@@ -38,7 +38,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font
 .hicon svg{width:26px;height:26px}
 .hero h1{margin:14px 0 6px;font-size:clamp(30px,8.6vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.06}
 .hero .sub{margin:0;color:var(--ink2);max-width:56ch}
-.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--seg);padding:4px;border-radius:14px;position:sticky;top:8px;z-index:5;box-shadow:var(--shadow)}
+.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;background:var(--seg);padding:4px;border-radius:14px;position:sticky;top:8px;z-index:5;box-shadow:var(--shadow)}
 .seg button{appearance:none;border:0;border-radius:11px;padding:10px 6px;font:inherit;font-weight:700;font-size:14px;line-height:1.2;color:var(--ink2);background:transparent;cursor:pointer}
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 h2.sec{margin:8px 4px -6px;font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
@@ -139,6 +139,11 @@ ul.hl.ok li{border-color:var(--green)}ul.hl.fav li{border-color:var(--blue)}ul.h
 .real img{width:100%;height:auto;display:block;border-radius:10px;background:#000}
 .lic{font-size:11px;color:var(--ink2)}
 .lic a{color:inherit}
+.lcard{display:flex;flex-direction:column;gap:6px;padding:16px;text-align:left;text-decoration:none;color:var(--ink);border:0;font:inherit;cursor:pointer;width:100%}
+.lcard b{font-size:18px}
+.lcard span:not(.lic2){font-size:14px;color:var(--ink2)}
+.lcard i{font-style:normal;font-weight:700;font-size:14px;color:var(--blue)}
+.lic2{align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:6px;padding:2px 7px;color:#fff;background:var(--c)}
 .egt{font-size:13px;font-weight:700;margin:4px 0 -2px}
 figure{margin:0;display:flex;flex-direction:column;gap:6px}
 figcaption{font-size:13px;color:var(--ink2)}
@@ -186,7 +191,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     <button id="tab-algo" class="on" role="tab" aria-selected="true" data-p="algo">Algoritmo</button>
     <button id="tab-arr" role="tab" aria-selected="false" data-p="arr">Arritmias</button>
     <button id="tab-man" role="tab" aria-selected="false" data-p="man">Maniobras</button>
-    <button id="tab-calc" role="tab" aria-selected="false" data-p="calc">Calculadora</button>
+    <button id="tab-loc" role="tab" aria-selected="false" data-p="loc">Localizar</button>
+    <button id="tab-calc" role="tab" aria-selected="false" data-p="calc">Calcular</button>
   </div>
 
   <!-- ALGORITMO -->
@@ -210,6 +216,29 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     <div class="ped"><b>En pediatría.</b> Casi todos los puntos de corte provienen de series de adultos. En niños pequeños, el corazón es más chico y las longitudes de ciclo más cortas: interpretá con cautela los valores cercanos al corte y apoyate en las maniobras cualitativas (respuesta A-V/A-A-V, fusión, EV con His refractario). La PJRT y la taquicardia de la unión son proporcionalmente más frecuentes que en el adulto.</div>
     <div class="filt" id="filt"></div>
     <div id="fichas" class="panel"></div>
+  </section>
+
+  <!-- LOCALIZAR -->
+  <section class="panel" id="p-loc" hidden>
+    <div id="loc-hub" class="panel">
+      <p class="small" style="margin:0 4px">Localización del sustrato arritmogénico a partir del ECG de superficie.</p>
+      <a class="card lcard" href="localizar/via-accesoria.html"><span class="lic2" style="--c:var(--violet)">Vía accesoria</span><b>Localización de la vía accesoria</b><span>Algoritmo por pasos según la onda delta, con ECG de ejemplo. Algoritmo del autor.</span><i>Abrir →</i></a>
+      <button class="card lcard" type="button" id="goKis"><span class="lic2" style="--c:var(--blue)">Foco auricular</span><b>Algoritmo de Kistler</b><span>Localización del foco de la taquicardia auricular según la morfología de la onda P.</span><i>En preparación</i></button>
+      <button class="card lcard" type="button" id="goEnr"><span class="lic2" style="--c:var(--rose)">Arritmia ventricular</span><b>Algoritmo de Enriquez</b><span>Sitio de origen de las EV y TV idiopáticas (corazón estructuralmente normal), por cuadrantes anatómicos.</span><i>Abrir →</i></button>
+    </div>
+    <div id="loc-enr" class="panel" hidden>
+      <div class="ctrl"><button class="btn" type="button" data-back>← Localizadores</button></div>
+      <div class="card" style="padding:14px 16px"><b>Arritmias ventriculares idiopáticas</b><p class="small" style="margin:4px 0 0">Enriquez 2019: (1) eje vertical en DII y DIII, (2) derecha/izquierda por DI en el eje inferior o por el bloqueo de rama en el eje superior, y (3) transición precordial, duración del QRS y morfología de V1 dentro de cada cuadrante.</p>
+        <a class="btn lnk" style="margin-top:10px" href="https://doi.org/10.1016/j.hrthm.2019.04.002" target="_blank" rel="noopener noreferrer">Ver el artículo y sus ECG de ejemplo (figs. 4 y 5) ↗</a></div>
+      <h2 class="sec">Pregunta actual</h2>
+      <div id="eCur"></div>
+      <div class="ctrl" id="eCtrl"></div>
+      <div id="eTrail" class="trail"></div>
+    </div>
+    <div id="loc-kis" class="panel" hidden>
+      <div class="ctrl"><button class="btn" type="button" data-back>← Localizadores</button></div>
+      <div class="card leaf gray"><div class="lt">En preparación</div><h3>Algoritmo de Kistler</h3><p style="margin:0">Kistler PM, et al. P-wave morphology in focal atrial tachycardia: development of an algorithm to predict the anatomic site of origin. <i>J Am Coll Cardiol</i> 2006;48:1010–7.</p><p class="small" style="margin:0">Se va a armar a partir del artículo original, para no reproducir de memoria los criterios de la onda P.</p></div>
+    </div>
   </section>
 
   <!-- CALCULADORA -->
@@ -305,6 +334,7 @@ const REFS = {
   wagshal95: ['Wagshal 1995', 'Wagshal AB, Pires LA, Huang SKS. Management of cardiac arrhythmias with radiofrequency catheter ablation. <i>Arch Intern Med</i> 1995;155:137–47.'],
   moore22: ['Moore 2022', 'Moore JP, Gallotti RG, Shannon KM, et al. Multicenter outcomes of catheter ablation for atrioventricular reciprocating tachycardia mediated by twin atrioventricular nodes. <i>JACC Clin Electrophysiol</i> 2022;8:322–30.'],
   gardey21: ['Gardey 2021', 'Gardey K, Thevenard R, Joly H, Bessière F. Atypical twin atrioventricular nodal re-entrant tachycardia in a congenitally corrected transposition of the great arteries patient with a surgical repair of a ventricular septal defect: a case report. <i>Eur Heart J Case Rep</i> 2021;5:ytab303.'],
+  enriquez19: ['Enriquez 2019', 'Enriquez A, Baranchuk A, Briceno D, Saenz L, Garcia F. How to use the 12-lead ECG to predict the site of origin of idiopathic ventricular arrhythmias. <i>Heart Rhythm</i> 2019;16:1538–44.'],
   // citadas en las revisiones anteriores
   hirao96: ['Hirao 1996', 'Hirao K, Otomo K, Wang X, et al. Para-Hisian pacing. <i>Circulation</i> 1996;94:1027–35. (citado en Veenhuyzen 2012)'],
   ho08: ['Ho 2008', 'Ho RT, Mark GE, Rhim ES, et al. Differentiating AVNRT from AVRT by ΔHA values during entrainment from the ventricle. <i>Heart Rhythm</i> 2008;5:83–8. (citado en Ho 2015)'],
@@ -717,6 +747,112 @@ function renderArr() {
     ${a.trampa ? `<div class="box trap"><div class="bl">Ojo</div><p>${a.trampa}</p></div>` : ''}
   </div></details>`).join('') : '<p class="small">No hay coincidencias. Probá con otro nombre (por ejemplo: TRNAV, PJRT, auricular, JET, antidrómica, Mahaim, rama-rama).</p>';
   bindMl($('#arrList'));
+}
+
+// ===============================================================================================================
+// Localizar sustrato: tres localizadores. Vía accesoria (página propia, copiada de la app de prácticas), Kistler
+// (focos auriculares, pendiente del artículo) y Enriquez 2019 (arritmias ventriculares idiopáticas, acá abajo).
+// ===============================================================================================================
+const EPI = 'signos de origen epicárdico: seudodelta prominente o índice de deflexión máxima > 0,55';
+const EN = {
+  e0: { q: '¿Cómo es el QRS en DII y DIII?', help: 'Corazón estructuralmente normal (EV o TV idiopática). Paso 1: eje vertical.', opts: [
+    { t: 'Positivo en las dos', s: 'Eje inferior: tractos de salida y parte alta de los anillos AV', go: 'eInf' },
+    { t: 'Negativo en las dos', s: 'Eje superior: cara inferior de los ventrículos', go: 'eSup' },
+    { t: 'DII positiva y DIII negativa', s: 'Discordancia: estructuras medioventriculares o anillos laterales', go: 'L_eDp' },
+    { t: 'DII negativa y DIII positiva', s: 'Discordancia: estructuras medioventriculares o anillos laterales', go: 'L_eDn' }] },
+  eInf: { q: 'Eje inferior: ¿cómo es el QRS en DI?', help: 'Paso 2: DI separa lo que está a la derecha de la línea media (DI positivo) de lo que está a la izquierda (DI negativo). Ojo: la cara anterior del TSVD es izquierda y la cúspide coronaria derecha es derecha.', opts: [
+    { t: 'Positivo', s: 'Cuadrante superior derecho: TSVD posterior, CCD, para-Hisiano, tricúspide superior', go: 'eRU' },
+    { t: 'Negativo', s: 'Cuadrante superior izquierdo: TSVD anterior, CCI, continuidad mitroaórtica, mitral anterolateral, summit', go: 'eLU' },
+    { t: 'Isodifásico o cercano a cero', s: 'Cerca de la línea media', go: 'L_eComm' }] },
+  eRU: { q: 'Cuadrante superior derecho: ¿cómo es aVL?', help: 'aVL es izquierda pero también superior: los tractos de salida dan QS en aVL; la tricúspide y el para-Hisiano están más abajo y a la derecha.', opts: [
+    { t: 'Negativa (QS), con R altas en DII y DIII', s: 'Tracto de salida: TSVD posterior o cúspide coronaria derecha', go: 'eRUot' },
+    { t: 'Positiva (R o r), con DIII menos positiva, isoeléctrica o negativa', s: 'Tricúspide superior o para-Hisiano', go: 'eRUtv' }] },
+  eRUot: { q: '¿Dónde está la transición precordial (primera derivación con R > S)?', opts: [
+    { t: 'Después de V3', go: 'L_eRvotP' },
+    { t: 'En V2 o antes', go: 'L_eRcc' },
+    { t: 'En V3', s: 'Zona gris: usá los índices', go: 'eRUv3' }] },
+  eRUv3: { q: 'Transición en V3: ¿qué muestran los índices?', help: 'Compará con el ritmo sinusal. Índice de transición en V2 = (R/(R+S) en V2 de la EV) ÷ (R/(R+S) en V2 del sinusal). Índice V2S/V3R = amplitud de la S en V2 ÷ amplitud de la R en V3.', opts: [
+    { t: 'La transición de la EV es más tardía que la del sinusal', s: 'TSVD (especificidad 100 %)', go: 'L_eRvotP' },
+    { t: 'Índice de transición en V2 ≥ 0,6, o V2S/V3R ≤ 1,5', s: 'Tracto de salida izquierdo (S 95 % y E 100 %; S 89 % y E 94 %)', go: 'L_eRcc' },
+    { t: 'Índice de transición en V2 < 0,6, o V2S/V3R > 1,5', go: 'L_eRvotP' }] },
+  eRUtv: { q: '¿Cuánto dura el QRS?', opts: [
+    { t: '< 130 ms', s: 'Activación temprana del His-Purkinje', go: 'L_ePH' },
+    { t: '≥ 130 ms', go: 'L_eTVs' }] },
+  eLU: { q: 'Cuadrante superior izquierdo: ¿qué patrón de bloqueo de rama tiene?', help: 'Cuanto más posterior el origen (de la pared libre del TSVD hacia el anillo mitral), más temprana la transición, hasta pasar de BRI a BRD en la continuidad mitroaórtica.', opts: [
+    { t: 'BRI (V1 negativo)', go: 'eLUl' },
+    { t: 'BRD (V1 positivo)', go: 'eLUr' }] },
+  eLUl: { q: 'BRI con eje inferior y DI negativo: ¿qué ves en V1 y la transición?', opts: [
+    { t: 'QS en V1 y transición en V3 o después', go: 'L_eRvotA' },
+    { t: 'QS en V1 con muesca en la rama descendente', go: 'L_eComm' },
+    { t: 'Transición en V1–V2, con V1 multifásico (M o W)', go: 'L_eLcc' },
+    { t: 'Transición en V2–V3 con ' + EPI + ', o quiebre del patrón en V2', go: 'L_eSummit' }] },
+  eLUr: { q: 'BRD con eje inferior: ¿qué ves en V1 y las precordiales?', opts: [
+    { t: 'qR en V1 con concordancia positiva', go: 'L_eAmc' },
+    { t: 'R o Rsr′ en V1 con concordancia positiva', go: 'L_eAlmv' },
+    { t: 'rsR′ en V1, QRS < 130 ms y eje derecho', go: 'L_eLaf' },
+    { t: 'R, Rsr′ o qR en V1, QRS ancho y transición tardía (V3–V5); DII puede ser negativa', go: 'L_eApm' },
+    { t: 'BRD con ' + EPI, go: 'L_eSummit' }] },
+  eSup: { q: 'Eje superior: ¿qué patrón de bloqueo de rama tiene?', help: 'Paso 2 en el eje superior: el bloqueo de rama pesa más que DI, porque algunas arritmias del septum izquierdo dan eje izquierdo.', opts: [
+    { t: 'BRI', s: 'Cuadrante inferior derecho: tricúspide inferior, banda moderadora, crux', go: 'eRL' },
+    { t: 'BRD', s: 'Cuadrante inferior izquierdo: mitral inferior, fascículo posterior, músculo papilar posteromedial', go: 'eLL' }] },
+  eRL: { q: 'BRI con eje superior: ¿dónde está la transición y cómo es V1?', opts: [
+    { t: 'Transición tardía (V5–V6), eje superior izquierdo', go: 'L_eMb' },
+    { t: 'Transición en V2, QS en las inferiores y ' + EPI, go: 'L_eCrux' },
+    { t: 'Transición en V2–V3 con QS en V1', go: 'L_eTViS' },
+    { t: 'Transición en V4–V5 con rS en V1', go: 'L_eTViL' }] },
+  eLL: { q: 'BRD con eje superior: ¿qué muestran las precordiales, el QRS y V1?', opts: [
+    { t: 'Concordancia positiva (R > S en V6)', go: 'L_eMvi' },
+    { t: 'R < S en V5, QRS < 130 ms y rsR′ en V1 (r < R′)', go: 'L_eLpf' },
+    { t: 'R < S en V5, QRS más ancho, con R, Rsr′ o qR en V1', go: 'L_ePpm' }] },
+  // ---------------- resultados
+  L_eRvotP: { leaf: true, dx: 'TSVD posterior (septal)', f: ['BRI, eje inferior, DI positiva', 'QS en V1 y en aVL', 'Transición en V3 o después'], dif: 'Cúspide coronaria derecha (transición en V2 o antes).' },
+  L_eRcc: { leaf: true, dx: 'Cúspide coronaria derecha', f: ['BRI, eje inferior, DI positiva', 'QS en V1 y en aVL', 'Transición en V2–V3 (índice de transición en V2 ≥ 0,6)'], dif: 'TSVD posterior, comisura CCD-CCI.' },
+  L_ePH: { leaf: true, dx: 'Región para-Hisiana', f: ['BRI con transición en V2–V3 y QS en V1', 'R en aVL (negativa en el TSVD); DIII puede ser negativa', 'QRS angosto (< 130 ms)'], dif: 'Tricúspide superior (QRS más ancho).' },
+  L_eTVs: { leaf: true, dx: 'Anillo tricuspídeo superior', f: ['BRI con transición variable; QS o rS en V1', 'aVL positiva (negativa en el TSVD); DIII puede ser negativa'], dif: 'Para-Hisiano (QRS < 130 ms).' },
+  L_eComm: { leaf: true, dx: 'Comisura entre las cúspides coronarias derecha e izquierda', f: ['Cerca de la línea media: DI positiva, negativa o isodifásica', 'QS en V1 con muesca en la rama descendente'], dif: 'Cúspide coronaria derecha o izquierda, TSVD.' },
+  L_eRvotA: { leaf: true, dx: 'TSVD anterior (pared libre o septal)', f: ['BRI, eje inferior, DI negativa (la cara anterior del TSVD es izquierda)', 'QS en V1', 'Transición en V3 o después: V4–V5 en la pared libre, V3–V4 en el septum'], dif: 'Cúspide coronaria izquierda (transición más temprana).' },
+  L_eLcc: { leaf: true, dx: 'Cúspide coronaria izquierda', f: ['BRI o BRD, transición en V1–V2', 'V1 rS, R o multifásico (M o W)'], dif: 'Continuidad mitroaórtica, summit del VI.' },
+  L_eSummit: { leaf: true, dx: 'Summit del VI', f: ['BRD (cara lateral, accesible) o BRI con transición en V2–V3 (cara septal, inaccesible)', 'Onda R en DIII más alta que en DII', EPI.charAt(0).toUpperCase() + EPI.slice(1), 'Quiebre del patrón en V2 (pérdida de la R en V2 respecto de V1 y V3): cerca del surco interventricular anterior y la descendente anterior'], dif: 'Cúspide coronaria izquierda, continuidad mitroaórtica.', nota: 'El summit se mapea por la vena cardíaca mayor y la interventricular anterior; la ablación puede requerir acceso epicárdico, con cuidado de las coronarias.' },
+  L_eAmc: { leaf: true, dx: 'Continuidad mitroaórtica', f: ['BRD con concordancia positiva', 'qR en V1'], dif: 'Mitral anterolateral (R en V1), cúspide coronaria izquierda.' },
+  L_eAlmv: { leaf: true, dx: 'Anillo mitral anterolateral', f: ['BRD con concordancia positiva', 'R o Rsr′ en V1'], dif: 'Continuidad mitroaórtica (qR en V1).' },
+  L_eLaf: { leaf: true, dx: 'Fascículo anterior izquierdo', f: ['BRD con rsR′ en V1, como un BRD típico', 'QRS angosto (< 130 ms)', 'Eje derecho'], dif: 'Músculo papilar anterolateral (QRS más ancho).' },
+  L_eApm: { leaf: true, dx: 'Músculo papilar anterolateral', f: ['BRD con R, Rsr′ o qR en V1', 'QRS más ancho', 'Transición tardía (V3–V5); DII puede ser negativa'], dif: 'Fascículo anterior izquierdo (QRS < 130 ms).' },
+  L_eMb: { leaf: true, dx: 'Banda moderadora', f: ['BRI con eje superior izquierdo', 'Transición tardía (después de V4)'], dif: 'Tricúspide inferior lateral.' },
+  L_eCrux: { leaf: true, dx: 'Crux cardíaco (epicárdico)', f: ['BRI con eje superior izquierdo y transición en V2', 'QS en las derivaciones inferiores', EPI.charAt(0).toUpperCase() + EPI.slice(1)], dif: 'Tricúspide inferior septal.', nota: 'Región epicárdica cerca de la unión de la vena cardíaca media con el seno coronario.' },
+  L_eTViS: { leaf: true, dx: 'Anillo tricuspídeo inferior (septal)', f: ['BRI con eje superior', 'Transición en V2–V3', 'QS en V1'], dif: 'Crux (signos epicárdicos), tricúspide lateral.' },
+  L_eTViL: { leaf: true, dx: 'Anillo tricuspídeo inferior (pared libre)', f: ['BRI con eje superior', 'Transición en V4–V5', 'rS en V1'], dif: 'Banda moderadora (transición más tardía).' },
+  L_eMvi: { leaf: true, dx: 'Anillo mitral inferior', f: ['BRD con eje superior', 'Concordancia positiva (R > S en V6): origen basal', 'R o Rsr′ en V1'], dif: 'Músculo papilar posteromedial, fascículo posterior.' },
+  L_eLpf: { leaf: true, dx: 'Fascículo posterior izquierdo', f: ['BRD con eje superior', 'R < S en V5', 'rsR′ en V1 (r < R′), QRS < 130 ms'], dif: 'Músculo papilar posteromedial (QRS más ancho, Rsr′ o qR en V1).' },
+  L_ePpm: { leaf: true, dx: 'Músculo papilar posteromedial', f: ['BRD con eje superior', 'R < S en V5', 'R, Rsr′ o qR en V1; QRS más ancho que el fascicular'], dif: 'Fascículo posterior izquierdo, mitral inferior.' },
+  L_eDp: { leaf: true, dx: 'Estructuras del VD: tricúspide lateral, banda moderadora o septum (para-Hisiano)', f: ['DII positiva y DIII negativa (eje −30° a +30°)', 'Todas con BRI'], dif: 'Diferenciá por la transición: la banda moderadora es tardía (después de V4).' },
+  L_eDn: { leaf: true, dx: 'Estructuras del VI: mitral lateral o músculo papilar anterolateral', f: ['DII negativa y DIII positiva (eje +150° a +210°)', 'Todas con BRD'], dif: 'El papilar anterolateral tiene QRS ancho y transición tardía.' }
+};
+let ePath = [];
+function eCur() { let id = 'e0'; for (const p of ePath) id = EN[p.id].opts[p.i].go; return id; }
+function renderEnr() {
+  const id = eCur(), n = EN[id];
+  let h;
+  if (n.leaf) {
+    h = `<div class="card leaf"><div class="lt">Sitio de origen más probable</div><h3>${n.dx}</h3>
+      <div class="box"><div class="bl">Rasgos típicos</div><ul>${n.f.map(x => `<li>${x}</li>`).join('')}</ul></div>
+      <div class="box"><div class="bl">Diferencial cercano</div><p>${n.dif}</p></div>
+      ${n.nota ? `<div class="box"><div class="bl">Nota</div><p>${n.nota}</p></div>` : ''}
+      <p class="small" style="margin:0">El ECG orienta; el sitio se confirma con mapeo de activación y estimulación. Varía con la contextura, la posición de los electrodos y la del corazón en el tórax. ${cite(['enriquez19'])}</p></div>`;
+  } else {
+    h = `<div class="card step"><div class="q">${n.q}</div>${n.help ? `<div class="help">${n.help}</div>` : ''}
+      <div class="opts">${n.opts.map((o, i) => `<button class="opt" data-i="${i}">${o.t}${o.s ? `<small>${o.s}</small>` : ''}</button>`).join('')}</div></div>`;
+  }
+  $('#eCur').innerHTML = h;
+  $('#eCtrl').innerHTML = ePath.length ? `<button class="btn" id="eBack">← Paso anterior</button><button class="btn" id="eReset">Empezar de nuevo</button>` : '';
+  $('#eTrail').innerHTML = ePath.map((p, k) => `<button class="card done" data-k="${k}"><span class="n">${k + 1}</span><div><b>${strip(EN[p.id].q)}</b><span>${EN[p.id].opts[p.i].t}</span></div></button>`).reverse().join('');
+  $('#eCur').querySelectorAll('.opt').forEach(b => b.onclick = () => { ePath.push({ id, i: +b.dataset.i }); renderEnr(); });
+  $('#eTrail').querySelectorAll('.done').forEach(b => b.onclick = () => { ePath = ePath.slice(0, +b.dataset.k); renderEnr(); });
+  const bk = $('#eBack'); if (bk) bk.onclick = () => { ePath.pop(); renderEnr(); };
+  const rs = $('#eReset'); if (rs) rs.onclick = () => { ePath = []; renderEnr(); };
+}
+function locView(v) {
+  ['hub', 'enr', 'kis'].forEach(x => $('#loc-' + x).hidden = x !== v);
+  if (v === 'enr') renderEnr();
 }
 
 const GRUPOS = { O: 'Observación', V: 'Ventricular', A: 'Auricular', F: 'Fármaco', C: 'Concepto' };
@@ -1164,7 +1300,7 @@ try { const s = JSON.parse(localStorage.getItem('mef_calc') || 'null'); if (s) {
 // ---------- pestañas
 function tab(p) {
   document.querySelectorAll('.seg button').forEach(b => { const on = b.dataset.p === p; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
-  ['algo', 'arr', 'man', 'calc'].forEach(x => $('#p-' + x).hidden = x !== p);
+  ['algo', 'arr', 'man', 'loc', 'calc'].forEach(x => $('#p-' + x).hidden = x !== p);
   try { localStorage.setItem('mef_tab', p); } catch (e) {}
 }
 document.querySelectorAll('.seg button').forEach(b => b.onclick = () => tab(b.dataset.p));
@@ -1172,7 +1308,9 @@ document.querySelectorAll('.seg button').forEach(b => b.onclick = () => tab(b.da
 $('#refsAll').innerHTML = Object.values(REFS).map(r => `<li>${r[1]}</li>`).join('');
 renderAlgo(); renderFichas(); renderArr(); calc();
 $('#arrQ').addEventListener('input', e => { arrQ = e.target.value; renderArr(); });
-try { const t = localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
+$('#goEnr').onclick = () => locView('enr'); $('#goKis').onclick = () => locView('kis');
+document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => locView('hub'));
+try { const t = location.hash === '#localizar' ? 'loc' : localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>

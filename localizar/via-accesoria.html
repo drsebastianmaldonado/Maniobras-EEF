@@ -1,0 +1,402 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Localización de la vía accesoria</title>
+<style>
+/* Layout: columna única tipo iOS (inset grouped), banda de encabezado con degradé, tarjeta de contacto, algoritmo en tarjetas con paneles abiertos y modo práctica (mismo formato que Fallas del Marcapasos Transitorio) */
+:root{
+  --bg:#f2f2f7;
+  --card:#ffffff;
+  --ink:#0b0b10;
+  --ink2:#6c6c74;
+  --line:#e3e3e8;
+  --blue:#0a74f0;
+  --blue-soft:#e4f0ff;
+  --green:#1faa4a;
+  --orange:#d97a00;
+  --red:#e0352b;
+  --violet:#7a3fd0;
+  --slate:#5b6b8c;
+  --teal:#12a58f;
+  --seg:#e4e4ea;
+  --shadow:0 1px 2px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.05);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#000;--card:#1c1c1e;--ink:#f5f5f7;--ink2:#9c9ca4;--line:#2e2e32;--blue:#4aa3ff;--blue-soft:#10263d;
+  --green:#30d158;--orange:#ffa733;--red:#ff6259;--violet:#a98bff;--slate:#9fb0d0;--teal:#2fd0b8;
+  --seg:#1c1c1e;--shadow:none;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#000;--card:#1c1c1e;--ink:#f5f5f7;--ink2:#9c9ca4;--line:#2e2e32;--blue:#4aa3ff;--blue-soft:#10263d;
+  --green:#30d158;--orange:#ffa733;--red:#ff6259;--violet:#a98bff;--slate:#9fb0d0;--teal:#2fd0b8;
+  --seg:#1c1c1e;--shadow:none;color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased}
+.wrap{max-width:680px;margin:0 auto;padding-inline:16px;padding-block:20px 40px;display:flex;flex-direction:column;gap:18px}
+h1{font-size:clamp(28px,7.5vw,36px);line-height:1.08;letter-spacing:-.02em;margin:0;font-weight:800;text-wrap:balance}
+.card{background:var(--card);border-radius:20px;box-shadow:var(--shadow);min-width:0}
+
+/* encabezado: banda con degradé suave, ícono, título grande y datos del médico */
+.hero{--hc:var(--blue);margin:-20px -16px 0;padding:44px 20px 26px;border-radius:0 0 32px 32px;background:linear-gradient(165deg,color-mix(in srgb,var(--hc) 30%,var(--bg)),color-mix(in srgb,var(--hc) 6%,var(--bg)))}
+.hicon{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;color:#fff;background:linear-gradient(135deg,var(--hc),color-mix(in srgb,var(--hc) 62%,#000));box-shadow:0 6px 16px color-mix(in srgb,var(--hc) 35%,transparent)}
+.hicon svg{width:26px;height:26px}
+.hero h1{margin:16px 0 6px;font-size:clamp(32px,9.4vw,40px);font-weight:800;letter-spacing:-.035em;line-height:1.06}
+.hero .sub{margin:0;color:var(--ink2);font-size:16px;max-width:44ch}
+.prof{margin:0;padding:11px 0 13px;border-top:.5px solid var(--line);border-bottom:.5px solid var(--line)}
+.pname{font-size:15px;font-weight:600}
+.prole{font-size:12px;line-height:1.35;color:var(--ink2);margin-top:1px;max-width:44ch}
+.pact{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:9px}
+.wa{display:inline-flex;align-items:center;gap:8px;background:#1f9d55;color:#fff;border-radius:99px;padding:7px 13px;font-size:13px;font-weight:600;text-decoration:none}
+.wa svg{width:15px;height:15px}
+.wa:active{opacity:.75}
+.mailbtn{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);min-width:0;appearance:none;border:0;background:none;font-family:inherit;padding:0;cursor:pointer;text-align:left}
+.mailtxt{user-select:all;overflow-wrap:anywhere}
+.mailcp{color:var(--blue);flex:none;display:grid;place-items:center;width:24px;height:24px}
+.mailcp svg{width:15px;height:15px}
+
+.btn{appearance:none;border:0;background:var(--blue-soft);color:var(--blue);font:inherit;font-weight:600;font-size:14px;border-radius:999px;padding:8px 14px;cursor:pointer;min-height:36px}
+.btn:active{opacity:.6}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.modelabel{margin:4px 4px -6px;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+
+/* algoritmo: una tarjeta por paso, con su panel lateral abierto */
+.flow{display:flex;flex-direction:column;align-items:stretch}
+.node{--t:var(--slate);padding:14px;display:flex;flex-direction:column;gap:12px;background:linear-gradient(145deg,color-mix(in srgb,var(--t) 20%,var(--card)),color-mix(in srgb,var(--t) 5%,var(--card)))}
+.node.t-warn{--t:var(--orange)}
+.node.t-ok{--t:var(--teal)}
+.node.t-crit{--t:var(--red)}
+.nh{display:flex;align-items:center;gap:12px}
+.nb{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:16px;font-variant-numeric:tabular-nums;background:linear-gradient(135deg,var(--t),color-mix(in srgb,var(--t) 62%,#000))}
+.nt{font-size:18px;font-weight:700;letter-spacing:-.01em;line-height:1.2;text-wrap:balance}
+.ns{font-size:14px;color:var(--ink2);margin-top:2px}
+.ns span{display:block}
+.side{background:var(--card);border-radius:14px;padding:12px 14px}
+.side .sl{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px}
+.side ol,.side ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:15px}
+.side li::marker{color:var(--ink2);font-weight:600}
+.arrow{align-self:center;display:grid;place-items:center;width:28px;height:28px;color:var(--ink2)}
+.arrow svg{width:14px;height:18px}
+
+/* modo práctica */
+.practice{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;text-align:left;appearance:none;border:0;font:inherit;color:inherit;cursor:pointer;border-radius:16px;background:linear-gradient(145deg,color-mix(in srgb,var(--violet) 24%,var(--card)),color-mix(in srgb,var(--violet) 6%,var(--card)))}
+.practice:active{opacity:.7}
+.practice .pico{flex:none;width:36px;height:36px;border-radius:11px;--hc:var(--violet)}
+.practice .pico svg{width:20px;height:20px}
+.practice .rt{flex:1;min-width:0}
+.practice .rt b{display:block;font-size:15px;font-weight:700;letter-spacing:-.01em}
+.practice .rt small{display:block;color:var(--ink2);font-size:13px;line-height:1.3;margin-top:1px}
+.practice .go{flex:none;color:var(--violet);font-weight:700;font-size:13px}
+.qhead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px 0}
+.qcount{font-size:14px;font-weight:600;color:var(--ink2);font-variant-numeric:tabular-nums}
+.qbar{height:5px;border-radius:99px;background:var(--seg);margin:12px 16px 4px;overflow:hidden}
+.qbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--violet),color-mix(in srgb,var(--violet) 60%,#e04aa0));transition:width .3s ease}
+.case-h{padding:14px 16px 4px}
+.case-h .tag{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
+.case-h h2{margin:2px 0 0;font-size:19px;letter-spacing:-.01em;line-height:1.25;text-wrap:balance}
+.q-opts{display:flex;flex-direction:column;gap:8px;padding:14px 16px 4px}
+.qopt{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;appearance:none;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:16px;font-weight:600;border-radius:14px;padding:13px 14px;min-height:48px;cursor:pointer;transition:border-color .15s,background .15s,opacity .15s}
+.qopt:active:not(:disabled){opacity:.6}
+.qopt:disabled{cursor:default}
+.qopt i{font-style:normal;font-weight:800;flex:none}
+.qopt.good{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--bg))}
+.qopt.good i{color:var(--green)}
+.qopt.bad{border-color:var(--red);background:color-mix(in srgb,var(--red) 14%,var(--bg))}
+.qopt.bad i{color:var(--red)}
+.qopt.dim{opacity:.5}
+.fb{margin:12px 16px 0;padding:14px;border-radius:14px;font-size:14px;line-height:1.45}
+.fb.ok{background:color-mix(in srgb,var(--green) 14%,var(--bg))}
+.fb.bad{background:color-mix(in srgb,var(--orange) 16%,var(--bg))}
+.fb p{margin:6px 0 0;color:var(--ink2)}
+.fb .fbt{font-weight:800;font-size:16px;color:var(--ink)}
+.nxt{display:block;width:calc(100% - 32px);margin:12px 16px 16px;appearance:none;border:0;border-radius:14px;padding:14px;font:inherit;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--violet),color-mix(in srgb,var(--violet) 62%,#000));cursor:pointer}
+.nxt:active{opacity:.8}
+.result .score{display:flex;align-items:baseline;justify-content:center;gap:8px;padding:22px 16px 0}
+.result .score b{font-size:76px;line-height:1;font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,var(--violet),color-mix(in srgb,var(--violet) 55%,#e04aa0));-webkit-background-clip:text;background-clip:text;color:transparent}
+.result .score span{font-size:24px;font-weight:700;color:var(--ink2)}
+.result .pct{text-align:center;color:var(--ink2);font-size:14px;margin-top:2px}
+.result h2{margin:14px 16px 0;text-align:center;font-size:22px;letter-spacing:-.015em;text-wrap:balance}
+.result .rtext{margin:8px 20px 0;text-align:center;color:var(--ink2);font-size:15px}
+.rlist{list-style:none;margin:16px 16px 0;padding:0;display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--line)}
+.rlist li{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.rlist .mk{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:800}
+.rlist .mk.ok{background:var(--green)}
+.rlist .mk.bad{background:var(--red)}
+.rlist small{color:var(--ink2)}
+.result .two{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px}
+@media (max-width:420px){.result .two{grid-template-columns:1fr}}
+.result .two .btn{border-radius:12px;padding:12px}
+.foot{font-size:12px;color:var(--ink2);text-align:center;padding-inline:8px;display:flex;flex-direction:column;gap:6px}
+.foot a{color:var(--blue)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+/* Localizador guiado: pregunta actual con botones grandes, recorrido elegido y resultado destacado */
+.guide{padding:0 0 16px;overflow:hidden}
+.ghead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px 0}
+.gtag{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
+.gq{padding:10px 16px 0}
+.gq h2{margin:2px 0 0;font-size:20px;letter-spacing:-.01em;line-height:1.25;text-wrap:balance}
+.gq p{margin:8px 0 0;color:var(--ink2);font-size:14px}
+.gopts{display:flex;flex-direction:column;gap:9px;padding:14px 16px 0}
+.gopts.two{display:grid;grid-template-columns:1fr 1fr}
+.gopt{appearance:none;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:17px;font-weight:700;border-radius:14px;padding:15px 14px;min-height:54px;cursor:pointer;text-align:center;transition:border-color .15s,background .15s}
+.gopt:hover{border-color:var(--blue)}
+.gopt:active{opacity:.6}
+.gopt small{display:block;font-weight:500;font-size:13px;color:var(--ink2);margin-top:2px}
+.gopt.si{border-color:color-mix(in srgb,var(--green) 55%,var(--line))}
+.gopt.no{border-color:color-mix(in srgb,var(--red) 45%,var(--line))}
+.path{display:flex;flex-direction:column;gap:6px;padding:14px 16px 0}
+.path .pl{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
+.step{display:flex;gap:9px;align-items:flex-start;font-size:14px;line-height:1.35}
+.step i{flex:none;font-style:normal;font-weight:800;font-size:11px;min-width:20px;height:20px;border-radius:99px;display:grid;place-items:center;background:var(--blue-soft);color:var(--blue);padding:0 5px}
+.step b{font-weight:700}
+.res{margin:14px 16px 0;padding:16px;border-radius:16px;--t:var(--blue);background:linear-gradient(145deg,color-mix(in srgb,var(--t) 24%,var(--card)),color-mix(in srgb,var(--t) 7%,var(--card)));border:2px solid var(--t)}
+.res .rl{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
+.res .rn{font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin-top:3px;text-wrap:balance}
+.res .rz{margin-top:6px;font-size:14px;color:var(--ink2)}
+.res.izq{--t:var(--blue)}.res.sep{--t:var(--orange)}.res.lat{--t:var(--green)}.res.nd{--t:var(--slate)}
+.gfoot{display:flex;gap:10px;padding:14px 16px 0}
+.gfoot .btn{flex:1;border-radius:12px;padding:12px}
+/* tabla resumen */
+.tbl{padding:14px}
+.tbl h3{margin:0 0 10px;font-size:17px}
+.zone{margin:0 0 12px}
+.zone:last-child{margin-bottom:0}
+.zh{font-size:13px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;padding:5px 10px;border-radius:8px;color:#fff}
+.zone.izq .zh{background:var(--blue)}.zone.sep .zh{background:var(--orange)}.zone.lat .zh{background:var(--green)}
+.zr{display:grid;grid-template-columns:1fr 1.4fr;gap:4px 12px;font-size:14px;padding:6px 4px;border-bottom:1px solid var(--line)}
+.zr:last-child{border-bottom:0}
+.zr span:first-child{color:var(--ink2)}
+.zr b{font-weight:700}
+.note{font-size:13px;color:var(--ink2);margin:10px 4px 0}
+.ej{margin:12px 16px 0}
+.ej img{width:100%;display:block;border-radius:12px;border:1px solid var(--line);background:#fff}
+.ej figcaption{font-size:13px;color:var(--ink2);margin-top:6px}
+</style>
+
+<main class="wrap">
+  <a href="../index.html#localizar" style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:600;font-size:14px;border-radius:999px;padding:8px 14px;background:color-mix(in srgb,#7a3fd0 14%,transparent);color:#7a3fd0">← Volver a Maniobras en el EEF</a>
+  <header class="hero">
+    <span class="hicon"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="11" r="6"/><path d="M13 17v6M9 23h8"/><path d="M10 11h2l1-2.5 1.500 5 1-2.500h1.500"/></svg></span>
+    <h1>Localización de la vía accesoria</h1>
+    <p class="sub">Algoritmo por pasos según la onda delta en el ECG de superficie</p>
+  </header>
+
+  <section class="prof" aria-label="Contacto"><div class="pname">Dr. Sebastián Maldonado</div><div class="prole">Electrofisiólogo infantil · Htal. JP Garrahan y Hospital Italiano de Buenos Aires</div>
+    <div class="pact"><a class="wa" href="https://wa.me/5491131860600?text=Hola%20Dr.%20Maldonado%2C%20te%20escribo%20por%20una%20interconsulta%20sobre%20un%20paciente%20con%20preexcitaci%C3%B3n." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.4.2-.4.700-1.300.1-.2 0-.3 0-.4l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.300-.9.900-.9 2.200s.9 2.500 1 2.700c.1.2 1.800 2.800 4.400 3.900 1.600.7 2.300.800 3.100.700.5-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.2-1.200-.1-.1-.3-.2-.5-.3z"/></svg>Interconsulta por WhatsApp</a>
+    <button class="mailbtn" id="copy" type="button" aria-label="Copiar mail"><span class="mailtxt" id="mailtxt">drsebastian.maldonado@gmail.com</span><span class="mailcp" id="mailcp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.500 2.500 0 0 1 7.500 4H15"/></svg></span></button></div></section>
+
+  <section id="main" style="display:flex;flex-direction:column;gap:18px" aria-label="Contenido"></section>
+
+  <footer class="foot">
+    <span>Material de apoyo para la toma de decisiones. No reemplaza el criterio clínico. Basado en el esquema «Ubicación de la vía accesoria» del autor.</span>
+    <span>Interconsultas: <a href="https://wa.me/5491131860600" target="_blank" rel="noopener">WhatsApp del Dr. Maldonado</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  /* ---------- datos del algoritmo ---------- */
+  var INF='Derivaciones inferiores: DII, DIII y aVF.';
+  var LOC={
+    izq_ps:{n:'Vía posteroseptal / posterior izquierda',z:'izq'},
+    izq_pl:{n:'Vía posterolateral izquierda',z:'izq'},
+    izq_al:{n:'Vía anterolateral izquierda',z:'izq'},
+    sd_ps:{n:'Vía posteroseptal derecha',z:'sep'},
+    sd_ms:{n:'Vía medioseptal derecha',z:'sep'},
+    sd_as:{n:'Vía anteroseptal derecha',z:'sep'},
+    ld_pl:{n:'Vía posterolateral derecha',z:'lat'},
+    ld_l:{n:'Vía lateral derecha',z:'lat'},
+    ld_al:{n:'Vía anterolateral derecha',z:'lat'}
+  };
+  var ZONA={izq:'Lado izquierdo',sep:'Septal derecha',lat:'Pared libre derecha'};
+  var INFOPC=[['neg','2 o 3 negativas','la onda delta es negativa en 2 o 3 derivaciones inferiores'],['p2','2 positivas','la onda delta es positiva en 2 derivaciones inferiores'],['p3','3 positivas','la onda delta es positiva en las 3 derivaciones inferiores']];
+  /* nodos: yn = Sí/No · ch = elegir una opción · res = resultado */
+  var N={
+    p1:{k:'yn',tag:'Paso 1',q:'¿Onda delta negativa en DI/aVL, o bien onda delta positiva o R>S en V1?',ayuda:'Cualquiera de las dos condiciones responde «Sí».',si:'zi',no:'p2',rs:'Onda delta negativa en DI/aVL, o positiva / R>S en V1',rn:'No cumple el Paso 1'},
+    zi:{k:'info',z:'izq',txt:'Vía izquierda',next:'inf_i'},
+    inf_i:{k:'ch',tag:'Vía izquierda',q:'Evaluá la onda delta en la cara inferior',ayuda:INF,o:[['neg','izq_ps'],['p2','izq_pl'],['p3','izq_al']]},
+    p2:{k:'yn',tag:'Paso 2',q:'¿Onda delta negativa en V1?',ayuda:'',si:'zs',no:'p3',rs:'Onda delta negativa en V1',rn:'Onda delta no negativa en V1'},
+    zs:{k:'info',z:'sep',txt:'Vía septal derecha',next:'inf_s'},
+    inf_s:{k:'ch',tag:'Vía septal derecha',q:'Evaluá la onda delta en la cara inferior',ayuda:INF,o:[['neg','sd_ps'],['p2','sd_ms'],['p3','sd_as']]},
+    p3:{k:'one',tag:'Hallazgo en V1',q:'Seleccioná el hallazgo en V1',ayuda:'',next:'tr',r:'rS (ausencia de onda delta)'},
+    tr:{k:'tr',tag:'Transición del QRS',q:'Evaluá la transición del QRS en las precordiales',ayuda:'Derivación donde el QRS pasa a ser predominantemente positivo.'},
+    zl:{k:'info',z:'lat',txt:'Vía lateral derecha',next:'inf_l'},
+    inf_l:{k:'ch',tag:'Vía lateral derecha',q:'Evaluá la onda delta en la cara inferior',ayuda:INF,o:[['neg','ld_pl'],['p2','ld_l'],['p3','ld_al']]}
+  };
+  var NOMBRE={neg:'2 o 3 negativas',p2:'2 positivas',p3:'3 positivas'};
+  var $=document.getElementById('main');
+  var hist=[];            /* [{p:'texto de la pregunta', r:'respuesta'}] */
+  var cur='p1', res=null, stack=[];
+  function esc(s){return String(s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];});}
+  function pushStack(){stack.push({cur:cur,res:res,hist:hist.slice()});}
+  function goto(n){
+    var x=N[n];
+    while(x&&x.k==='info'){hist.push({p:null,r:x.txt,z:x.z});n=x.next;x=N[n];}   /* los nodos informativos solo suman al recorrido */
+    cur=n;
+  }
+  function answerYN(si){
+    var x=N[cur]; pushStack();
+    hist.push({p:x.q.replace(/^¿|\?$/g,''),r:si?'Sí':'No'});
+    goto(si?x.si:x.no);
+  }
+  function answerOne(){
+    var x=N[cur]; pushStack();
+    hist.push({p:'Hallazgo en V1',r:x.r});
+    goto(x.next);
+  }
+  function answerCh(i){
+    var x=N[cur]; pushStack();
+    hist.push({p:'Onda delta en cara inferior',r:NOMBRE[x.o[i][0]]});
+    res=x.o[i][1]; cur=null;
+  }
+  function answerTr(v){
+    pushStack();
+    hist.push({p:'Transición del QRS en precordiales',r:v?'después de V3 (> V3)':'hasta V3 (≤ V3)'});
+    goto(v?'zl':'zs');
+  }
+  /* ejemplos de ECG de 12 derivaciones (casos del banco con la localización confirmada); el resto queda como «pendiente» */
+  var EJ={
+    sd_ps:{img:'img/f04_c07_01.jpg',t:'ECG de ejemplo: vía posteroseptal derecha.'},
+    sd_ms:{img:'img/f05_c02_01.jpg',t:'ECG de ejemplo: vía medio/posteroseptal derecha.'},
+    sd_as:{img:'img/f07_c07_01.jpg',t:'ECG de ejemplo: vía anteroseptal derecha.'},
+    ld_l:{img:'img/der_l.jpg',t:'ECG de ejemplo: WPW lateral derecho.'},
+    izq_ps:{img:'img/izq_ps.jpg',t:'ECG de ejemplo: WPW posterior izquierdo.'},
+    izq_al:{img:'img/izq_al.jpg',t:'ECG de ejemplo: WPW anterolateral izquierdo.'}
+  };
+  var exOpen=false;
+  function ejemploHtml(k){
+    var e=EJ[k];
+    if(!e) return '<div class="path"><div class="pl">Ejemplo de ECG</div><div class="step"><span>Ejemplo pendiente para esta localización.</span></div></div>';
+    return '<div class="gfoot"><button class="btn" type="button" data-ej="1">'+(exOpen?'Ocultar ejemplo de ECG':'Ver ejemplo de ECG (12 derivaciones)')+'</button></div>'+
+      (exOpen?'<figure class="ej"><a href="'+e.img+'" target="_blank" rel="noopener"><img src="'+e.img+'" alt="'+esc(e.t)+'"></a><figcaption>'+esc(e.t)+' Tocá la imagen para ampliarla.</figcaption></figure>':'');
+  }
+  function back(){var s=stack.pop();if(!s)return;cur=s.cur;res=s.res;hist=s.hist;exOpen=false;}
+  function reset(){hist=[];stack=[];cur='p1';res=null;exOpen=false;}
+  function pathHtml(){
+    if(!hist.length) return '';
+    var h='<div class="path"><div class="pl">Tu recorrido</div>',n=0;
+    hist.forEach(function(s){
+      if(s.p===null) h+='<div class="step"><i>›</i><span>Resultado parcial: <b>'+esc(s.r)+'</b></span></div>';
+      else {n++;h+='<div class="step"><i>'+n+'</i><span>'+esc(s.p)+': <b>'+esc(s.r)+'</b></span></div>';}
+    });
+    return h+'</div>';
+  }
+  function guideHtml(){
+    var h='<article class="card guide"><div class="ghead"><span class="gtag">Localizador guiado</span>'+(stack.length?'<button class="btn" type="button" data-back="1">‹ Atrás</button>':'<span></span>')+'</div>';
+    if(res){
+      var L=LOC[res];
+      h+='<div class="res '+L.z+'" role="status"><div class="rl">Localización probable · '+ZONA[L.z]+'</div><div class="rn">'+esc(L.n)+'</div><div class="rz">Según el algoritmo de localización por onda delta.</div></div>'+pathHtml()+
+        ejemploHtml(res)+'<div class="gfoot"><button class="btn" type="button" data-reset="1">Nuevo ECG</button></div>';
+    } else {
+      var x=N[cur];
+      {
+        h+='<div class="gq"><div class="gtag">'+esc(x.tag)+'</div><h2>'+esc(x.q)+'</h2>'+(x.ayuda?'<p>'+esc(x.ayuda)+'</p>':'')+'</div>';
+        if(x.k==='one') h+='<div class="gopts"><button class="gopt" type="button" data-one="1">rS en V1<small>ausencia de onda delta</small></button></div>';
+        else if(x.k==='yn') h+='<div class="gopts two"><button class="gopt si" type="button" data-yn="1">Sí</button><button class="gopt no" type="button" data-yn="0">No</button></div>';
+        else if(x.k==='ch') h+='<div class="gopts">'+x.o.map(function(o,i){return '<button class="gopt" type="button" data-ch="'+i+'">'+NOMBRE[o[0]]+'</button>';}).join('')+'</div>';
+        else if(x.k==='tr') h+='<div class="gopts two"><button class="gopt" type="button" data-tr="0">≤ V3<small>transición hasta V3</small></button><button class="gopt" type="button" data-tr="1">&gt; V3<small>transición después de V3</small></button></div>';
+        h+=pathHtml();
+        if(hist.length) h+='<div class="gfoot"><button class="btn" type="button" data-reset="1">Empezar de nuevo</button></div>';
+      }
+    }
+    return h+'</article>';
+  }
+  function resumenHtml(){
+    function zone(k,rows){return '<div class="zone '+k+'"><div class="zh">'+ZONA[k]+'</div>'+rows.map(function(r){return '<div class="zr"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('')+'</div>';}
+    return '<article class="card tbl"><h3>Resumen de localizaciones</h3>'+
+      zone('izq',[['2 o 3 inferiores negativas',LOC.izq_ps.n],['2 inferiores positivas',LOC.izq_pl.n],['3 inferiores positivas',LOC.izq_al.n]])+
+      zone('sep',[['2 o 3 inferiores negativas',LOC.sd_ps.n],['2 inferiores positivas',LOC.sd_ms.n],['3 inferiores positivas',LOC.sd_as.n]])+
+      zone('lat',[['2 o 3 inferiores negativas',LOC.ld_pl.n],['2 inferiores positivas',LOC.ld_l.n],['3 inferiores positivas',LOC.ld_al.n]])+
+      '<p class="note"><b>Izquierda:</b> Paso 1 «Sí». <b>Septal derecha:</b> Paso 2 «Sí», o rS en V1 con transición ≤ V3. <b>Lateral derecha:</b> rS en V1 con transición &gt; V3. Cara inferior: DII, DIII y aVF.</p></article>';
+  }
+  /* ---------- modo práctica: casos armados con las reglas del algoritmo ---------- */
+  var BASE=[
+    {z:'izq',desc:'Onda delta negativa en DI y aVL.'},
+    {z:'izq',desc:'Onda delta positiva en V1, con R>S.'},
+    {z:'sd',desc:'Onda delta positiva en DI/aVL y negativa en V1.'},
+    {z:'sd',desc:'Sin onda delta negativa en DI/aVL ni positiva en V1; complejo rS en V1 (sin onda delta) y transición del QRS hasta V3.'},
+    {z:'ld',desc:'Sin onda delta negativa en DI/aVL ni positiva en V1; complejo rS en V1 (sin onda delta) y transición del QRS después de V3.'}
+  ];
+  var INFTXT={neg:'onda delta negativa en 2 o 3 derivaciones inferiores',p2:'onda delta positiva en 2 derivaciones inferiores',p3:'onda delta positiva en las 3 derivaciones inferiores'};
+  var TABLA={izq:{neg:'izq_ps',p2:'izq_pl',p3:'izq_al'},sd:{neg:'sd_ps',p2:'sd_ms',p3:'sd_as'},ld:{neg:'ld_pl',p2:'ld_l',p3:'ld_al'}};
+  var QCASES=[];
+  BASE.forEach(function(b){['neg','p2','p3'].forEach(function(k){QCASES.push({q:'Paciente con preexcitación. '+b.desc+' En la cara inferior hay '+INFTXT[k]+'. ¿Cuál es la localización probable de la vía accesoria?',a:TABLA[b.z][k],f:b.desc+' Cara inferior: '+INFTXT[k]+'. Corresponde a: '+LOC[TABLA[b.z][k]].n.toLowerCase()+'.'});});});
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  var quiz=null;
+  function startQuiz(){
+    var items=shuffle(QCASES).slice(0,5).map(function(c){
+      var distr=shuffle(Object.keys(LOC).filter(function(k){return k!==c.a;})).slice(0,3);
+      return {c:c,opts:shuffle([c.a].concat(distr)).map(function(k){return {k:k,t:LOC[k].n,ok:k===c.a};}),pick:null};
+    });
+    quiz={items:items,i:0,done:false};render();window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function score(){return quiz.items.reduce(function(s,it){return s+(it.pick!==null&&it.opts[it.pick].ok?1:0);},0);}
+  function quizHtml(){
+    var n=quiz.items.length;
+    if(quiz.done) return resultHtml();
+    var it=quiz.items[quiz.i],ans=it.pick!==null,ok=ans&&it.opts[it.pick].ok,doneN=quiz.i+(ans?1:0);
+    var h='<div class="qhead"><button class="btn" type="button" data-exit="1">‹ Salir</button><span class="qcount">Pregunta '+(quiz.i+1)+' de '+n+'</span></div>'+
+      '<div class="qbar" role="progressbar" aria-valuemin="0" aria-valuemax="'+n+'" aria-valuenow="'+doneN+'"><i style="width:'+(doneN/n*100)+'%"></i></div>'+
+      '<div class="case-h"><div class="tag">Caso '+(quiz.i+1)+'</div><h2>'+esc(it.c.q)+'</h2></div><div class="q-opts" role="group" aria-label="Opciones">';
+    it.opts.forEach(function(o,k){
+      var cls='qopt';
+      if(ans){if(o.ok)cls+=' good';else if(k===it.pick)cls+=' bad';else cls+=' dim';}
+      h+='<button type="button" class="'+cls+'" data-pick="'+k+'"'+(ans?' disabled':'')+'><span>'+esc(o.t)+'</span>'+(ans&&o.ok?'<i aria-hidden="true">✓</i>':(ans&&k===it.pick?'<i aria-hidden="true">✕</i>':''))+'</button>';
+    });
+    h+='</div>';
+    if(ans) h+='<div class="fb '+(ok?'ok':'bad')+'" role="status"><div class="fbt">'+(ok?'Correcto':'Incorrecto')+'</div><p>'+esc(it.c.f)+'</p></div><button class="nxt" type="button" data-next="1">'+(quiz.i===n-1?'Ver resultado':'Siguiente caso ›')+'</button>';
+    return h;
+  }
+  function resultHtml(){
+    var n=quiz.items.length,sc=score(),pct=Math.round(sc/n*100),title,text;
+    if(sc===n){title='Excelente';text='Acertaste todos los casos. Tenés muy bien incorporado el algoritmo.';}
+    else if(sc===n-1){title='Muy bien';text='Se te escapó un solo caso. Repasá el algoritmo y vas por el puntaje máximo.';}
+    else if(sc>=3){title='Bien, con margen para mejorar';text='Acertaste '+sc+' de '+n+'. Conviene repasar los pasos que fallaste.';}
+    else{title='Conviene repasar';text='Acertaste '+sc+' de '+n+'. Volvé a recorrer el algoritmo y probá con otros casos.';}
+    var rows=quiz.items.map(function(it){
+      var ok=it.opts[it.pick].ok;
+      return '<li><span class="mk '+(ok?'ok':'bad')+'" aria-hidden="true">'+(ok?'✓':'✕')+'</span><span><b>'+esc(it.c.q)+'</b>'+(ok?'':'<br><small>Elegiste: '+esc(it.opts[it.pick].t)+'</small>')+'<br><small>'+esc(it.c.f)+'</small></span></li>';
+    }).join('');
+    return '<div class="qhead"><button class="btn" type="button" data-exit="1">‹ Inicio</button><span class="qcount">Resultado</span></div>'+
+      '<div class="score"><b>'+sc+'</b><span>/ '+n+'</span></div><div class="pct">'+pct+' % de aciertos</div><h2>'+title+'</h2><p class="rtext">'+text+'</p>'+
+      '<ul class="rlist">'+rows+'</ul><div class="two"><button class="btn" type="button" data-start="1">Practicar otros 5</button><button class="btn" type="button" data-exit="1">Volver al inicio</button></div>';
+  }
+  function homeHtml(){
+    return '<button class="card practice" type="button" data-start="1"><span class="hicon pico"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3.5l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L13 17.7l-5.6 3 1.1-6.2L4 10.1l6.2-.9z"/></svg></span>'+
+      '<span class="rt"><b>Modo práctica</b><small>5 casos al azar. Al final, tu puntuación.</small></span><span class="go" aria-hidden="true">Empezar ›</span></button>'+
+      '<div class="modelabel">Localizador</div>'+guideHtml();
+  }
+  function render(){
+    if(quiz) $.innerHTML='<article class="card '+(quiz.done?'result':'case q')+'">'+quizHtml()+'</article>';
+    else $.innerHTML=homeHtml();
+  }
+  $.addEventListener('click',function(e){
+    var t;
+    if(e.target.closest('[data-start]')){startQuiz();return;}
+    if(e.target.closest('[data-exit]')){quiz=null;render();window.scrollTo({top:0,behavior:'smooth'});return;}
+    if(quiz){
+      var pk=e.target.closest('[data-pick]');
+      if(pk){var it=quiz.items[quiz.i];if(it.pick===null){it.pick=+pk.getAttribute('data-pick');render();}return;}
+      if(e.target.closest('[data-next]')){if(quiz.i===quiz.items.length-1)quiz.done=true;else quiz.i++;render();window.scrollTo({top:0,behavior:'smooth'});}
+      return;
+    }
+    if(e.target.closest('[data-ej]')){exOpen=!exOpen;render();return;}
+    if(e.target.closest('[data-one]')){answerOne();render();return;}
+    if((t=e.target.closest('[data-yn]'))){answerYN(t.getAttribute('data-yn')==='1');render();return;}
+    if((t=e.target.closest('[data-ch]'))){answerCh(+t.getAttribute('data-ch'));render();return;}
+    if((t=e.target.closest('[data-tr]'))){answerTr(t.getAttribute('data-tr')==='1');render();return;}
+    if(e.target.closest('[data-back]')){back();render();return;}
+    if(e.target.closest('[data-reset]')){reset();render();return;}
+  });
+  document.getElementById('copy').addEventListener('click',function(){
+    var cp=document.getElementById('mailcp'),old=cp.innerHTML,txt=document.getElementById('mailtxt');
+    var CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg>';
+    function done(){cp.innerHTML=CHECK;setTimeout(function(){cp.innerHTML=old;},1600);}
+    function sel(){var r=document.createRange();r.selectNodeContents(txt);var s=getSelection();s.removeAllRanges();s.addRange(r);}
+    try{navigator.clipboard.writeText(txt.textContent).then(done,sel);}catch(err){sel();}
+  });
+  render();
+})();
+</script>
+
+</body></html>
