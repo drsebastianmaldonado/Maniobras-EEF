@@ -7,7 +7,7 @@ taquicardias supraventriculares.
   diagnóstico, con acceso directo a la ficha de cada maniobra. La rama de RP largo sigue el algoritmo del autor
   (circuito inferior por encarrilamiento ventricular + circuito superior por ΔAH).
 - **Arritmias**: buscador por mecanismo (TRNAV típica y atípica, TRAV septal y de pared libre, PJRT, vías
-  nodofasciculares y nodoventriculares, TA, taquicardia de la unión, TRAV antidrómica, Mahaim, TV rama-rama) con los hallazgos que lo confirman, apoyan o
+  nodofasciculares y nodoventriculares, TA, taquicardia de la unión, TRAV antidrómica, Mahaim, TV rama-rama, vías nodoventriculares y nodofasciculares participantes o espectadoras, fasciculoventricular) con los hallazgos que lo confirman, apoyan o
   descartan, y acceso a la ficha de cada maniobra.
 - **Maniobras**: 13 fichas (cómo se hace, qué medir, tabla de interpretación con puntos de corte y fuente, trampas,
   esquemas de electrogramas).

@@ -290,6 +290,9 @@ const REFS = {
   klein88: ['Klein 1988', 'Klein GJ, Guiraudon GM, Kerr CR, et al. "Nodoventricular" accessory pathway: evidence for a distinct accessory atrioventricular pathway with atrioventricular node-like properties. <i>J Am Coll Cardiol</i> 1988;11:1035–40. (agregado: no estaba en el material base)'],
   sternick04: ['Sternick 2004', 'Sternick EB, Timmermans C, Sosa E, et al. The electrocardiogram during sinus rhythm and tachycardia in patients with Mahaim fibers: the importance of an "rS" pattern in lead III. <i>J Am Coll Cardiol</i> 2004;44:1626–35. (agregado: no estaba en el material base)'],
   merino01: ['Merino 2001', 'Merino JL, Peinado R, Fernández-Lozano I, et al. Bundle-branch reentry and the postpacing interval after entrainment by right ventricular apex stimulation: a new approach to elucidate the mechanism of wide-QRS-complex tachycardia with atrioventricular dissociation. <i>Circulation</i> 2001;103:1102–8. (agregado: no estaba en el material base)'],
+  nagashima20: ['Nagashima 2020', 'Nagashima K, Kaneko Y, Maruyama M, et al. Novel diagnostic observations of nodoventricular/nodofascicular pathway-related orthodromic reciprocating tachycardia differentiating from atrioventricular nodal re-entrant tachycardia. <i>JACC Clin Electrophysiol</i> 2020 (doi:10.1016/j.jacep.2020.07.007).'],
+  sriramoju22: ['Sriramoju 2022', 'Sriramoju A, Srivathsan K, Shen WK. Incessant supraventricular tachycardia following tricuspid valve repair: unmasking of a nodoventricular pathway. <i>HeartRhythm Case Rep</i> 2022;8:167–70.'],
+  li22: ['Li 2022', 'Li J, Liu Q, Yang L. A manifest nodoventricular accessory pathway with unusual electrophysiological manifestations. <i>J Arrhythm</i> 2022;38:793–5.'],
   // citadas en las revisiones anteriores
   hirao96: ['Hirao 1996', 'Hirao K, Otomo K, Wang X, et al. Para-Hisian pacing. <i>Circulation</i> 1996;94:1027–35. (citado en Veenhuyzen 2012)'],
   ho08: ['Ho 2008', 'Ho RT, Mark GE, Rhim ES, et al. Differentiating AVNRT from AVRT by ΔHA values during entrainment from the ventricle. <i>Heart Rhythm</i> 2008;5:83–8. (citado en Ho 2015)'],
@@ -423,6 +426,7 @@ const M = {
       ['Ráfaga: el V se disocia y la TSV sigue', 'Excluye TRAV', 'knight00 autor'],
       ['Secuencia auricular durante la estimulación distinta de la TSV', 'TA (o vía accesoria espectadora); excluye TRNAV y TRAV', 'knight00 veen11'],
       ['Enfoque rápido: VA septal ≤ 70 ms + respuesta A-V', 'TRNAV (41 % de las TSV)', 'knight00'],
+      ['Respuesta V-V-A (SA mayor que la LC; la A llega después del His de retorno)', 'TRAV por vía nodoventricular o nodofascicular (VPP 100 %)', 'nagashima20'],
       ['Enfoque rápido: VA septal > 70 ms + activación excéntrica + A-V', 'TRAV (19 %)', 'knight00'],
       ['Estimulación simultánea AD + VD (80–90 % de la LC): 1.er EGM al cortar = A', 'TA', 'saba11'],
       ['Estimulación simultánea AD + VD: 1.er EGM al cortar = His', 'TRNAV (en TRAV la respuesta es variable)', 'saba11']],
@@ -439,7 +443,8 @@ const M = {
       ['RP largo: PPI−LC < 125 ms', 'TRAV (PJRT / NFRT)', 'ho13 ho15'],
       ['RP largo: PPI−LC > 125 ms', 'TRNAV atípica', 'ho13 ho15'],
       ['Base del VD: corte de cPPI−LC 110 ms, con mayor separación entre grupos', 'Mejor discriminación que desde el ápex', 'veen08 veen11'],
-      ['Encarrilamiento para-Hisiano sin captura del His: PPI−LC > 100 ms', 'TRNAV (S 97 %, E 92 %)', 'perez08']],
+      ['Encarrilamiento para-Hisiano sin captura del His: PPI−LC > 100 ms', 'TRNAV (S 97 %, E 92 %)', 'perez08'],
+      ['TSV con bloqueo VA: PPI−LC ≤ 125 ms', 'TRAV por vía nodoventricular (VPP y VPN 100 %); no discrimina la nodofascicular', 'nagashima20']],
     trampas: ['Vía libre izquierda: el ápex del VD queda lejos del circuito y alarga el PPI (falso TRNAV).', 'Vía decremental (PJRT): el decremento retrógrado alarga PPI y SA−VA; el cPPI puede ser incluso mayor que el no corregido.', 'Salto a la vía lenta durante el encarrilamiento: alarga el AH de retorno (por eso se corrige).', 'Estimulá lo más lento posible (10–40 ms por debajo de la LC) para minimizar el decremento.'],
     fig: ['ppi'], refs: ['michaud01', 'gt06', 'veen08', 'veen11', 'ho15', 'perez08', 'bennett11'] },
 
@@ -473,9 +478,10 @@ const M = {
     como: ['Encarrilá desde el VD a la LC más larga posible (10–40 ms por debajo de la LC).', 'Compará la morfología y la secuencia del His durante la estimulación con las de la TSV.', 'Repetí a LC más cortas: la captura pasa a ser antidrómica (His retrógrado).'],
     interp: [
       ['His ortodrómico (igual a la TSV) a LC lentas', 'Vía accesoria presente y participando: TRAV (PJRT / NFRT)', 'ho15 veen11'],
-      ['His antidrómico (morfología distinta) a LC rápidas', 'Inespecífico', 'ho15']],
+      ['His antidrómico (morfología distinta) a LC rápidas', 'Inespecífico', 'ho15'],
+      ['TSV con bloqueo VA: His ortodrómico durante la sobreestimulación del VD', 'TRAV por vía nodoventricular o nodofascicular (VPP 100 %, VPN 98 %)', 'nagashima20']],
     trampas: ['Equivale a resetear de forma continua con EV His refractarias.', 'En teoría podría verse en una TRNAV atípica con vía nodofascicular espectadora, pero no se ha documentado.'],
-    refs: ['ho15', 'veen11'] },
+    refs: ['ho15', 'veen11', 'nagashima20'] },
 
   diff: { g: 'V', t: 'Encarrilamiento diferencial (base vs ápex)', s: 'Mismo encarrilamiento desde dos sitios del VD',
     para: 'En la TRNAV, el ápex está "eléctricamente" más cerca del circuito (entrada al Purkinje); en la TRAV septal, la base está más cerca de la vía. Desde la base, en la TRNAV se alargan el VA y el PPI.',
@@ -548,9 +554,11 @@ const M = {
       ['Ese EA adelanta el V solo desde la pared libre del AD y no desde el septum', 'Vía atriofascicular o AV derecha lateral', 'josephson'],
       ['Estimulación auricular decremental: la preexcitación aparece o aumenta con el AV que se alarga (decremental) y el HV que se acorta hasta hacerse negativo, con morfología de BRI', 'Vía atriofascicular (Mahaim)', 'klein88 josephson'],
       ['QRS de la taquicardia igual al de máxima preexcitación desde la pared libre del AD', 'TRAV antidrómica por vía atriofascicular', 'josephson'],
-      ['Preexcitación con AV corto que no se alarga con la estimulación', 'Vía tipo Kent (no decremental)', 'josephson']],
+      ['Preexcitación con AV corto que no se alarga con la estimulación', 'Vía tipo Kent (no decremental)', 'josephson'],
+      ['Preexcitación fija con HV corto constante aunque se alargue el AH', 'Vía fasciculoventricular', 'li22'],
+      ['El AH y el HV se alargan y la preexcitación disminuye o cambia; los latidos de la unión siguen preexcitados', 'Vía nodoventricular manifiesta (excluye fasciculoventricular)', 'li22']],
     trampas: ['La TV con BRI (incluida la rama-rama) puede imitar a la taquicardia antidrómica por Mahaim: buscá la relación AV 1:1 y el reset por EA.', 'Una TRNAV o una TA con conducción por una vía espectadora dan QRS preexcitado sin que la vía sea parte del circuito.', 'Las vías decrementales pueden bloquearse con adenosina.', 'En la antidrómica, el brazo retrógrado puede ser otra vía accesoria y no el nodo.'],
-    refs: ['autor', 'josephson', 'klein88', 'sternick04'] },
+    refs: ['autor', 'josephson', 'klein88', 'sternick04', 'li22'] },
 
   bbr: { g: 'V', t: 'Reentrada rama-rama: criterios', s: 'TV con His antes de cada V',
     para: 'Macrorreentrada que baja por una rama y sube por la otra (lo típico: anterógrada por la derecha, morfología de BRI). Necesita enfermedad del sistema His-Purkinje (HV prolongado en sinusal) y suele verse con miocardiopatía dilatada, después de cirugía valvular o en enfermedades neuromusculares.',
@@ -617,11 +625,21 @@ const ARR = [
     apoya: [['EV con His refractario que adelanta la A o termina sin A', 'ehr', 'veen12'], ['A más precoz cerca del ostium del SC (no siempre)', 'basal', 'ho15'], ['Seudo A-A-V a la sobreestimulación ventricular', 'vop', 'ho15']],
     desc: [['ΔAH > 40 ms o AH de la TSV < AH en sinusal (circuito superior intranodal)', 'aop', 'ho15'], ['La TSV sigue con bloqueo AV', 'basal', 'ho15'], ['EV-HR sin efecto adelantando el V local > 60 ms', 'ehr', 'veen12']],
     trampa: 'Los valores de encarrilamiento pueden ser largos (falso TRNAV) y la adenosina puede bloquear la vía.' },
-  { id: 'nfrt', n: 'Vía nodofascicular o nodoventricular (NFRT / NVRT)', al: 'nodofascicular nodoventricular NFRT NVRT ONFRT ONVRT disociación VA', dif: 'TRNAV (con o sin bloqueo VA), taquicardia de la unión, PJRT y TV (incluida la rama-rama).',
-    conf: [['TSV con V > A: la EV con His refractario adelanta o retrasa el His o termina la TSV', 'ehr', 'veen12'], ['Además, fusión del QRS al resetear o encarrilar → nodoventricular', 'vop conc', 'veen12'], ['RP largo: circuito inferior de TRAV (PPI−LC < 125) con ΔAH > 40 ms o AH de la TSV < AH en sinusal → NFRT', 'ppi aop', 'ho15']],
-    apoya: [['TSV que parece TRNAV con cPPI−LC o SA−VA demasiado cortos', 'ppi sava', 'veen12'], ['AH de la TSV muy corto (seudointervalo)', 'aop', 'ho15']],
-    desc: [['EV con His refractario sin efecto sobre el His en una TSV con disociación VA', 'ehr', 'veen12']],
-    trampa: 'Una vía nodofascicular espectadora en una TRNAV atípica puede resetearla con retraso y dar un A-A-V verdadero.' },
+  { id: 'nfrt', n: 'Vía nodofascicular o nodoventricular (NFRT / NVRT)', al: 'nodofascicular nodoventricular NFRT NVRT ONFRT ONVRT NV NF disociación VA bloqueo VA', dif: 'TRNAV con bloqueo del haz común superior, TRNAV con vía espectadora, taquicardia de la unión, PJRT y TV (incluida la rama-rama).',
+    conf: [['La EV con His refractario adelanta o retrasa el His o termina la TSV (en TSV con bloqueo VA)', 'ehr', 'veen12 nagashima20'], ['Durante la sobreestimulación del VD: His capturado ortodrómicamente (VPP 100 %, VPN 98 %)', 'hisorto', 'nagashima20'], ['Respuesta V-V-A: SA mayor que la LC de la TSV, con la A después del His (VPP 100 %, VPN 95 %)', 'vop', 'nagashima20'], ['PPI−LC ≤ 125 ms en TSV con bloqueo VA → nodoventricular (VPP y VPN 100 %; no discrimina la nodofascicular)', 'ppi', 'nagashima20'], ['Fusión del QRS constante durante el encarrilamiento → nodoventricular; sin fusión, o HA de la TSV > HA estimulando el VD → nodofascicular', 'vop conc dha', 'nagashima20 veen12'], ['RP largo: circuito inferior de TRAV (PPI−LC < 125) con ΔAH > 40 ms o AH de la TSV < AH en sinusal → NFRT', 'ppi aop', 'ho15']],
+    apoya: [['Se induce una sola TSV (VPP 69 %, VPN 100 %)', 'basal', 'nagashima20'], ['Bloqueo VA tipo Wenckebach durante la TSV (VPP 70 %, VPN 87 %)', 'basal', 'nagashima20'], ['HH estable aunque haya bloqueo VA (VPP 70 %, VPN 85 %)', 'basal', 'nagashima20'], ['cPPI−LC ≤ 110 ms; TSV que parece TRNAV con valores demasiado cortos', 'ppi', 'nagashima20 veen12'], ['AH de la TSV muy corto (seudointervalo)', 'aop', 'ho15']],
+    desc: [['Se inducen varias TSV con distinto VA (75 % de las TRNAV, ninguna NV/NF)', 'basal', 'nagashima20'], ['El HH se alarga ≥ 10 ms en el latido que sigue al bloqueo VA (79 % de las TRNAV)', 'basal', 'nagashima20'], ['EV con His refractario sin efecto sobre el His', 'ehr', 'veen12'], ['Durante la sobreestimulación ventricular la A sigue a la LC de la TSV (V disociado): el ventrículo no es parte del circuito (vía espectadora)', 'vop', 'sriramoju22']],
+    trampa: 'El SA−VA no discrimina (el AH y el VA son seudointervalos). Una vía espectadora puede terminar la TSV con EV-HR repetidas o resetearla con retraso. En la serie de Nagashima, la vía NV/NF estuvo en el 36 % de las TSV con bloqueo VA: no es tan rara.' },
+  { id: 'nvbys', n: 'TRNAV con vía nodofascicular o nodoventricular espectadora', al: 'espectadora bystander nodofascicular nodoventricular TRNAV atípica NFV', dif: 'NFRT/NVRT ortodrómica, PJRT y TA.',
+    conf: [['La EV con His refractario termina la TSV sin activar la A, pero durante la sobreestimulación ventricular la A sigue a la LC de la TSV (V disociado)', 'ehr vop', 'sriramoju22'], ['Criterios de TRNAV en el encarrilamiento (PPI−LC largo, His antidrómico, sin V-V-A ni fusión) con una EV-HR que bloquea el VA y retrasa el His un ciclo después', 'ppi ehr', 'nagashima20']],
+    apoya: [['Se inducen varias TSV con distinto VA', 'basal', 'nagashima20'], ['AH de la TSV muy corto; A-A-V verdadero por doble respuesta', 'vop aop', 'ho15']],
+    desc: [['Fusión del QRS, His ortodrómico o PPI−LC ≤ 125 ms (la vía participa)', 'vop hisorto ppi', 'nagashima20']],
+    trampa: 'La vía suele insertarse cerca de la vía lenta: la ablación en la A más precoz cerca del ostium del SC o de la vía lenta puede eliminar las dos.' },
+  { id: 'fv', n: 'Vía fasciculoventricular (vs nodoventricular manifiesta)', al: 'fasciculoventricular FV FVP preexcitación mínima nodoventricular manifiesta', dif: 'Vía nodoventricular manifiesta, vía AV tipo Kent septal y Mahaim.',
+    conf: [['Preexcitación fija, con HV corto y constante, que no cambia al alargarse el AH (estimulación auricular, vía rápida o lenta)', 'preex', 'li22']],
+    apoya: [['Latidos de la unión con la misma preexcitación', 'preex', 'li22']],
+    desc: [['Con extraestímulos auriculares, el AH y el HV se alargan y la preexcitación disminuye o cambia de morfología → vía nodoventricular manifiesta (decremental)', 'preex', 'li22']],
+    trampa: 'La fasciculoventricular no genera taquicardias por sí misma; en la nodoventricular manifiesta, los latidos de la unión siguen preexcitados porque la inserción proximal está en el nodo.' },
   { id: 'ta', n: 'Taquicardia auricular', al: 'TA focal ectópica AT auricular septal', dif: 'TRNAV (sobre todo atípica) y TRAV.',
     conf: [['Secuencia auricular descendente (alta → baja)', 'basal', 'veen11'], ['Respuesta A-A-V reproducible (sin seudo A-A-V)', 'vop', 'knight99 knight00'], ['Secuencia auricular distinta durante la estimulación ventricular con conducción 1:1', 'vop', 'knight00'], ['Con adenosina: bloqueo AV y la taquicardia auricular sigue', 'ado', 'autor']],
     apoya: [['La estimulación ventricular no acelera las A (TA en ~80 %)', 'vop', 'knight00 veen12'], ['Los AA cambian antes que los HH', 'basal', 'veen11'], ['AOP desde varios sitios: VA de retorno con variación > 14 ms', 'aop', 'maruyama07'], ['Al cortar la estimulación simultánea AD + VD, el primer EGM es la A', 'vop', 'saba11']],
@@ -780,6 +798,14 @@ const CASOS = [
     vals: [['TSV', 'HA 136 · AH 252 · A más precoz en el ostium del SC'], ['Con bloqueo AV 2:1', 'misma secuencia y LC → TRNAV rápida-lenta con bloqueo en el haz común inferior']] },
   { m: 'basal', ref: 'lim11', fig: 'fig. 1–3', doi: '10.1111/j.1540-8167.2011.02073.x', t: 'LC alternante: dos vías lentas y una TA',
     vals: [['RR alternantes', '336 / 436 ms con AH distintos'], ['Mecanismo', 'TRNAV por dos vías lentas que resetea un foco de TA; tras ablacionar la vía lenta, apareció la TA']] },
+  { m: 'hisorto', ref: 'nagashima20', fig: 'fig. 2', doi: '10.1016/j.jacep.2020.07.007', t: 'TRAV por vía nodoventricular con bloqueo VA',
+    vals: [['TSV', 'bloqueo VA tipo Wenckebach'], ['Sobreestimulación del VD', 'PPI−LC 105 ms · His ortodrómico · respuesta V-V-A'], ['ECG durante la estimulación', 'fusión del QRS constante → nodoventricular (no nodofascicular)']] },
+  { m: 'ehr', ref: 'nagashima20', fig: 'fig. 4', doi: '10.1016/j.jacep.2020.07.007', t: 'TRNAV con vía nodoventricular espectadora',
+    vals: [['TSV', 'bloqueo VA Wenckebach; el HH se alarga después del bloqueo'], ['EV con His refractario', 'bloquea el VA y retrasa el His un ciclo después (no el siguiente)'], ['Sobreestimulación del VD', 'PPI−LC largo, His antidrómico, sin V-V-A ni fusión'], ['Además', 'se indujo otra TSV con distinto VA (lenta-lenta)']] },
+  { m: 'ehr', ref: 'sriramoju22', fig: 'fig. 2', doi: '10.1016/j.hrcr.2021.11.024', t: 'TSV incesante después de una plástica tricuspídea',
+    vals: [['TSV de RP largo', 'LC 419 · AH 73 · HV 50 · VA 273 ms; A más precoz en SC 9-10, ~1 cm del ostium'], ['Sobreestimulación ventricular', 'la A sigue a la LC de la TSV mientras el V se acelera; termina en el primer latido totalmente estimulado sin adelantar la A'], ['EV con His refractario', 'termina la TSV sin conducir a la A, de forma repetida'], ['Diagnóstico', 'TRNAV atípica con vía nodoventricular espectadora; ablación exitosa en la A más precoz']] },
+  { m: 'preex', ref: 'li22', fig: 'fig. 1–3', doi: '10.1002/joa3.12759', t: 'Vía nodoventricular manifiesta',
+    vals: [['Ritmo sinusal', 'preexcitación mínima · AH 80 · HV 20 ms'], ['Extraestímulos auriculares (400 → 280 ms)', 'se alargan el AH y el HV, disminuye la preexcitación y cambia el QRS → excluye fasciculoventricular'], ['Latido de la unión', 'HV 28 ms con la misma preexcitación → inserción proximal en el nodo'], ['Estimulación ventricular a 400 ms', 'disociación VA; no se indujo taquicardia']] },
   { m: 'vop', ref: 'saba11', fig: '', doi: '10.1093/europace/euq502', t: 'Estimulación simultánea AD + VD',
     vals: [['Al cortar (80–90 % de la LC)', '1.er EGM = A en todas las TA; = His en todas las TRNAV; variable en la TRAV']] }
 ];
@@ -815,7 +841,7 @@ function fichaHTML(id) {
 const VOP_OPTS = (onAV) => [
   { t: 'A-A-V (A-A-H), reproducible', s: 'Verificado contando desde el último A acelerado', go: 'L_at' },
   { t: 'A-V (A-H)', s: 'Incluye el seudo A-A-V: A₁–A₂ = LC de estimulación y secuencia idéntica a la TSV', go: onAV },
-  { t: 'Las A no se aceleran a la LC de estimulación', s: 'Disociación VA durante la estimulación', go: 'L_atprob' },
+  { t: 'Las A no se aceleran a la LC de estimulación', s: 'Disociación VA durante la estimulación', go: 'noacc' },
   { t: 'La TSV se corta durante la estimulación', go: 'term' }];
 const N = {
   start: { q: '¿Cómo es el QRS de la taquicardia?', help: 'Mirá el HV: si el His precede al QRS con HV igual o mayor que en sinusal, la conducción es por el sistema normal (angosto o con aberrancia).', man: ['pre', 'basal'], opts: [
@@ -907,7 +933,7 @@ const N = {
   vop_l: { q: 'Sobreestimulación ventricular: ¿qué respuesta obtenés al cortar?', help: 'En el RP largo el seudo A-A-V es frecuente: identificá el último A acelerado (A₁–A₂ = LC de estimulación) y compará la secuencia con la TSV.', man: ['vop'], opts: [
     { t: 'A-A-V verdadero', s: 'La secuencia auricular durante la estimulación es distinta de la TSV', go: 'L_at_l' },
     { t: 'A-V (incluye el seudo A-A-V)', go: 'ehr_l' },
-    { t: 'Las A no se aceleran a la LC de estimulación', go: 'L_atprob' },
+    { t: 'Las A no se aceleran a la LC de estimulación', go: 'noacc' },
     { t: 'La TSV se corta durante la estimulación', go: 'term' }] },
   ehr_l: { q: 'EV con His refractario (varios acoplamientos): ¿qué pasa con la A siguiente?', help: 'Es la mejor maniobra para demostrar una vía accesoria. En el RP largo, una sola EV puede dar un falso negativo.', man: ['ehr'], opts: [
     { t: 'Termina la TSV sin activar la A', go: 'low_l', set: { ehr: 'pos' } },
@@ -927,12 +953,16 @@ const N = {
     { t: 'Entre 20 y 40 ms', go: 'L_long', set: { up: 'gris' } }] },
 
   // ---------- V > A
-  vgta: { q: 'Una EV con His refractario, ¿modifica el siguiente His?', help: 'Diferencial: TRNAV o taquicardia de la unión con bloqueo retrógrado, taquicardia por vía nodoventricular o nodofascicular. Si el QRS es ancho, descartá TV y reentrada rama-rama.', man: ['ehr'], opts: [
-    { t: 'Sí: lo adelanta, lo retrasa o termina la TSV', go: 'nv' },
-    { t: 'No', go: 'jt2v' }] },
-  nv: { q: '¿Hay fusión del QRS al resetear o encarrilar desde el ventrículo?', man: ['vop', 'conc'], opts: [
+  vgta: { q: 'TSV con bloqueo VA: ¿una EV con His refractario modifica el siguiente His, o la sobreestimulación del VD muestra signos de vía?', help: 'Diferencial: TRNAV con bloqueo del haz común superior, taquicardia de la unión y vía nodoventricular o nodofascicular (36 % en la serie de Nagashima). Pistas a favor de la vía: una sola TSV inducible, bloqueo VA tipo Wenckebach y HH estable a pesar del bloqueo.', man: ['ehr', 'hisorto', 'ppi'], opts: [
+    { t: 'La EV-HR adelanta o retrasa el His, o termina la TSV', go: 'nv' },
+    { t: 'Sobreestimulación del VD: His ortodrómico, respuesta V-V-A o PPI−LC ≤ 125 ms', go: 'nv' },
+    { t: 'Nada de eso: EV-HR sin efecto, PPI−LC largo, His antidrómico', s: 'A favor de TRNAV o taquicardia de la unión, sobre todo si se inducen varias TSV o el HH se alarga después del bloqueo VA', go: 'jt2v' }] },
+  nv: { q: '¿Hay fusión del QRS constante al encarrilar desde el ventrículo?', man: ['vop', 'conc', 'dha'], opts: [
     { t: 'Sí', go: 'L_nvrt' },
-    { t: 'No', go: 'L_nfrt_dis' }] },
+    { t: 'No, o el HA de la TSV es mayor que el HA estimulando el VD', go: 'L_nfrt_dis' }] },
+  noacc: { q: 'Las A no se aceleran: ¿una EV con His refractario termina la TSV sin activar la A?', help: 'Si la ventricular no se vincula a la aurícula pero una EV-HR igual corta la TSV, hay una vía cerca del circuito que no lo integra.', man: ['ehr', 'vop'], opts: [
+    { t: 'Sí, de forma reproducible', go: 'L_nvbys' },
+    { t: 'No', go: 'L_atprob' }] },
   jt2v: { q: 'Estudiá el brazo superior: ¿qué respuesta obtuviste?', man: ['eha', 'aop'], opts: [
     { t: 'El EA con His refractario retrasa, adelanta o termina el siguiente His', go: 'L_avnrt_vab' },
     { t: 'Durante la sobreestimulación auricular, el último A conduce por la vía lenta (AH largo, PR > RR)', go: 'L_avnrt_vab' },
@@ -972,8 +1002,9 @@ const N = {
   L_notat: { leaf: true, tone: 'gray', dx: 'TA excluida', why: ['La TSV terminó sin activar la aurícula.'], next: ['Seguí con EV-HR, para-Hisiana o encarrilamiento diferencial para separar TRAV de TRNAV.'], man: ['ehr', 'parahis', 'diff'], refs: ['knight00'] },
   L_avnrt_a: { leaf: true, dx: 'TRNAV atípica', why: ['PPI−LC, SA−VA, ΔHA o el encarrilamiento diferencial indican que el VD está lejos del circuito y que A y V se activan en paralelo.'], next: ['Antes de ablacionar en un RP largo, asegurate de que una EV-HR no modifique la A: una vía decremental da valores falsamente largos.', 'Ablación de la vía lenta.'], man: ['ppi', 'sava', 'diff', 'dha'], refs: ['michaud01', 'gt11', 'segal09', 'bennett11'] },
   L_avnrt_vab: { leaf: true, dx: 'TRNAV con bloqueo VA', why: ['La EV-HR no modifica el His (descarta vía nodoventricular o nodofascicular) y la respuesta auricular indica un circuito con la vía lenta.'], next: ['Ablación de la vía lenta.'], man: ['eha', 'aop'], refs: ['veen12', 'padanilam08'] },
-  L_nvrt: { leaf: true, dx: 'Taquicardia ortodrómica por vía nodoventricular', why: ['La EV-HR resetea el His (excluye TRNAV y taquicardia de la unión) y la fusión del QRS requiere que la colisión ocurra en el miocardio ventricular.'], next: ['Mapeo de la inserción ventricular por encarrilamiento: el sitio con PPI−LC más corto y QRS más parecido al de la TSV (incluso fusión oculta).'], man: ['ehr', 'vop'], refs: ['veen12'] },
-  L_nfrt_dis: { leaf: true, tone: 'gray', dx: 'Vía nodofascicular (o nodoventricular sin fusión demostrable)', why: ['La EV-HR resetea el His. Sin fusión del QRS, la colisión pudo ocurrir dentro del sistema de conducción (nodofascicular).', 'Si el SH se alarga con EV más precoces, apoya un nodo en el circuito más que una reentrada rama-rama.'], next: ['Estimulá desde la base, cerca de la inserción presunta, para buscar fusión.'], man: ['ehr', 'conc'], refs: ['veen12'] },
+  L_nvbys: { leaf: true, dx: 'TRNAV atípica con vía nodofascicular o nodoventricular espectadora', why: ['La aurícula sigue a la LC de la TSV mientras el V se acelera: el ventrículo no forma parte del circuito (no es una TRAV ni una NVRT ortodrómica).', 'La EV con His refractario que la termina sin activar la A excluye la TA y exige una vía que entre al circuito nodal antes de su salida auricular.'], next: ['Ablación en la A más precoz cerca del ostium del SC o en la vía lenta: suele eliminar las dos.', 'Después, inducí de nuevo con y sin isoproterenol.'], man: ['ehr', 'vop'], refs: ['sriramoju22', 'nagashima20', 'ho15'] },
+  L_nvrt: { leaf: true, dx: 'Taquicardia ortodrómica por vía nodoventricular', why: ['La EV-HR resetea el His, o el encarrilamiento muestra His ortodrómico, V-V-A o PPI−LC ≤ 125 ms: excluye TRNAV y taquicardia de la unión.', 'La fusión del QRS constante requiere que la colisión ocurra en el miocardio ventricular.'], next: ['La mayoría se resuelve con ablación anatómica de la vía lenta; a veces se registra un potencial de la vía.', 'Mapeo de la inserción ventricular por encarrilamiento: el sitio con PPI−LC más corto y QRS más parecido al de la TSV (incluso fusión oculta).'], man: ['ehr', 'vop'], refs: ['veen12', 'nagashima20'] },
+  L_nfrt_dis: { leaf: true, tone: 'gray', dx: 'Vía nodofascicular (o nodoventricular sin fusión demostrable)', why: ['La EV-HR resetea el His (o el encarrilamiento muestra signos de vía). Sin fusión del QRS, la colisión pudo ocurrir dentro del sistema de conducción (nodofascicular); un HA de la TSV mayor que el HA estimulando el VD también apoya la nodofascicular.', 'En la serie de Nagashima, el PPI−LC ≤ 125 ms no discriminó la nodofascicular de la TRNAV.', 'Si el SH se alarga con EV más precoces, apoya un nodo en el circuito más que una reentrada rama-rama.'], next: ['Estimulá desde la base, cerca de la inserción presunta, para buscar fusión.', 'La ablación anatómica de la vía lenta suele ser eficaz.'], man: ['ehr', 'conc', 'dha'], refs: ['veen12', 'nagashima20'] },
   L_long: { leaf: true, fn: f => {
     const apNote = f.ehr === 'pos' ? 'La EV con His refractario fue positiva: hay una vía accesoria.' : f.ehr === 'neg' ? 'La EV con His refractario fue negativa con adelanto local > 60 ms: en contra de una vía decremental participante.' : 'Sin EV con His refractario concluyente.';
     if (f.up === 'gris') return { tone: 'gray', dx: 'Circuito superior en zona gris (ΔAH 20–40 ms)', why: [apNote, 'Con un ΔAH entre 20 y 40 ms no se separa PJRT de las taquicardias "nodales".'], next: ['Compará el AH de la TSV con el del ritmo sinusal: si es menor, es un seudointervalo (nodal).', 'Repetí la estimulación auricular a la LC de la TSV y desde el ostium del SC.'], man: ['aop'], refs: ['man95', 'ho15'] };
