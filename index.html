@@ -798,7 +798,10 @@ const VOP_OPTS = (onAV) => [
   { t: 'Las A no se aceleran a la LC de estimulación', s: 'Disociación VA durante la estimulación', go: 'L_atprob' },
   { t: 'La TSV se corta durante la estimulación', go: 'term' }];
 const N = {
-  start: { q: '¿Qué relación AV tiene la taquicardia?', help: 'Contá A y V en el His y en el SC durante varios ciclos. Si el QRS es ancho, primero descartá una TV (HV y secuencia H-V). Si todavía no la indujiste, empezá por el estudio basal.', man: ['pre', 'basal', 'ado'], opts: [
+  start: { q: '¿Cómo es el QRS de la taquicardia?', help: 'Mirá el HV: si el His precede al QRS con HV igual o mayor que en sinusal, la conducción es por el sistema normal (angosto o con aberrancia).', man: ['pre', 'basal'], opts: [
+    { t: 'Angosto, o ancho con HV normal', s: 'Conducción anterógrada por el His (aberrancia)', go: 'av' },
+    { t: 'Ancho con HV corto o negativo', s: 'His después del inicio del QRS: preexcitación o TV', go: 'pw1' }] },
+  av: { q: '¿Qué relación AV tiene la taquicardia?', help: 'Contá A y V en el His y en el SC durante varios ciclos. Si todavía no la indujiste, empezá por el estudio basal.', man: ['pre', 'basal', 'ado'], opts: [
     { t: '1:1', s: 'Una A por cada V', go: 'seq' },
     { t: 'Más A que V', s: 'Bloqueo AV y la taquicardia sigue (espontáneo o con adenosina)', go: 'L_atblock' },
     { t: 'Más V que A', s: 'Bloqueo VA o disociación', go: 'vgta' }] },
@@ -815,6 +818,23 @@ const N = {
   rp: { q: '¿El RP es corto o largo?', help: 'RP largo: la A retrógrada está más cerca del QRS siguiente que del anterior (RP > PR).', opts: [
     { t: 'RP corto (RP < PR)', s: 'Diferencial: TRAV septal, TRNAV atípica (lenta-lenta), TA', go: 'vop_s' },
     { t: 'RP largo (RP > PR)', s: 'Diferencial: TA, TRNAV atípica (rápida-lenta), PJRT, NFRT', go: 'vop_l' }] },
+
+  // ---------- QRS ancho preexcitado
+  pw1: { q: 'QRS ancho con HV corto o negativo: ¿qué relación AV tiene?', help: 'La TRAV antidrómica necesita una A por cada V. Diferencial: TV, TA o TRNAV con conducción por una vía espectadora, Mahaim.', man: ['basal', 'preex'], opts: [
+    { t: '1:1', go: 'pw2' },
+    { t: 'Más A que V', s: 'Bloqueo AV y la taquicardia sigue', go: 'L_pwbys_a' },
+    { t: 'Más V que A', s: 'Disociación AV o bloqueo VA', go: 'L_pwvt' }] },
+  pw2: { q: 'EA durante la taquicardia, con la unión AV refractaria, desde cerca de la inserción auricular de la vía: ¿qué pasa?', help: 'Introducí el EA cuando el septum o el His ya se activaron, desde la pared libre del AD o el SC según la preexcitación.', man: ['preex'], opts: [
+    { t: 'Adelanta el V siguiente (misma morfología) y también la A siguiente', s: 'Resetea la taquicardia', go: 'pw3' },
+    { t: 'Termina la taquicardia por bloqueo en la vía', go: 'pw3' },
+    { t: 'Adelanta el V pero la A siguiente llega a su tiempo', s: 'No resetea la taquicardia', go: 'L_pwbys' },
+    { t: 'No modifica el V', go: 'L_pwind' }] },
+  pw3: { q: 'La vía es el brazo anterógrado: ¿qué tipo de vía es?', help: 'Mirá la conducción en ritmo sinusal y con estimulación auricular decremental.', man: ['preex', 'pre'], opts: [
+    { t: 'Decremental, con BRI', s: 'El AV se alarga, el HV se acorta hasta hacerse negativo y no hay conducción retrógrada por la vía', go: 'L_mahaim' },
+    { t: 'Tipo Kent', s: 'AV corto que no se alarga con la estimulación', go: 'pw4' }] },
+  pw4: { q: '¿Por dónde vuelve a la aurícula?', man: ['basal', 'pre'], opts: [
+    { t: 'Por el nodo', s: 'His retrógrado antes de la A y secuencia retrógrada concéntrica', go: 'L_antid' },
+    { t: 'Por otra vía', s: 'Secuencia retrógrada excéntrica, distinta de la inserción de la vía anterógrada', go: 'L_antid2' }] },
 
   // ---------- VA ≤ 70 ms
   vop_t: { q: 'Sobreestimulación ventricular: ¿qué respuesta obtenés al cortar?', help: 'Con VA ≤ 70 ms la TRAV está excluida. La pregunta es TRNAV típica vs TA septal (rara), y en niños, la taquicardia de la unión.', man: ['vop'], opts: VOP_OPTS('jt') },
@@ -894,6 +914,13 @@ const N = {
     { t: 'No es interpretable', go: 'L_term_retry' }] },
 
   // ================= RESULTADOS =================
+  L_pwvt: { leaf: true, tone: 'warn', dx: 'TV probable · TRAV antidrómica excluida', why: ['La TRAV antidrómica y la conducción por una vía espectadora necesitan que la aurícula se active antes de cada V.', 'Con más V que A, lo más probable es una TV (incluida la reentrada rama-rama). Muy rara: una taquicardia antidrómica por vía nodoventricular o nodofascicular, cuyo circuito no necesita la aurícula.'], next: ['Seguí el estudio como TV: relación H-V, secuencia del His y de las ramas, encarrilamiento ventricular.'], man: ['basal'], refs: ['josephson'] },
+  L_pwbys_a: { leaf: true, tone: 'warn', dx: 'TA o TRNAV con conducción por una vía espectadora', why: ['Si la taquicardia sigue con bloqueo AV, el ventrículo no forma parte del circuito: no es una TRAV antidrómica.', 'El QRS preexcitado indica que la vía conduce en forma pasiva.'], next: ['Estudiá el mecanismo como una TSV de QRS angosto (por ejemplo, después de bloquear la vía o en los latidos conducidos por el nodo).', 'Ablacioná también la vía accesoria.'], man: ['basal', 'aop'], refs: ['josephson'] },
+  L_pwbys: { leaf: true, tone: 'gray', dx: 'Vía espectadora (sugerido)', why: ['El EA conduce por la vía y adelanta el V, pero no modifica el circuito: la taquicardia sigue a su ritmo.', 'Sugiere una TRNAV o una TA con conducción preexcitada por una vía que no participa.'], next: ['Repetí con distintos acoplamientos y desde otros sitios.', 'Estudiá el mecanismo de base con las maniobras de QRS angosto; ablacioná la vía.'], man: ['preex', 'vop'], refs: ['josephson', 'autor'] },
+  L_pwind: { leaf: true, tone: 'gray', dx: 'No concluyente', why: ['Un EA que no llega a modificar el V puede estar lejos de la vía o ser poco prematuro.', 'Si el V no se puede modificar desde ningún sitio auricular, pensá en una TV.'], next: ['Repetí desde la pared libre del AD, el SC y el septum, con acoplamientos más cortos.', 'Compará el QRS de la taquicardia con el de máxima preexcitación al estimular cada sitio.'], man: ['preex'], refs: ['josephson'] },
+  L_mahaim: { leaf: true, dx: 'TRAV antidrómica por vía atriofascicular (Mahaim)', why: ['La vía decremental es el brazo anterógrado (EA desde la pared libre que adelanta el V o termina la taquicardia).', 'La conducción decremental, el BRI y el HV que se hace negativo caracterizan a la vía atriofascicular.'], next: ['Mapeo del potencial de la vía en el anillo tricuspídeo lateral; la ablación se hace ahí, no en la inserción ventricular.', 'Cuidado con la adenosina: puede bloquear la vía.'], man: ['preex', 'pre'], refs: ['klein88', 'josephson', 'sternick04'] },
+  L_antid: { leaf: true, dx: 'TRAV antidrómica (vía tipo Kent → nodo)', why: ['El EA con la unión AV refractaria resetea la taquicardia a través de la vía: la vía y la aurícula son parte del circuito.', 'El retorno a la aurícula es por el nodo (His retrógrado, secuencia concéntrica).'], next: ['Mapeo de la inserción de la vía (preexcitación máxima o AV más corto) y ablación.', 'Después, inducí de nuevo: puede haber una segunda vía.'], man: ['preex'], refs: ['autor', 'josephson'] },
+  L_antid2: { leaf: true, dx: 'TRAV antidrómica con retorno por una segunda vía', why: ['La vía anterógrada participa (el EA resetea la taquicardia) y la secuencia retrógrada excéntrica indica otra vía como brazo retrógrado.'], next: ['Mapeo y ablación de las dos vías.'], man: ['preex', 'basal'], refs: ['josephson'] },
   L_at: { leaf: true, tone: 'warn', dx: 'Taquicardia auricular', why: ['La respuesta A-A-V indica que el mecanismo no puede devolver al ventrículo el último A conducido en forma retrógrada.'], next: ['Confirmá que sea reproducible y a distintas LC.', 'Mapeo de activación de la A más precoz.'], man: ['vop'], refs: ['knight99', 'veen11'] },
   L_at_l: { leaf: true, tone: 'warn', dx: 'Taquicardia auricular (probable)', why: ['A-A-V verdadero con secuencia auricular distinta de la TSV.', 'Atención: una TRNAV atípica con vía nodofascicular espectadora puede dar un A-A-V verdadero por doble respuesta retrógrada (AH de la TSV muy corto, menor que en ritmo sinusal).'], next: ['Si el AH de la TSV es muy corto o hay dudas, seguí con la EV con His refractario y la estimulación auricular (ΔAH).'], man: ['vop', 'aop'], refs: ['ho15', 'veen11'] },
   L_atprob: { leaf: true, tone: 'warn', dx: 'TRAV excluida · TA probable', why: ['Si no se acelera la aurícula, el ventrículo no forma parte del circuito: se excluye la TRAV.', 'En ~80 % de estos casos el diagnóstico final es TA, pero falta excluir la TRNAV.'], next: ['Sobreestimulación auricular: VA linking (≤ 10 ms) favorece TRNAV; desde 2–3 sitios, una variación del VA > 14 ms favorece TA.', 'Terminación sobre una A no prematura, o HH que predicen los AA, favorecen TRNAV.'], man: ['aop', 'basal'], refs: ['knight00', 'veen12', 'maruyama07'] },

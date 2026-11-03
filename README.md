@@ -3,7 +3,7 @@
 App independiente con las maniobras del polígrafo de electrofisiología para el diagnóstico diferencial de las
 taquicardias supraventriculares.
 
-- **Algoritmo**: preguntas paso a paso (la pregunta actual arriba y el recorrido debajo), desde la relación AV hasta el
+- **Algoritmo**: arranca por el QRS (angosto o ancho preexcitado) y sigue con preguntas paso a paso (la pregunta actual arriba y el recorrido debajo), desde la relación AV hasta el
   diagnóstico, con acceso directo a la ficha de cada maniobra. La rama de RP largo sigue el algoritmo del autor
   (circuito inferior por encarrilamiento ventricular + circuito superior por ΔAH).
 - **Arritmias**: buscador por mecanismo (TRNAV típica y atípica, TRAV septal y de pared libre, PJRT, vías
