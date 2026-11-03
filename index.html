@@ -197,7 +197,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
   <!-- ARRITMIAS -->
   <section class="panel" id="p-arr" hidden>
-    <input type="search" id="arrQ" class="srch" placeholder="Buscar arritmia: TRNAV, PJRT, auricular, JET…" aria-label="Buscar arritmia" autocomplete="off">
+    <input type="search" id="arrQ" class="srch" placeholder="Buscar arritmia: TRNAV, PJRT, Mahaim, JET…" aria-label="Buscar arritmia" autocomplete="off">
     <p class="small" style="margin:-4px 4px 0">Qué hallazgos y maniobras confirman, apoyan o descartan cada mecanismo. Tocá una maniobra para ver cómo se hace.</p>
     <div id="arrList" class="panel"></div>
   </section>
@@ -286,6 +286,9 @@ const REFS = {
   alm13a: ['Almendral 2013 (I)', 'Almendral J, Caulier-Cisterna R, Rojo-Álvarez JL. Resetting and entrainment of reentrant arrhythmias: part I. <i>Pacing Clin Electrophysiol</i> 2013;36:508–32.'],
   alm13b: ['Almendral 2013 (II)', 'Almendral J. Resetting and entrainment of reentrant arrhythmias: part II. <i>Pacing Clin Electrophysiol</i> 2013;36:641–61.'],
   autor: ['Maldonado (presentación)', 'Maldonado S. Maniobras electrofisiológicas para interpretar TPSV (presentación docente).'],
+  josephson: ['Josephson (texto)', 'Josephson ME. <i>Clinical Cardiac Electrophysiology: Techniques and Interpretations</i>. 5.ª ed. Wolters Kluwer; 2016. (agregado: no estaba en el material base)'],
+  klein88: ['Klein 1988', 'Klein GJ, Guiraudon GM, Kerr CR, et al. "Nodoventricular" accessory pathway: evidence for a distinct accessory atrioventricular pathway with atrioventricular node-like properties. <i>J Am Coll Cardiol</i> 1988;11:1035–40. (agregado: no estaba en el material base)'],
+  sternick04: ['Sternick 2004', 'Sternick EB, Timmermans C, Sosa E, et al. The electrocardiogram during sinus rhythm and tachycardia in patients with Mahaim fibers: the importance of an "rS" pattern in lead III. <i>J Am Coll Cardiol</i> 2004;44:1626–35. (agregado: no estaba en el material base)'],
   // citadas en las revisiones anteriores
   hirao96: ['Hirao 1996', 'Hirao K, Otomo K, Wang X, et al. Para-Hisian pacing. <i>Circulation</i> 1996;94:1027–35. (citado en Veenhuyzen 2012)'],
   ho08: ['Ho 2008', 'Ho RT, Mark GE, Rhim ES, et al. Differentiating AVNRT from AVRT by ΔHA values during entrainment from the ventricle. <i>Heart Rhythm</i> 2008;5:83–8. (citado en Ho 2015)'],
@@ -536,6 +539,18 @@ const M = {
     trampas: ['En la TRNAV, el VA del primer retorno puede variar más de 10 ms.', 'El VA linking puede darse por coincidencia en una TA: repetí y estimulá desde distintos sitios.', 'La taquicardia de la unión con doble vía nodal puede imitar a la TRNAV.', 'Una respuesta A-A-V <i>después de estimular la aurícula</i> no tiene el valor diagnóstico de la A-A-V tras estimular el ventrículo.'],
     refs: ['veen12', 'knight00', 'maruyama07', 'fan11', 'man95', 'ho15', 'miller87', 'kaneko11', 'autor'] },
 
+  preex: { g: 'A', t: 'Estimulación auricular en las taquicardias preexcitadas', s: 'TRAV antidrómica y vía atriofascicular (Mahaim)',
+    para: 'En una taquicardia con QRS preexcitado, la estimulación auricular muestra si la vía es el brazo anterógrado del circuito y si la aurícula forma parte de él. En ritmo sinusal, la estimulación auricular decremental desenmascara las vías con conducción decremental (Mahaim).',
+    como: ['<b>En ritmo sinusal</b>: estimulá la AD (pared libre lateral y septum) con LC decrecientes y extraestímulos. Medí AV, AH, HV y la morfología del QRS.', '<b>Durante la taquicardia</b>: introducí EA desde el sitio más cercano a la inserción auricular presunta de la vía, en el momento en que la unión AV (septum o His) ya está activada.', 'Compará el EA desde la pared libre con el EA desde el septum.', 'Mirá si el EA adelanta el V siguiente sin cambiar el QRS, y si adelanta también la A siguiente (resetea el circuito).'],
+    interp: [
+      ['Durante la TSV preexcitada, un EA con la unión AV refractaria adelanta el V siguiente con la misma morfología y resetea la taquicardia', 'La vía es el brazo anterógrado y la aurícula está en el circuito: TRAV antidrómica (excluye TV y TRNAV con vía espectadora)', 'autor josephson'],
+      ['Ese EA adelanta el V solo desde la pared libre del AD y no desde el septum', 'Vía atriofascicular o AV derecha lateral', 'josephson'],
+      ['Estimulación auricular decremental: la preexcitación aparece o aumenta con el AV que se alarga (decremental) y el HV que se acorta hasta hacerse negativo, con morfología de BRI', 'Vía atriofascicular (Mahaim)', 'klein88 josephson'],
+      ['QRS de la taquicardia igual al de máxima preexcitación desde la pared libre del AD', 'TRAV antidrómica por vía atriofascicular', 'josephson'],
+      ['Preexcitación con AV corto que no se alarga con la estimulación', 'Vía tipo Kent (no decremental)', 'josephson']],
+    trampas: ['La TV con BRI (incluida la rama-rama) puede imitar a la taquicardia antidrómica por Mahaim: buscá la relación AV 1:1 y el reset por EA.', 'Una TRNAV o una TA con conducción por una vía espectadora dan QRS preexcitado sin que la vía sea parte del circuito.', 'Las vías decrementales pueden bloquearse con adenosina.', 'En la antidrómica, el brazo retrógrado puede ser otra vía accesoria y no el nodo.'],
+    refs: ['autor', 'josephson', 'klein88', 'sternick04'] },
+
   eha: { g: 'A', t: 'Extraestímulo auricular con His refractario', s: 'TRNAV vs taquicardia de la unión (JET)',
     para: 'Un EA que llega cuando el His (subrogante de la vía rápida) está refractario no puede alcanzar un foco de la unión, pero sí entrar al circuito de la TRNAV por la vía lenta.',
     como: ['Durante la TSV, introducí EA desde el ostium del SC o la región de la vía lenta.', 'Primero en el momento del His esperado (His refractario); después, más precoces.', 'Mirá el efecto sobre el siguiente His.'],
@@ -603,6 +618,17 @@ const ARR = [
     desc: [['EA con His refractario que retrasa el His siguiente (o lo adelanta o termina la TSV)', 'eha', 'padanilam08'], ['Durante la sobreestimulación auricular, el último A conduce con AH largo (PR > RR)', 'aop', 'fan11 veen12'], ['EV con His refractario que modifica el His (sugiere vía nodoventricular o nodofascicular)', 'ehr', 'veen12']],
     trampa: 'Si coexiste doble vía nodal, un EA puede adelantar el His y dar una "respuesta doble". Ninguna maniobra la prueba con certeza.' }
 ];
+ARR.push(
+  { id: 'antid', n: 'TRAV antidrómica', al: 'antidromica antidromic preexcitada QRS ancho vía accesoria anterógrada Kent', dif: 'TV, TRNAV o TA con conducción por una vía espectadora, Mahaim y TRAV por dos vías.',
+    conf: [['Durante la TSV, un EA con la unión AV refractaria adelanta el V siguiente con la misma morfología preexcitada y resetea la taquicardia', 'preex', 'autor josephson']],
+    apoya: [['QRS de la taquicardia igual al de máxima preexcitación al estimular cerca de la inserción auricular de la vía', 'preex', 'josephson'], ['Relación AV 1:1 constante; His retrógrado, después del inicio del QRS', 'basal', 'josephson'], ['Preexcitación en ritmo sinusal', 'pre', 'knight00']],
+    desc: [['La taquicardia sigue con bloqueo AV o VA (disociación)', 'basal', 'josephson'], ['His anterógrado con HV normal antes de cada QRS', 'basal', 'josephson']],
+    trampa: 'El brazo retrógrado puede ser una segunda vía accesoria y no el nodo. Una vía espectadora también da QRS preexcitado: lo que define la antidrómica es que la vía y la aurícula sean parte del circuito.' },
+  { id: 'mahaim', n: 'Mahaim (vía atriofascicular)', al: 'mahaim atriofascicular decremental BRI preexcitada rama derecha', dif: 'TV con BRI (incluida la rama-rama), TRAV antidrómica por vía tipo Kent y vías nodoventriculares o fasciculoventriculares.',
+    conf: [['Estimulación auricular decremental: preexcitación con BRI que aumenta mientras el AV se alarga y el HV se acorta hasta hacerse negativo', 'preex pre', 'klein88 josephson'], ['Durante la taquicardia, un EA desde la pared libre del AD (no desde el septum), con la unión AV refractaria, adelanta el V', 'preex', 'josephson']],
+    apoya: [['Taquicardia con BRI igual a la preexcitación máxima', 'preex', 'josephson'], ['ECG en ritmo sinusal normal o con patrón rS en DIII', 'basal', 'sternick04'], ['Sin conducción retrógrada por la vía (conducción solo anterógrada)', 'pre', 'josephson'], ['Potencial de la vía en el anillo tricuspídeo lateral durante el mapeo', 'preex', 'josephson']],
+    desc: [['Preexcitación con AV corto que no se alarga con la estimulación (vía tipo Kent)', 'preex', 'josephson'], ['Conducción VA rápida por la vía', 'pre', 'josephson'], ['Disociación AV durante la taquicardia (pensar en TV)', 'basal', 'josephson']],
+    trampa: 'La ablación se guía por el potencial de la vía en el anillo tricuspídeo, no por el sitio de inserción ventricular. La adenosina puede bloquear la vía.' });
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 function arrRows(xs, cls) {
   return `<ul class="hl ${cls}">${xs.map(x => `<li><span>${x[0]}</span><span class="hm">${x[1].split(' ').map(k => `<button class="ml" data-m="${k}">${M[k].t}</button>`).join('')}<span class="cit">${x[2].split(' ').map(r => REFS[r][0]).join(' · ')}</span></span></li>`).join('')}</ul>`;
@@ -616,7 +642,7 @@ function renderArr() {
     <div class="box"><div class="bl fav">Lo apoya</div>${arrRows(a.apoya, 'fav')}</div>
     <div class="box"><div class="bl no">Lo descarta</div>${arrRows(a.desc, 'no')}</div>
     ${a.trampa ? `<div class="box trap"><div class="bl">Ojo</div><p>${a.trampa}</p></div>` : ''}
-  </div></details>`).join('') : '<p class="small">No hay coincidencias. Probá con otro nombre (por ejemplo: TRNAV, PJRT, auricular, JET).</p>';
+  </div></details>`).join('') : '<p class="small">No hay coincidencias. Probá con otro nombre (por ejemplo: TRNAV, PJRT, auricular, JET, antidrómica, Mahaim).</p>';
   bindMl($('#arrList'));
 }
 
