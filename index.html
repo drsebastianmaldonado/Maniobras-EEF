@@ -289,6 +289,7 @@ const REFS = {
   josephson: ['Josephson (texto)', 'Josephson ME. <i>Clinical Cardiac Electrophysiology: Techniques and Interpretations</i>. 5.ª ed. Wolters Kluwer; 2016. (agregado: no estaba en el material base)'],
   klein88: ['Klein 1988', 'Klein GJ, Guiraudon GM, Kerr CR, et al. "Nodoventricular" accessory pathway: evidence for a distinct accessory atrioventricular pathway with atrioventricular node-like properties. <i>J Am Coll Cardiol</i> 1988;11:1035–40. (agregado: no estaba en el material base)'],
   sternick04: ['Sternick 2004', 'Sternick EB, Timmermans C, Sosa E, et al. The electrocardiogram during sinus rhythm and tachycardia in patients with Mahaim fibers: the importance of an "rS" pattern in lead III. <i>J Am Coll Cardiol</i> 2004;44:1626–35. (agregado: no estaba en el material base)'],
+  merino01: ['Merino 2001', 'Merino JL, Peinado R, Fernández-Lozano I, et al. Bundle-branch reentry and the postpacing interval after entrainment by right ventricular apex stimulation: a new approach to elucidate the mechanism of wide-QRS-complex tachycardia with atrioventricular dissociation. <i>Circulation</i> 2001;103:1102–8. (agregado: no estaba en el material base)'],
   // citadas en las revisiones anteriores
   hirao96: ['Hirao 1996', 'Hirao K, Otomo K, Wang X, et al. Para-Hisian pacing. <i>Circulation</i> 1996;94:1027–35. (citado en Veenhuyzen 2012)'],
   ho08: ['Ho 2008', 'Ho RT, Mark GE, Rhim ES, et al. Differentiating AVNRT from AVRT by ΔHA values during entrainment from the ventricle. <i>Heart Rhythm</i> 2008;5:83–8. (citado en Ho 2015)'],
@@ -551,6 +552,20 @@ const M = {
     trampas: ['La TV con BRI (incluida la rama-rama) puede imitar a la taquicardia antidrómica por Mahaim: buscá la relación AV 1:1 y el reset por EA.', 'Una TRNAV o una TA con conducción por una vía espectadora dan QRS preexcitado sin que la vía sea parte del circuito.', 'Las vías decrementales pueden bloquearse con adenosina.', 'En la antidrómica, el brazo retrógrado puede ser otra vía accesoria y no el nodo.'],
     refs: ['autor', 'josephson', 'klein88', 'sternick04'] },
 
+  bbr: { g: 'V', t: 'Reentrada rama-rama: criterios', s: 'TV con His antes de cada V',
+    para: 'Macrorreentrada que baja por una rama y sube por la otra (lo típico: anterógrada por la derecha, morfología de BRI). Necesita enfermedad del sistema His-Purkinje (HV prolongado en sinusal) y suele verse con miocardiopatía dilatada, después de cirugía valvular o en enfermedades neuromusculares.',
+    como: ['Catéter de His y, si es posible, uno en la rama derecha.', 'Inducción con estimulación ventricular (extraestímulos, secuencias largo-corto) o isoproterenol.', 'Compará el HV de la TV con el del ritmo sinusal y la secuencia H → rama → V.', 'Mirá las oscilaciones de ciclo: ¿cambian primero los HH o los VV?', 'Encarrilá desde el ápex del VD y medí el PPI−LC.'],
+    interp: [
+      ['His (y rama) antes de cada V, con HV igual o mayor que en sinusal', 'Compatible con rama-rama', 'josephson'],
+      ['Los cambios de los HH preceden y predicen los de los VV', 'Rama-rama (el His está en el circuito)', 'josephson'],
+      ['Secuencia H → rama derecha → V con morfología de BRI', 'Rama-rama típica', 'josephson'],
+      ['Encarrilamiento desde el ápex del VD: PPI−LC ≤ 30 ms', 'Rama-rama (la rama derecha está en el circuito)', 'merino01'],
+      ['Encarrilamiento desde el ápex del VD: PPI−LC > 30 ms', 'TV miocárdica', 'merino01'],
+      ['Bloqueo de la rama derecha (mecánico o por ablación) que la termina y la vuelve no inducible', 'Confirma rama-rama', 'josephson'],
+      ['EV con His refractario que adelanta el His siguiente y alarga el SH con más prematuridad', 'Sugiere un nodo en el circuito (vía nodoventricular) más que rama-rama', 'veen12']],
+    trampas: ['Con conducción VA 1:1 se confunde con una TSV con aberrancia: en la TSV hay una A antes de cada His.', 'El HV de la TV puede ser algo menor que el sinusal según dónde se registre el His.', 'La reentrada interfascicular da morfología de BRD.', 'Puede coexistir con una TV miocárdica: la ablación de la rama no protege de esta.', 'En pediatría es rara: pensala en posoperatorios y en enfermedades neuromusculares.'],
+    refs: ['merino01', 'josephson', 'veen12'] },
+
   eha: { g: 'A', t: 'Extraestímulo auricular con His refractario', s: 'TRNAV vs taquicardia de la unión (JET)',
     para: 'Un EA que llega cuando el His (subrogante de la vía rápida) está refractario no puede alcanzar un foco de la unión, pero sí entrar al circuito de la TRNAV por la vía lenta.',
     como: ['Durante la TSV, introducí EA desde el ostium del SC o la región de la vía lenta.', 'Primero en el momento del His esperado (His refractario); después, más precoces.', 'Mirá el efecto sobre el siguiente His.'],
@@ -624,6 +639,11 @@ ARR.push(
     apoya: [['QRS de la taquicardia igual al de máxima preexcitación al estimular cerca de la inserción auricular de la vía', 'preex', 'josephson'], ['Relación AV 1:1 constante; His retrógrado, después del inicio del QRS', 'basal', 'josephson'], ['Preexcitación en ritmo sinusal', 'pre', 'knight00']],
     desc: [['La taquicardia sigue con bloqueo AV o VA (disociación)', 'basal', 'josephson'], ['His anterógrado con HV normal antes de cada QRS', 'basal', 'josephson']],
     trampa: 'El brazo retrógrado puede ser una segunda vía accesoria y no el nodo. Una vía espectadora también da QRS preexcitado: lo que define la antidrómica es que la vía y la aurícula sean parte del circuito.' },
+  { id: 'bbr', n: 'TV por reentrada rama-rama', al: 'rama rama bundle branch reentry BBR BBRVT taquicardia ventricular reentrada His Purkinje', dif: 'TSV con aberrancia, TV miocárdica, reentrada interfascicular y vía nodoventricular.',
+    conf: [['PPI−LC ≤ 30 ms al encarrilar desde el ápex del VD, en una TV con His antes de cada V', 'bbr', 'merino01'], ['El bloqueo de la rama derecha la termina y la vuelve no inducible', 'bbr', 'josephson']],
+    apoya: [['His (y rama) antes de cada V, con HV igual o mayor que en sinusal', 'bbr', 'josephson'], ['Los cambios de los HH preceden y predicen los de los VV', 'bbr', 'josephson'], ['Secuencia H → rama derecha → V con morfología de BRI', 'bbr', 'josephson'], ['HV prolongado en ritmo sinusal, miocardiopatía dilatada, cirugía valvular o enfermedad neuromuscular', 'pre', 'josephson']],
+    desc: [['A antes de cada His con relación 1:1 (TSV con aberrancia)', 'basal', 'josephson'], ['Los VV cambian antes que los HH, o PPI−LC > 30 ms desde el ápex del VD', 'bbr', 'merino01'], ['EV con His refractario que adelanta el His y alarga el SH (sugiere vía nodoventricular)', 'ehr', 'veen12']],
+    trampa: 'Puede coexistir con una TV miocárdica. En pediatría es rara: pensala en posoperatorios y en enfermedades neuromusculares.' },
   { id: 'mahaim', n: 'Mahaim (vía atriofascicular)', al: 'mahaim atriofascicular decremental BRI preexcitada rama derecha', dif: 'TV con BRI (incluida la rama-rama), TRAV antidrómica por vía tipo Kent y vías nodoventriculares o fasciculoventriculares.',
     conf: [['Estimulación auricular decremental: preexcitación con BRI que aumenta mientras el AV se alarga y el HV se acorta hasta hacerse negativo', 'preex pre', 'klein88 josephson'], ['Durante la taquicardia, un EA desde la pared libre del AD (no desde el septum), con la unión AV refractaria, adelanta el V', 'preex', 'josephson']],
     apoya: [['Taquicardia con BRI igual a la preexcitación máxima', 'preex', 'josephson'], ['ECG en ritmo sinusal normal o con patrón rS en DIII', 'basal', 'sternick04'], ['Sin conducción retrógrada por la vía (conducción solo anterógrada)', 'pre', 'josephson'], ['Potencial de la vía en el anillo tricuspídeo lateral durante el mapeo', 'preex', 'josephson']],
@@ -642,7 +662,7 @@ function renderArr() {
     <div class="box"><div class="bl fav">Lo apoya</div>${arrRows(a.apoya, 'fav')}</div>
     <div class="box"><div class="bl no">Lo descarta</div>${arrRows(a.desc, 'no')}</div>
     ${a.trampa ? `<div class="box trap"><div class="bl">Ojo</div><p>${a.trampa}</p></div>` : ''}
-  </div></details>`).join('') : '<p class="small">No hay coincidencias. Probá con otro nombre (por ejemplo: TRNAV, PJRT, auricular, JET, antidrómica, Mahaim).</p>';
+  </div></details>`).join('') : '<p class="small">No hay coincidencias. Probá con otro nombre (por ejemplo: TRNAV, PJRT, auricular, JET, antidrómica, Mahaim, rama-rama).</p>';
   bindMl($('#arrList'));
 }
 
@@ -799,7 +819,8 @@ const VOP_OPTS = (onAV) => [
   { t: 'La TSV se corta durante la estimulación', go: 'term' }];
 const N = {
   start: { q: '¿Cómo es el QRS de la taquicardia?', help: 'Mirá el HV: si el His precede al QRS con HV igual o mayor que en sinusal, la conducción es por el sistema normal (angosto o con aberrancia).', man: ['pre', 'basal'], opts: [
-    { t: 'Angosto, o ancho con HV normal', s: 'Conducción anterógrada por el His (aberrancia)', go: 'av' },
+    { t: 'Angosto', go: 'av' },
+    { t: 'Ancho con His antes de cada V', s: 'HV igual o mayor que en sinusal: aberrancia o reentrada rama-rama', go: 'wh' },
     { t: 'Ancho con HV corto o negativo', s: 'His después del inicio del QRS: preexcitación o TV', go: 'pw1' }] },
   av: { q: '¿Qué relación AV tiene la taquicardia?', help: 'Contá A y V en el His y en el SC durante varios ciclos. Si todavía no la indujiste, empezá por el estudio basal.', man: ['pre', 'basal', 'ado'], opts: [
     { t: '1:1', s: 'Una A por cada V', go: 'seq' },
@@ -818,6 +839,18 @@ const N = {
   rp: { q: '¿El RP es corto o largo?', help: 'RP largo: la A retrógrada está más cerca del QRS siguiente que del anterior (RP > PR).', opts: [
     { t: 'RP corto (RP < PR)', s: 'Diferencial: TRAV septal, TRNAV atípica (lenta-lenta), TA', go: 'vop_s' },
     { t: 'RP largo (RP > PR)', s: 'Diferencial: TA, TRNAV atípica (rápida-lenta), PJRT, NFRT', go: 'vop_l' }] },
+
+  // ---------- QRS ancho con His antes de cada V
+  wh: { q: 'QRS ancho con His antes de cada V: ¿qué relación AV tiene?', man: ['basal', 'bbr'], opts: [
+    { t: '1:1, con una A antes de cada His', s: 'Lo más probable es una TSV con aberrancia', go: 'av' },
+    { t: 'Más A que V', s: 'TSV con aberrancia y bloqueo AV', go: 'av' },
+    { t: 'Más V que A', s: 'Disociación AV: TV con His en el circuito o TV miocárdica', go: 'bbr1' }] },
+  bbr1: { q: 'Durante la TV, ¿los cambios de los HH preceden y predicen los de los VV, con HV igual o mayor que en sinusal?', help: 'Si el VV cambia primero y el His lo sigue, el His se activa en forma pasiva.', man: ['bbr'], opts: [
+    { t: 'Sí', go: 'bbr2' },
+    { t: 'No: el VV cambia primero, o el HV es claramente más corto', go: 'L_vtmyo' }] },
+  bbr2: { q: 'Encarrilamiento desde el ápex del VD: ¿cuánto vale el PPI−LC?', man: ['bbr', 'ppi'], opts: [
+    { t: '≤ 30 ms', go: 'L_bbr' },
+    { t: '> 30 ms', go: 'L_vtmyo' }] },
 
   // ---------- QRS ancho preexcitado
   pw1: { q: 'QRS ancho con HV corto o negativo: ¿qué relación AV tiene?', help: 'La TRAV antidrómica necesita una A por cada V. Diferencial: TV, TA o TRNAV con conducción por una vía espectadora, Mahaim.', man: ['basal', 'preex'], opts: [
@@ -914,7 +947,9 @@ const N = {
     { t: 'No es interpretable', go: 'L_term_retry' }] },
 
   // ================= RESULTADOS =================
-  L_pwvt: { leaf: true, tone: 'warn', dx: 'TV probable · TRAV antidrómica excluida', why: ['La TRAV antidrómica y la conducción por una vía espectadora necesitan que la aurícula se active antes de cada V.', 'Con más V que A, lo más probable es una TV (incluida la reentrada rama-rama). Muy rara: una taquicardia antidrómica por vía nodoventricular o nodofascicular, cuyo circuito no necesita la aurícula.'], next: ['Seguí el estudio como TV: relación H-V, secuencia del His y de las ramas, encarrilamiento ventricular.'], man: ['basal'], refs: ['josephson'] },
+  L_bbr: { leaf: true, dx: 'TV por reentrada rama-rama', why: ['His antes de cada V, con los HH que preceden y predicen los VV: el His está en el circuito.', 'PPI−LC ≤ 30 ms desde el ápex del VD: la rama derecha forma parte del circuito.'], next: ['Ablación de la rama derecha (o de la izquierda según la morfología).', 'Evaluá la conducción residual y la necesidad de marcapasos o CDI por la enfermedad de base.', 'Inducí de nuevo: puede coexistir una TV miocárdica.'], man: ['bbr'], refs: ['merino01', 'josephson'] },
+  L_vtmyo: { leaf: true, tone: 'warn', dx: 'TV miocárdica probable', why: ['El His no gobierna la taquicardia (los VV cambian primero) o el PPI−LC desde el ápex es > 30 ms.', 'Diferencial: reentrada interfascicular (BRD), TV fascicular y, si una EV con His refractario adelanta el His, vía nodoventricular.'], next: ['Mapeo de activación y de encarrilamiento de la TV.'], man: ['bbr', 'ehr'], refs: ['merino01', 'josephson', 'veen12'] },
+  L_pwvt: { leaf: true, tone: 'warn', dx: 'TV probable · TRAV antidrómica excluida', why: ['La TRAV antidrómica y la conducción por una vía espectadora necesitan que la aurícula se active antes de cada V.', 'Con más V que A, lo más probable es una TV miocárdica (en la reentrada rama-rama el His precede a cada V). Muy rara: una taquicardia antidrómica por vía nodoventricular o nodofascicular, cuyo circuito no necesita la aurícula.'], next: ['Seguí el estudio como TV: relación H-V, secuencia del His y de las ramas, encarrilamiento ventricular.'], man: ['basal'], refs: ['josephson'] },
   L_pwbys_a: { leaf: true, tone: 'warn', dx: 'TA o TRNAV con conducción por una vía espectadora', why: ['Si la taquicardia sigue con bloqueo AV, el ventrículo no forma parte del circuito: no es una TRAV antidrómica.', 'El QRS preexcitado indica que la vía conduce en forma pasiva.'], next: ['Estudiá el mecanismo como una TSV de QRS angosto (por ejemplo, después de bloquear la vía o en los latidos conducidos por el nodo).', 'Ablacioná también la vía accesoria.'], man: ['basal', 'aop'], refs: ['josephson'] },
   L_pwbys: { leaf: true, tone: 'gray', dx: 'Vía espectadora (sugerido)', why: ['El EA conduce por la vía y adelanta el V, pero no modifica el circuito: la taquicardia sigue a su ritmo.', 'Sugiere una TRNAV o una TA con conducción preexcitada por una vía que no participa.'], next: ['Repetí con distintos acoplamientos y desde otros sitios.', 'Estudiá el mecanismo de base con las maniobras de QRS angosto; ablacioná la vía.'], man: ['preex', 'vop'], refs: ['josephson', 'autor'] },
   L_pwind: { leaf: true, tone: 'gray', dx: 'No concluyente', why: ['Un EA que no llega a modificar el V puede estar lejos de la vía o ser poco prematuro.', 'Si el V no se puede modificar desde ningún sitio auricular, pensá en una TV.'], next: ['Repetí desde la pared libre del AD, el SC y el septum, con acoplamientos más cortos.', 'Compará el QRS de la taquicardia con el de máxima preexcitación al estimular cada sitio.'], man: ['preex'], refs: ['josephson'] },
