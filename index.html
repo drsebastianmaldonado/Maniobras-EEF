@@ -223,7 +223,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     <div id="loc-hub" class="panel">
       <p class="small" style="margin:0 4px">Localización del sustrato arritmogénico a partir del ECG de superficie.</p>
       <a class="card lcard" href="localizar/via-accesoria.html"><span class="lic2" style="--c:var(--violet)">Vía accesoria</span><b>Localización de la vía accesoria</b><span>Algoritmo por pasos según la onda delta, con ECG de ejemplo. Algoritmo del autor.</span><i>Abrir →</i></a>
-      <button class="card lcard" type="button" id="goKis"><span class="lic2" style="--c:var(--blue)">Foco auricular</span><b>Algoritmo de Kistler</b><span>Localización del foco de la taquicardia auricular según la morfología de la onda P.</span><i>En preparación</i></button>
+      <button class="card lcard" type="button" id="goKis"><span class="lic2" style="--c:var(--blue)">Foco auricular</span><b>Algoritmo de Kistler</b><span>Localización del foco de la taquicardia auricular según la morfología de la onda P.</span><i>Abrir →</i></button>
       <button class="card lcard" type="button" id="goEnr"><span class="lic2" style="--c:var(--rose)">Arritmia ventricular</span><b>Algoritmo de Enriquez</b><span>Sitio de origen de las EV y TV idiopáticas (corazón estructuralmente normal), por cuadrantes anatómicos.</span><i>Abrir →</i></button>
     </div>
     <div id="loc-enr" class="panel" hidden>
@@ -237,7 +237,13 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     </div>
     <div id="loc-kis" class="panel" hidden>
       <div class="ctrl"><button class="btn" type="button" data-back>← Localizadores</button></div>
-      <div class="card leaf gray"><div class="lt">En preparación</div><h3>Algoritmo de Kistler</h3><p style="margin:0">Kistler PM, et al. P-wave morphology in focal atrial tachycardia: development of an algorithm to predict the anatomic site of origin. <i>J Am Coll Cardiol</i> 2006;48:1010–7.</p><p class="small" style="margin:0">Se va a armar a partir del artículo original, para no reproducir de memoria los criterios de la onda P.</p></div>
+      <div class="card" style="padding:14px 16px"><b>Taquicardia auricular focal</b><p class="small" style="margin:4px 0 0">Kistler 2006: algoritmo según la morfología de la onda P, construido con 130 TA y validado en forma prospectiva (localizó el foco, o una estructura vecina, en el 93 %). Analizá una onda P aislada, sin superposición con el QRS ni la T (por ejemplo, con bloqueo AV o tras estimular el ventrículo). Clasificala como positiva, negativa, isoeléctrica (desvío &lt; 0,05 mV) o bifásica.</p>
+        <a class="btn lnk" style="margin-top:10px" href="https://doi.org/10.1016/j.jacc.2006.03.058" target="_blank" rel="noopener noreferrer">Ver el artículo y el algoritmo original (fig. 6) ↗</a></div>
+      <div class="warnbox" style="font-size:13px">No se validó después de ablaciones lineales extensas, en cardiopatías congénitas ni con cicatrices auriculares extensas, donde la activación auricular cambia. Tampoco incluye la vena cava superior ni el ligamento de Marshall.</div>
+      <h2 class="sec">Pregunta actual</h2>
+      <div id="kCur"></div>
+      <div class="ctrl" id="kCtrl"></div>
+      <div id="kTrail" class="trail"></div>
     </div>
   </section>
 
@@ -370,6 +376,7 @@ const REFS = {
   yamada09: ['Yamada 2009', 'Yamada T, McElderry HT, Okada T, et al. Idiopathic focal ventricular arrhythmias originating from the anterior papillary muscle in the left ventricle. <i>J Cardiovasc Electrophysiol</i> 2009;20:866–72.'],
   yamada10: ['Yamada 2010', 'Yamada T, Doppalapudi H, McElderry HT, et al. Idiopathic ventricular arrhythmias originating from the papillary muscles in the left ventricle: prevalence, electrocardiographic and electrophysiological characteristics, and results of the radiofrequency catheter ablation. <i>J Cardiovasc Electrophysiol</i> 2010;21:62–9.'],
   rivera16: ['Rivera 2016', 'Rivera S, Ricapito MP, Tomas L, et al. Results of cryoenergy and radiofrequency-based catheter ablation for treating ventricular arrhythmias arising from the papillary muscles of the left ventricle, guided by intracardiac echocardiography and image integration. <i>Circ Arrhythm Electrophysiol</i> 2016;9:e003874.'],
+  kistler06: ['Kistler 2006', 'Kistler PM, Roberts-Thomson KC, Haqqani HM, et al. P-wave morphology in focal atrial tachycardia: development of an algorithm to predict the anatomic site of origin. <i>J Am Coll Cardiol</i> 2006;48:1010–7.'],
   // citadas en las revisiones anteriores
   hirao96: ['Hirao 1996', 'Hirao K, Otomo K, Wang X, et al. Para-Hisian pacing. <i>Circulation</i> 1996;94:1027–35. (citado en Veenhuyzen 2012)'],
   ho08: ['Ho 2008', 'Ho RT, Mark GE, Rhim ES, et al. Differentiating AVNRT from AVRT by ΔHA values during entrainment from the ventricle. <i>Heart Rhythm</i> 2008;5:83–8. (citado en Ho 2015)'],
@@ -946,9 +953,69 @@ function renderEnr() {
   const bk = $('#eBack'); if (bk) bk.onclick = () => { ePath.pop(); renderEnr(); };
   const rs = $('#eReset'); if (rs) rs.onclick = () => { ePath = []; renderEnr(); };
 }
+const KN = {
+  k0: { q: '¿Cómo es la onda P en V1 durante la taquicardia?', help: 'V1 es la derivación más útil: negativa o bifásica +/− indica aurícula derecha (especificidad 100 %); positiva o bifásica −/+ indica aurícula izquierda (sensibilidad 100 %). Los focos septales y la cresta alta reducen la precisión.', opts: [
+    { t: 'Negativa', go: 'kNeg' },
+    { t: 'Positiva / negativa (+/−)', go: 'L_kCT' },
+    { t: 'Negativa / positiva (−/+) o isoeléctrica / positiva', go: 'kAvl' },
+    { t: 'Isoeléctrica', go: 'L_kSep' },
+    { t: 'Positiva', go: 'kBif' }] },
+  kNeg: { q: 'P negativa en V1: ¿son positivas V2 a V4?', opts: [
+    { t: 'Sí', go: 'L_kCT' },
+    { t: 'No', go: 'kNegInf' }] },
+  kNegInf: { q: '¿Es negativa en todas las derivaciones inferiores (DII, DIII, aVF)?', opts: [
+    { t: 'Sí', go: 'L_kTA' },
+    { t: 'No', go: 'L_kTAsup' }] },
+  kAvl: { q: 'V1 −/+ o iso/+: ¿cómo es la P en aVL?', opts: [
+    { t: 'Negativa', go: 'L_kMA' },
+    { t: 'Positiva', go: 'L_kCSos' }] },
+  kBif: { q: 'P positiva en V1: ¿es bífida (con muesca) en DII y/o en V1?', opts: [
+    { t: 'Sí', go: 'kBifInf' },
+    { t: 'No', go: 'kSR' }] },
+  kBifInf: { q: 'P bífida: ¿es negativa en todas las derivaciones inferiores?', opts: [
+    { t: 'Sí', go: 'L_kCSb' },
+    { t: 'No', go: 'L_kLPV' }] },
+  kSR: { q: 'P positiva no bífida: ¿cómo es la P en V1 en ritmo sinusal?', help: 'En la vena pulmonar superior derecha, la P de V1 pasa de bifásica en sinusal a positiva en la taquicardia (9 de 14); en la cresta no cambia.', opts: [
+    { t: 'Positiva', go: 'L_kCTRPV' },
+    { t: 'Bifásica (+/−)', go: 'L_kRPV' }] },
+  L_kCT: { leaf: true, dx: 'Cresta terminal', crit: 'V1 +/− (o, si es positiva en la taquicardia, también positiva en sinusal), con P positiva en DI y DII y negativa en aVR', est: 'S 93 %, E 95 %, VPP 84 %, VPN 98 %', f: ['En la serie: superior 47 %, media 47 %, inferior 6 %', 'Si V1 es negativa en la taquicardia, también lo es en sinusal'], dif: 'Vena pulmonar superior derecha (superpuesta con la cresta alta).' },
+  L_kTA: { leaf: true, dx: 'Anillo tricuspídeo (inferoanterior)', crit: 'V1 negativa con aVL positiva o isoeléctrica', est: 'S 83 %, E 97 %, VPP 89 %, VPN 95 %', f: ['V1 negativa bífida en 23 de 29 focos del anillo', 'Inferiores profundamente negativas en la región inferoanterior'], dif: 'Ostium del seno coronario (el algoritmo confundió un foco tricuspídeo vecino al ostium).' },
+  L_kTAsup: { leaf: true, dx: 'Anillo tricuspídeo (superior) u orejuela derecha', crit: 'V1 negativa con aVL positiva o isoeléctrica', est: 'Anillo tricuspídeo: S 83 %, E 97 %', f: ['En la región superior del anillo, las inferiores son de baja amplitud, positivas o bifásicas', 'La orejuela derecha da una P muy parecida a la del anillo superior'], dif: 'Cresta terminal (V2–V4 positivas).' },
+  L_kMA: { leaf: true, dx: 'Anillo mitral superior', crit: 'V1 −/+ con aVL isoeléctrica o negativa', est: 'S 88 %, E 99 %, VPP 88 %, VPN 99 %', f: ['Las excepciones fueron un foco septal izquierdo y uno mitral superior isoeléctrico y luego positivo en V1'], dif: 'Septum izquierdo.' },
+  L_kCSos: { leaf: true, dx: 'Ostium del seno coronario o septum izquierdo', crit: 'V1 −/+ o iso/+ con DII, DIII y aVF negativas y aVL positiva', est: 'Ostium del SC: S 86 %, E 98 %, VPP 86 %, VPN 98 %', f: ['V1 −/+ en los 3 focos del septum izquierdo y en 1 de 7 perinodales'], dif: 'Septum izquierdo y región perinodal (superpuestos).' },
+  L_kSep: { leaf: true, dx: 'Septum derecho o región perinodal', crit: 'V1 isoeléctrica', est: 'S 50 %, E 100 %, VPP 100 %, VPN 97 %', f: ['Baja sensibilidad: los focos septales tienen morfologías variables', 'Perinodal: activación más precoz en el His proximal; ablación exitosa a menos de 1 cm'], dif: 'Septum izquierdo, ostium del SC. Cuidado con el BAV al ablacionar.' },
+  L_kCSb: { leaf: true, dx: 'Cuerpo del seno coronario', crit: 'V1 positiva bífida, DII, DIII y aVF profundamente negativas, aVL positiva y aVR negativa (3 de 3)', est: 'Serie pequeña (3 focos)', f: [], dif: 'Venas pulmonares izquierdas inferiores.' },
+  L_kLPV: { leaf: true, dx: 'Venas pulmonares izquierdas u orejuela izquierda', crit: 'V1 positiva bífida (o DII bífida) con DI isoeléctrica o negativa', est: 'S 82 %, E 98 %, VPP 88 %, VPN 97 %', f: ['Una DI profundamente negativa sugiere la orejuela izquierda', 'Venas inferiores: P de baja amplitud en las inferiores; superiores: P más positiva'], dif: 'Orejuela izquierda vs vena pulmonar superior izquierda (superpuestas).' },
+  L_kCTRPV: { leaf: true, dx: 'Cresta terminal o vena pulmonar superior derecha', crit: 'V1 positiva no bífida en la taquicardia y también positiva en sinusal', est: '—', f: ['Los 7 focos de cresta con V1 positiva también la tenían positiva en sinusal', 'Solo 5 de 14 focos de la vena superior derecha eran positivos en sinusal'], dif: 'Diferenciá con el mapeo: la cresta alta y la vena superior derecha están muy cerca. La vena cava superior también da V1 positiva o bifásica.' },
+  L_kRPV: { leaf: true, dx: 'Venas pulmonares derechas', crit: 'V1 positiva (no bífida) con DI positiva; V1 bifásica en sinusal que pasa a positiva en la taquicardia', est: 'S 87 %, E 94 %, VPP 65 %, VPN 100 % (positiva de V1 a V6 y DI positiva)', f: ['El cambio de V1 de bifásica en sinusal a positiva en la taquicardia se vio en 9 de 14 focos de la vena superior derecha y en ningún foco de la cresta'], dif: 'Cresta terminal alta.' }
+};
+let kPath = [];
+function kCurId() { let id = 'k0'; for (const x of kPath) id = KN[x.id].opts[x.i].go; return id; }
+function renderKis() {
+  const id = kCurId(), n = KN[id];
+  let h;
+  if (n.leaf) {
+    h = `<div class="card leaf"><div class="lt">Foco más probable</div><h3>${n.dx}</h3>
+      <div class="box"><div class="bl">Criterio de Kistler</div><p>${n.crit}</p><p class="small" style="margin:6px 0 0">${n.est}</p></div>
+      ${n.f.length ? `<div class="box"><div class="bl">Para tener en cuenta</div><ul>${n.f.map(x => `<li>${x}</li>`).join('')}</ul></div>` : ''}
+      <div class="box"><div class="bl">Diferencial cercano</div><p>${n.dif}</p></div>
+      <p class="small" style="margin:0">La onda P orienta; el foco se confirma con mapeo de activación. ${cite(['kistler06'])}</p></div>`;
+  } else {
+    h = `<div class="card step"><div class="q">${n.q}</div>${n.help ? `<div class="help">${n.help}</div>` : ''}
+      <div class="opts">${n.opts.map((o, i) => `<button class="opt" data-i="${i}">${o.t}${o.s ? `<small>${o.s}</small>` : ''}</button>`).join('')}</div></div>`;
+  }
+  $('#kCur').innerHTML = h;
+  $('#kCtrl').innerHTML = kPath.length ? `<button class="btn" id="kBack">← Paso anterior</button><button class="btn" id="kReset">Empezar de nuevo</button>` : '';
+  $('#kTrail').innerHTML = kPath.map((x, k) => `<button class="card done" data-k="${k}"><span class="n">${k + 1}</span><div><b>${strip(KN[x.id].q)}</b><span>${KN[x.id].opts[x.i].t}</span></div></button>`).reverse().join('');
+  $('#kCur').querySelectorAll('.opt').forEach(b => b.onclick = () => { kPath.push({ id, i: +b.dataset.i }); renderKis(); });
+  $('#kTrail').querySelectorAll('.done').forEach(b => b.onclick = () => { kPath = kPath.slice(0, +b.dataset.k); renderKis(); });
+  const bk = $('#kBack'); if (bk) bk.onclick = () => { kPath.pop(); renderKis(); };
+  const rs = $('#kReset'); if (rs) rs.onclick = () => { kPath = []; renderKis(); };
+}
 function locView(v) {
   ['hub', 'enr', 'kis'].forEach(x => $('#loc-' + x).hidden = x !== v);
   if (v === 'enr') renderEnr();
+  if (v === 'kis') renderKis();
 }
 
 const GRUPOS = { O: 'Observación', V: 'Ventricular', A: 'Auricular', F: 'Fármaco', C: 'Concepto' };

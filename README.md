@@ -10,7 +10,7 @@ taquicardias supraventriculares.
   nodofasciculares y nodoventriculares, TA, taquicardia de la unión, TRAV antidrómica, Mahaim, TV rama-rama, vías nodoventriculares y nodofasciculares participantes o espectadoras, fasciculoventricular, nodos AV gemelos, TV fascicular, músculo papilar) con los hallazgos que lo confirman, apoyan o
   descartan, y acceso a la ficha de cada maniobra.
 - **Localizar**: localizadores de sustrato a partir del ECG: vía accesoria (algoritmo del autor, en `localizar/`),
-  Kistler para focos auriculares (en preparación) y Enriquez 2019 para arritmias ventriculares idiopáticas.
+  Kistler 2006 para focos auriculares y Enriquez 2019 para arritmias ventriculares idiopáticas.
 - **Maniobras**: 13 fichas (cómo se hace, qué medir, tabla de interpretación con puntos de corte y fuente, trampas,
   esquemas de electrogramas).
 - **Calculadora**: PPI−LC, cPPI−LC, SA−VA, ΔHA, encarrilamiento diferencial, ΔAH y AH TSV vs sinusal, con cortes de
