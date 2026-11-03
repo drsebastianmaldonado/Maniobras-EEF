@@ -38,7 +38,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font
 .hicon svg{width:26px;height:26px}
 .hero h1{margin:14px 0 6px;font-size:clamp(30px,8.6vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.06}
 .hero .sub{margin:0;color:var(--ink2);max-width:56ch}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--seg);padding:4px;border-radius:14px;position:sticky;top:8px;z-index:5;box-shadow:var(--shadow)}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--seg);padding:4px;border-radius:14px;position:sticky;top:8px;z-index:5;box-shadow:var(--shadow)}
 .seg button{appearance:none;border:0;border-radius:11px;padding:10px 6px;font:inherit;font-weight:700;font-size:14px;line-height:1.2;color:var(--ink2);background:transparent;cursor:pointer}
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 h2.sec{margin:8px 4px -6px;font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
@@ -127,6 +127,15 @@ td.dx{font-weight:700}
 table.mini{min-width:0;font-size:13px}
 table.mini td:first-child{width:45%;color:var(--ink2)}
 .lnk{align-self:flex-start;text-decoration:none;display:inline-flex;align-items:center}
+.srch{font:inherit;font-size:17px;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;width:100%;box-shadow:var(--shadow)}
+.srch:focus{border-color:var(--violet);outline:0}
+.bl.ok{color:var(--green)}.bl.fav{color:var(--blue)}.bl.no{color:var(--red)}
+ul.hl{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+ul.hl li{display:flex;flex-direction:column;gap:6px;padding-left:12px;border-left:3px solid var(--line);font-size:15px}
+ul.hl.ok li{border-color:var(--green)}ul.hl.fav li{border-color:var(--blue)}ul.hl.no li{border-color:var(--red)}
+.hm{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.hm .ml{font-size:12px;padding:3px 9px}
+.seg button{white-space:nowrap}
 .egt{font-size:13px;font-weight:700;margin:4px 0 -2px}
 figure{margin:0;display:flex;flex-direction:column;gap:6px}
 figcaption{font-size:13px;color:var(--ink2)}
@@ -159,7 +168,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--ink2)}
 .legend span{display:inline-flex;align-items:center;gap:4px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px}
-@media (max-width:420px){.seg button{font-size:13px}.step .q{font-size:18px}}
+@media (max-width:420px){.seg button{font-size:12.5px;padding:10px 2px}.step .q{font-size:18px}}
 </style>
 </head>
 <body>
@@ -172,6 +181,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
   <div class="seg" role="tablist">
     <button id="tab-algo" class="on" role="tab" aria-selected="true" data-p="algo">Algoritmo</button>
+    <button id="tab-arr" role="tab" aria-selected="false" data-p="arr">Arritmias</button>
     <button id="tab-man" role="tab" aria-selected="false" data-p="man">Maniobras</button>
     <button id="tab-calc" role="tab" aria-selected="false" data-p="calc">Calculadora</button>
   </div>
@@ -183,6 +193,13 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     <div class="ctrl" id="algoCtrl"></div>
     <h2 class="sec" id="trailT">Recorrido</h2>
     <div id="trail" class="trail"></div>
+  </section>
+
+  <!-- ARRITMIAS -->
+  <section class="panel" id="p-arr" hidden>
+    <input type="search" id="arrQ" class="srch" placeholder="Buscar arritmia: TRNAV, PJRT, auricular, JET…" aria-label="Buscar arritmia" autocomplete="off">
+    <p class="small" style="margin:-4px 4px 0">Qué hallazgos y maniobras confirman, apoyan o descartan cada mecanismo. Tocá una maniobra para ver cómo se hace.</p>
+    <div id="arrList" class="panel"></div>
   </section>
 
   <!-- MANIOBRAS -->
@@ -542,6 +559,67 @@ const M = {
     trampas: ['La fusión depende del acoplamiento o la LC: a veces la ventana es estrecha.', 'Durante el encarrilamiento la conducción VA usa una sola ruta (la de la TSV), a diferencia de la estimulación en ritmo sinusal.'],
     refs: ['alm13a', 'alm13b', 'ormaetxe93'] }
 };
+// ===============================================================================================================
+// Buscador por arritmia. Cada hallazgo: [texto, fichas (claves de M separadas por espacio), fuentes].
+// conf = lo confirma (diagnóstico) · apoya = evidencia a favor · desc = lo descarta o va fuertemente en contra.
+// ===============================================================================================================
+const ARR = [
+  { id: 'trnavt', n: 'TRNAV típica', al: 'lenta-rápida slow-fast AVNRT reentrada nodal típica', dif: 'TA septal (rara) y, en niños, taquicardia de la unión.',
+    conf: [['VA septal ≤ 70 ms y respuesta A-V a la sobreestimulación ventricular (41 % de las TSV)', 'basal vop', 'knight00']],
+    apoya: [['Doble fisiología nodal; inducción dependiente de un salto o de un AH crítico', 'pre basal', 'knight00'], ['Los cambios de HH preceden y predicen los AA', 'basal', 'veen11'], ['Termina en una A no prematura (bloqueo AV), espontáneamente o con adenosina', 'basal ado', 'veen11 knight00'], ['VA linking tras la sobreestimulación auricular', 'aop', 'veen12'], ['EA con His refractario que retrasa, adelanta o termina (vs taquicardia de la unión)', 'eha', 'padanilam08'], ['Al cortar la estimulación simultánea AD + VD, el primer EGM es el His', 'vop', 'saba11']],
+    desc: [['Respuesta A-A-V o secuencia auricular distinta durante la estimulación ventricular', 'vop', 'knight00'], ['Activación excéntrica', 'basal', 'knight00'], ['VA que aumenta > 20 ms con bloqueo de rama', 'basal', 'knight00'], ['Fusión del QRS durante el encarrilamiento ventricular', 'vop conc', 'ormaetxe93'], ['EV con His refractario que termina la TSV o modifica la A', 'ehr', 'knight00']] },
+  { id: 'trnava', n: 'TRNAV atípica', al: 'lenta-lenta rápida-lenta fast-slow slow-slow AVNRT RP largo', dif: 'TRAV por vía septal (sobre todo decremental: PJRT), NFRT y TA.',
+    conf: [['PPI−LC > 115 ms (> 125 en RP largo) y SA−VA > 85 ms, con EV con His refractario negativa', 'ppi sava ehr', 'michaud01 ho15'], ['Encarrilamiento diferencial: ΔVA > 20 ms o ΔcPPI−LC > 30 ms (base − ápex)', 'diff', 'segal09'], ['RP largo: además, circuito superior intranodal (ΔAH > 40 ms o AH de la TSV < AH en sinusal)', 'aop', 'ho15 man95']],
+    apoya: [['SA−VA > 110 ms en TSV con VA > 100 ms', 'sava', 'gt11'], ['cPPI−LC > 110 ms', 'ppi', 'gt06'], ['ΔHA > 0 (encarrilamiento) o > −10 ms (estimulando a la LC de la TSV)', 'dha', 'ho08 miller91'], ['Encarrilamiento para-Hisiano sin captura del His: SA−VA > 75 o PPI−LC > 100', 'parahis', 'perez08'], ['Seudo A-A-V (VA estimulado > LC de estimulación)', 'vop', 'veen11']],
+    desc: [['Fusión del QRS o captura ortodrómica del His durante el encarrilamiento', 'vop hisorto', 'ormaetxe93 ho15'], ['EV con His refractario que adelanta o retrasa la A (salvo vía nodofascicular espectadora)', 'ehr', 'veen12 ho15'], ['ΔAH < 20 ms (la aurícula está en el circuito)', 'aop', 'man95']],
+    trampa: 'Una vía decremental da PPI−LC, SA−VA y ΔHA "de TRNAV": antes de ablacionar, asegurate de que la EV con His refractario no modifique la A.' },
+  { id: 'travs', n: 'TRAV ortodrómica por vía septal', al: 'AVRT ORT vía accesoria oculta septal posteroseptal Kent', dif: 'TRNAV atípica y TA septal.',
+    conf: [['Fusión del QRS durante el encarrilamiento ventricular', 'vop conc', 'ormaetxe93 veen11'], ['Captura ortodrómica del His durante el encarrilamiento', 'hisorto', 'ho15'], ['EV con His refractario que termina la TSV sin activar la A', 'ehr', 'knight00 veen12'], ['La A se perturba antes o en el primer latido de QRS estable (zona de transición)', 'vop', 'transz']],
+    apoya: [['EV con His refractario que adelanta la A sin cambiar la secuencia', 'ehr', 'veen12'], ['PPI−LC < 115 ms, cPPI−LC < 110 ms, SA−VA < 85 ms (< 50 ms: septal)', 'ppi sava', 'michaud01 gt06 gt11'], ['ΔHA < 0 (encarrilamiento) o < −10 ms (estimulando a la LC)', 'dha', 'ho08 miller91'], ['Encarrilamiento diferencial: ΔVA ≤ 20 y ΔcPPI−LC ≤ 30 ms', 'diff', 'segal09'], ['Para-Hisiana con respuesta extranodal; índice VA > +10 ms', 'parahis vai pre', 'hirao96 ma94'], ['Preexcitación en ritmo sinusal', 'pre', 'knight00']],
+    desc: [['VA septal ≤ 70 ms', 'basal', 'knight00'], ['La TSV sigue con bloqueo AV', 'basal', 'knight00'], ['Las A no se aceleran con la estimulación ventricular o la ráfaga disocia el V y la TSV sigue', 'vop', 'knight00'], ['Respuesta A-A-V o secuencia distinta durante la estimulación ventricular', 'vop', 'knight00']] },
+  { id: 'travl', n: 'TRAV ortodrómica por vía libre', al: 'AVRT ORT vía lateral izquierda derecha pared libre Kent oculta', dif: 'TA izquierda y, rara, TRNAV con salida auricular izquierda.',
+    conf: [['VA septal > 70 ms, activación excéntrica y respuesta A-V (19 % de las TSV)', 'basal vop', 'knight00'], ['VA que aumenta > 20–30 ms con bloqueo de rama homolateral (Coumel)', 'basal', 'knight00 veen11'], ['Fusión al encarrilar desde el VI basal (rama del SC) o His ortodrómico', 'vop hisorto', 'veen11 veen08'], ['EV con His refractario (idealmente desde el VI basal) que termina sin A', 'ehr', 'veen12']],
+    apoya: [['EV con His refractario que adelanta la A', 'ehr', 'veen12'], ['Bloqueo de rama izquierda durante la TSV', 'basal', 'knight00'], ['Encarrilamiento diferencial ΔVA ≤ 20 ms', 'diff', 'segal09'], ['Preexcitación en ritmo sinusal', 'pre', 'knight00']],
+    desc: [['La TSV sigue con bloqueo AV', 'basal', 'knight00'], ['Respuesta A-A-V', 'vop', 'knight99'], ['Disociación VA durante la estimulación ventricular', 'vop', 'knight00']],
+    trampa: 'Desde el ápex del VD, el PPI−LC y el SA−VA pueden quedar "límite" (falso TRNAV) y la EV-HR no alcanzar la vía: estimulá desde el VI basal.' },
+  { id: 'pjrt', n: 'PJRT', al: 'reciprocante permanente unión vía decremental lenta Coumel RP largo', dif: 'TRNAV atípica rápida-lenta, NFRT y TA septal baja.',
+    conf: [['EV con His refractario que retrasa la A sin cambiar la secuencia', 'ehr', 'veen12 ho15'], ['Circuito inferior de TRAV (PPI−LC < 125, His ortodrómico o diferencial ≤ 20) y ΔAH < 20 ms', 'ppi hisorto diff aop', 'ho15 man95']],
+    apoya: [['EV con His refractario que adelanta la A o termina sin A', 'ehr', 'veen12'], ['A más precoz cerca del ostium del SC (no siempre)', 'basal', 'ho15'], ['Seudo A-A-V a la sobreestimulación ventricular', 'vop', 'ho15']],
+    desc: [['ΔAH > 40 ms o AH de la TSV < AH en sinusal (circuito superior intranodal)', 'aop', 'ho15'], ['La TSV sigue con bloqueo AV', 'basal', 'ho15'], ['EV-HR sin efecto adelantando el V local > 60 ms', 'ehr', 'veen12']],
+    trampa: 'Los valores de encarrilamiento pueden ser largos (falso TRNAV) y la adenosina puede bloquear la vía.' },
+  { id: 'nfrt', n: 'Vía nodofascicular o nodoventricular (NFRT / NVRT)', al: 'nodofascicular nodoventricular NFRT NVRT ONFRT ONVRT disociación VA', dif: 'TRNAV (con o sin bloqueo VA), taquicardia de la unión, PJRT y TV (incluida la rama-rama).',
+    conf: [['TSV con V > A: la EV con His refractario adelanta o retrasa el His o termina la TSV', 'ehr', 'veen12'], ['Además, fusión del QRS al resetear o encarrilar → nodoventricular', 'vop conc', 'veen12'], ['RP largo: circuito inferior de TRAV (PPI−LC < 125) con ΔAH > 40 ms o AH de la TSV < AH en sinusal → NFRT', 'ppi aop', 'ho15']],
+    apoya: [['TSV que parece TRNAV con cPPI−LC o SA−VA demasiado cortos', 'ppi sava', 'veen12'], ['AH de la TSV muy corto (seudointervalo)', 'aop', 'ho15']],
+    desc: [['EV con His refractario sin efecto sobre el His en una TSV con disociación VA', 'ehr', 'veen12']],
+    trampa: 'Una vía nodofascicular espectadora en una TRNAV atípica puede resetearla con retraso y dar un A-A-V verdadero.' },
+  { id: 'ta', n: 'Taquicardia auricular', al: 'TA focal ectópica AT auricular septal', dif: 'TRNAV (sobre todo atípica) y TRAV.',
+    conf: [['Secuencia auricular descendente (alta → baja)', 'basal', 'veen11'], ['Respuesta A-A-V reproducible (sin seudo A-A-V)', 'vop', 'knight99 knight00'], ['Secuencia auricular distinta durante la estimulación ventricular con conducción 1:1', 'vop', 'knight00'], ['Con adenosina: bloqueo AV y la taquicardia auricular sigue', 'ado', 'autor']],
+    apoya: [['La estimulación ventricular no acelera las A (TA en ~80 %)', 'vop', 'knight00 veen12'], ['Los AA cambian antes que los HH', 'basal', 'veen11'], ['AOP desde varios sitios: VA de retorno con variación > 14 ms', 'aop', 'maruyama07'], ['Al cortar la estimulación simultánea AD + VD, el primer EGM es la A', 'vop', 'saba11']],
+    desc: [['Respuesta A-V a la sobreestimulación ventricular', 'vop', 'knight99'], ['Termina en una A (bloqueo AV), espontáneamente o con adenosina', 'basal ado', 'knight00'], ['EV con His refractario con cualquier efecto, o ráfaga ventricular que termina sin activar la A', 'ehr vop', 'knight00'], ['VA linking tras la sobreestimulación auricular', 'aop', 'knight00 veen12']],
+    trampa: 'Un A-A-V verdadero puede verse en una TRNAV atípica con vía nodofascicular espectadora. En niños, pensá también en la taquicardia de la unión.' },
+  { id: 'jet', n: 'Taquicardia de la unión (JET)', al: 'JET ectópica de la unión junctional focal hisiana posoperatorio', dif: 'TRNAV típica (sobre todo si hay disociación VA).',
+    conf: [['EA precoz que adelanta el His inmediato y la TSV continúa', 'eha', 'padanilam08 veen12']],
+    apoya: [['Contexto: lactante o posoperatorio; inducción que no depende de un salto a la vía lenta', 'basal', 'veen12'], ['Durante la sobreestimulación auricular, el último A no conduce por la vía lenta', 'aop', 'fan11']],
+    desc: [['EA con His refractario que retrasa el His siguiente (o lo adelanta o termina la TSV)', 'eha', 'padanilam08'], ['Durante la sobreestimulación auricular, el último A conduce con AH largo (PR > RR)', 'aop', 'fan11 veen12'], ['EV con His refractario que modifica el His (sugiere vía nodoventricular o nodofascicular)', 'ehr', 'veen12']],
+    trampa: 'Si coexiste doble vía nodal, un EA puede adelantar el His y dar una "respuesta doble". Ninguna maniobra la prueba con certeza.' }
+];
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+function arrRows(xs, cls) {
+  return `<ul class="hl ${cls}">${xs.map(x => `<li><span>${x[0]}</span><span class="hm">${x[1].split(' ').map(k => `<button class="ml" data-m="${k}">${M[k].t}</button>`).join('')}<span class="cit">${x[2].split(' ').map(r => REFS[r][0]).join(' · ')}</span></span></li>`).join('')}</ul>`;
+}
+let arrQ = '';
+function renderArr() {
+  const q = norm(arrQ.trim());
+  const list = ARR.filter(a => !q || norm(a.n + ' ' + a.al).includes(q));
+  $('#arrList').innerHTML = list.length ? list.map(a => `<details class="card ref arr" id="a-${a.id}"${q && list.length <= 2 ? ' open' : ''}><summary><span class="sumt"><span>${a.n}</span><small>Diferencial: ${a.dif}</small></span></summary><div class="refb">
+    <div class="box"><div class="bl ok">Lo confirma</div>${arrRows(a.conf, 'ok')}</div>
+    <div class="box"><div class="bl fav">Lo apoya</div>${arrRows(a.apoya, 'fav')}</div>
+    <div class="box"><div class="bl no">Lo descarta</div>${arrRows(a.desc, 'no')}</div>
+    ${a.trampa ? `<div class="box trap"><div class="bl">Ojo</div><p>${a.trampa}</p></div>` : ''}
+  </div></details>`).join('') : '<p class="small">No hay coincidencias. Probá con otro nombre (por ejemplo: TRNAV, PJRT, auricular, JET).</p>';
+  bindMl($('#arrList'));
+}
+
 const GRUPOS = { O: 'Observación', V: 'Ventricular', A: 'Auricular', F: 'Fármaco', C: 'Concepto' };
 
 // ===============================================================================================================
@@ -904,13 +982,14 @@ try { const s = JSON.parse(localStorage.getItem('mef_calc') || 'null'); if (s) {
 // ---------- pestañas
 function tab(p) {
   document.querySelectorAll('.seg button').forEach(b => { const on = b.dataset.p === p; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
-  ['algo', 'man', 'calc'].forEach(x => $('#p-' + x).hidden = x !== p);
+  ['algo', 'arr', 'man', 'calc'].forEach(x => $('#p-' + x).hidden = x !== p);
   try { localStorage.setItem('mef_tab', p); } catch (e) {}
 }
 document.querySelectorAll('.seg button').forEach(b => b.onclick = () => tab(b.dataset.p));
 
 $('#refsAll').innerHTML = Object.values(REFS).map(r => `<li>${r[1]}</li>`).join('');
-renderAlgo(); renderFichas(); calc();
+renderAlgo(); renderFichas(); renderArr(); calc();
+$('#arrQ').addEventListener('input', e => { arrQ = e.target.value; renderArr(); });
 try { const t = localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
