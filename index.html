@@ -38,7 +38,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font
 .hicon svg{width:26px;height:26px}
 .hero h1{margin:14px 0 6px;font-size:clamp(30px,8.6vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.06}
 .hero .sub{margin:0;color:var(--ink2);max-width:56ch}
-.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;background:var(--seg);padding:4px;border-radius:14px;position:sticky;top:8px;z-index:5;box-shadow:var(--shadow)}
+.seg{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;background:var(--seg);padding:4px;border-radius:14px;position:sticky;top:8px;z-index:5;box-shadow:var(--shadow)}
 .seg button{appearance:none;border:0;border-radius:11px;padding:10px 6px;font:inherit;font-weight:700;font-size:14px;line-height:1.2;color:var(--ink2);background:transparent;cursor:pointer}
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 h2.sec{margin:8px 4px -6px;font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
@@ -127,6 +127,13 @@ ul.hl.ok li{border-color:var(--green)}ul.hl.fav li{border-color:var(--blue)}ul.h
 .real img{width:100%;height:auto;display:block;border-radius:10px;background:#000}
 .lic{font-size:11px;color:var(--ink2)}
 .lic a{color:inherit}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pgrid .opt{font-size:14px;padding:10px 12px}
+.plog{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.plog p{margin:0;font-size:15px}
+.ph{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ph .n{flex:none;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;background:var(--slate)}
+@media (max-width:520px){.seg{grid-template-columns:repeat(3,1fr)}.pgrid{grid-template-columns:1fr}}
 .lcard{display:flex;flex-direction:column;gap:6px;padding:16px;text-align:left;text-decoration:none;color:var(--ink);border:0;font:inherit;cursor:pointer;width:100%}
 .lcard b{font-size:18px}
 .lcard span:not(.lic2){font-size:14px;color:var(--ink2)}
@@ -180,6 +187,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     <button id="tab-man" role="tab" aria-selected="false" data-p="man">Maniobras</button>
     <button id="tab-loc" role="tab" aria-selected="false" data-p="loc">Localizar</button>
     <button id="tab-calc" role="tab" aria-selected="false" data-p="calc">Calcular</button>
+    <button id="tab-prac" role="tab" aria-selected="false" data-p="prac">Práctica</button>
   </div>
 
   <!-- ALGORITMO -->
@@ -233,6 +241,11 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
       <div class="ctrl" id="kCtrl"></div>
       <div id="kTrail" class="trail"></div>
     </div>
+  </section>
+
+  <!-- PRÁCTICA -->
+  <section class="panel" id="p-prac" hidden>
+    <div id="pracBody" class="panel"></div>
   </section>
 
   <!-- CALCULADORA -->
@@ -999,6 +1012,170 @@ function locView(v) {
   if (v === 'kis') renderKis();
 }
 
+// ===============================================================================================================
+// Modo práctica. Cada caso: presentación, hallazgos iniciales, resultado de cada maniobra (u = clave, util, trampa;
+// sin u = no aporta) y diagnóstico. Las maniobras no definidas en un caso devuelven "no aporta".
+// ===============================================================================================================
+const PMAN = [
+  ['pre', 'Estudio basal en ritmo sinusal', 'pre'], ['vop', 'Sobreestimulación ventricular desde el ápex', 'vop'],
+  ['medidas', 'Medir PPI−LC, SA−VA y ΔHA', 'ppi'], ['vopvi', 'Sobreestimulación desde el VI basal', 'vop'],
+  ['diff', 'Encarrilamiento diferencial (base vs ápex)', 'diff'], ['ehr', 'EV con His refractario', 'ehr'],
+  ['aop', 'Sobreestimulación auricular (VA linking, ΔAH)', 'aop'], ['eha', 'EA con His refractario', 'eha'],
+  ['parahis', 'Estimulación para-Hisiana en sinusal', 'parahis'], ['ado', 'Adenosina', 'ado'],
+  ['verap', 'Verapamilo IV', 'tvf'], ['map', 'Mapeo del septum del VI', 'tvf']];
+const PDX = [['trnav_t', 'TRNAV típica'], ['trnav_a', 'TRNAV atípica'], ['trav_s', 'TRAV por vía septal'], ['trav_l', 'TRAV por vía libre'],
+  ['pjrt', 'PJRT (vía septal lenta y decremental)'], ['ta', 'Taquicardia auricular'], ['jet', 'Taquicardia de la unión'],
+  ['nvrt', 'Vía nodoventricular o nodofascicular'], ['tvf', 'TV fascicular'], ['bbr', 'TV por reentrada rama-rama']];
+const UTAG = { clave: ['Clave', 'var(--green)'], util: ['Útil', 'var(--blue)'], trampa: ['Engañosa', 'var(--orange)'] };
+const PCASOS = [
+  { id: 'c1', t: 'Palpitaciones de inicio y fin bruscos', p: 'Adolescente de 15 años con palpitaciones paroxísticas. ECG basal normal, sin preexcitación.',
+    h: ['TSV de QRS angosto inducida con extraestímulos auriculares, LC 430 ms', 'Relación AV 1:1', 'VA septal 40 ms: la A cae casi junto con el V', 'Activación auricular concéntrica (más precoz en el His y el SC proximal)'],
+    m: { vop: { r: 'Estimulando a 370 ms las A se aceleran con la misma secuencia; al cortar, respuesta A-V (A-H).', u: 'clave', img: 'figs/sim/knight99.png' },
+      medidas: { r: 'PPI−LC 170 ms; SA−VA 150 ms.', u: 'util' }, diff: { r: 'ΔVA (base − ápex) +35 ms.', u: 'util' },
+      aop: { r: 'VA linking: el VA del primer latido de retorno es igual al de la TSV.', u: 'util' },
+      pre: { r: 'Salto AH de 60 ms con extraestímulos auriculares y eco nodal.', u: 'util' },
+      parahis: { r: 'Respuesta nodal: al perder la captura del His el SA se alarga 50 ms, sin cambiar la secuencia.', u: 'util' },
+      ado: { r: 'La TSV termina con una A (bloqueo AV).', u: 'util' },
+      ehr: { r: 'No modifica la A ni termina la TSV.' },
+      eha: { r: 'Un EA con His refractario desde el ostium del SC retrasa el His siguiente 14 ms.', u: 'util' } },
+    dx: ['trnav_t'], ex: 'Un VA septal ≤ 70 ms excluye la TRAV, y la respuesta A-V a la sobreestimulación ventricular excluye la TA. Con esas dos observaciones se llega a la TRNAV típica (41 % de las TSV en la serie de Knight).', refs: ['knight00', 'knight99', 'veen11'] },
+  { id: 'c2', t: 'TSV de RP corto con VA de 110 ms', p: 'Niña de 10 años con TSV recurrentes. ECG basal sin preexcitación.',
+    h: ['TSV de QRS angosto, LC 360 ms', 'Relación AV 1:1', 'VA septal 110 ms, RP corto', 'Activación concéntrica, más precoz en el ostium del SC'],
+    m: { vop: { r: 'Respuesta A-V. Desde el ápex el QRS estimulado no muestra fusión evidente.', u: 'util' },
+      medidas: { r: 'PPI−LC 80 ms; SA−VA 40 ms; ΔHA −45 ms.', u: 'clave' },
+      ehr: { r: 'Una EV con His refractario adelanta la A 25 ms sin cambiar la secuencia.', u: 'clave' },
+      diff: { r: 'ΔVA (base − ápex) −10 ms; ΔcPPI−LC +2 ms.', u: 'util' },
+      parahis: { r: 'Al perder la captura del His el SA no cambia: respuesta extranodal.', u: 'util' },
+      pre: { r: 'Sin doble vía. Conducción VA no decremental, concéntrica, más precoz en el ostium del SC.', u: 'util' },
+      aop: { r: 'VA linking presente.' }, ado: { r: 'La TSV termina con una A.' } },
+    dx: ['trav_s'], ex: 'Con VA > 70 ms y respuesta A-V, el diferencial es TRAV septal vs TRNAV atípica. PPI−LC < 115, SA−VA < 85 y ΔHA < 0 apuntan a TRAV, y la EV con His refractario que adelanta la A demuestra la vía.', refs: ['michaud01', 'ho08', 'veen12'] },
+  { id: 'c3', t: 'Taquicardia incesante con disfunción ventricular', p: 'Varón de 14 años con taquicardia incesante y FEVI de 45 %.',
+    h: ['TSV de QRS angosto, LC 360 ms', 'Relación AV 1:1; RP largo', 'A más precoz en el His y el SC proximal'],
+    m: { vop: { r: 'Las A se aceleran a la LC de estimulación con una secuencia distinta de la TSV. Al cortar: A-A-V, verificado contando desde el último A acelerado y reproducible.', u: 'clave' },
+      ado: { r: 'Bloqueo AV 2:1 transitorio y la taquicardia auricular sigue.', u: 'clave' },
+      aop: { r: 'Desde la AD alta, el ostium del SC y el SC distal, el VA del primer latido de retorno varía 40 ms.', u: 'util' },
+      ehr: { r: 'No modifica la A.' }, parahis: { r: 'Respuesta nodal.' },
+      pre: { r: 'Sin doble vía. Conducción VA decremental, por el nodo.' },
+      medidas: { r: 'No corresponde: con respuesta A-A-V, el PPI−LC y el SA−VA no se interpretan.' } },
+    dx: ['ta'], ex: 'La respuesta A-A-V verdadera, la secuencia auricular distinta durante la estimulación ventricular y la persistencia con bloqueo AV por adenosina indican TA. La variación del VA de retorno desde varios sitios (> 14 ms) también la apoya.', refs: ['knight99', 'knight00', 'maruyama07'] },
+  { id: 'c4', t: 'TSV con activación excéntrica', p: 'Adolescente de 16 años con TSV. ECG basal sin preexcitación.',
+    h: ['TSV de QRS angosto, LC 340 ms, relación 1:1', 'VA 115 ms; A más precoz en el SC distal (excéntrica)', 'Con bloqueo de rama izquierda funcional, el VA se alarga 35 ms y la LC 30 ms'],
+    m: { vop: { r: 'Respuesta A-V. Desde el ápex no hay fusión.', u: 'util' },
+      medidas: { r: 'Desde el ápex: PPI−LC 140 ms, cPPI−LC 120 ms, SA−VA 75 ms. Valores "límite" por la distancia a la vía.', u: 'trampa' },
+      vopvi: { r: 'Desde el VI basal (rama del SC): QRS de fusión e His ortodrómico; PPI−LC 90, cPPI−LC 30, SA−VA −20 ms.', u: 'clave', img: 'figs/sim/veen11_fusion.png' },
+      ehr: { r: 'Desde el ápex del VD no modifica la A; desde el VI basal la adelanta 20 ms.', u: 'clave' },
+      parahis: { r: 'Respuesta nodal: la vía está lejos del sitio de estimulación.', u: 'trampa' },
+      pre: { r: 'Conducción VA excéntrica, no decremental, más precoz en el SC distal.', u: 'clave' },
+      ado: { r: 'La TSV termina con una A.' }, aop: { r: 'VA linking presente.' } },
+    dx: ['trav_l'], ex: 'La activación excéntrica y el efecto Coumel (VA que aumenta > 20–30 ms con bloqueo de rama homolateral) ya apuntan a una vía libre izquierda. Desde el ápex del VD los valores salen "límite"; desde el VI basal aparecen la fusión y el His ortodrómico.', refs: ['veen11', 'knight00', 'veen12'] },
+  { id: 'c5', t: 'TSV de RP largo con "A-A-V"', p: 'Mujer de 22 años con TSV de RP largo.',
+    h: ['TSV de QRS angosto, LC 380 ms, relación 1:1', 'VA 265 ms (RP largo)', 'Activación concéntrica, más precoz en el ostium del SC'],
+    m: { vop: { r: 'Estimulando a 360 ms, después de la última espiga hay dos A antes del V. Entre ellas hay 360 ms y la secuencia es idéntica a la de la TSV.', u: 'clave', img: 'figs/sim/veen11_pseudo.png' },
+      medidas: { r: 'PPI 565 (PPI−LC 185), cPPI−LC 185, SA 415 (SA−VA 150).', u: 'clave' },
+      ehr: { r: 'No modifica la A, aun adelantando el V local más de 60 ms cerca del ostium del SC.', u: 'clave' },
+      diff: { r: 'ΔVA (base − ápex) +30 ms.', u: 'util' },
+      aop: { r: 'ΔAH 55 ms; el AH de la TSV es más corto que en sinusal.', u: 'util' },
+      pre: { r: 'Doble fisiología nodal con salto AH de 65 ms.', u: 'util' },
+      ado: { r: 'La TSV termina con un V (bloqueo en el brazo retrógrado).' }, parahis: { r: 'Respuesta nodal.' } },
+    dx: ['trnav_a'], ex: 'Es un seudo A-A-V: el SA (415) supera la LC de estimulación (360), así que A₂ es el último A acelerado y la respuesta es A-V. PPI−LC > 125 y SA−VA > 85 con EV-HR negativa y ΔAH > 40 indican TRNAV atípica rápida-lenta.', refs: ['veen11', 'ho15', 'man95'] },
+  { id: 'c6', t: 'Taquicardia incesante y miocardiopatía', p: 'Niño de 6 años con taquicardia incesante y FEVI de 35 %. ECG: P negativa en las inferiores, RP largo.',
+    h: ['TSV de QRS angosto, LC 521 ms, relación 1:1', 'VA 290 ms, HA 335 ms', 'A más precoz en el ostium del SC'],
+    m: { vop: { r: 'Estimulando a 490 ms el His se captura en forma ortodrómica (misma morfología que en la TSV). Respuesta A-V.', u: 'clave', img: 'figs/sim/ho15.png' },
+      medidas: { r: 'PPI−LC 71 ms; ΔVA 19 ms; ΔHA −76 ms.', u: 'clave' },
+      ehr: { r: 'Una EV con His refractario retrasa la A 20 ms sin cambiar la secuencia.', u: 'clave' },
+      aop: { r: 'ΔAH 10 ms.', u: 'clave' }, diff: { r: 'ΔVA (base − ápex) −15 ms.', u: 'util' },
+      ado: { r: 'La TSV termina con un V: bloqueo en la vía.', u: 'trampa' },
+      parahis: { r: 'Respuesta nodal: la vía conduce más lento que el nodo.', u: 'trampa' },
+      pre: { r: 'Sin doble vía. Conducción VA decremental, concéntrica, más precoz en el ostium del SC.' } },
+    dx: ['pjrt'], ex: 'El His ortodrómico y la EV-HR que retrasa la A demuestran una vía decremental que participa; el ΔAH < 20 ms ubica la aurícula en el circuito. Es una PJRT. La adenosina y la para-Hisiana engañan con las vías decrementales.', refs: ['ho15', 'veen12', 'man95'] },
+  { id: 'c7', t: 'Taquicardia con A y V simultáneos', p: 'Adolescente de 13 años con taquicardia de QRS angosto.',
+    h: ['TSV de QRS angosto, LC 560 ms', 'Relación 1:1 con A y V simultáneos (VA septal ~0)', 'Activación concéntrica'],
+    m: { vop: { r: 'Respuesta A-H. No distingue la TRNAV de la taquicardia de la unión.', u: 'util' },
+      eha: { r: 'Un EA precoz desde la AD alta adelanta el His inmediato 38 ms y la taquicardia continúa.', u: 'clave', img: 'figs/sim/veen12_jt.png' },
+      aop: { r: 'Durante la sobreestimulación auricular el último A conduce con AH corto (no hay PR > RR) y la taquicardia retoma.', u: 'util' },
+      pre: { r: 'Sin doble vía nodal; la inducción no depende de un salto.', u: 'util' },
+      medidas: { r: 'PPI−LC 175 ms: no distingue la TRNAV de la taquicardia de la unión.' }, ehr: { r: 'No modifica el His.' },
+      ado: { r: 'Enlentece transitoriamente, con bloqueo VA, sin terminar.' }, parahis: { r: 'Respuesta nodal.' } },
+    dx: ['jet'], ex: 'Un EA precoz que adelanta el His inmediato sin cortar la taquicardia no es compatible con TRNAV (dejaría la vía rápida refractaria). Sin doble vía y sin conducción por la vía lenta en la sobreestimulación auricular, el diagnóstico es taquicardia de la unión.', refs: ['padanilam08', 'fan11', 'veen12'] },
+  { id: 'c8', t: 'Taquicardia de QRS ancho que terminó con verapamilo', p: 'Varón de 17 años, corazón sano. En la guardia, una taquicardia de QRS ancho terminó con verapamilo.',
+    h: ['Taquicardia de QRS 130 ms, BRD con eje superior, LC 337 ms', 'Disociación AV (más V que A)', 'His retrógrado 15 ms después del inicio del QRS'],
+    m: { map: { r: 'En el septum medio: P1 mesodiastólico (proximal → distal) y P2 presistólico (distal → proximal); P1-V 45 ms.', u: 'clave', img: 'figs/sim/tvf_post.png' },
+      verap: { r: 'Verapamilo 0,03 mg/kg alarga la LC; P1-P2 y P2-P1 se alargan y P2-QRS no cambia.', u: 'clave' },
+      vop: { r: 'Encarrilable desde el VD; el encarrilamiento captura P1 en forma ortodrómica.', u: 'util' },
+      pre: { r: 'Se induce con estimulación auricular y ventricular programada.', u: 'util' },
+      ado: { r: 'Sin efecto sobre la taquicardia.', u: 'util' }, ehr: { r: 'No aplica: no es una TSV.' } },
+    dx: ['tvf'], ex: 'BRD con eje superior, His retrógrado, P1 y P2 en el septum y respuesta al verapamilo: TV fascicular posterior. Es reentrante (inducible y encarrilable); la TV focal de Purkinje no se induce con estimulación programada y responde a la adenosina.', refs: ['nogami10', 'liuq23', 'liu15'] },
+  { id: 'c9', t: 'RP largo con valores "de TRNAV"', p: 'Mujer de 30 años con TSV de RP largo.',
+    h: ['TSV de QRS angosto, LC 480 ms, relación 1:1', 'VA 296 ms, HA 338 ms', 'A más precoz en el SC proximal'],
+    m: { vop: { r: 'Respuesta A-V: excluye la TA.', u: 'util', img: 'figs/sim/arias10.png' },
+      medidas: { r: 'PPI−LC 144 ms; cPPI−LC 144; ΔVA 142; ΔHA 56: todos en rango de TRNAV.', u: 'trampa' },
+      ehr: { r: 'Una EV con His refractario adelanta la A siguiente.', u: 'clave' },
+      diff: { r: 'Base − ápex: ΔcPPI−LC −18 ms y ΔVA −28 ms.', u: 'clave' },
+      aop: { r: 'ΔAH 12 ms.', u: 'util' },
+      pre: { r: 'Sin doble vía. Conducción VA decremental, más precoz en el SC proximal.', u: 'util' },
+      parahis: { r: 'Respuesta nodal.', u: 'trampa' } },
+    dx: ['pjrt', 'trav_s'], ex: 'Una vía septal lenta y decremental alarga el PPI, el SA−VA y el ΔHA y "simula" una TRNAV. La EV con His refractario que adelanta la A y el encarrilamiento diferencial (ΔVA ≤ 20) demuestran la TRAV por vía septal lenta.', refs: ['arias10', 'bennett11', 'segal09'] },
+  { id: 'c10', t: 'TSV con bloqueo VA tipo Wenckebach', p: 'Varón de 40 años con TSV. Se induce una sola taquicardia.',
+    h: ['TSV de QRS angosto, LC 390 ms', 'Bloqueo VA tipo Wenckebach con taquicardia que sigue (más V que A)', 'El HH se mantiene estable a pesar del bloqueo VA'],
+    m: { vop: { r: 'His ortodrómico, respuesta V-V-A y fusión constante del QRS. PPI−LC 105 ms.', u: 'clave' },
+      ehr: { r: 'Una EV con His refractario adelanta el His siguiente.', u: 'clave' },
+      pre: { r: 'Doble fisiología nodal.' }, eha: { r: 'Sin efecto sobre el His.' },
+      medidas: { r: 'PPI−LC 105 ms; el SA−VA no se interpreta con bloqueo VA.', u: 'util' } },
+    dx: ['nvrt'], ex: 'Con bloqueo VA, el diferencial es TRNAV con bloqueo superior vs vía nodoventricular o nodofascicular. Una sola TSV, Wenckebach VA y HH estable apoyan la vía; His ortodrómico, V-V-A y PPI−LC ≤ 125 la confirman, y la fusión constante indica nodoventricular.', refs: ['nagashima20', 'veen12'] }
+];
+let pState = {};
+try { pState = JSON.parse(localStorage.getItem('mef_prac') || '{}'); } catch (e) {}
+let pCur = null, pLog = [], pDone = null;
+const pSave = () => { try { localStorage.setItem('mef_prac', JSON.stringify(pState)); } catch (e) {} };
+function renderPracList() {
+  const ok = Object.values(pState).filter(x => x.ok).length;
+  $('#pracBody').innerHTML = `<div class="card" style="padding:14px 16px"><b>Cómo funciona</b><p class="small" style="margin:4px 0 0">Cada caso empieza con los hallazgos de la taquicardia. Elegí las maniobras que harías, en el orden que quieras, y cuando tengas el diagnóstico, decidilo. Al final ves qué maniobras eran clave y cuáles engañaban. Los casos 4, 5, 6, 8 y 9 usan intervalos publicados; los demás son didácticos, con valores coherentes con los puntos de corte. Resueltos: ${ok} de ${PCASOS.length}.</p></div>` +
+    PCASOS.map((c, i) => { const st = pState[c.id]; return `<button class="card lcard" type="button" data-c="${i}"><span class="lic2" style="--c:${st ? (st.ok ? 'var(--green)' : 'var(--orange)') : 'var(--slate)'}">${st ? (st.ok ? 'Resuelto · ' + st.n + ' maniobras' : 'A revisar') : 'Caso ' + (i + 1)}</span><b>${c.t}</b><span>${c.p}</span></button>`; }).join('');
+  $('#pracBody').querySelectorAll('[data-c]').forEach(b => b.onclick = () => startCase(+b.dataset.c));
+}
+function startCase(i) { pCur = i; pLog = []; pDone = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
+function renderCase() {
+  const c = PCASOS[pCur];
+  const res = k => c.m[k] || { r: 'No aporta información en este caso.' };
+  let h = `<div class="ctrl"><button class="btn" id="pBack">← Casos</button></div>
+    <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${pCur + 1}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
+    <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div></div>`;
+  if (pLog.length) h += `<h2 class="sec">Estudio</h2><div class="panel">${pLog.map((k, n) => { const r = res(k), tag = pDone && r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><span class="n">${n + 1}</span><b>${PMAN.find(x => x[0] === k)[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div><p>${r.r}</p>${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro simulado" loading="lazy"></a><figcaption>Registro simulado (no es un registro real). Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('')}</div>`;
+  if (!pDone) {
+    const left = PMAN.filter(x => !pLog.includes(x[0]));
+    h += `<h2 class="sec">¿Qué hacés?</h2><div class="pgrid">${left.map(x => `<button class="opt pm" data-k="${x[0]}">${x[1]}</button>`).join('')}</div>
+      <button class="btn" id="pDx" style="align-self:flex-start;background:var(--violet);color:#fff">Elegir el diagnóstico</button><div id="pDxBox"></div>`;
+  } else {
+    const ok = c.dx.includes(pDone), claves = Object.entries(c.m).filter(([, v]) => v.u === 'clave').map(([k]) => k);
+    const usadas = claves.filter(k => pLog.includes(k)), trampas = pLog.filter(k => (c.m[k] || {}).u === 'trampa');
+    h += `<div class="card leaf ${ok ? '' : 'warn'}"><div class="lt">${ok ? 'Correcto' : 'No es el diagnóstico'}</div><h3>${PDX.find(x => x[0] === c.dx[0])[1]}${c.dx.length > 1 ? ' (también vale: ' + c.dx.slice(1).map(d => PDX.find(x => x[0] === d)[1]).join(', ') + ')' : ''}</h3>
+      ${ok ? '' : `<p style="margin:-4px 0 0">Elegiste: ${PDX.find(x => x[0] === pDone)[1]}.</p>`}
+      <div class="box"><div class="bl">Por qué</div><p>${c.ex}</p></div>
+      <div class="box"><div class="bl">Tu estudio</div><ul><li>Hiciste ${pLog.length} maniobra${pLog.length === 1 ? '' : 's'}.</li><li>Maniobras clave: ${claves.map(k => `${pLog.includes(k) ? '✓' : '○'} ${PMAN.find(x => x[0] === k)[1]}`).join(' · ')}</li>${trampas.length ? `<li>Resultados engañosos que viste: ${trampas.map(k => PMAN.find(x => x[0] === k)[1]).join(', ')}.</li>` : ''}</ul></div>
+      <div class="mlinks">${[...new Set(claves.map(k => PMAN.find(x => x[0] === k)[2]))].map(m => `<button class="ml" data-m="${m}">${M[m].t}</button>`).join('')}</div>
+      <p class="small" style="margin:0">${cite(c.refs)}</p>
+      <div class="ctrl"><button class="btn" id="pRetry">Reintentar</button>${pCur < PCASOS.length - 1 ? '<button class="btn" id="pNext">Siguiente caso →</button>' : ''}</div></div>`;
+  }
+  $('#pracBody').innerHTML = h;
+  $('#pBack').onclick = () => { pCur = null; renderPracList(); };
+  $('#pracBody').querySelectorAll('.pm').forEach(b => b.onclick = () => {
+    const k = b.dataset.k;
+    if (k === 'medidas' && !pLog.includes('vop') && !pLog.includes('vopvi')) { b.querySelector('small') || b.insertAdjacentHTML('beforeend', '<small>Primero encarrilá desde el ventrículo.</small>'); return; }
+    pLog.push(k); renderCase();
+  });
+  const dx = $('#pDx'); if (dx) dx.onclick = () => {
+    $('#pDxBox').innerHTML = `<div class="card step" style="--t:var(--violet)"><div class="q">¿Cuál es el diagnóstico?</div><div class="opts">${PDX.map(x => `<button class="opt pd" data-d="${x[0]}">${x[1]}</button>`).join('')}</div></div>`;
+    $('#pDxBox').querySelectorAll('.pd').forEach(b => b.onclick = () => {
+      pDone = b.dataset.d; pState[PCASOS[pCur].id] = { ok: PCASOS[pCur].dx.includes(pDone), n: pLog.length }; pSave(); renderCase();
+      scrollTo({ top: $('#pracBody .leaf').offsetTop - 70, behavior: 'smooth' });
+    });
+    $('#pDxBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  const rt = $('#pRetry'); if (rt) rt.onclick = () => startCase(pCur);
+  const nx = $('#pNext'); if (nx) nx.onclick = () => startCase(pCur + 1);
+  bindMl($('#pracBody'));
+}
+
 const GRUPOS = { O: 'Observación', V: 'Ventricular', A: 'Auricular', F: 'Fármaco', C: 'Concepto' };
 
 // ===============================================================================================================
@@ -1442,7 +1619,8 @@ try { const s = JSON.parse(localStorage.getItem('mef_calc') || 'null'); if (s) {
 // ---------- pestañas
 function tab(p) {
   document.querySelectorAll('.seg button').forEach(b => { const on = b.dataset.p === p; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
-  ['algo', 'arr', 'man', 'loc', 'calc'].forEach(x => $('#p-' + x).hidden = x !== p);
+  ['algo', 'arr', 'man', 'loc', 'calc', 'prac'].forEach(x => $('#p-' + x).hidden = x !== p);
+  if (p === 'prac' && pCur === null) renderPracList();
   try { localStorage.setItem('mef_tab', p); } catch (e) {}
 }
 document.querySelectorAll('.seg button').forEach(b => b.onclick = () => tab(b.dataset.p));

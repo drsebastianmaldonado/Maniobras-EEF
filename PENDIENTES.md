@@ -19,7 +19,14 @@ Todos dicen "REGISTRO SIMULADO" y están en `figs/sim/`.
 - [ ] **Gardey 2021:** canales "Nodo sup." y "Nodo inf." y "AD lateral".
 - [ ] **Arias 2010:** la LC de estimulación no está publicada (no tiene calibre).
 
-## 2. Bibliografía que no estaba en el material base
+## 2. Modo práctica (10 casos)
+
+- [ ] **Casos con intervalos publicados:** 4 (Veenhuyzen 2011, fig. 1B y 5), 5 (Veenhuyzen 2011, fig. 3), 6 (Ho 2015), 8 (Liu Q 2023, Liu 2015, Nogami 2010) y 9 (Arias 2010).
+- [ ] **Casos didácticos con valores ilustrativos** (coherentes con los cortes, pero no publicados): 1 (TRNAV típica: PPI−LC 170, SA−VA 150, ΔVA +35, EA que retrasa 14 ms), 2 (TRAV septal: PPI−LC 80 y SA−VA 40 de Michaud; ΔHA −45 y EV-HR que adelanta 25 ms son ilustrativos), 3 (TA), 7 (taquicardia de la unión: PPI−LC 175) y 10 (vía nodoventricular: LC 390).
+- [ ] **Clasificación de cada resultado** como "clave", "útil" o "engañosa": revisar que coincida con tu criterio docente.
+- [ ] **Diagnósticos aceptados:** en el caso 9 valen PJRT y TRAV por vía septal.
+
+## 3. Bibliografía que no estaba en el material base
 
 Las agregué yo; verificá los datos con tus copias o reemplazalas por artículos tuyos.
 
@@ -29,7 +36,7 @@ Las agregué yo; verificá los datos con tus copias o reemplazalas por artículo
 - [ ] **Búsqueda web (solo con datos del resumen):** Kumagai 2005, Van Beeumen 2008, Chen 2012 (año y autores completos) y Li YC 2013, en la ficha del anillo mitral.
 - [ ] **Citas tomadas de las revisiones, no de los originales:** Hirao 1996, Ho 2008, Ho 2013, Man 1995, Bennett 2011, Padanilam 2008, Fan 2011, Maruyama 2007, Dandamudi 2010, AlMahameed 2010, Obeyesekere 2011.
 
-## 3. Datos bibliográficos incompletos
+## 4. Datos bibliográficos incompletos
 
 - [ ] **Nogami 2010** (*Eur Cardiol* 6:79): sin DOI; el caso enlaza a una búsqueda de PubMed.
 - [ ] **Miller 1991** (*Am J Cardiol* 68:1037): sin DOI; enlaza a PubMed.
@@ -37,7 +44,7 @@ Las agregué yo; verificá los datos con tus copias o reemplazalas por artículo
 - [ ] **Ramprakash 2008** (*Indian Pacing Electrophysiol J*): falta la página final.
 - [ ] **Takase 2019** (*HeartRhythm Case Rep* 5): verificar las páginas (puse 48–52).
 
-## 4. Contenido para tu revisión
+## 5. Contenido para tu revisión
 
 - [ ] **Ficha de adenosina:** se basa en tu presentación; no tiene artículo de respaldo.
 - [ ] **Tu presentación:** escribir la fórmula del índice VA (ápex − base, > +10 ms = vía) para que el "< 10" no se lea al revés.
@@ -47,23 +54,23 @@ Las agregué yo; verificá los datos con tus copias o reemplazalas por artículo
 - [ ] **Algoritmo de Enriquez:** transcripción de la tabla 1 y la figura 3; conviene cotejarla.
 - [ ] **Puntos de corte pediátricos:** casi todos son de adultos. Si tenés cortes propios, los sumo.
 
-## 5. Localizador de vía accesoria (copiado de la app de prácticas)
+## 6. Localizador de vía accesoria (copiado de la app de prácticas)
 
 - [ ] Tiene 3 ECG del banco de casos de la app de prácticas (casos 4-7, 5-2 y 7-7), con la leyenda cambiada a "ECG de ejemplo". Confirmar que se pueden usar en esta app.
 - [ ] Ya no tiene el WhatsApp ni el mail; el resto quedó igual que en la app de prácticas.
 
-## 6. Figuras reales (acceso abierto)
+## 7. Figuras reales (acceso abierto)
 
 - [ ] **Sriramoju 2022 y Liu Q 2023 (CC BY-NC-ND):** se muestran completas; solo cambié el tamaño del archivo.
 - [ ] **Li 2022 y Wei 2023 (CC BY), Gardey 2021 (CC BY-NC):** con atribución y enlace a la licencia.
 
-## 7. Material que falta
+## 8. Material que falta
 
 - [ ] **Tus trazados**, sin nombre, fecha, número de historia ni datos del equipo.
 - [ ] **Revisión 2024** (*J Arrhythm* 40:767): el link de Google no abrió desde la sesión; hace falta el PDF.
 - [ ] **Casos que no simulé por falta de intervalos:** Michaud 2001, Segal 2009, Nagashima 2020, Cáceres 1989 (rama-rama), Veenhuyzen 2012 fig. 2 (EV-HR que retrasa la A) y Lim 2011.
 
-## 8. Configuración
+## 9. Configuración
 
 - [ ] La dirección de la app lleva **M mayúscula**: https://drsebastianmaldonado.github.io/Maniobras-EEF/
 - [ ] Si querés que lea PubMed directamente, hay que habilitar `ncbi.nlm.nih.gov` en la configuración de red del entorno.
