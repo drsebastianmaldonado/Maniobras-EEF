@@ -5,34 +5,61 @@ Marcá con `[x]` lo que ya revisaste.
 
 ## 1. Registros simulados (revisión clínica)
 
-Son 43 trazados sintéticos que reproducen los intervalos publicados; la morfología es ilustrativa.
-Todos dicen "REGISTRO SIMULADO" y están en `figs/sim/`.
+Son 43 trazados sintéticos. Todos dicen "REGISTRO SIMULADO". Tocá **ver** para abrir cada imagen.
+En todos conviene mirar las amplitudes y la morfología del QRS, la visibilidad del His y la ubicación de la A en cada canal.
 
-- [ ] **Todos:** amplitudes y morfología del QRS (TSV y estimulado), visibilidad del His, ubicación de la A en cada canal.
-- [ ] **Veenhuyzen 2011, fig. 5 (fusión desde el VI):** morfología del QRS de fusión y del His ortodrómico.
-- [ ] **TV fascicular posterior:** ubicación de P1 y P2 en el septum del VI. Combina tres fuentes (Liu Q 2023, Liu 2015, Nogami 2010).
-- [ ] **Veenhuyzen 2012, fig. 7 (taquicardia de la unión):** secuencia del EA desde la AD alta y del His adelantado.
-- [ ] **Veenhuyzen 2012, fig. 1 (EV con His refractario):** secuencia auricular de la vía derecha y QRS fusionado.
-- [ ] **Kaneko 2011 (2:1):** asumí bloqueo por encima del His (sin H en los ciclos bloqueados). Confirmar con la figura original.
-- [ ] **Knight 1999:** el SA durante la estimulación es ilustrativo (no está publicado).
-- [ ] **Miller 1991:** el momento del His retrógrado estimulando es ilustrativo; el HA 103 sí es publicado.
-- [ ] **Gardey 2021:** canales "Nodo sup." y "Nodo inf." y "AD lateral".
-- [ ] **Burri 2012 (doble disparo):** publicados solo la frecuencia (134 lpm), la relación 1:2 y la A sinusal. El AH1 (90 ms) y el H1–H2 (430 ms, dentro del rango 265–520 de Peiker) son ilustrativos.
-- [ ] **Registros nuevos para las fichas que no tenían imagen** (valores publicados donde existen, el resto ilustrativo):
-  - Michaud 2001 (SA−VA): publicados la estimulación a 440, SA−VA 40 y PPI−LC 80; la LC 470 y el VA 120 son míos.
-  - Veenhuyzen 2012, fig. 3 (para-Hisiana): publicado el Δ 61 ms; el SA 90 es mío.
-  - Veenhuyzen 2012, fig. 5 (sobreestimulación auricular): publicados LC 350 y estimulación a 340; AH 255 y VA 50 son míos.
-  - Cáceres 1989 (rama-rama): publicado el HV 80 y la disociación; la LC 300 y el H-rama derecha son míos.
-  - Doppalapudi 2008 (papilar), Tada 2005 (anillo mitral) y Jackman 1988 (vía oblicua): morfologías según el artículo; tiempos míos.
-  - **Didácticos sin caso publicado:** salto AH (estudio basal) y terminación con adenosina. Están rotulados como "registro simulado didáctico".
-  - La ficha de conceptos de reset usa el registro de Veenhuyzen 2011, fig. 5 (fusión).
-- [ ] **Modo práctica (19 registros nuevos, uno por cada resultado clave):** respetan los intervalos de cada caso; lo que no está en el caso es ilustrativo y lo aclara la leyenda. Revisar sobre todo:
-  - Caso 9: el adelanto de la A con la EV-HR (20 ms) y el SA de la base (410) son míos; publicados solo ΔVA −28 y ΔcPPI−LC −18.
-  - Caso 10 (vía nodoventricular): el adelanto del His (25 ms), la LC de estimulación y el patrón de bloqueo VA son míos.
-  - Casos 11 y 12 (Mahaim y antidrómica): todos los tiempos son ilustrativos.
-  - Caso 8: el alargamiento con verapamilo (LC 337 → 400, P1-P2 110 → 160) es ilustrativo.
-  - Reusé registros existentes en el caso 2 (Michaud), el 5 (Veenhuyzen 2011, fig. 3) y el 6 (Ho 2015).
-- [ ] **Arias 2010:** la LC de estimulación no está publicada (no tiene calibre).
+### Fichas de maniobras (casos publicados)
+
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/knight99.png) **Knight 1999** (A-V vs A-A-V): el SA durante la estimulación es ilustrativo.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen11_pseudo.png) **Veenhuyzen 2011, fig. 3** (seudo A-A-V).
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen11_fusion.png) **Veenhuyzen 2011, fig. 5** (fusión desde el VI): morfología del QRS de fusión y del His ortodrómico. También se usa en la ficha de conceptos de reset.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/gt06.png) **González-Torrecilla 2006** (PPI corregido).
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/miller91.png) **Miller 1991** (ΔHA): el momento del His retrógrado es ilustrativo; el HA 103 es publicado.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/ho15.png) **Ho 2015** (captura ortodrómica del His en la PJRT).
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/arias10.png) **Arias 2010** (RP largo con valores de TRNAV): la LC de estimulación no está publicada.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_vai.png) **Veenhuyzen 2012, fig. 4** (índice VA).
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_ehr.png) **Veenhuyzen 2012, fig. 1** (EV con His refractario): secuencia auricular de la vía derecha y QRS fusionado.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_eav.png) **Veenhuyzen 2012, fig. 6** (EA con His refractario en la TRNAV).
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_jt.png) **Veenhuyzen 2012, fig. 7** (taquicardia de la unión): secuencia del EA desde la AD alta y His adelantado.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/kaneko11.png) **Kaneko 2011** (2:1): asumí bloqueo por encima del His (sin H en los ciclos bloqueados).
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/gardey21.png) **Gardey 2021** (nodos gemelos): canales "Nodo sup.", "Nodo inf." y "AD lateral".
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/tvf_post.png) **TV fascicular posterior**: ubicación de P1 y P2; combina Liu Q 2023, Liu 2015 y Nogami 2010.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/burri12.png) **Burri 2012** (doble disparo): el AH1 (90 ms) y el H1–H2 (430 ms) son ilustrativos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/michaud01.png) **Michaud 2001** (SA−VA): publicados estimulación a 440, SA−VA 40 y PPI−LC 80; la LC 470 y el VA 120 son míos. También en el caso 2.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/parahis.png) **Veenhuyzen 2012, fig. 3** (para-Hisiana): publicado el Δ 61 ms; el SA 90 es mío.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_aop.png) **Veenhuyzen 2012, fig. 5** (sobreestimulación auricular): publicados LC 350 y estimulación a 340; AH 255 y VA 50 son míos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/caceres89.png) **Cáceres 1989** (rama-rama): publicados HV 80 y disociación; LC 300 e intervalo His-rama derecha míos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/pm_doppa.png) **Doppalapudi 2008** (músculo papilar): morfología según el artículo; tiempos míos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/tada05.png) **Tada 2005** (anillo mitral): morfología según el artículo; tiempos míos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/jackman88.png) **Jackman 1988** (vía oblicua): potencial de la vía; tiempos míos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/pre_salto.png) **Didáctico, sin caso publicado:** salto del AH (estudio basal).
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/ado_term.png) **Didáctico, sin caso publicado:** terminación con adenosina en una A.
+
+### Modo práctica (resultados clave de cada caso)
+
+Respetan los intervalos del caso; lo que no está en el caso es ilustrativo y lo dice la leyenda.
+
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p2_ehr.png) **Caso 2**, EV con His refractario: adelanta la A 25 ms.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p3_vop.png) **Caso 3**, sobreestimulación ventricular: A-A-V en la TA.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p3_ado.png) **Caso 3**, adenosina: bloqueo AV 2:1 y la TA sigue.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p4_ehr.png) **Caso 4**, EV con His refractario desde el ápex (sin cambio) y desde el VI basal (adelanta 20 ms).
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p4_pre.png) **Caso 4**, estudio basal: conducción VA excéntrica no decremental.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p5_ehr.png) **Caso 5**, EV con His refractario: V local adelantado > 60 ms sin cambio de la A.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p6_ehr.png) **Caso 6**, EV con His refractario: retrasa la A 20 ms.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p6_aop.png) **Caso 6**, sobreestimulación auricular: ΔAH 10 ms; la LC de estimulación (490) es mía.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p8_verap.png) **Caso 8**, verapamilo: el alargamiento (LC 337 → 400, P1-P2 110 → 160) es ilustrativo.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p9_ehr.png) **Caso 9**, EV con His refractario: el adelanto de 20 ms es mío.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p9_diff.png) **Caso 9**, encarrilamiento diferencial: publicados ΔVA −28 y ΔcPPI−LC −18; el SA de la base (410) es mío.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p10_vop.png) **Caso 10**, sobreestimulación del VD: fusión, His ortodrómico, V-V-A; LC de estimulación y VA míos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p10_ehr.png) **Caso 10**, EV con His refractario: el adelanto del His (25 ms) y el bloqueo VA son míos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p11_adec.png) **Caso 11** (Mahaim), estimulación auricular decremental: tiempos ilustrativos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p11_eapre.png) **Caso 11** (Mahaim), EA desde la AD lateral: tiempos ilustrativos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p11_anillo.png) **Caso 11** (Mahaim), potencial M en el anillo tricuspídeo: tiempos ilustrativos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p12_eapre.png) **Caso 12** (antidrómica), EA desde el SC distal: tiempos ilustrativos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p12_pre.png) **Caso 12** (antidrómica), preexcitación con AV fijo: tiempos ilustrativos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p13_abll.png) **Caso 13**, ablación de la vía lenta: desaparece el segundo His.
+
+En el caso 5 (medidas) y en el 6 (medidas) se reusan los registros de Veenhuyzen 2011, fig. 3, y de Ho 2015.
 
 ## 2. Modo práctica (13 casos)
 
