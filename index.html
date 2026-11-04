@@ -260,8 +260,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
           <label class="fld">PPI<small>estímulo → V de retorno (canal de estimulación)</small><input inputmode="numeric" id="ppi"></label>
           <label class="fld">SA<small>estímulo → A, último latido encarrilado</small><input inputmode="numeric" id="sa"></label>
           <label class="fld">VA de la TSV<small>inicio del QRS → misma A</small><input inputmode="numeric" id="va"></label>
-          <label class="fld">AH 1.er latido de retorno<input inputmode="numeric" id="ahpost"></label>
-          <label class="fld">AH de la TSV<input inputmode="numeric" id="ahsvt"></label>
+          <label class="fld">AH 1.er latido de retorno (opcional)<input inputmode="numeric" id="ahpost"></label>
+          <label class="fld">AH de la TSV (opcional)<input inputmode="numeric" id="ahsvt"></label>
           <label class="fld">HA durante el encarrilamiento<input inputmode="numeric" id="haen"></label>
           <label class="fld">HA de la TSV<input inputmode="numeric" id="hasvt"></label>
         </div></div>
@@ -270,8 +270,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
         <div class="grid">
           <label class="fld">VA (SA) desde la base<input inputmode="numeric" id="vab"></label>
           <label class="fld">VA (SA) desde el ápex<input inputmode="numeric" id="vaa"></label>
-          <label class="fld">cPPI−LC desde la base<input inputmode="numeric" id="cpb"></label>
-          <label class="fld">cPPI−LC desde el ápex<input inputmode="numeric" id="cpa"></label>
+          <label class="fld">PPI−LC (o cPPI−LC) desde la base<input inputmode="numeric" id="cpb"></label>
+          <label class="fld">PPI−LC (o cPPI−LC) desde el ápex<input inputmode="numeric" id="cpa"></label>
         </div></div>
       <div class="box" style="background:var(--bg)"><div class="bl">Circuito superior (estimulación auricular)</div>
         <div class="grid">
@@ -483,7 +483,13 @@ const M = {
 
   ppi: { g: 'V', t: 'PPI − LC (y PPI corregido)', s: 'Distancia del sitio de estimulación al circuito',
     para: 'Si el ventrículo es parte del circuito (TRAV), el retorno desde el VD es corto; en la TRNAV el estímulo tiene que subir y bajar por el His-Purkinje.',
-    como: ['Encarrilá desde el ápex del VD (o la base) a 10–40 ms menos que la LC.', 'PPI: desde la última espiga hasta el primer EGM ventricular de retorno en el canal de estimulación.', 'PPI−LC = PPI − LC de la TSV.', 'Corregido: cPPI−LC = PPI−LC − (AH del 1.er latido de retorno − AH de la TSV).'],
+    como: ['Encarrilá desde el ápex del VD (o la base) a 10–40 ms menos que la LC.', 'PPI: desde la última espiga hasta el primer EGM ventricular de retorno en el canal de estimulación.', 'PPI−LC = PPI − LC de la TSV. En la práctica habitual alcanza con este valor.',
+      '<b>PPI corregido (opcional, para valores en el límite o si hubo salto del AH):</b> el encarrilamiento alarga el AH del primer retorno por conducción decremental del nodo, y eso infla el PPI aunque el catéter esté cerca del circuito. La corrección descuenta ese retraso.',
+      'Medí el AH de la TSV en cualquier latido estable, antes de estimular.',
+      'Medí el AH del primer latido de retorno: en el His, desde la última A acelerada hasta el His que conduce ese latido.',
+      'ΔAH = AH del retorno − AH de la TSV.',
+      'cPPI−LC = (PPI − LC) − ΔAH. Corte: < 110 ms TRAV, > 110 ms TRNAV.',
+      '<b>Ejemplo (González-Torrecilla 2006):</b> LC 300, PPI 440, AH 130 en el retorno y 80 en la TSV. PPI−LC = 140 (parece TRNAV con el corte de 115); ΔAH = 50; cPPI−LC = 140 − 50 = 90 → TRAV.'],
     interp: [
       ['PPI−LC < 115 ms', 'TRAV septal', 'michaud01'],
       ['PPI−LC > 115 ms', 'TRNAV atípica', 'michaud01'],
@@ -1510,13 +1516,13 @@ const N = {
     { t: 'Sí', s: 'Encarrilamiento manifiesto', go: 'L_avrt_s' },
     { t: 'No', s: 'Encarrilamiento oculto', go: 'meas_s' }] },
   meas_s: { q: 'Medí PPI−LC y SA−VA del mismo encarrilamiento', help: 'Podés cargar los valores en la pestaña Calculadora.', man: ['ppi', 'sava'], opts: [
-    { t: 'PPI−LC > 115 ms (cPPI−LC > 110) y SA−VA > 85 ms', go: 'L_avnrt_a' },
-    { t: 'PPI−LC < 115 ms (cPPI−LC < 110) y SA−VA < 85 ms', go: 'L_avrt_s' },
+    { t: 'PPI−LC > 115 ms y SA−VA > 85 ms', s: 'Si además medís el AH de retorno: cPPI−LC > 110 ms (opcional)', go: 'L_avnrt_a' },
+    { t: 'PPI−LC < 115 ms y SA−VA < 85 ms', s: 'Si además medís el AH de retorno: cPPI−LC < 110 ms (opcional)', go: 'L_avrt_s' },
     { t: 'Discordantes o en el límite', go: 'bord' }] },
   bord: { q: 'Valores en el límite: agregá una maniobra. ¿Qué resultado obtuviste?', man: ['diff', 'dha', 'ehr', 'parahis'], opts: [
     { t: 'EV con His refractario: adelanta o retrasa la A, o termina sin A', go: 'L_avrt_s' },
-    { t: 'Encarrilamiento diferencial: ΔVA > 20 ms o ΔcPPI−LC > 30 ms', go: 'L_avnrt_a' },
-    { t: 'Encarrilamiento diferencial: ΔVA ≤ 20 ms y ΔcPPI−LC ≤ 30 ms', go: 'L_avrt_s' },
+    { t: 'Encarrilamiento diferencial: ΔVA > 20 ms', s: 'Base − ápex. Opcional, si medís el AH: ΔcPPI−LC > 30 ms', go: 'L_avnrt_a' },
+    { t: 'Encarrilamiento diferencial: ΔVA ≤ 20 ms', s: 'Base − ápex. Opcional, si medís el AH: ΔcPPI−LC ≤ 30 ms', go: 'L_avrt_s' },
     { t: 'ΔHA durante el encarrilamiento > 0', s: 'o > −10 ms estimulando el VD a la LC de la TSV', go: 'L_avnrt_a' },
     { t: 'ΔHA durante el encarrilamiento < 0', s: 'o < −10 ms estimulando el VD a la LC de la TSV', go: 'L_avrt_s' },
     { t: 'Encarrilamiento para-Hisiano sin captura del His: SA−VA > 75 o PPI−LC > 100', go: 'L_avnrt_a' }] },
@@ -1536,9 +1542,9 @@ const N = {
   low_l: { q: 'Circuito inferior: encarrilamiento desde el VD. ¿Qué encontrás?', help: 'Estimulá lo más lento posible (10–40 ms por debajo de la LC). En el RP largo usá el corte de 125 ms para el PPI−LC.', man: ['ppi', 'sava', 'dha', 'hisorto', 'diff'], opts: [
     { t: 'Captura ortodrómica del His', go: 'up_l', set: { low: 'av' } },
     { t: 'PPI−LC < 125 ms, SA−VA < 85 ms o ΔHA < 0', s: 'Los criterios disponibles apuntan a TRAV', go: 'up_l', set: { low: 'av' } },
-    { t: 'Diferencial: ΔVA ≤ 20 ms y ΔcPPI−LC ≤ 30 ms', go: 'up_l', set: { low: 'av' } },
+    { t: 'Diferencial: ΔVA ≤ 20 ms (base − ápex)', s: 'Opcional, si medís el AH: ΔcPPI−LC ≤ 30 ms', go: 'up_l', set: { low: 'av' } },
     { t: 'PPI−LC > 125 ms, SA−VA > 85 ms y ΔHA > 0', s: 'Los criterios disponibles apuntan a TRNAV', go: 'up_l', set: { low: 'nod' } },
-    { t: 'Diferencial: ΔVA > 20 ms o ΔcPPI−LC > 30 ms', go: 'up_l', set: { low: 'nod' } }] },
+    { t: 'Diferencial: ΔVA > 20 ms (base − ápex)', s: 'Opcional, si medís el AH: ΔcPPI−LC > 30 ms', go: 'up_l', set: { low: 'nod' } }] },
   up_l: { q: 'Circuito superior: estimulación auricular. ¿Cuánto vale el ΔAH?', help: 'ΔAH = AH estimulando la aurícula (encarrilamiento, o a la LC de la TSV) − AH de la TSV. Compará también el AH de la TSV con el AH en ritmo sinusal.', man: ['aop'], opts: [
     { t: 'ΔAH < 20 ms', s: 'La aurícula forma parte del circuito', go: 'L_long', set: { up: 'atr' } },
     { t: 'ΔAH > 40 ms, o AH de la TSV < AH en ritmo sinusal', s: 'AH de la TSV = seudointervalo (circuito superior intranodal)', go: 'L_long', set: { up: 'nod' } },
@@ -1687,7 +1693,7 @@ function calc() {
   }
   if (has('haen', 'hasvt')) { const x = d.haen - d.hasvt; row(x < 0 ? 'av' : x > 0 ? 'nod' : 'gray', sg(x), 'ΔHA = HA encarrilamiento − HA TSV', x < 0 ? 'Favorece TRAV' : x > 0 ? 'Favorece TRNAV' : 'Cero: no discrimina'); }
   if (has('vab', 'vaa')) { const x = d.vab - d.vaa; row(x > 20 ? 'nod' : 'av', sg(x), 'ΔVA diferencial = base − ápex (corte 20 ms)', x > 20 ? 'TRNAV' : 'TRAV'); }
-  if (has('cpb', 'cpa')) { const x = d.cpb - d.cpa; row(x > 30 ? 'nod' : 'av', sg(x), 'ΔcPPI−LC diferencial = base − ápex (corte 30 ms)', x > 30 ? 'TRNAV' : 'TRAV'); }
+  if (has('cpb', 'cpa')) { const x = d.cpb - d.cpa; row(x > 30 ? 'nod' : 'av', sg(x), 'ΔPPI−LC diferencial = base − ápex (corte 30 ms; validado con el corregido)', x > 30 ? 'TRNAV' : 'TRAV'); }
   if (has('ahatr', 'ahsvt')) { const x = d.ahatr - d.ahsvt; row(x < 20 ? 'av' : x > 40 ? 'nod' : 'gray', sg(x), 'ΔAH = AH estimulación auricular − AH TSV', x < 20 ? 'La aurícula está en el circuito: PJRT' : x > 40 ? 'Circuito superior intranodal: TRNAV o NFRT' : 'Zona gris (20–40 ms)'); }
   if (has('ahsvt', 'ahrs')) { const x = d.ahsvt - d.ahrs; row(x < 0 ? 'nod' : 'gray', sg(x), 'AH TSV − AH ritmo sinusal', x < 0 ? 'AH de la TSV menor: seudointervalo (TRNAV / NFRT)' : 'No discrimina'); }
   $('#res').innerHTML = out.length ? out.join('') + `<p class="small" style="margin:4px 0 0">Los cortes no son infalibles: en las vías decrementales, el PPI, el SA−VA y el ΔHA pueden dar valores de TRNAV. Si son discordantes, priorizá la EV con His refractario y el encarrilamiento diferencial.</p>` : '<p class="small">Todavía no hay datos.</p>';
