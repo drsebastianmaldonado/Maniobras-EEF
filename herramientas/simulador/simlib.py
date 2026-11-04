@@ -17,11 +17,15 @@ QRS = {  # (desfase, ancho, amplitud) por derivación
     'lv': {'I': [(25, 20, -0.60), (65, 22, -0.25)], 'aVF': [(25, 20, 0.45), (65, 22, 0.20)], 'V1': [(25, 20, 0.80), (65, 22, 0.35)]},
     'fl': {'I': [(6, 11, 0.30), (32, 14, -0.30)], 'aVF': [(8, 11, 0.50), (32, 14, 0.15)], 'V1': [(6, 10, 0.05), (28, 14, 0.45)]},
     'rbs': {'I': [(8, 9, 0.45), (40, 12, -0.15)], 'aVF': [(6, 8, 0.10), (28, 12, -0.70)], 'V1': [(6, 7, 0.25), (22, 8, -0.15), (52, 12, 0.70)]},
+    'lb':  {'I': [(30, 22, 0.75), (75, 18, 0.20)], 'aVF': [(30, 22, 0.45), (70, 20, 0.10)], 'V1': [(10, 6, 0.08), (45, 26, -0.90)]},   # BRI (rama-rama)
+    'pm':  {'I': [(15, 14, 0.35), (60, 20, -0.25)], 'aVF': [(20, 18, -0.80), (65, 20, -0.25)], 'V1': [(25, 18, 0.30), (75, 22, 0.70)]},  # BRD eje superior, ancho (papilar posteromedial)
+    'mal': {'I': [(30, 22, -0.55), (70, 20, -0.15)], 'aVF': [(30, 22, 0.80), (75, 20, 0.30)], 'V1': [(35, 26, 0.85), (85, 20, 0.30)]},  # anillo mitral anterolateral: R en V1, eje inferior
 }
 TWAVE = {'n': {'I': 0.18, 'aVF': 0.22, 'V1': 0.10}, 'pa': {'I': -0.20, 'aVF': 0.25, 'V1': 0.22},
          'pb': {'I': -0.15, 'aVF': -0.25, 'V1': 0.20}, 'f': {'I': 0.05, 'aVF': 0.10, 'V1': 0.15},
          'lv': {'I': 0.20, 'aVF': -0.15, 'V1': -0.20}, 'fl': {'I': 0.10, 'aVF': 0.05, 'V1': -0.05},
-         'rbs': {'I': -0.10, 'aVF': 0.18, 'V1': -0.15}}
+         'rbs': {'I': -0.10, 'aVF': 0.18, 'V1': -0.15}, 'lb': {'I': -0.25, 'aVF': -0.15, 'V1': 0.25},
+         'pm': {'I': 0.10, 'aVF': 0.25, 'V1': -0.20}, 'mal': {'I': 0.20, 'aVF': -0.25, 'V1': -0.25}}
 
 # secuencias auriculares: desfase (ms) de cada canal respecto del inicio de la activación auricular
 CS_NAMES = ['CS 9-10', 'CS 7-8', 'CS 5-6', 'CS 3-4', 'CS 1-2']
@@ -48,7 +52,7 @@ def render(sc, path):
     h_ante = sc.get('h_ante', [])
     h_retro = sc.get('h_retro', [])
     def v_local(t0, typ):  # momento del V local en el VD
-        return t0 + (14 if typ in ('pa',) else 30 if typ in ('pb', 'lv') else 6 if typ in ('f', 'fl') else 8 if typ == 'rbs' else 2)
+        return t0 + (14 if typ in ('pa',) else 30 if typ in ('pb', 'lv', 'lb', 'mal') else 6 if typ in ('f', 'fl') else 8 if typ in ('rbs', 'pm') else 2)
 
     def egm(t, sites, w=1.0, frac=0):
         y = 0.0
@@ -146,6 +150,8 @@ def render(sc, path):
         out.append(f'<text x="{X(tt):.1f}" y="{y}" font-size="9.5" text-anchor="middle" fill="#0a58ca">{label}</text>')
     out.append(f'<line x1="{W-20-100*PXMS:.1f}" x2="{W-20}" y1="{H-20}" y2="{H-20}" stroke="#333" stroke-width="1.2"/>')
     out.append(f'<text x="{W-20-50*PXMS:.1f}" y="{H-8}" font-size="9.5" text-anchor="middle" fill="#333">100 ms</text>')
+    if sc.get('title'):
+        out.append(f'<text x="8" y="15" font-size="11.5" font-weight="700" fill="#0a58ca">{sc["title"]}</text>')
     out.append(f'<text x="{LEFT}" y="{H-8}" font-size="9.5" fill="#666">REGISTRO SIMULADO · {sc["src"]}</text>')
     out.append('</svg>')
     open(path, 'w').write('\n'.join(out))

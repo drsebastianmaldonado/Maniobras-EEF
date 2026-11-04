@@ -5,7 +5,7 @@ Marcá con `[x]` lo que ya revisaste.
 
 ## 1. Registros simulados (revisión clínica)
 
-Son 15 trazados sintéticos que reproducen los intervalos publicados; la morfología es ilustrativa.
+Son 24 trazados sintéticos que reproducen los intervalos publicados; la morfología es ilustrativa.
 Todos dicen "REGISTRO SIMULADO" y están en `figs/sim/`.
 
 - [ ] **Todos:** amplitudes y morfología del QRS (TSV y estimulado), visibilidad del His, ubicación de la A en cada canal.
@@ -18,6 +18,14 @@ Todos dicen "REGISTRO SIMULADO" y están en `figs/sim/`.
 - [ ] **Miller 1991:** el momento del His retrógrado estimulando es ilustrativo; el HA 103 sí es publicado.
 - [ ] **Gardey 2021:** canales "Nodo sup." y "Nodo inf." y "AD lateral".
 - [ ] **Burri 2012 (doble disparo):** publicados solo la frecuencia (134 lpm), la relación 1:2 y la A sinusal. El AH1 (90 ms) y el H1–H2 (430 ms, dentro del rango 265–520 de Peiker) son ilustrativos.
+- [ ] **Registros nuevos para las fichas que no tenían imagen** (valores publicados donde existen, el resto ilustrativo):
+  - Michaud 2001 (SA−VA): publicados la estimulación a 440, SA−VA 40 y PPI−LC 80; la LC 470 y el VA 120 son míos.
+  - Veenhuyzen 2012, fig. 3 (para-Hisiana): publicado el Δ 61 ms; el SA 90 es mío.
+  - Veenhuyzen 2012, fig. 5 (sobreestimulación auricular): publicados LC 350 y estimulación a 340; AH 255 y VA 50 son míos.
+  - Cáceres 1989 (rama-rama): publicado el HV 80 y la disociación; la LC 300 y el H-rama derecha son míos.
+  - Doppalapudi 2008 (papilar), Tada 2005 (anillo mitral) y Jackman 1988 (vía oblicua): morfologías según el artículo; tiempos míos.
+  - **Didácticos sin caso publicado:** salto AH (estudio basal) y terminación con adenosina. Están rotulados como "registro simulado didáctico".
+  - La ficha de conceptos de reset usa el registro de Veenhuyzen 2011, fig. 5 (fusión).
 - [ ] **Arias 2010:** la LC de estimulación no está publicada (no tiene calibre).
 
 ## 2. Modo práctica (13 casos)
