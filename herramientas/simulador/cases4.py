@@ -226,7 +226,8 @@ def tvf(LC, p1p2, title):
 S['p8_verap_a'] = tvf(337, 110, 'A. Antes del verapamilo')
 S['p8_verap_b'] = tvf(400, 160, 'B. Con verapamilo: se alargan la LC y el P1-P2; el P2-QRS no cambia')
 
-only = sys.argv[3:] or list(S)
-for k in only:
-    render(S[k], f'{OUT}/{k}.svg')
-    print(k)
+if __name__ == '__main__':
+    only = sys.argv[3:] or list(S)
+    for k in only:
+        render(S[k], f'{OUT}/{k}.svg')
+        print(k)

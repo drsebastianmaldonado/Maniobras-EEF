@@ -86,6 +86,7 @@ S['veen12_ehr'] = dict(win=(-100, 1950), pxms=0.36, src='intervalos de Veenhuyze
     cal=[(A[1], A3, 'HRA', 'A-A 425 (LC 444)')],
     marks=[(s_hr, 'V1', 'EV-HR')])
 
-for k, sc in S.items():
-    render(sc, f'{OUT}/{k}.svg')
-    print(k)
+if __name__ == '__main__':
+    for k, sc in S.items():
+        render(sc, f'{OUT}/{k}.svg')
+        print(k)

@@ -38,6 +38,7 @@ En todos conviene mirar las amplitudes y la morfología del QRS, la visibilidad 
 ### Modo práctica (resultados clave de cada caso)
 
 Respetan los intervalos del caso; lo que no está en el caso es ilustrativo y lo dice la leyenda.
+En la app, el modo práctica muestra una versión **sin diagnóstico ni cuentas** (sin SA−VA, PPI−LC, Δ ni conclusiones; solo mediciones crudas), en `figs/sim/prac/`. Los links de abajo abren la versión completa, con las cuentas, para tu revisión.
 
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p2_ehr.png) **Caso 2**, EV con His refractario: adelanta la A 25 ms.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/p3_vop.png) **Caso 3**, sobreestimulación ventricular: A-A-V en la TA.

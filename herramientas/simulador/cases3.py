@@ -126,7 +126,8 @@ S['jackman88'] = dict(win=(-60, 1600), pxms=0.48, channels=['HRA', 'His d', 'CS 
     extra={'Abl d': [(v + 35, 0.9, 1.4) for v in vs] + [(v + 80, 0.55, 0.5) for v in vs] + [(v + VA + 2, 1.0, 1.0) for v in vs]},
     marks=[(vs[2] + 80, 'Abl d', 'potencial de la vía'), (vs[2] + VA, 'CS 1-2', 'A más precoz')])
 
-only = sys.argv[3:] or list(S)
-for k in only:
-    render(S[k], f'{OUT}/{k}.svg')
-    print(k)
+if __name__ == '__main__':
+    only = sys.argv[3:] or list(S)
+    for k in only:
+        render(S[k], f'{OUT}/{k}.svg')
+        print(k)

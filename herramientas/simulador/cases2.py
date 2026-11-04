@@ -116,7 +116,8 @@ S['burri12'] = dict(win=(-80, 2450), pxms=0.30, src='Burri 2012 (134 lpm, P:QRS 
     cal=[(As[0], As[1], 'HRA', 'A-A 896: una A cada dos V'), (vs[2], vs[4], 'V1', '2 RR = 896 (134 lpm)')],
     marks=[(h1[1], 'His d', 'H1'), (h2[1], 'His d', 'H2'), (As[1] + 30, 'aVF', 'P'), (vs[2] + 45, 'aVF', 'V1'), (vs[3] + 45, 'aVF', 'V2')])
 
-only = sys.argv[3:] or list(S)
-for k in only:
-    render(S[k], f'{OUT}/{k}.svg')
-    print(k)
+if __name__ == '__main__':
+    only = sys.argv[3:] or list(S)
+    for k in only:
+        render(S[k], f'{OUT}/{k}.svg')
+        print(k)
