@@ -6,15 +6,17 @@ HV = 45
 S = {}
 
 # 1. Knight 1999: TRNAV típica, LC 430, estimulación VD 370 → A-V
-svt = [0, 430]; sp = [700, 1070, 1440]; AH = 430 - (HV + 10)
-A = [v + 10 for v in svt] + [s + 150 for s in sp]
-ret_h = A[-1] + AH; ret_v = ret_h + HV; after = [ret_v, ret_v + 430]
-S['knight99'] = dict(win=(-120, 2560), src='intervalos de Knight 1999, fig. 1',
+#    VA 40, SA 190 (SA−VA 150) y PPI 600 (PPI−LC 170): ilustrativos, iguales a los del caso 1 de práctica.
+svt = [0, 430]; sp = [700, 1070, 1440]
+A = [v + 40 for v in svt] + [s + 190 for s in sp]
+ret_v = sp[-1] + 600; ret_h = ret_v - HV; after = [ret_v, ret_v + 430]
+S['knight99'] = dict(win=(-120, 2560), src='Knight 1999, fig. 1 (LC 430, estimulación 370); SA, PPI y VA ilustrativos',
     beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
-    atr=[(a, 'conc_his', -1) for a in A + [v + 10 for v in after]],
+    atr=[(a, 'conc_his', -1) for a in A + [v + 40 for v in after]],
     h_ante=[v - HV for v in svt + after], h_retro=[s + 120 for s in sp],
-    cal=[(0, 430, 'RVA', 'LC TSV 430'), (sp[0], sp[1], 'RVA', 'S-S 370')],
-    marks=[(A[-1], 'HRA', 'último A')])
+    cal=[(0, 430, 'RVA', 'LC TSV 430'), (sp[0], sp[1], 'RVA', 'S-S 370'), (sp[-1], ret_v + 2, 'RVA', 'PPI 600'),
+         (sp[-1], A[-1] + 2, 'CS 9-10', 'SA 190'), (svt[1], svt[1] + 40, 'CS 9-10', 'VA 40')],
+    marks=[(A[-1], 'HRA', 'último A'), (ret_v + 215, 'His p', 'PPI−LC 170 · SA−VA 150 → TRNAV')])
 
 # 2. Veenhuyzen 2011 fig. 3: seudo A-A-V (TRNAV rápida-lenta)
 svt = [0, 380]; sp = [700, 1060, 1420]
