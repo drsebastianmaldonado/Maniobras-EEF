@@ -19,17 +19,12 @@ S['knight99'] = dict(win=(-120, 2560), src='Knight 1999, fig. 1 (LC 430, estimul
     marks=[(A[-1], 'HRA', 'último A'), (ret_v + 215, 'His p', 'PPI−LC 170 · SA−VA 150 → TRNAV')])
 
 # 2. Veenhuyzen 2011 fig. 3: seudo A-A-V (TRNAV rápida-lenta). LC 380, VA 265, estimulación 360, SA 415, PPI 565.
-#    Panel A: la taquicardia sola (relación VA). Panel B: encarrilamiento con 6 estímulos, A-A a 360 y PPI.
+#    Encarrilamiento con 6 estímulos, A-A a 360, LC y PPI.
 LC, VA = 380, 265
-svt = [i * LC for i in range(5)]
-S['veen11_pseudo_a'] = dict(win=(-100, svt[-1] + 330), pxms=0.25, title='A. Taquicardia',
-    src='Veenhuyzen 2011, fig. 3: LC 380, VA 265',
-    beats=[(v, 'n') for v in svt], atr=[(v + VA, 'conc_cs', -1) for v in svt], h_ante=[v - HV for v in svt],
-    cal=[(svt[1], svt[2], 'RVA', 'LC 380'), (svt[2], svt[2] + VA + 2, 'CS 9-10', 'VA 265')])
 svt = [0, LC]; sp = [700 + 360 * i for i in range(6)]
 A = [v + VA for v in svt] + [s + 415 for s in sp]
 ret = sp[-1] + 565; after = [ret, ret + LC]
-S['veen11_pseudo_b'] = dict(win=(-100, after[-1] + 330), pxms=0.25, title='B. Encarrilamiento desde el ápex del VD a 360 ms',
+S['veen11_pseudo'] = dict(win=(-100, after[-1] + 330), pxms=0.25, title='Encarrilamiento desde el ápex del VD a 360 ms',
     src='Veenhuyzen 2011, fig. 3: LC 380, estimulación 360, PPI 565',
     beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
     atr=[(a, 'conc_cs', -1) for a in A + [v + VA for v in after]],
