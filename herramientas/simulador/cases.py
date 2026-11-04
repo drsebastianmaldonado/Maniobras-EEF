@@ -93,8 +93,9 @@ S['veen12_vai_a'] = dict(win=(-100, sp[-1] + 400), pxms=0.3, title='A. Estimulac
     cal=[(sp[1], sp[1] + 142, 'CS 5-6', 'VA 142'), (sp[0], sp[1], 'RVA', 'S-S 600')])
 S['veen12_vai_b'] = dict(win=(-100, sp[-1] + 400), pxms=0.3, title='B. Estimulación del VD posterobasal: VA 120 ms',
     src='Veenhuyzen 2012, fig. 4: VA 120 desde la base; índice VA = 142 − 120 = +22 ms (> +10: vía septal)',
+    channels=['HRA', 'His p', 'His d', 'CS 9-10', 'CS 7-8', 'CS 5-6', 'CS 3-4', 'CS 1-2', 'VD basal'], pace_ch='VD basal',
     beats=[(x, 'pb') for x in sp], spikes=sp, atr=[(x + 120, 'cs_mid', -1) for x in sp], h_retro=[x + 140 for x in sp],
-    cal=[(sp[1], sp[1] + 120, 'CS 5-6', 'VA 120'), (sp[0], sp[1], 'RVA', 'S-S 600')])
+    cal=[(sp[1], sp[1] + 120, 'CS 5-6', 'VA 120'), (sp[0], sp[1], 'VD basal', 'S-S 600')])
 
 # 7. Veenhuyzen 2012 fig. 1: EV His refractaria que adelanta la A 19 ms (LC 444, vía derecha)
 svt = [0, 444, 888]; VA = 150

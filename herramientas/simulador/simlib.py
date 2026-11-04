@@ -97,7 +97,7 @@ def render(sc, path):
                 i = CS_NAMES.index(name)
                 y += egm(t, [(ta + ch_atrial_offset(seq, name), 1.0 - 0.06 * i) for ta, seq, pol in atr], frac=1 if i in (1, 2) else 0)
                 y += egm(t, [(far_v(t0, typ, 18 + 6 * i if typ in ('n', 'f') else 45 + 6 * i), 0.35) for t0, typ in beats], w=2.5)
-            elif name == 'RVA':
+            elif name == 'RVA' or name.startswith('VD'):
                 y += egm(t, [(v_local(t0, typ), 1.5 if typ != 'n' else 1.4) for t0, typ in beats], w=1.8, frac=1)
             elif name.startswith('LV') or name.startswith('Nodo') or name.startswith('AD '):
                 y += egm(t, [(far_v(t0, typ, 4), 0.8) for t0, typ in beats], w=2.0, frac=1)
