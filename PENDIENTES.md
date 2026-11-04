@@ -17,7 +17,7 @@ En todos conviene mirar las amplitudes y la morfología del QRS, la visibilidad 
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen11_fusion.png) **Veenhuyzen 2011, fig. 5** (fusión desde el VI): morfología del QRS de fusión y del His ortodrómico. También se usa en la ficha de conceptos de reset.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/gt06.png) **González-Torrecilla 2006** (PPI corregido): rehecho; encarrilamiento con 6 estímulos a 270 (ilustrativo), A-A 270, LC 300, PPI 440, AH 80 y 130.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/miller91.png) **Miller 1991** (ΔHA): rehecho en dos paneles. A: TSV (LC 340, HA 199). B: estimulación del ápex a 340 en sinusal (HA 103). El momento del His retrógrado es ilustrativo.
-- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/ho15.png) **Ho 2015** (captura ortodrómica del His en la PJRT).
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/ho15.png) **Ho 2015** (captura ortodrómica del His en la PJRT): encarrilamiento con 6 estímulos a 490, A-A 490, LC 521, PPI 592, HA 335 y 259.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/arias10.png) **Arias 2010** (RP largo con valores de TRNAV): la LC de estimulación no está publicada.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_vai.png) **Veenhuyzen 2012, fig. 4** (índice VA).
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_ehr.png) **Veenhuyzen 2012, fig. 1** (EV con His refractario): secuencia auricular de la vía derecha y QRS fusionado.

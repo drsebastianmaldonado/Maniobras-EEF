@@ -67,17 +67,22 @@ S['miller91_b'] = dict(win=(-100, sp[-1] + 300), pxms=0.27,
     cal=[(sp[0], sp[1], 'RVA', 'S-S 340'), (hr[2], hr[2] + 103 + 8, 'His d', 'HA 103')],
     marks=[(hr[3], 'His p', 'H retrógrado')])
 
-# 5. Ho 2015 fig. 3: PJRT con captura ortodrómica del His (LC 521, estimulación 490)
-svt = [0, 521]; sp = [1000, 1490, 1980]
-A = [v + 290 for v in svt] + [s + 309 for s in sp]
-ret = sp[-1] + 592
-S['ho15'] = dict(win=(-120, 2780), pxms=0.26, src='intervalos de Ho 2015, fig. 3',
-    beats=[(v, 'n') for v in svt + [ret]] + [(s, 'pa') for s in sp], spikes=sp,
-    atr=[(a, 'conc_cs', -1) for a in A + [ret + 290]],
-    h_ante=[v - HV for v in svt + [ret]] + [a - 259 for a in A[2:]],
-    cal=[(svt[1] - HV, A[1] + 8, 'His p', 'HA 335'), (A[-1] - 259, A[-1] + 8, 'His p', 'HA 259'),
-         (sp[0], sp[1], 'RVA', 'S-S 490'), (sp[-1], ret + 2, 'RVA', 'PPI 592')],
-    marks=[(A[-1] - 259, 'His d', 'H ortodr.')])
+# 5. Ho 2015 fig. 3: PJRT con captura ortodrómica del His. LC 521, VA 290, HA 335; estimulación 490: VA 309, HA 259; PPI 592.
+#    Encarrilamiento con 6 estímulos.
+LC, VA = 521, 290
+svt = [i * LC for i in range(3)]
+sp = [svt[-1] + 490 * (i + 1) for i in range(6)]
+A = [v + VA for v in svt] + [s + 309 for s in sp]
+ret = sp[-1] + 592; after = [ret, ret + LC]
+S['ho15'] = dict(win=(-100, after[-1] + 380), pxms=0.2,
+    src='Ho 2015, fig. 3: LC 521, estimulación 490, HA 335 (TSV) y 259 (estimulando), PPI 592',
+    beats=[(v, 'n') for v in svt + after] + [(x, 'pa') for x in sp], spikes=sp,
+    atr=[(a, 'conc_cs', -1) for a in A + [v + VA for v in after]],
+    h_ante=[v - HV for v in svt + after] + [a - 259 for a in A[3:]],
+    cal=[(svt[0], svt[1], 'RVA', 'LC 521'), (sp[0], sp[1], 'RVA', 'S-S 490'), (sp[-1], ret + 2, 'RVA', 'PPI 592'),
+         (A[5] + 38, A[6] + 38, 'HRA', 'A-A 490'), (A[6] + 38, A[7] + 38, 'HRA', 'A-A 490'),
+         (svt[2] - HV, A[2] + 8, 'His p', 'HA 335'), (A[-1] - 259, A[-1] + 8, 'His p', 'HA 259')],
+    marks=[(A[-2] - 259, 'His d', 'H ortodr.')])
 
 # 6. Veenhuyzen 2012 fig. 4: índice VA (ápex 142 ms, base 120 ms)
 sa = [0, 600]; sb = [1350, 1950]
