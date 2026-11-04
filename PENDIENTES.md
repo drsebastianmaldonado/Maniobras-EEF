@@ -1,7 +1,9 @@
 # Pendientes para revisar
 
 Listado de lo que queda por chequear en **Maniobras en el EEF**. Se actualiza con cada cambio.
-Marcá con `[x]` lo que ya revisaste.
+**Para marcar lo revisado usá el issue #1**, donde las casillas se tildan con un toque:
+https://github.com/drsebastianmaldonado/Maniobras-EEF/issues/1
+Este archivo es una copia de referencia; las marcas se llevan en el issue.
 
 ## 1. Registros simulados (revisión clínica)
 
@@ -118,7 +120,7 @@ Las agregué yo; verificá los datos con tus copias o reemplazalas por artículo
 
 - [ ] **Tus trazados**, sin nombre, fecha, número de historia ni datos del equipo.
 - [ ] **Revisión 2024** (*J Arrhythm* 40:767): el link de Google no abrió desde la sesión; hace falta el PDF.
-- [ ] **Casos que no simulé por falta de intervalos:** Michaud 2001, Segal 2009, Nagashima 2020, Cáceres 1989 (rama-rama), Veenhuyzen 2012 fig. 2 (EV-HR que retrasa la A) y Lim 2011.
+- [ ] **Casos que no simulé por falta de intervalos:** Segal 2009, Veenhuyzen 2012 fig. 2 (EV-HR que retrasa la A) y Lim 2011.
 
 ## 9. Configuración
 
