@@ -33,17 +33,21 @@ S['veen11_pseudo'] = dict(win=(-100, after[-1] + 330), pxms=0.25, title='Encarri
          (A[4] + 38, A[5] + 38, 'HRA', 'A-A 360'), (A[5] + 38, A[6] + 38, 'HRA', 'A-A 360')],
     marks=[(A[-2] + 38, 'CS 9-10', 'A₁'), (A[-1] + 38, 'CS 9-10', 'A₂')])
 
-# 3. González-Torrecilla 2006: PPI corregido (TRAV), LC 300, PPI 440, AH 130 vs 80
-svt = [0, 300]; sp = [400, 670]
-A_svt = [v + 175 for v in svt[:1]] + []
-A = [175, 665, 935]
-ret = sp[-1] + 440; after = [ret, ret + 300]
-S['gt06'] = dict(win=(-100, 1520), pxms=0.42, src='intervalos de González-Torrecilla 2006, fig. 2',
+# 3. González-Torrecilla 2006: PPI corregido (TRAV). Publicados: LC 300, PPI 440, AH 130 (1.er retorno) vs 80 (TSV).
+#    Encarrilamiento desde el ápex con 6 estímulos; la LC de estimulación (270) es ilustrativa. VA 175 (TSV) y SA 265 resultan de lo anterior.
+LC, VA, AHt, AHr, PPI, SC = 300, 175, 80, 130, 440, 270
+svt = [i * LC for i in range(3)]
+sp = [svt[-1] + SC + SC * i for i in range(6)]
+A = [v + VA for v in svt] + [s + (PPI - HV - AHr) for s in sp]
+ret = sp[-1] + PPI; after = [ret, ret + LC]
+S['gt06'] = dict(win=(-80, after[-1] + 280), pxms=0.25,
+    src='González-Torrecilla 2006, fig. 2: LC 300, PPI 440, AH 130 vs 80; LC de estimulación 270 ilustrativa',
     beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
-    atr=[(a, 'conc_his', -1) for a in A + [ret + 175]],
-    h_ante=[300 - HV, ret - HV, ret + 300 - HV], h_retro=[],
-    cal=[(0, 300, 'RVA', 'LC 300'), (175, 300 - HV, 'His d', 'AH 80'), (935, ret - HV, 'His d', 'AH 130'),
-         (sp[-1], ret + 2, 'RVA', 'PPI 440')])
+    atr=[(a, 'conc_cs', -1) for a in A + [v + VA for v in after]],
+    h_ante=[v - HV for v in svt + after], h_retro=[s + 60 for s in sp],
+    cal=[(svt[0], svt[1], 'RVA', 'LC 300'), (sp[0], sp[1], 'RVA', 'S-S 270'), (sp[-1], ret + 2, 'RVA', 'PPI 440'),
+         (A[4] + 38, A[5] + 38, 'HRA', 'A-A 270'), (A[5] + 38, A[6] + 38, 'HRA', 'A-A 270'),
+         (A[1] + 8, svt[2] - HV, 'His d', 'AH 80'), (A[-1] + 8, ret - HV, 'His d', 'AH 130')])
 
 # 4. Miller 1991: ΔHA en TRAV posteroseptal (LC 340; HA 199 en TSV, 103 estimulando a la LC)
 svt = [0, 340, 680]; sp = [1250, 1590, 1930]
