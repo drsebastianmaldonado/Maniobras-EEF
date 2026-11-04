@@ -123,6 +123,7 @@ ul.hl.ok li{border-color:var(--green)}ul.hl.fav li{border-color:var(--blue)}ul.h
 .hm{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .hm .ml{font-size:12px;padding:3px 9px}
 .seg button{white-space:nowrap}
+.sim img{background:#fff;border:1px solid var(--line)}
 .real img{width:100%;height:auto;display:block;border-radius:10px;background:#000}
 .lic{font-size:11px;color:var(--ink2)}
 .lic a{color:inherit}
@@ -1001,18 +1002,19 @@ function locView(v) {
 const GRUPOS = { O: 'Observación', V: 'Ventricular', A: 'Auricular', F: 'Fármaco', C: 'Concepto' };
 
 // ===============================================================================================================
-// Casos publicados: datos informados en cada artículo y enlace a la figura original. Solo se muestran figuras reales
-// de artículos de acceso abierto con licencia Creative Commons (carpeta figs/), con su atribución.
+// Casos publicados: datos informados en cada artículo y enlace a la figura original. Figuras reales solo de artículos de
+// acceso abierto con licencia Creative Commons (figs/), con su atribución. Los registros simulados (figs/sim/) se generan
+// con herramientas/simulador a partir de los intervalos publicados y llevan la leyenda "REGISTRO SIMULADO".
 // ===============================================================================================================
 const DOI = d => 'https://doi.org/' + d;
 const CASOS = [
-  { m: 'vop', ref: 'knight99', fig: 'fig. 1 y 2', doi: '10.1016/S0735-1097(98)00614-7', t: 'Respuesta A-V en TRNAV típica y A-A-V en TA',
+  { m: 'vop', ref: 'knight99', fig: 'fig. 1 y 2', doi: '10.1016/S0735-1097(98)00614-7', t: 'Respuesta A-V en TRNAV típica y A-A-V en TA', sim: 'figs/sim/knight99.png',
     vals: [['TRNAV: LC de la TSV / de estimulación', '430 / 370 ms → A-V'], ['TA: LC de la TSV / de estimulación', '260 / 230 ms → A-A-V']],
     nota: 'En la TRNAV el último A acelerado conduce al V; en la TA le sigue otra A del foco antes del V.' },
-  { m: 'vop', ref: 'veen11', fig: 'fig. 3', doi: '10.1111/j.1540-8159.2011.03076.x', t: 'Seudo A-A-V en una TRNAV rápida-lenta',
+  { m: 'vop', ref: 'veen11', fig: 'fig. 3', doi: '10.1111/j.1540-8159.2011.03076.x', t: 'Seudo A-A-V en una TRNAV rápida-lenta', sim: 'figs/sim/veen11_pseudo.png',
     vals: [['LC TSV / estimulación', '380 / 360 ms'], ['SA / VA', '415 / 265 ms (SA−VA 150)'], ['PPI / cPPI−LC', '565 / 185 ms']],
     nota: 'El SA (415) supera la LC de estimulación (360): A₁, el primer A tras la última espiga, viene de la penúltima; A₂ es el último A acelerado. Contando bien, la respuesta es A-V. PPI y SA−VA largos: TRNAV atípica.' },
-  { m: 'ppi', ref: 'gt06', fig: 'fig. 2', doi: '10.1016/j.hrthm.2006.02.019', t: 'Cálculo del PPI corregido',
+  { m: 'ppi', ref: 'gt06', fig: 'fig. 2', doi: '10.1016/j.hrthm.2006.02.019', t: 'Cálculo del PPI corregido', sim: 'figs/sim/gt06.png',
     vals: [['PPI / LC de la TSV', '440 / 300 ms'], ['AH 1.er retorno / AH TSV', '130 / 80 ms'], ['cPPI−LC', '440 − 300 − (130 − 80) = 90 ms → TRAV']],
  },
   { m: 'ppi', ref: 'veen11', fig: 'fig. 1B', doi: '10.1111/j.1540-8159.2011.03076.x', t: 'TRAV por vía izquierda: valores "límite" desde el ápex',
@@ -1028,10 +1030,10 @@ const CASOS = [
   { m: 'vop', ref: 'veen08', fig: 'fig. 1 y 2', doi: '10.1016/j.hrthm.2008.04.010', t: 'Fusión manifiesta y fusión oculta desde el VI basal',
     vals: [['Fusión manifiesta', 'estim. 450 ms en TSV de 470 ms'], ['Fusión oculta', 'estim. 330 ms en TSV de 340 ms']],
     nota: 'En la fusión oculta el QRS estimulado es igual al de la TSV: hay que descartar la disociación isorrítmica.' },
-  { m: 'dha', ref: 'miller91', fig: 'fig. 2 y 3', url: 'https://pubmed.ncbi.nlm.nih.gov/?term=Miller+JM+Josephson+%22delta+HA%22+1991', t: 'ΔHA estimulando a la LC de la TSV',
+  { m: 'dha', ref: 'miller91', fig: 'fig. 2 y 3', url: 'https://pubmed.ncbi.nlm.nih.gov/?term=Miller+JM+Josephson+%22delta+HA%22+1991', t: 'ΔHA estimulando a la LC de la TSV', sim: 'figs/sim/miller91.png',
     vals: [['TRNAV (LC 280)', 'HA TSV 75 → HA estimulado 86: ΔHA +11'], ['TRAV posteroseptal (LC 340)', 'HA TSV 199 → HA estimulado 103: ΔHA −96']],
     nota: 'En la TRAV, durante la TSV His → V → vía → A en serie; estimulando, His y vía se activan en paralelo y el HA se acorta.' },
-  { m: 'hisorto', ref: 'ho15', fig: 'fig. 3', doi: '10.1007/s11936-015-0370-5', t: 'PJRT: captura ortodrómica vs antidrómica del His',
+  { m: 'hisorto', ref: 'ho15', fig: 'fig. 3', doi: '10.1007/s11936-015-0370-5', t: 'PJRT: captura ortodrómica vs antidrómica del His', sim: 'figs/sim/ho15.png',
     vals: [['LC TSV', '521 ms'], ['Ortodrómica (estim. 490)', 'VA 309 · HA 259'], ['Antidrómica (estim. 480)', 'VA 314 · HA 284'], ['TSV', 'VA 290 · HA 335'], ['Resultado', 'PPI−LC 71 · ΔVA 19 · ΔHA −76 → TRAV']],
     nota: 'Con captura ortodrómica, la morfología del His es igual a la de la TSV. Demuestra la vía y su participación.' },
   { m: 'diff', ref: 'segal09', fig: 'fig. 2 y 3', doi: '10.1016/j.hrthm.2008.12.033', t: 'Encarrilamiento diferencial en TRNAV y en TRAV',
@@ -1039,10 +1041,10 @@ const CASOS = [
   { m: 'diff', ref: 'arias10', fig: 'fig. 2 y 3', doi: '10.1111/j.1540-8167.2009.01632.x', t: 'RP largo con valores de TRNAV que resultó TRAV',
     vals: [['TSV', 'LC 480 · VA 296 · HA 338'], ['Encarrilamiento desde el ápex', 'PPI−LC 144 · cPPI 144 · ΔVA 142 · ΔHA 56 (todos "de TRNAV")'], ['Diferencial (TSV 445, estim. 430)', 'ΔcPPI−LC −18 · ΔVA −28 → TRAV'], ['EV con His refractario', 'adelantó la A']],
     nota: 'Vía posteroseptal lenta y decremental. Ablación exitosa de la vía.' },
-  { m: 'vai', ref: 'veen12', fig: 'fig. 4', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'Índice VA positivo',
+  { m: 'vai', ref: 'veen12', fig: 'fig. 4', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'Índice VA positivo', sim: 'figs/sim/veen12_vai.png',
     vals: [['VA desde el ápex / la base', '142 / 120 ms'], ['Índice VA', '+22 ms → vía accesoria']],
  },
-  { m: 'ehr', ref: 'veen12', fig: 'fig. 1 y 2', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'EV con His refractario que adelanta y que retrasa la A',
+  { m: 'ehr', ref: 'veen12', fig: 'fig. 1 y 2', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'EV con His refractario que adelanta y que retrasa la A', sim: 'figs/sim/veen12_ehr.png',
     vals: [['TSV de LC 444 (vía derecha)', 'adelanta la A 19 ms; QRS fusionado 122 ms vs 144 estimulado puro'], ['RP largo de LC 473 (vía septal lenta)', 'retrasa la A 20 ms']],
     nota: 'La EV coincide con el His esperado y el QRS sale fusionado: es His refractaria. Adelanta la A sin cambiar la secuencia.' },
   { m: 'parahis', ref: 'veen12', fig: 'fig. 3', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'Para-Hisiana antes y después de ablacionar la vía',
@@ -1134,6 +1136,7 @@ function casosHTML(id) {
   return `<div class="box casos"><div class="bl">Casos publicados</div>${cs.map(c => `<div class="caso">
     <div class="ct">${c.t}</div>
     <div class="tw"><table class="mini"><tbody>${c.vals.map(v => `<tr><td>${v[0]}</td><td class="dx">${v[1]}</td></tr>`).join('')}</tbody></table></div>
+    ${c.sim ? `<figure class="real sim"><a href="${c.sim}" target="_blank" rel="noopener" title="Ver en tamaño completo"><img src="${c.sim}" alt="Registro simulado: ${c.t}" loading="lazy"></a><figcaption><b>Registro simulado, no es el registro original.</b> Reproduce los intervalos publicados en ${REFS[c.ref][0]}${c.fig ? ', ' + c.fig : ''}; la morfología de las señales es ilustrativa. Tocá la imagen para verla en tamaño completo.</figcaption></figure>` : ''}
     ${c.img ? [].concat(c.img).map(g => `<figure class="real"><a href="${g.src}" target="_blank" rel="noopener" title="Ver en tamaño completo"><img src="${g.src}" alt="${g.alt}" loading="lazy"></a><figcaption>Tocá la imagen para verla en tamaño completo. ${g.cap}<br><span class="lic">${g.lic}</span></figcaption></figure>`).join('') : ''}
     ${c.nota ? `<p class="small" style="margin:0">${c.nota}</p>` : ''}
     <a class="btn lnk" href="${c.url || DOI(c.doi)}" target="_blank" rel="noopener noreferrer">Ver ${c.fig ? 'la ' + c.fig : 'el artículo'} en ${REFS[c.ref][0]} ↗</a>

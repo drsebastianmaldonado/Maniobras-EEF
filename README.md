@@ -16,7 +16,7 @@ taquicardias supraventriculares.
 - **Calculadora**: PPI−LC, cPPI−LC, SA−VA, ΔHA, encarrilamiento diferencial, ΔAH y AH TSV vs sinusal, con cortes de
   RP corto o largo.
 
-Figuras reales: solo de artículos de acceso abierto con licencia Creative Commons (carpeta `figs/`), con su atribución y licencia en la app. Del resto se muestran los datos publicados y el enlace a la figura original; no se usan gráficos de elaboración propia.
+Figuras reales: solo de artículos de acceso abierto con licencia Creative Commons (carpeta `figs/`), con su atribución y licencia en la app. Del resto se muestran los datos publicados y el enlace a la figura original. En algunos casos hay un registro simulado (`figs/sim/`, generado con `herramientas/simulador/`) que reproduce los intervalos publicados y lleva la leyenda "REGISTRO SIMULADO".
 
 Archivos: `index.html` (todo el contenido), `manifest.json` + `sw.js` (instalable y sin conexión), `iconos/`.
 Está pensada para publicarse sola en GitHub Pages (por ejemplo, en un repositorio propio).
