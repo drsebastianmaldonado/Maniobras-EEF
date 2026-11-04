@@ -5,7 +5,7 @@ Marcá con `[x]` lo que ya revisaste.
 
 ## 1. Registros simulados (revisión clínica)
 
-Son 14 trazados sintéticos que reproducen los intervalos publicados; la morfología es ilustrativa.
+Son 15 trazados sintéticos que reproducen los intervalos publicados; la morfología es ilustrativa.
 Todos dicen "REGISTRO SIMULADO" y están en `figs/sim/`.
 
 - [ ] **Todos:** amplitudes y morfología del QRS (TSV y estimulado), visibilidad del His, ubicación de la A en cada canal.
@@ -17,6 +17,7 @@ Todos dicen "REGISTRO SIMULADO" y están en `figs/sim/`.
 - [ ] **Knight 1999:** el SA durante la estimulación es ilustrativo (no está publicado).
 - [ ] **Miller 1991:** el momento del His retrógrado estimulando es ilustrativo; el HA 103 sí es publicado.
 - [ ] **Gardey 2021:** canales "Nodo sup." y "Nodo inf." y "AD lateral".
+- [ ] **Burri 2012 (doble disparo):** publicados solo la frecuencia (134 lpm), la relación 1:2 y la A sinusal. El AH1 (90 ms) y el H1–H2 (430 ms, dentro del rango 265–520 de Peiker) son ilustrativos.
 - [ ] **Arias 2010:** la LC de estimulación no está publicada (no tiene calibre).
 
 ## 2. Modo práctica (13 casos)

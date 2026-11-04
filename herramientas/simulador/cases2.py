@@ -104,6 +104,18 @@ S['tvf_post'] = dict(win=(-60, 2200), pxms=0.32, src='intervalos de Liu Q 2023 (
     cal=[(vs[2], vs[3], 'RVA', 'LC 337'), (vs[4] - 45, vs[4], 'LV 1-2', 'P1-V 45')],
     marks=[(vs[3] - 85, 'LV 9-10', 'P1'), (vs[3] - 30, 'LV 1-2', 'P2'), (vs[5] + 15, 'His d', 'H')])
 
+# H. Burri 2012: doble disparo nodal. 134 lpm con RR levemente alternantes y relación P:QRS 1:2 (A-A ≈ 896).
+#    Publicado: frecuencia, relación 1:2 y secuencia sinusal. Ilustrativos: AH1 90, H1-H2 430 (rango de Peiker 2016: 265-520).
+AA = 896; AH1 = 90; H12 = 430
+As = [i * AA for i in range(3)]
+h1 = [a + AH1 for a in As]; h2 = [h + H12 for h in h1]
+vs = sorted([h + HV for h in h1 + h2])
+S['burri12'] = dict(win=(-80, 2450), pxms=0.30, src='Burri 2012 (134 lpm, P:QRS 1:2, A sinusal); AH y H1-H2 ilustrativos',
+    channels=['HRA', 'His p', 'His d'],
+    beats=[(v, 'n') for v in vs], atr=[(a, 'sinus', 1) for a in As], h_ante=h1 + h2,
+    cal=[(As[0], As[1], 'HRA', 'A-A 896: una A cada dos V'), (vs[2], vs[4], 'V1', '2 RR = 896 (134 lpm)')],
+    marks=[(h1[1], 'His d', 'H1'), (h2[1], 'His d', 'H2'), (As[1] + 30, 'aVF', 'P'), (vs[2] + 45, 'aVF', 'V1'), (vs[3] + 45, 'aVF', 'V2')])
+
 only = sys.argv[3:] or list(S)
 for k in only:
     render(S[k], f'{OUT}/{k}.svg')
