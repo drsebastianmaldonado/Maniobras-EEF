@@ -10,7 +10,7 @@ S = {}
 CH = ['HRA', 'His p', 'His d', 'CS 9-10', 'CS 5-6', 'CS 1-2', 'RVA']
 
 
-def ehr(LC, VA, seq, d, k_spike=2, early=0, typ='pa', pace='RVA', n_after=2, title=None, src='', lab=None, mark='EV-HR'):
+def ehr(LC, VA, seq, d, k_spike=3, early=0, typ='pa', pace='RVA', n_after=2, title=None, src='', lab=None, mark='EV-HR'):
     """TSV 1:1; EV con His refractario en el ciclo k. d > 0 adelanta la A, d < 0 la retrasa, 0 = sin efecto."""
     vs = [i * LC for i in range(k_spike)]
     h_exp = k_spike * LC - HV
@@ -23,7 +23,7 @@ def ehr(LC, VA, seq, d, k_spike=2, early=0, typ='pa', pace='RVA', n_after=2, tit
     A += [v + VA for v in after]
     beats = [(v, 'n') for v in vs] + [(sp, typ)] + [(v, 'n') for v in after]
     h = [v - HV for v in vs] + [h_exp] + [v - HV for v in after]
-    cal = [(A[k_spike - 1] + 2, a_new + 2, 'CS 9-10', lab or f'A-A {LC - d}')]
+    cal = [(A[k_spike - 2] + 2, A[k_spike - 1] + 2, 'CS 9-10', f'A-A {LC}'), (A[k_spike - 1] + 2, a_new + 2, 'CS 9-10', lab or f'A-A {LC - d}')]
     return dict(win=(-80, after[-1] + 200), pxms=0.30, channels=CH, title=title, src=src, spikes=[sp], pace_ch=pace,
                 beats=beats, atr=[(a, seq, -1) for a in A], h_ante=h, cal=cal,
                 marks=[(sp, 'V1', mark), (h_exp, 'His p', 'H')])

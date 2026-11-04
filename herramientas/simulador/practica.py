@@ -40,9 +40,6 @@ def limpiar(k, sc):
             continue
         cal.append((t1, t2, ch, lab))
     cal += EXTRA.get(k, [])
-    if k in EHR:
-        a0, a1 = sc['atr'][0][0], sc['atr'][1][0]
-        cal.append((a0 + 2, a1 + 2, 'CS 9-10', f'A-A {a1 - a0}'))
     if any(l.startswith('PPI') for *_, l in cal) and not any(l.startswith('LC') for *_, l in cal):
         n = sorted(t for t, typ in sc['beats'] if typ == 'n')
         cal.append((n[0], n[1], 'RVA', f'LC {n[1] - n[0]}'))

@@ -97,18 +97,20 @@ S['veen12_vai_b'] = dict(win=(-100, sp[-1] + 400), pxms=0.3, title='B. Estimulac
     beats=[(x, 'pb') for x in sp], spikes=sp, atr=[(x + 120, 'cs_mid', -1) for x in sp], h_retro=[x + 140 for x in sp],
     cal=[(sp[1], sp[1] + 120, 'CS 5-6', 'VA 120'), (sp[0], sp[1], 'VD basal', 'S-S 600')])
 
-# 7. Veenhuyzen 2012 fig. 1: EV His refractaria que adelanta la A 19 ms (LC 444, vía derecha)
-svt = [0, 444, 888]; VA = 150
-A = [v + VA for v in svt[:2]]
-s_hr = 888 - HV                        # cae en el momento del His esperado
-A3 = 888 + VA - 19                     # A adelantada
-v4 = A3 + (444 - VA); v5 = v4 + 444
-S['veen12_ehr'] = dict(win=(-100, 1950), pxms=0.36, src='intervalos de Veenhuyzen 2012, fig. 1',
-    beats=[(0, 'n'), (444, 'n'), (s_hr, 'f'), (v4, 'n'), (v5, 'n')], spikes=[s_hr],
+# 7. Veenhuyzen 2012 fig. 1: EV His refractaria que adelanta la A 19 ms (LC 444, vía derecha). VA 150 ilustrativo.
+LC, VA = 444, 150
+svt = [i * LC for i in range(4)]
+A = [v + VA for v in svt[:3]]
+s_hr = svt[3] - HV                     # cae en el momento del His esperado
+A3 = svt[3] + VA - 19                  # A adelantada
+v4 = A3 + (LC - VA); v5 = v4 + LC
+S['veen12_ehr'] = dict(win=(-100, v5 + 330), pxms=0.3,
+    src='Veenhuyzen 2012, fig. 1: LC 444; la EV con His refractario adelanta la A 19 ms (VA 150 ilustrativo)',
+    beats=[(v, 'n') for v in svt[:3]] + [(s_hr, 'f'), (v4, 'n'), (v5, 'n')], spikes=[s_hr],
     atr=[(a, 'right', -1) for a in A + [A3, v4 + VA, v5 + VA]],
-    h_ante=[v - HV for v in [0, 444, v4, v5]] + [s_hr],
-    cal=[(A[1], A3, 'HRA', 'A-A 425 (LC 444)')],
-    marks=[(s_hr, 'V1', 'EV-HR')])
+    h_ante=[v - HV for v in svt[:3] + [v4, v5]] + [s_hr],
+    cal=[(A[1], A[2], 'HRA', 'A-A 444'), (A[2], A3, 'HRA', 'A-A 425 (−19)')],
+    marks=[(s_hr, 'V1', 'EV-HR'), (s_hr, 'His p', 'H')])
 
 if __name__ == '__main__':
     for k, sc in S.items():

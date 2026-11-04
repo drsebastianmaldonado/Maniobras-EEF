@@ -20,7 +20,7 @@ En todos conviene mirar las amplitudes y la morfología del QRS, la visibilidad 
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/ho15.png) **Ho 2015** (captura ortodrómica del His en la PJRT): encarrilamiento con 6 estímulos a 490, A-A 490, LC 521, PPI 592, HA 335 y 259.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/arias10.png) **Arias 2010** (RP largo con valores de TRNAV): encarrilamiento con 6 estímulos a 465 (ilustrativo, no publicado), A-A 465, LC 480, VA 296, SA 438, HA 338 y 394, PPI 624.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_vai.png) **Veenhuyzen 2012, fig. 4** (índice VA): dos paneles, ápex (VA 142) y posterobasal (VA 120); LC de estimulación 600 ilustrativa.
-- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_ehr.png) **Veenhuyzen 2012, fig. 1** (EV con His refractario): secuencia auricular de la vía derecha y QRS fusionado.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_ehr.png) **Veenhuyzen 2012, fig. 1** (EV con His refractario): A-A previo 444 y A-A adelantado 425 (−19); secuencia auricular de la vía derecha y QRS fusionado. VA 150 ilustrativo.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_eav.png) **Veenhuyzen 2012, fig. 6** (EA con His refractario en la TRNAV).
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_jt.png) **Veenhuyzen 2012, fig. 7** (taquicardia de la unión): secuencia del EA desde la AD alta y His adelantado.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/kaneko11.png) **Kaneko 2011** (2:1): asumí bloqueo por encima del His (sin H en los ciclos bloqueados).
