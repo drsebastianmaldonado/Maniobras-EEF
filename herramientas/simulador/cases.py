@@ -18,17 +18,25 @@ S['knight99'] = dict(win=(-120, 2560), src='Knight 1999, fig. 1 (LC 430, estimul
          (sp[-1], A[-1] + 2, 'CS 9-10', 'SA 190'), (svt[1], svt[1] + 40, 'CS 9-10', 'VA 40')],
     marks=[(A[-1], 'HRA', 'último A'), (ret_v + 215, 'His p', 'PPI−LC 170 · SA−VA 150 → TRNAV')])
 
-# 2. Veenhuyzen 2011 fig. 3: seudo A-A-V (TRNAV rápida-lenta)
-svt = [0, 380]; sp = [700, 1060, 1420]
-A = [v + 265 for v in svt] + [s + 415 for s in sp]
-ret = sp[-1] + 565; after = [ret, ret + 380]
-S['veen11_pseudo'] = dict(win=(-150, 2650), src='intervalos de Veenhuyzen 2011, fig. 3',
+# 2. Veenhuyzen 2011 fig. 3: seudo A-A-V (TRNAV rápida-lenta). LC 380, VA 265, estimulación 360, SA 415, PPI 565.
+#    Panel A: la taquicardia sola (relación VA). Panel B: encarrilamiento con 6 estímulos, A-A a 360 y PPI.
+LC, VA = 380, 265
+svt = [i * LC for i in range(5)]
+S['veen11_pseudo_a'] = dict(win=(-100, svt[-1] + 330), pxms=0.25, title='A. Taquicardia',
+    src='Veenhuyzen 2011, fig. 3: LC 380, VA 265',
+    beats=[(v, 'n') for v in svt], atr=[(v + VA, 'conc_cs', -1) for v in svt], h_ante=[v - HV for v in svt],
+    cal=[(svt[1], svt[2], 'RVA', 'LC 380'), (svt[2], svt[2] + VA + 2, 'CS 9-10', 'VA 265')])
+svt = [0, LC]; sp = [700 + 360 * i for i in range(6)]
+A = [v + VA for v in svt] + [s + 415 for s in sp]
+ret = sp[-1] + 565; after = [ret, ret + LC]
+S['veen11_pseudo_b'] = dict(win=(-100, after[-1] + 330), pxms=0.25, title='B. Encarrilamiento desde el ápex del VD a 360 ms',
+    src='Veenhuyzen 2011, fig. 3: LC 380, estimulación 360, PPI 565',
     beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
-    atr=[(a, 'conc_cs', -1) for a in A + [v + 265 for v in after]],
+    atr=[(a, 'conc_cs', -1) for a in A + [v + VA for v in after]],
     h_ante=[v - HV for v in svt + after], h_retro=[s + 120 for s in sp],
-    cal=[(sp[-1], A[-1] + 38, 'HRA', 'SA 415'), (after[0], after[0] + 265 + 38, 'HRA', 'VA 265'),
-         (sp[0], sp[1], 'RVA', 'S-S 360'), (sp[-1], ret + 2, 'RVA', 'PPI 565')],
-    marks=[(A[-2] + 38, 'HRA', 'A₁'), (A[-1] + 38, 'HRA', 'A₂')])
+    cal=[(svt[0], svt[1], 'RVA', 'LC 380'), (sp[0], sp[1], 'RVA', 'S-S 360'), (sp[-1], ret + 2, 'RVA', 'PPI 565'),
+         (A[4] + 38, A[5] + 38, 'HRA', 'A-A 360'), (A[5] + 38, A[6] + 38, 'HRA', 'A-A 360')],
+    marks=[(A[-2] + 38, 'CS 9-10', 'A₁'), (A[-1] + 38, 'CS 9-10', 'A₂')])
 
 # 3. González-Torrecilla 2006: PPI corregido (TRAV), LC 300, PPI 440, AH 130 vs 80
 svt = [0, 300]; sp = [400, 670]

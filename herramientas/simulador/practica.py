@@ -13,9 +13,9 @@ S = {**cases.S, **cases2.S, **cases3.S, **cases4.S}
 
 USADAS = ['arias10', 'burri12', 'ho15', 'knight99', 'michaud01', 'p10_ehr', 'p10_vop', 'p11_adec', 'p11_anillo', 'p11_eapre',
           'p12_eapre', 'p12_pre', 'p13_abll', 'p2_ehr', 'p3_ado', 'p3_vop', 'p4_ehr_a', 'p4_ehr_b', 'p4_pre', 'p5_ehr', 'p6_aop',
-          'p6_ehr', 'p8_verap_a', 'p8_verap_b', 'p9_diff_a', 'p9_diff_b', 'p9_ehr', 'tvf_post', 'veen11_fusion', 'veen11_pseudo', 'veen12_jt']
+          'p6_ehr', 'p8_verap_a', 'p8_verap_b', 'p9_diff_a', 'p9_diff_b', 'p9_ehr', 'tvf_post', 'veen11_fusion', 'veen11_pseudo_a', 'veen11_pseudo_b', 'veen12_jt']
 
-TITULOS = {'p4_ehr_a': 'A. EV-HR desde el ápex del VD', 'p4_ehr_b': 'B. EV-HR desde el VI basal (rama del SC)',
+TITULOS = {'veen11_pseudo_a': 'A. Taquicardia', 'veen11_pseudo_b': 'B. Encarrilamiento desde el ápex del VD','p4_ehr_a': 'A. EV-HR desde el ápex del VD', 'p4_ehr_b': 'B. EV-HR desde el VI basal (rama del SC)',
            'p8_verap_a': 'A. Antes del verapamilo', 'p8_verap_b': 'B. Con verapamilo',
            'p9_diff_a': 'A. Desde el ápex del VD', 'p9_diff_b': 'B. Desde la base del VD'}
 

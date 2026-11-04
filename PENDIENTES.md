@@ -13,7 +13,7 @@ En todos conviene mirar las amplitudes y la morfología del QRS, la visibilidad 
 ### Fichas de maniobras (casos publicados)
 
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/knight99.png) **Knight 1999** (A-V vs A-A-V): publicados LC 430 y estimulación 370. VA 40, SA 190 (SA−VA 150) y PPI 600 (PPI−LC 170) son ilustrativos, iguales a los del caso 1 de práctica.
-- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen11_pseudo.png) **Veenhuyzen 2011, fig. 3** (seudo A-A-V).
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen11_pseudo.png) **Veenhuyzen 2011, fig. 3** (seudo A-A-V): rehecho en dos paneles. A: taquicardia sola (LC 380, VA 265). B: encarrilamiento con 6 estímulos a 360, A-A 360, LC 380 y PPI 565; sin SA.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen11_fusion.png) **Veenhuyzen 2011, fig. 5** (fusión desde el VI): morfología del QRS de fusión y del His ortodrómico. También se usa en la ficha de conceptos de reset.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/gt06.png) **González-Torrecilla 2006** (PPI corregido).
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/miller91.png) **Miller 1991** (ΔHA): el momento del His retrógrado es ilustrativo; el HA 103 es publicado.
