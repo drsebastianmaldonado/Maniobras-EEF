@@ -14,9 +14,14 @@ QRS = {  # (desfase, ancho, amplitud) por derivación
     'pa': {'I': [(20, 18, 0.55), (60, 22, 0.35)], 'aVF': [(25, 20, -0.75), (70, 24, -0.35)], 'V1': [(25, 22, -0.85), (75, 24, -0.30)]},
     'pb': {'I': [(22, 18, 0.35), (62, 22, 0.20)], 'aVF': [(25, 20, 0.80), (68, 22, 0.35)], 'V1': [(25, 22, -0.70), (72, 24, -0.25)]},
     'f':  {'I': [(6, 12, 0.60), (40, 16, 0.20)], 'aVF': [(10, 13, 0.10), (42, 16, -0.30)], 'V1': [(8, 12, 0.10), (34, 16, -0.75)]},
+    'lv': {'I': [(25, 20, -0.60), (65, 22, -0.25)], 'aVF': [(25, 20, 0.45), (65, 22, 0.20)], 'V1': [(25, 20, 0.80), (65, 22, 0.35)]},
+    'fl': {'I': [(6, 11, 0.30), (32, 14, -0.30)], 'aVF': [(8, 11, 0.50), (32, 14, 0.15)], 'V1': [(6, 10, 0.05), (28, 14, 0.45)]},
+    'rbs': {'I': [(8, 9, 0.45), (40, 12, -0.15)], 'aVF': [(6, 8, 0.10), (28, 12, -0.70)], 'V1': [(6, 7, 0.25), (22, 8, -0.15), (52, 12, 0.70)]},
 }
 TWAVE = {'n': {'I': 0.18, 'aVF': 0.22, 'V1': 0.10}, 'pa': {'I': -0.20, 'aVF': 0.25, 'V1': 0.22},
-         'pb': {'I': -0.15, 'aVF': -0.25, 'V1': 0.20}, 'f': {'I': 0.05, 'aVF': 0.10, 'V1': 0.15}}
+         'pb': {'I': -0.15, 'aVF': -0.25, 'V1': 0.20}, 'f': {'I': 0.05, 'aVF': 0.10, 'V1': 0.15},
+         'lv': {'I': 0.20, 'aVF': -0.15, 'V1': -0.20}, 'fl': {'I': 0.10, 'aVF': 0.05, 'V1': -0.05},
+         'rbs': {'I': -0.10, 'aVF': 0.18, 'V1': -0.15}}
 
 # secuencias auriculares: desfase (ms) de cada canal respecto del inicio de la activación auricular
 CS_NAMES = ['CS 9-10', 'CS 7-8', 'CS 5-6', 'CS 3-4', 'CS 1-2']
@@ -26,6 +31,7 @@ SEQ = {
     'cs_mid':   {'HRA': 45, 'His': 20, 'CS': [14, 6, 0, 6, 14]},       # más precoz en el SC medio
     'right':    {'HRA': 0, 'His': 22, 'CS': [32, 40, 48, 56, 64]},     # más precoz en la pared libre derecha (AD alta)
     'sinus':    {'HRA': 0, 'His': 28, 'CS': [38, 46, 54, 62, 70]},
+    'left':     {'HRA': 60, 'His': 40, 'CS': [36, 28, 18, 8, 0]},       # más precoz en el SC distal (vía izquierda)
 }
 
 def render(sc, path):
@@ -36,11 +42,13 @@ def render(sc, path):
     W = int(LEFT + (T1 - T0) * PXMS + 20)
     beats = sc['beats']            # [(tiempo del inicio del QRS o espiga, tipo)]
     spikes = sc.get('spikes', [])  # tiempos de estimulación ventricular
+    aspikes = sc.get('aspikes', [])  # tiempos de estimulación auricular
+    extra = sc.get('extra', {})      # {canal: [(t, amplitud, ancho)]}
     atr = sc['atr']                # [(tiempo, secuencia, polaridad P en aVF: -1 retrógrada / +1 sinusal)]
     h_ante = sc.get('h_ante', [])
     h_retro = sc.get('h_retro', [])
     def v_local(t0, typ):  # momento del V local en el VD
-        return t0 + (14 if typ in ('pa',) else 30 if typ == 'pb' else 6 if typ == 'f' else 2)
+        return t0 + (14 if typ in ('pa',) else 30 if typ in ('pb', 'lv') else 6 if typ in ('f', 'fl') else 8 if typ == 'rbs' else 2)
 
     def egm(t, sites, w=1.0, frac=0):
         y = 0.0
@@ -87,13 +95,17 @@ def render(sc, path):
                 y += egm(t, [(far_v(t0, typ, 18 + 6 * i if typ in ('n', 'f') else 45 + 6 * i), 0.35) for t0, typ in beats], w=2.5)
             elif name == 'RVA':
                 y += egm(t, [(v_local(t0, typ), 1.5 if typ != 'n' else 1.4) for t0, typ in beats], w=1.8, frac=1)
+            elif name.startswith('LV') or name.startswith('Nodo') or name.startswith('AD '):
+                y += egm(t, [(far_v(t0, typ, 4), 0.8) for t0, typ in beats], w=2.0, frac=1)
+            if name in extra:
+                y += egm(t, [(tt, a) for tt, a, w in extra[name]], w=extra[name][0][2] if extra[name] else 1.0)
             return y
         return f
 
+    names = sc.get('channels', ['HRA', 'His p', 'His d'] + CS_NAMES + ['RVA'])
     channels = [('I', lambda t: surface(t, 'I'), 'surf', 26), ('aVF', lambda t: surface(t, 'aVF'), 'surf', 26),
-                ('V1', lambda t: surface(t, 'V1'), 'surf', 26), ('HRA', channel('HRA'), 'icd', 16),
-                ('His p', channel('His p'), 'icd', 16), ('His d', channel('His d'), 'icd', 16)] + \
-               [(n, channel(n), 'icd', 14) for n in CS_NAMES] + [('RVA', channel('RVA'), 'icd', 16)]
+                ('V1', lambda t: surface(t, 'V1'), 'surf', 26)] + \
+               [(n, channel(n), 'icd', 14 if n.startswith('CS') else 16) for n in names]
     H = TOP + ROWH * len(channels) + 40
     X = lambda t: LEFT + (t - T0) * PXMS
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" font-family="Helvetica,Arial,sans-serif">',
@@ -114,6 +126,10 @@ def render(sc, path):
                 if 0 <= ms - s < 3:
                     big = name == sc.get('pace_ch', 'RVA')
                     v += (-22 if big else (-6 if kind == 'icd' else -3)) * (1 if ms - s < 2 else -0.6)
+            for s in aspikes:
+                if 0 <= ms - s < 3:
+                    big = name == sc.get('apace_ch', 'HRA')
+                    v += (-22 if big else (-5 if kind == 'icd' else -2)) * (1 if ms - s < 2 else -0.6)
             v = max(-ROWH * 0.62, min(ROWH * 0.62, v))
             pts.append(f'{X(ms):.1f},{y0 - v:.1f}')
         out.append(f'<text x="8" y="{y0+4:.1f}" font-size="10.5" font-weight="700" fill="#333">{name}</text>')

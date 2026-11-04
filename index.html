@@ -1024,7 +1024,7 @@ const CASOS = [
     vals: [['TRNAV (estimulación septal a 510 ms)', 'SA−VA 120 · PPI−LC 150'], ['TRAV posteroseptal (ápex a 440 ms)', 'SA−VA 40 · PPI−LC 80']] },
   { m: 'sava', ref: 'gt11', fig: 'fig. 1', doi: '10.1111/j.1540-8167.2011.02020.x', t: 'SA−VA en tres mecanismos de VA largo',
     vals: [['TRNAV atípica', 'SA−VA 145 ms'], ['TRAV por vía septal', 'SA−VA 40 ms'], ['TRAV por vía lateral izquierda', 'SA−VA 80 ms']] },
-  { m: 'vop', ref: 'veen11', fig: 'fig. 5', doi: '10.1111/j.1540-8159.2011.03076.x', t: 'Encarrilamiento manifiesto desde el VI basal',
+  { m: 'vop', ref: 'veen11', fig: 'fig. 5', doi: '10.1111/j.1540-8159.2011.03076.x', t: 'Encarrilamiento manifiesto desde el VI basal', sim: 'figs/sim/veen11_fusion.png',
     vals: [['LC TSV / estimulación', '340 / 320 ms'], ['PPI−LC', '90 ms (cPPI−LC 30; AH 240 vs 180)'], ['SA−VA', '−20 ms'], ['His', 'capturado ortodrómicamente']],
     nota: 'QRS de fusión (más angosto que el estimulado puro) y His ortodrómico: TRAV por vía lateral izquierda.' },
   { m: 'vop', ref: 'veen08', fig: 'fig. 1 y 2', doi: '10.1016/j.hrthm.2008.04.010', t: 'Fusión manifiesta y fusión oculta desde el VI basal',
@@ -1038,7 +1038,7 @@ const CASOS = [
     nota: 'Con captura ortodrómica, la morfología del His es igual a la de la TSV. Demuestra la vía y su participación.' },
   { m: 'diff', ref: 'segal09', fig: 'fig. 2 y 3', doi: '10.1016/j.hrthm.2008.12.033', t: 'Encarrilamiento diferencial en TRNAV y en TRAV',
     vals: [['TRNAV', 'ΔPPI−LC +42 · ΔVA +34 (base − ápex)'], ['TRAV', 'ΔPPI−LC −5 · ΔVA −39']] },
-  { m: 'diff', ref: 'arias10', fig: 'fig. 2 y 3', doi: '10.1111/j.1540-8167.2009.01632.x', t: 'RP largo con valores de TRNAV que resultó TRAV',
+  { m: 'diff', ref: 'arias10', fig: 'fig. 2 y 3', doi: '10.1111/j.1540-8167.2009.01632.x', t: 'RP largo con valores de TRNAV que resultó TRAV', sim: 'figs/sim/arias10.png',
     vals: [['TSV', 'LC 480 · VA 296 · HA 338'], ['Encarrilamiento desde el ápex', 'PPI−LC 144 · cPPI 144 · ΔVA 142 · ΔHA 56 (todos "de TRNAV")'], ['Diferencial (TSV 445, estim. 430)', 'ΔcPPI−LC −18 · ΔVA −28 → TRAV'], ['EV con His refractario', 'adelantó la A']],
     nota: 'Vía posteroseptal lenta y decremental. Ablación exitosa de la vía.' },
   { m: 'vai', ref: 'veen12', fig: 'fig. 4', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'Índice VA positivo', sim: 'figs/sim/veen12_vai.png',
@@ -1055,12 +1055,12 @@ const CASOS = [
     vals: [['LC TSV / estimulación AD', '350 / 340 ms'], ['VA del último latido encarrilado', 'igual al de la TSV (VA linking)'], ['Durante la estimulación', 'PR > RR: vía lenta → TRNAV, no TA ni taquicardia de la unión']] },
   { m: 'aop', ref: 'knight00', fig: 'fig. 1', doi: '10.1016/S0735-1097(00)00770-1', t: 'VA linking tras encarrilar desde la aurícula',
     vals: [['VA del latido de retorno', 'igual al de la TSV → excluye TA']] },
-  { m: 'eha', ref: 'veen12', fig: 'fig. 6 y 7', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'EA con His refractario: TRNAV vs taquicardia de la unión',
+  { m: 'eha', ref: 'veen12', fig: 'fig. 6 y 7', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'EA con His refractario: TRNAV vs taquicardia de la unión', sim: ['figs/sim/veen12_eav.png', 'figs/sim/veen12_jt.png'],
     vals: [['TSV de LC 412, EA desde el ostium del SC', 'retrasa el His siguiente 16 ms → TRNAV'], ['TSV de LC 560, EA desde la AD alta', 'adelanta el His 38 ms y la TSV sigue → taquicardia de la unión']] },
   { m: 'ehr', ref: 'ho15', fig: 'fig. 1', doi: '10.1007/s11936-015-0370-5', t: 'Las tres respuestas positivas a la EV-HR',
     vals: [['Termina con bloqueo VA', 'TRNAV atípica con vía nodofascicular espectadora (AH 25 ms)'], ['Resetea adelantando', 'PJRT'], ['Resetea retrasando', 'TRNAV atípica con vía nodofascicular espectadora (AH 38 ms)']],
     nota: 'Un AH de la TSV muy corto (menor que en ritmo sinusal) es la pista de un circuito superior intranodal.' },
-  { m: 'basal', ref: 'kaneko11', fig: 'fig. 1 y 2', doi: '10.1111/j.1540-8167.2010.01997.x', t: 'RP largo con bloqueo AV 2:1',
+  { m: 'basal', ref: 'kaneko11', fig: 'fig. 1 y 2', doi: '10.1111/j.1540-8167.2010.01997.x', t: 'RP largo con bloqueo AV 2:1', sim: 'figs/sim/kaneko11.png',
     vals: [['TSV', 'HA 136 · AH 252 · A más precoz en el ostium del SC'], ['Con bloqueo AV 2:1', 'misma secuencia y LC → TRNAV rápida-lenta con bloqueo en el haz común inferior']] },
   { m: 'basal', ref: 'lim11', fig: 'fig. 1–3', doi: '10.1111/j.1540-8167.2011.02073.x', t: 'LC alternante: dos vías lentas y una TA',
     vals: [['RR alternantes', '336 / 436 ms con AH distintos'], ['Mecanismo', 'TRNAV por dos vías lentas que resetea un foco de TA; tras ablacionar la vía lenta, apareció la TA']] },
@@ -1085,11 +1085,11 @@ const CASOS = [
     vals: [['Pacientes', '5, con QRS ancho en sinusal y TV de QRS parecido (LC mediana 300 ms)'], ['His', 'relación 1:1 con el V, pero activado en forma pasiva desde el latido previo (VH largo)'], ['Lo demostraron', 'secuencia de activación, respuesta a la estimulación, disociación VH intermitente y la forma de terminación']] },
   { m: 'twin', ref: 'moore22', fig: '', doi: '10.1016/j.jacep.2021.08.004', t: 'Serie multicéntrica de 59 pacientes',
     vals: [['Población', 'edad mediana 8 años; 93 % heterotaxia (isomerismo derecho 39, izquierdo 8); 39 % con Fontan'], ['TSV', 'inducida en 75 %; LC mediana 343 ms; isoproterenol en 20 %'], ['Brazo retrógrado', 'nodo anterior 50 %, posterior 32 %, ambas direcciones 18 %'], ['Wenckebach', 'nodo anterior 300 ms, posterior 275 ms'], ['EV con His refractario', 'preexcitó la A o terminó la TSV en 6 de 24 (25 %)'], ['Ablación', 'éxito agudo 91 %, 3 recurrencias en 3,8 años, sin BAV de alto grado ni cambio del QRS']] },
-  { m: 'twin', ref: 'gardey21', fig: 'fig. 2 y 3', doi: '10.1093/ehjcr/ytab303', t: 'Nodos gemelos en TCGA con CIV reparada',
+  { m: 'twin', ref: 'gardey21', fig: 'fig. 2 y 3', doi: '10.1093/ehjcr/ytab303', t: 'Nodos gemelos en TCGA con CIV reparada', sim: 'figs/sim/gardey21.png',
     img: [{ src: 'figs/gardey2021_fig2.jpg', alt: 'Anatomía y propiedades de los nodos superior e inferior alrededor del parche de la CIV', cap: 'Figura 2: nodo superior (AH 80, HV 45, PRE 220, Wenckebach 270 ms) y nodo inferior (AH 70, HV 104, PRE 400, Wenckebach 420 ms) a cada lado del parche de la CIV; el asterisco marca el asa de Mönckeberg.', lic: 'Gardey K, Thevenard R, Joly H, Bessière F. <i>Eur Heart J Case Rep</i> 2021;5:ytab303, figura 2. Licencia <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>.' },
       { src: 'figs/gardey2021_fig3.jpg', alt: 'Activación de los dos nodos durante la taquicardia', cap: 'Figura 3: durante la TSV baja por el nodo superior (A-H-V) y sube por el inferior (V-H-A), pasando por el asa.', lic: 'Gardey K, Thevenard R, Joly H, Bessière F. <i>Eur Heart J Case Rep</i> 2021;5:ytab303, figura 3. Licencia <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>.' }],
     vals: [['Paciente', '15 años, TCGA, CIV cerrada con parche a los 3 años; TSV de RP largo incesante'], ['Ritmo sinusal', 'un solo QRS (mala conducción anterógrada del nodo inferior)'], ['TSV', 'baja por el nodo superior (AH 70, HV 47) y sube por el inferior (VH 133, HA 100 ms)'], ['Encarrilamiento desde los dos nodos', 'ambos en el circuito: descarta TA y TRNAV atípica'], ['Ablación del nodo inferior', 'desde el lado izquierdo de la CIV; sin recurrencia a 8 meses']] },
-  { m: 'tvf', ref: 'nogami10', fig: 'fig. 2', url: 'https://pubmed.ncbi.nlm.nih.gov/?term=Nogami+diagnosis+and+ablation+of+fascicular+tachycardia', t: 'P1 y P2 en la TV fascicular posterior',
+  { m: 'tvf', ref: 'nogami10', fig: 'fig. 2', url: 'https://pubmed.ncbi.nlm.nih.gov/?term=Nogami+diagnosis+and+ablation+of+fascicular+tachycardia', t: 'P1 y P2 en la TV fascicular posterior', sim: 'figs/sim/tvf_post.png', simde: 'Liu Q 2023 (LC 337, P1-V 45), Liu 2015 (P2 ~30 ms antes del QRS) y Nogami 2010 (His 5–30 ms después del QRS)',
     vals: [['Serie', '20 pacientes; P1 y P2 registrados en 15'], ['Durante la TV', 'P1 de proximal a distal; P2 de distal a proximal; His 5–30 ms después del QRS'], ['En sinusal', 'P2 antes del QRS y después del His'], ['Experiencia del autor', '76 posteriores (éxito 97 %, recurrencia 4 %), 12 anteriores (92 %, 8 %), 2 septales superiores (100 %, 0 %)']] },
   { m: 'tvfabl', ref: 'liu15', fig: '', doi: '10.1161/CIRCEP.115.003080', t: 'Seguimiento de 120 ablaciones',
     vals: [['Población', '29 años promedio, 82 % varones, FEVI normal; 118 posteriores, 2 anteriores'], ['Blanco', 'Purkinje presistólico más precoz (30 ms antes del QRS)'], ['Resultado', 'éxito agudo 117/120; sin recurrencia ni drogas con un procedimiento: 80 % a 4,6 años'], ['Recurrencias', '17 por el mismo fascículo; 6 TV septales superiores nuevas']] },
@@ -1136,7 +1136,7 @@ function casosHTML(id) {
   return `<div class="box casos"><div class="bl">Casos publicados</div>${cs.map(c => `<div class="caso">
     <div class="ct">${c.t}</div>
     <div class="tw"><table class="mini"><tbody>${c.vals.map(v => `<tr><td>${v[0]}</td><td class="dx">${v[1]}</td></tr>`).join('')}</tbody></table></div>
-    ${c.sim ? `<figure class="real sim"><a href="${c.sim}" target="_blank" rel="noopener" title="Ver en tamaño completo"><img src="${c.sim}" alt="Registro simulado: ${c.t}" loading="lazy"></a><figcaption><b>Registro simulado, no es el registro original.</b> Reproduce los intervalos publicados en ${REFS[c.ref][0]}${c.fig ? ', ' + c.fig : ''}; la morfología de las señales es ilustrativa. Tocá la imagen para verla en tamaño completo.</figcaption></figure>` : ''}
+    ${c.sim ? [].concat(c.sim).map(src => `<figure class="real sim"><a href="${src}" target="_blank" rel="noopener" title="Ver en tamaño completo"><img src="${src}" alt="Registro simulado: ${c.t}" loading="lazy"></a><figcaption><b>Registro simulado, no es el registro original.</b> Reproduce los intervalos publicados en ${c.simde || REFS[c.ref][0] + (c.fig ? ', ' + c.fig : '')}; la morfología de las señales es ilustrativa. Tocá la imagen para verla en tamaño completo.</figcaption></figure>`).join('') : ''}
     ${c.img ? [].concat(c.img).map(g => `<figure class="real"><a href="${g.src}" target="_blank" rel="noopener" title="Ver en tamaño completo"><img src="${g.src}" alt="${g.alt}" loading="lazy"></a><figcaption>Tocá la imagen para verla en tamaño completo. ${g.cap}<br><span class="lic">${g.lic}</span></figcaption></figure>`).join('') : ''}
     ${c.nota ? `<p class="small" style="margin:0">${c.nota}</p>` : ''}
     <a class="btn lnk" href="${c.url || DOI(c.doi)}" target="_blank" rel="noopener noreferrer">Ver ${c.fig ? 'la ' + c.fig : 'el artículo'} en ${REFS[c.ref][0]} ↗</a>

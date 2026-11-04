@@ -5,7 +5,7 @@ Todo el trazado es sintético; solo se rotulan los intervalos publicados y cada 
 "REGISTRO SIMULADO".
 
 - `simlib.py`: motor (canales, morfologías, secuencias auriculares, calibres).
-- `cases.py`: un escenario por caso (latidos, espigas, activaciones, His, calibres).
+- `cases.py` y `cases2.py`: un escenario por caso (latidos, espigas, activaciones, His, calibres).
 - `png.js`: convierte los SVG en PNG con Playwright.
 
 Uso:
