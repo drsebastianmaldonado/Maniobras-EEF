@@ -19,9 +19,10 @@ Todos dicen "REGISTRO SIMULADO" y están en `figs/sim/`.
 - [ ] **Gardey 2021:** canales "Nodo sup." y "Nodo inf." y "AD lateral".
 - [ ] **Arias 2010:** la LC de estimulación no está publicada (no tiene calibre).
 
-## 2. Modo práctica (12 casos)
+## 2. Modo práctica (13 casos)
 
-- [ ] **Casos con intervalos publicados:** 4 (Veenhuyzen 2011, fig. 1B y 5), 5 (Veenhuyzen 2011, fig. 3), 6 (Ho 2015), 8 (Liu Q 2023, Liu 2015, Nogami 2010) y 9 (Arias 2010).
+- [ ] **Casos con datos publicados:** 4 (Veenhuyzen 2011, fig. 1B y 5), 5 (Veenhuyzen 2011, fig. 3), 6 (Ho 2015), 8 (Liu Q 2023, Liu 2015, Nogami 2010), 9 (Arias 2010) y 13 (Burri 2012, doble disparo nodal).
+- [ ] **Caso 13:** las respuestas a la atropina y a la adenosina no están en el caso publicado; las escribí como lo esperable según Peiker 2016.
 - [ ] **Casos didácticos con valores ilustrativos** (coherentes con los cortes, pero no publicados): 1 (TRNAV típica: PPI−LC 170, SA−VA 150, ΔVA +35, EA que retrasa 14 ms), 2 (TRAV septal: PPI−LC 80 y SA−VA 40 de Michaud; ΔHA −45 y EV-HR que adelanta 25 ms son ilustrativos), 3 (TA), 7 (taquicardia de la unión: PPI−LC 175), 10 (vía nodoventricular: LC 390), 11 (Mahaim: LC 300) y 12 (TRAV antidrómica: LC 280). Los casos 11 y 12 se apoyan en Josephson, Klein 1988, Sternick 2004 y tu presentación.
 - [ ] **Clasificación de cada resultado** como "clave", "útil" o "engañosa": revisar que coincida con tu criterio docente.
 - [ ] **Diagnósticos aceptados:** en el caso 9 ("TRAV septal que imita una TRNAV atípica") valen PJRT y TRAV por vía septal. Revisar la explicación reescrita.
@@ -38,6 +39,10 @@ Las agregué yo; verificá los datos con tus copias o reemplazalas por artículo
 
 ## 4. Datos bibliográficos incompletos
 
+- [ ] **Singh 2016** (*Card Electrophysiol Clin*): sin volumen ni páginas; solo DOI.
+- [ ] **Wang 2011** (*PACE* 34:1671): citado desde las revisiones, no tengo el original.
+- [ ] **Atropina en el doble disparo:** Peiker la toma de una cita (Kim 1987); no tengo el original.
+
 - [ ] **Nogami 2010** (*Eur Cardiol* 6:79): sin DOI; el caso enlaza a una búsqueda de PubMed.
 - [ ] **Miller 1991** (*Am J Cardiol* 68:1037): sin DOI; enlaza a PubMed.
 - [ ] **Nogami 2002** (*Card Electrophysiol Rev*): el PDF es escaneado y no pude leerlo; el contenido sale de Nogami 2010.
@@ -45,6 +50,8 @@ Las agregué yo; verificá los datos con tus copias o reemplazalas por artículo
 - [ ] **Takase 2019** (*HeartRhythm Case Rep* 5): verificar las páginas (puse 48–52).
 
 ## 5. Contenido para tu revisión
+
+- [ ] **Doble disparo nodal (nuevo):** ficha, buscador, rama del algoritmo (relación AV "Una A seguida de dos V") y caso 13. Revisar el diferencial de la pregunta 1:2 (bigeminia auricular, extrasístoles de la unión, TSV subnodal con bloqueo 2:1).
 
 - [ ] **Ficha de adenosina:** se basa en tu presentación; no tiene artículo de respaldo.
 - [ ] **Tu presentación:** escribir la fórmula del índice VA (ápex − base, > +10 ms = vía) para que el "< 10" no se lea al revés.

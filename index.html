@@ -302,6 +302,13 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
 const REFS = {
+  peiker16: ['Peiker 2016', 'Peiker C, Pott C, Eckardt L, et al. Dual atrioventricular nodal non-re-entrant tachycardia. <i>Europace</i> 2016;18:332–9 (doi:10.1093/europace/euv056).'],
+  burri12: ['Burri 2012', 'Burri H, Hoffmann J, Zimmermann M. Double fire tachycardia. <i>Heart</i> 2012;98:958 (doi:10.1136/heartjnl-2012-301800).'],
+  jastrz09: ['Jastrzebski 2009', 'Jastrzebski M. Double fire or junctional ectopy? (carta, con la respuesta de Roten y Tanner). <i>Europace</i> 2009;11:1127–8 (doi:10.1093/europace/eup137).'],
+  kaczmarek14: ['Kaczmarek 2014', 'Kaczmarek K, Ruta J, Wranicz J, Ptaszynski P. A new type of dual atrioventricular nodal nonreentrant tachycardia. <i>Ann Noninvasive Electrocardiol</i> 2014;19:501–3 (doi:10.1111/anec.12129).'],
+  singh16: ['Singh 2016', 'Singh DK, Badhwar N. Implantable cardioverter-defibrillator shock caused by uncommon variety of nonreentrant atrioventricular nodal tachycardia. <i>Card Electrophysiol Clin</i> 2016 (doi:10.1016/j.ccep.2015.10.004).'],
+  adusumalli17: ['Adusumalli 2017', 'Adusumalli S, Gluer R, Lee A, Denman R. Double fire tachycardia induced cardiomyopathy: first ever reported case in Australia. <i>Intern Med J</i> 2017;47:468–9 (doi:10.1111/imj.13385).'],
+  wang11: ['Wang 2011', 'Wang NC. Dual atrioventricular nodal nonreentrant tachycardia: a systematic review. <i>Pacing Clin Electrophysiol</i> 2011;34:1671–81. (Citado en las revisiones.)'],
   knight99: ['Knight 1999', 'Knight BP, Zivin A, Souza J, et al. A technique for the rapid diagnosis of atrial tachycardia in the electrophysiology laboratory. <i>J Am Coll Cardiol</i> 1999;33:775–81.'],
   knight00: ['Knight 2000', 'Knight BP, Ebinger M, Oral H, et al. Diagnostic value of tachycardia features and pacing maneuvers during paroxysmal supraventricular tachycardia. <i>J Am Coll Cardiol</i> 2000;36:574–82.'],
   michaud01: ['Michaud 2001', 'Michaud GF, Tada H, Chough S, et al. Differentiation of atypical AVNRT from orthodromic reciprocating tachycardia using a septal accessory pathway by the response to ventricular pacing. <i>J Am Coll Cardiol</i> 2001;38:1163–7.'],
@@ -421,7 +428,8 @@ const M = {
       ['Termina con una A no prematura (más de una vez)', 'Bloqueo AV terminal: TRNAV o TRAV (excluye TA)', 'veen11 veen12'],
       ['VA aumenta > 20–30 ms con bloqueo de rama funcional (Coumel)', 'TRAV con vía libre homolateral al bloqueo', 'knight00 veen11 ho15'],
       ['Inducción desde el ventrículo sin conducción VA rápida', 'Argumenta en contra de TA', 'ho15'],
-      ['LC alternantes con AH distintos', 'Dos vías lentas anterógradas; pensar también en doble taquicardia (TRNAV + TA)', 'lim11']],
+      ['LC alternantes con AH distintos', 'Dos vías lentas anterógradas; pensar también en doble taquicardia (TRNAV + TA)', 'lim11'],
+      ['Una A sinusal seguida de dos His y dos V (relación 1:2), con H1–H2 fijo', 'Taquicardia no reentrante por doble vía nodal ("double fire")', 'peiker16 burri12']],
     trampas: ['En el RP largo, la vía decremental atenúa el efecto Coumel (la aceleración se compensa con decremento).', 'Las taquicardias con brazo retrógrado lento suelen oscilar y terminar en el brazo retrógrado: la terminación es poco útil.', 'El bloqueo AV 2:1 funcional en el haz común inferior puede verse en la TRNAV.'],
     refs: ['knight00', 'veen11', 'ho15', 'kaneko11', 'lim11', 'autor'] },
 
@@ -727,6 +735,20 @@ const M = {
     trampas: ['La taquicardia de la unión con doble vía nodal puede adelantar el His (pero no retrasarlo) y dar una "respuesta doble".'],
     refs: ['padanilam08', 'veen12', 'sra95'] },
 
+  dfire: { g: 'O', t: 'Respuesta 1:2: doble disparo nodal', s: 'Taquicardia no reentrante por doble vía nodal (DAVNNT, "double fire")',
+    para: 'Una sola activación auricular (sinusal o estimulada) baja por la vía rápida y, cientos de milisegundos después, por la vía lenta: cada A da dos His y dos V. No es una reentrada: no hay circuito que encarrilar ni resetear. En el ECG se ve una P seguida de dos QRS angostos y suele confundirse con FA, extrasístoles auriculares o TV.',
+    como: ['ECG de 12 derivaciones: buscá la P sinusal (sobre todo en V1) antes del primer QRS de cada par, y el patrón repetitivo de latidos agrupados.', 'Registrá con catéteres en la AD alta y el His: secuencia auricular, relación A-H-V y los dos intervalos AH.', 'Medí H1–H2 (diferencia entre la conducción rápida y la lenta): en lo publicado, 265–520 ms (media 359 ms).', 'Estimulación auricular programada: un salto AH ≥ 50 ms confirma la doble vía, aunque muchas veces no se puede demostrar porque la doble conducción ya está manifiesta.', 'Si dudás con extrasístoles de la unión: atropina (suprime el doble disparo y aumenta la actividad de la unión).', 'Tratamiento: modificación o ablación de la vía lenta; objetivo final, que desaparezca el doble disparo y no se induzca.'],
+    interp: [
+      ['Una A seguida de dos His y dos V (A-H1-V1-H2-V2), con la secuencia auricular sinusal o la de la estimulación', 'Doble disparo nodal (excluye las taquicardias subnodales con bloqueo retrógrado 2:1)', 'burri12 adusumalli17 peiker16'],
+      ['H1–H2 fijo, con HV igual en ambos latidos', 'Doble disparo nodal (excluye extrasístoles de la unión o del His, que dan H1–H2 irregular)', 'peiker16'],
+      ['La AD registra una sola A por cada par de V', 'Doble disparo nodal o taquicardia de la unión (excluye bigeminia auricular)', 'burri12'],
+      ['Persiste a distintas frecuencias sinusales, con acoplamiento fijo y sin P retrógradas', 'Doble disparo nodal (en contra de bigeminia de la unión)', 'burri12 adusumalli17'],
+      ['La atropina lo suprime y no aumenta la actividad de la unión', 'Doble disparo nodal (en contra de extrasístoles de la unión)', 'peiker16'],
+      ['Desaparece con la ablación de la vía lenta', 'Confirma el diagnóstico', 'peiker16 burri12 singh16'],
+      ['Secuencia repetitiva 1:2 – 1:0 – 1:1', 'Variante atípica: doble disparo, latido no conducido por ocultación y conducción 1:1', 'kaczmarek14']],
+    trampas: ['Lo más común es que se diagnostique como FA (con anticoagulación innecesaria); también como extrasístoles auriculares, TV o TV en el cardiodesfibrilador, con descargas inapropiadas.', 'El AH puede variar (ocultación retrógrada, Wenckebach en alguna de las vías): un AH variable no descarta el doble disparo.', 'El isoproterenol favorece la conducción retrógrada: suprime el doble disparo y facilita ecos nodales o TRNAV, que pueden coexistir.', 'Con aberrancia o bloqueo de rama en el segundo latido puede parecer una TV o una extrasístole ventricular.', 'Si es incesante puede producir miocardiopatía por taquicardia, que revierte tras la ablación.', 'Los antiarrítmicos casi nunca lo controlan a largo plazo.'],
+    refs: ['peiker16', 'burri12', 'jastrz09', 'kaczmarek14', 'singh16', 'adusumalli17', 'wang11'] },
+
   conc: { g: 'C', t: 'Reset y encarrilamiento: conceptos', s: 'Lo que hay que entender para interpretar todo lo anterior',
     para: 'El reset es la interacción entre un estímulo y la taquicardia: la pausa que sigue es menos que compensadora. El encarrilamiento es un reset continuo: la TSV se acelera a la LC de estimulación y, al cortar, retoma su LC.',
     como: ['Estimulá más rápido que la TSV sin interrumpirla.', 'Buscá fusión constante (salvo en el último latido) y fusión distinta a distintas LC (criterios de Waldo).', 'El PPI se aproxima a la LC (0–30 ms) si el sitio está en el circuito.'],
@@ -828,7 +850,12 @@ ARR.push(
     conf: [['Estimulación auricular decremental: preexcitación con BRI que aumenta mientras el AV se alarga y el HV se acorta hasta hacerse negativo', 'preex pre', 'klein88 josephson'], ['Durante la taquicardia, un EA desde la pared libre del AD (no desde el septum), con la unión AV refractaria, adelanta el V', 'preex', 'josephson']],
     apoya: [['Taquicardia con BRI igual a la preexcitación máxima', 'preex', 'josephson'], ['ECG en ritmo sinusal normal o con patrón rS en DIII', 'basal', 'sternick04'], ['Sin conducción retrógrada por la vía (conducción solo anterógrada)', 'pre', 'josephson'], ['Potencial de la vía en el anillo tricuspídeo lateral durante el mapeo', 'preex', 'josephson']],
     desc: [['Preexcitación con AV corto que no se alarga con la estimulación (vía tipo Kent)', 'preex', 'josephson'], ['Conducción VA rápida por la vía', 'pre', 'josephson'], ['Disociación AV durante la taquicardia (pensar en TV)', 'basal', 'josephson']],
-    trampa: 'La ablación se guía por el potencial de la vía en el anillo tricuspídeo, no por el sitio de inserción ventricular. La adenosina puede bloquear la vía.' });
+    trampa: 'La ablación se guía por el potencial de la vía en el anillo tricuspídeo, no por el sitio de inserción ventricular. La adenosina puede bloquear la vía.' },
+  { id: 'dfire', n: 'Taquicardia no reentrante por doble vía nodal', al: 'double fire doble disparo DAVNNT 1:2 doble respuesta ventricular no reentrante nodal', dif: 'FA, extrasístoles o bigeminia auricular, bigeminia de la unión, TRNAV con bloqueo retrógrado 2:1, TV.',
+    conf: [['Una A (sinusal o estimulada) seguida de dos His y dos V (A-H1-V1-H2-V2), con H1–H2 fijo', 'dfire', 'peiker16 burri12 adusumalli17'], ['Desaparece con la ablación de la vía lenta', 'dfire', 'peiker16 burri12 singh16']],
+    apoya: [['ECG: P sinusal seguida de dos QRS angostos, latidos agrupados', 'dfire basal', 'peiker16'], ['Doble fisiología nodal (salto AH ≥ 50 ms), aunque a menudo no se demuestra', 'pre dfire', 'peiker16'], ['Conducción VA ausente o débil', 'pre', 'peiker16 singh16'], ['La atropina lo suprime', 'dfire', 'peiker16'], ['Persiste a distintas frecuencias sinusales', 'dfire', 'adusumalli17']],
+    desc: [['P retrógradas o secuencia auricular concéntrica (TRNAV con bloqueo 2:1 u otra TSV subnodal)', 'basal', 'burri12 adusumalli17'], ['H1–H2 irregular (extrasístoles de la unión o del His)', 'dfire', 'peiker16'], ['Una A extra por cada QRS en la AD (bigeminia auricular)', 'dfire', 'burri12']],
+    trampa: 'Es el gran imitador de la FA: buscá la P en V1 antes de anticoagular. Un AH variable no lo descarta.' });
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 function arrRows(xs, cls) {
   return `<ul class="hl ${cls}">${xs.map(x => `<li><span>${x[0]}</span><span class="hm">${x[1].split(' ').map(k => `<button class="ml" data-m="${k}">${M[k].t}</button>`).join('')}<span class="cit">${x[2].split(' ').map(r => REFS[r][0]).join(' · ')}</span></span></li>`).join('')}</ul>`;
@@ -1024,11 +1051,13 @@ const PMAN = [
   ['parahis', 'Estimulación para-Hisiana en sinusal', 'parahis'], ['ado', 'Adenosina', 'ado'],
   ['verap', 'Verapamilo IV', 'tvf'], ['map', 'Mapeo del septum del VI', 'tvf'],
   ['adec', 'Estimulación auricular decremental en sinusal', 'preex'], ['eapre', 'EA durante la taquicardia con la unión AV refractaria', 'preex'],
-  ['anillo', 'Mapeo del anillo tricuspídeo', 'preex']];
+  ['anillo', 'Mapeo del anillo tricuspídeo', 'preex'],
+  ['regah', 'Registrar la A y el His (AD alta y His)', 'dfire'], ['atrop', 'Atropina', 'dfire'], ['abll', 'Ablación de la vía lenta', 'dfire']];
 const PDX = [['trnav_t', 'TRNAV típica'], ['trnav_a', 'TRNAV atípica'], ['trav_s', 'TRAV por vía septal'], ['trav_l', 'TRAV por vía libre'],
   ['pjrt', 'PJRT (vía septal lenta y decremental)'], ['ta', 'Taquicardia auricular'], ['jet', 'Taquicardia de la unión'],
   ['nvrt', 'Vía nodoventricular o nodofascicular'], ['tvf', 'TV fascicular'], ['bbr', 'TV por reentrada rama-rama'],
-  ['antid', 'TRAV antidrómica'], ['mahaim', 'Mahaim (vía atriofascicular)'], ['bys', 'TSV con conducción por una vía espectadora']];
+  ['antid', 'TRAV antidrómica'], ['mahaim', 'Mahaim (vía atriofascicular)'], ['bys', 'TSV con conducción por una vía espectadora'],
+  ['dfire', 'Taquicardia no reentrante por doble vía nodal'], ['bigat', 'Bigeminia auricular']];
 const UTAG = { clave: ['Clave', 'var(--green)'], util: ['Útil', 'var(--blue)'], trampa: ['Engañosa', 'var(--orange)'] };
 const PCASOS = [
   { id: 'c1', t: 'Palpitaciones de inicio y fin bruscos', p: 'Adolescente de 15 años con palpitaciones paroxísticas. ECG basal normal, sin preexcitación.',
@@ -1143,7 +1172,18 @@ const PCASOS = [
       vop: { r: 'Respuesta A-V: TRNAV o TRAV (excluye la TA).', u: 'util' },
       ado: { r: 'La taquicardia termina por bloqueo en el nodo.', u: 'trampa' },
       aop: { r: 'VA linking presente.' }, ehr: { r: 'No aplica: el QRS es preexcitado.' }, parahis: { r: 'No aplica.' } },
-    dx: ['antid'], ex: 'Si una vía fuera espectadora, el EA adelantaría el V pero la taquicardia seguiría a su ritmo. Acá el EA con la unión AV refractaria resetea la taquicardia a través de la vía: la vía es el brazo anterógrado y la aurícula está en el circuito. El retorno es por el nodo (His retrógrado antes de la A, secuencia concéntrica): TRAV antidrómica por una vía tipo Kent. La terminación con adenosina no distingue: también terminaría una TRNAV con conducción por una vía espectadora.', refs: ['autor', 'josephson'] }
+    dx: ['antid'], ex: 'Si una vía fuera espectadora, el EA adelantaría el V pero la taquicardia seguiría a su ritmo. Acá el EA con la unión AV refractaria resetea la taquicardia a través de la vía: la vía es el brazo anterógrado y la aurícula está en el circuito. El retorno es por el nodo (His retrógrado antes de la A, secuencia concéntrica): TRAV antidrómica por una vía tipo Kent. La terminación con adenosina no distingue: también terminaría una TRNAV con conducción por una vía espectadora.', refs: ['autor', 'josephson'] },
+  { id: 'c13', t: 'Una P y dos QRS', p: 'Mujer de 69 años, sin antecedentes, con palpitaciones recurrentes.',
+    h: ['Taquicardia de QRS angosto a 134 lpm, con RR levemente alternantes', 'Ondas P sinusales (se ven bien en V1), relación P:QRS 1:2', 'Sin ondas P retrógradas; el patrón se mantiene con acoplamiento fijo'],
+    m: { regah: { r: 'La AD registra una sola A por cada par de QRS, con secuencia alta → baja (sinusal). En el His, cada A conduce por la vía rápida y después por una vía muy lenta: A-H1-V1-H2-V2.', u: 'clave' },
+      abll: { r: 'La radiofrecuencia en la vía lenta (como en la TRNAV) interrumpió la taquicardia en 10 s; después no se indujo más.', u: 'clave' },
+      pre: { r: 'No hay datos basales en el caso publicado. El salto AH muchas veces no se puede demostrar porque la doble conducción ya está manifiesta.' },
+      vop: { r: 'No se informó. No hay un circuito que encarrilar: el doble disparo no es una reentrada.' },
+      medidas: { r: 'No aplica: no es una reentrada.' },
+      ado: { r: 'No se informó. Bloquearía el nodo y cortaría transitoriamente la conducción, sin separar los diagnósticos.' },
+      atrop: { r: 'No se usó en este caso. En el doble disparo suprime la respuesta 1:2; en las extrasístoles de la unión las aumenta.', u: 'util' },
+      ehr: { r: 'No aplica: no hay taquicardia reentrante que resetear.' } },
+    dx: ['dfire'], ex: 'Una P y dos QRS: el diferencial es bigeminia auricular, bigeminia de la unión, TRNAV con bloqueo retrógrado 2:1 y doble disparo nodal. El catéter de la AD descartó la bigeminia auricular (una sola A); la arritmia sostenida, con acoplamiento fijo y sin P retrógradas, hizo improbable la bigeminia de la unión; y la secuencia auricular sinusal (alta → baja) descartó la TRNAV con bloqueo 2:1. Cada A conduce por la vía rápida y por una vía muy lenta. La ablación de la vía lenta la cura. No hacen falta maniobras de encarrilamiento: no hay circuito.', refs: ['burri12', 'peiker16'] }
 ];
 let pState = {};
 try { pState = JSON.parse(localStorage.getItem('mef_prac') || '{}'); } catch (e) {}
@@ -1151,7 +1191,7 @@ let pCur = null, pLog = [], pDone = null;
 const pSave = () => { try { localStorage.setItem('mef_prac', JSON.stringify(pState)); } catch (e) {} };
 function renderPracList() {
   const ok = Object.values(pState).filter(x => x.ok).length;
-  $('#pracBody').innerHTML = `<div class="card" style="padding:14px 16px"><b>Cómo funciona</b><p class="small" style="margin:4px 0 0">Cada caso empieza con los hallazgos de la taquicardia. Elegí las maniobras que harías, en el orden que quieras, y cuando tengas el diagnóstico, decidilo. Al final ves qué maniobras eran clave y cuáles engañaban. Los casos 4, 5, 6, 8 y 9 usan intervalos publicados; los demás son didácticos, con valores coherentes con los puntos de corte. Resueltos: ${ok} de ${PCASOS.length}.</p></div>` +
+  $('#pracBody').innerHTML = `<div class="card" style="padding:14px 16px"><b>Cómo funciona</b><p class="small" style="margin:4px 0 0">Cada caso empieza con los hallazgos de la taquicardia. Elegí las maniobras que harías, en el orden que quieras, y cuando tengas el diagnóstico, decidilo. Al final ves qué maniobras eran clave y cuáles engañaban. Los casos 4, 5, 6, 8, 9 y 13 usan datos publicados; los demás son didácticos, con valores coherentes con los puntos de corte. Resueltos: ${ok} de ${PCASOS.length}.</p></div>` +
     PCASOS.map((c, i) => { const st = pState[c.id]; return `<button class="card lcard" type="button" data-c="${i}"><span class="lic2" style="--c:${st ? (st.ok ? 'var(--green)' : 'var(--orange)') : 'var(--slate)'}">${st ? (st.ok ? 'Resuelto · ' + st.n + ' maniobras' : 'A revisar') : 'Caso ' + (i + 1)}</span><b>${c.t}</b><span>${c.p}</span></button>`; }).join('');
   $('#pracBody').querySelectorAll('[data-c]').forEach(b => b.onclick = () => startCase(+b.dataset.c));
 }
@@ -1371,7 +1411,13 @@ const N = {
   av: { q: '¿Qué relación AV tiene la taquicardia?', help: 'Contá A y V en el His y en el SC durante varios ciclos. Si todavía no la indujiste, empezá por el estudio basal.', man: ['pre', 'basal', 'ado'], opts: [
     { t: '1:1', s: 'Una A por cada V', go: 'seq' },
     { t: 'Más A que V', s: 'Bloqueo AV y la taquicardia sigue (espontáneo o con adenosina)', go: 'L_atblock' },
-    { t: 'Más V que A', s: 'Bloqueo VA o disociación', go: 'vgta' }] },
+    { t: 'Más V que A', s: 'Bloqueo VA o disociación', go: 'vgta' },
+    { t: 'Una A seguida de dos V (1:2)', s: 'Una P seguida de dos QRS angostos; suele parecer FA o extrasístoles', go: 'df1' }] },
+  df1: { q: 'Relación 1:2: ¿cómo son la A y los dos His?', help: 'Diferencial: doble disparo nodal (no reentrante), bigeminia auricular o de la unión, y taquicardias subnodales con bloqueo retrógrado 2:1 (TRNAV, unión, vía nodoventricular).', man: ['dfire', 'basal'], opts: [
+    { t: 'Secuencia auricular sinusal (o la estimulada), A-H1-V1-H2-V2 con H1–H2 fijo', s: 'Una sola A en la AD por cada par de V; sin P retrógradas', go: 'L_dfire' },
+    { t: 'La A es retrógrada (concéntrica) y sigue a uno de los V', s: 'TSV subnodal con bloqueo retrógrado 2:1', go: 'vgta' },
+    { t: 'El segundo His no tiene relación fija con la A (H1–H2 irregular)', go: 'L_ject' },
+    { t: 'Hay una A prematura antes del segundo V', s: 'En la AD se ve otra A, a veces oculta en la T', go: 'L_bigat' }] },
 
   seq: { q: '¿Cómo es la secuencia de activación auricular?', man: ['basal'], opts: [
     { t: 'Concéntrica', s: 'Más precoz en el His o el SC proximal', go: 'vasep' },
@@ -1529,6 +1575,9 @@ const N = {
   L_at: { leaf: true, tone: 'warn', dx: 'Taquicardia auricular', why: ['La respuesta A-A-V indica que el mecanismo no puede devolver al ventrículo el último A conducido en forma retrógrada.'], next: ['Confirmá que sea reproducible y a distintas LC.', 'Mapeo de activación de la A más precoz.'], man: ['vop'], refs: ['knight99', 'veen11'] },
   L_at_l: { leaf: true, tone: 'warn', dx: 'Taquicardia auricular (probable)', why: ['A-A-V verdadero con secuencia auricular distinta de la TSV.', 'Atención: una TRNAV atípica con vía nodofascicular espectadora puede dar un A-A-V verdadero por doble respuesta retrógrada (AH de la TSV muy corto, menor que en ritmo sinusal).'], next: ['Si el AH de la TSV es muy corto o hay dudas, seguí con la EV con His refractario y la estimulación auricular (ΔAH).'], man: ['vop', 'aop'], refs: ['ho15', 'veen11'] },
   L_atprob: { leaf: true, tone: 'warn', dx: 'TRAV excluida · TA probable', why: ['Si no se acelera la aurícula, el ventrículo no forma parte del circuito: se excluye la TRAV.', 'En ~80 % de estos casos el diagnóstico final es TA, pero falta excluir la TRNAV.'], next: ['Sobreestimulación auricular: VA linking (≤ 10 ms) favorece TRNAV; desde 2–3 sitios, una variación del VA > 14 ms favorece TA.', 'Terminación sobre una A no prematura, o HH que predicen los AA, favorecen TRNAV.'], man: ['aop', 'basal'], refs: ['knight00', 'veen12', 'maruyama07'] },
+  L_dfire: { leaf: true, dx: 'Taquicardia no reentrante por doble vía nodal', sub: 'Doble disparo nodal ("double fire", DAVNNT)', why: ['Cada A baja primero por la vía rápida y después por la vía lenta: dos His y dos V por cada A.', 'La secuencia auricular sinusal excluye las taquicardias subnodales con bloqueo retrógrado 2:1, y el H1–H2 fijo va en contra de extrasístoles de la unión.', 'Para que ocurra, la diferencia entre las dos vías (265–520 ms) tiene que superar la refractariedad del His-Purkinje, y ninguna vía debe ocultarse en la otra en sentido retrógrado.'], next: ['Ablación o modificación de la vía lenta, como en la TRNAV. Objetivo final: que desaparezca el doble disparo y no se induzca.', 'Si hay dudas con la unión: atropina (suprime el doble disparo y aumenta la actividad de la unión).', 'Revisá ECG previos: suele haber diagnósticos de FA y anticoagulación innecesaria; si es incesante, buscá miocardiopatía por taquicardia.'], man: ['dfire', 'pre'], refs: ['peiker16', 'burri12', 'adusumalli17', 'singh16'] },
+  L_ject: { leaf: true, tone: 'gray', dx: 'Extrasístoles de la unión o del His', why: ['El segundo His no guarda un intervalo fijo con la A ni con el primer His: no es la conducción de esa A por la vía lenta.'], next: ['La atropina aumenta la actividad de la unión y suprime el doble disparo.', 'Ojo: el AH puede variar en el doble disparo (ocultación, Wenckebach). Si persiste un patrón agrupado reproducible, reconsiderá el doble disparo.'], man: ['dfire'], refs: ['peiker16', 'jastrz09'] },
+  L_bigat: { leaf: true, tone: 'gray', dx: 'Bigeminia auricular (o extrasístoles auriculares)', why: ['Cada QRS tiene su propia A: la relación real es 1:1.', 'La P de la extrasístole suele quedar oculta en la T y el ECG simula una relación 1:2.'], next: ['Si son repetitivas y sintomáticas, mapeá el foco como en la TA.'], man: ['dfire', 'basal'], refs: ['burri12', 'peiker16'] },
   L_atblock: { leaf: true, tone: 'warn', dx: 'TRAV excluida · TA o TRNAV', why: ['Si la TSV persiste con bloqueo AV, el ventrículo no es necesario para el circuito.', 'El bloqueo AV es más frecuente en la TA, pero como la TRNAV es mucho más común, cuando aparece el diagnóstico suele ser TRNAV (bloqueo 2:1 en el haz común inferior).', 'Con adenosina, el bloqueo AV con taquicardia auricular persistente es típico de la TA.'], next: ['Bloqueo infra-His, o LC y secuencia iguales a las de la conducción 1:1: pensá en TRNAV con bloqueo bajo.', 'VA septal ≤ 70 ms en los latidos conducidos: TRNAV.', 'Sobreestimulación auricular (VA linking) o ventricular: que la TSV termine sin captura auricular previa va en contra de TA.'], man: ['basal', 'ado', 'aop', 'vop'], refs: ['knight00', 'ho15', 'kaneko11', 'miller87'] },
   L_atdesc: { leaf: true, tone: 'warn', dx: 'Taquicardia auricular', why: ['La secuencia descendente (alta → baja) alcanza para el diagnóstico.'], next: ['Mapeo de activación. Si la sobreestimulación ventricular con conducción 1:1 cambia la secuencia auricular, también confirma TA.'], man: ['basal', 'vop'], refs: ['veen11'] },
   L_avnrt_t: { leaf: true, dx: 'TRNAV típica (lenta-rápida)', why: ['VA ≤ 70 ms: excluye TRAV.', 'Respuesta A-V a la sobreestimulación ventricular: excluye TA.', 'Respuesta auricular compatible con circuito nodal (no taquicardia de la unión).'], next: ['Ablación de la vía lenta.', 'Guía de sitio: un EA desde el catéter de ablación que termina la TRNAV con el mayor acoplamiento señala el sitio exitoso (18 de 19).'], man: ['vop', 'aop', 'eha'], refs: ['knight00', 'veen11', 'veen12', 'sra95'] },
