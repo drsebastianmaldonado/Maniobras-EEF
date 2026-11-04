@@ -5,7 +5,7 @@ Marcá con `[x]` lo que ya revisaste.
 
 ## 1. Registros simulados (revisión clínica)
 
-Son 24 trazados sintéticos que reproducen los intervalos publicados; la morfología es ilustrativa.
+Son 43 trazados sintéticos que reproducen los intervalos publicados; la morfología es ilustrativa.
 Todos dicen "REGISTRO SIMULADO" y están en `figs/sim/`.
 
 - [ ] **Todos:** amplitudes y morfología del QRS (TSV y estimulado), visibilidad del His, ubicación de la A en cada canal.
@@ -26,6 +26,12 @@ Todos dicen "REGISTRO SIMULADO" y están en `figs/sim/`.
   - Doppalapudi 2008 (papilar), Tada 2005 (anillo mitral) y Jackman 1988 (vía oblicua): morfologías según el artículo; tiempos míos.
   - **Didácticos sin caso publicado:** salto AH (estudio basal) y terminación con adenosina. Están rotulados como "registro simulado didáctico".
   - La ficha de conceptos de reset usa el registro de Veenhuyzen 2011, fig. 5 (fusión).
+- [ ] **Modo práctica (19 registros nuevos, uno por cada resultado clave):** respetan los intervalos de cada caso; lo que no está en el caso es ilustrativo y lo aclara la leyenda. Revisar sobre todo:
+  - Caso 9: el adelanto de la A con la EV-HR (20 ms) y el SA de la base (410) son míos; publicados solo ΔVA −28 y ΔcPPI−LC −18.
+  - Caso 10 (vía nodoventricular): el adelanto del His (25 ms), la LC de estimulación y el patrón de bloqueo VA son míos.
+  - Casos 11 y 12 (Mahaim y antidrómica): todos los tiempos son ilustrativos.
+  - Caso 8: el alargamiento con verapamilo (LC 337 → 400, P1-P2 110 → 160) es ilustrativo.
+  - Reusé registros existentes en el caso 2 (Michaud), el 5 (Veenhuyzen 2011, fig. 3) y el 6 (Ho 2015).
 - [ ] **Arias 2010:** la LC de estimulación no está publicada (no tiene calibre).
 
 ## 2. Modo práctica (13 casos)

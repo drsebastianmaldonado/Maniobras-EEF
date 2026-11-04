@@ -110,7 +110,9 @@ def render(sc, path):
     channels = [('I', lambda t: surface(t, 'I'), 'surf', 26), ('aVF', lambda t: surface(t, 'aVF'), 'surf', 26),
                 ('V1', lambda t: surface(t, 'V1'), 'surf', 26)] + \
                [(n, channel(n), 'icd', 14 if n.startswith('CS') else 16) for n in names]
-    H = TOP + ROWH * len(channels) + 40
+    W = max(W, int(LEFT + len('REGISTRO SIMULADO · ' + sc['src']) * 5.0 + 20))   # que entre la leyenda
+    LONG = len(sc['src']) * 5.2 + 140 > W - 110   # leyenda larga: va en una línea propia, debajo de la barra de 100 ms
+    H = TOP + ROWH * len(channels) + (54 if LONG else 40)
     X = lambda t: LEFT + (t - T0) * PXMS
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" font-family="Helvetica,Arial,sans-serif">',
            f'<rect width="{W}" height="{H}" fill="#fff"/>']
@@ -148,8 +150,9 @@ def render(sc, path):
     for tt, ch, label in sc.get('marks', []):
         y = TOP + ROWH * rows[ch] + 8
         out.append(f'<text x="{X(tt):.1f}" y="{y}" font-size="9.5" text-anchor="middle" fill="#0a58ca">{label}</text>')
-    out.append(f'<line x1="{W-20-100*PXMS:.1f}" x2="{W-20}" y1="{H-20}" y2="{H-20}" stroke="#333" stroke-width="1.2"/>')
-    out.append(f'<text x="{W-20-50*PXMS:.1f}" y="{H-8}" font-size="9.5" text-anchor="middle" fill="#333">100 ms</text>')
+    yb = H - 34 if LONG else H - 20
+    out.append(f'<line x1="{W-20-100*PXMS:.1f}" x2="{W-20}" y1="{yb}" y2="{yb}" stroke="#333" stroke-width="1.2"/>')
+    out.append(f'<text x="{W-20-50*PXMS:.1f}" y="{yb+12}" font-size="9.5" text-anchor="middle" fill="#333">100 ms</text>')
     if sc.get('title'):
         out.append(f'<text x="8" y="15" font-size="11.5" font-weight="700" fill="#0a58ca">{sc["title"]}</text>')
     out.append(f'<text x="{LEFT}" y="{H-8}" font-size="9.5" fill="#666">REGISTRO SIMULADO · {sc["src"]}</text>')
