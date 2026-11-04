@@ -49,15 +49,23 @@ S['gt06'] = dict(win=(-80, after[-1] + 280), pxms=0.25,
          (A[4] + 38, A[5] + 38, 'HRA', 'A-A 270'), (A[5] + 38, A[6] + 38, 'HRA', 'A-A 270'),
          (A[1] + 8, svt[2] - HV, 'His d', 'AH 80'), (A[-1] + 8, ret - HV, 'His d', 'AH 130')])
 
-# 4. Miller 1991: ΔHA en TRAV posteroseptal (LC 340; HA 199 en TSV, 103 estimulando a la LC)
-svt = [0, 340, 680]; sp = [1250, 1590, 1930]
-S['miller91'] = dict(win=(-120, 2280), src='intervalos de Miller 1991, fig. 3',
-    beats=[(v, 'n') for v in svt] + [(s, 'pa') for s in sp], spikes=sp,
-    atr=[(v - HV + 199, 'conc_cs', -1) for v in svt] + [(s + 60 + 103, 'conc_cs', -1) for s in sp],
-    h_ante=[v - HV for v in svt], h_retro=[s + 60 for s in sp],
-    cal=[(340 - HV, 340 - HV + 199 + 8, 'His p', 'HA TSV 199'), (sp[1] + 60, sp[1] + 60 + 103 + 8, 'His p', 'HA estim. 103'),
-         (sp[0], sp[1], 'RVA', 'S-S 340')],
-    marks=[(1080, 'aVF', 'termina la TSV')])
+# 4. Miller 1991: ΔHA en TRAV posteroseptal. LC 340; HA 199 en la TSV y 103 estimulando el VD a la LC de la TSV (en sinusal).
+#    Panel A: TSV. Panel B: estimulación del ápex a 340 ms, 6 estímulos. El momento del His retrógrado (95 ms tras la espiga) es ilustrativo.
+LC = 340
+svt = [i * LC for i in range(5)]
+S['miller91_a'] = dict(win=(-100, svt[-1] + 280), pxms=0.27, title='A. Taquicardia: HA 199 ms',
+    src='Miller 1991, fig. 3: LC 340, HA 199 en la TSV',
+    beats=[(v, 'n') for v in svt], atr=[(v - HV + 199, 'conc_cs', -1) for v in svt], h_ante=[v - HV for v in svt],
+    cal=[(svt[0], svt[1], 'RVA', 'LC 340'), (svt[2] - HV, svt[2] - HV + 199 + 8, 'His d', 'HA 199')])
+sp = [i * LC for i in range(6)]
+hr = [x + 95 for x in sp]
+S['miller91_b'] = dict(win=(-100, sp[-1] + 300), pxms=0.27,
+    title='B. Estimulación del ápex del VD a 340 ms (la LC de la TSV), en ritmo sinusal: HA 103 ms',
+    src='Miller 1991, fig. 3: HA 103 estimulando a la LC de la TSV; el momento del His retrógrado es ilustrativo',
+    beats=[(x, 'pa') for x in sp], spikes=sp, atr=[(h + 103, 'conc_cs', -1) for h in hr],
+    extra={'His p': [(h, 0.45, 0.6) for h in hr], 'His d': [(h, 0.7, 0.6) for h in hr]},
+    cal=[(sp[0], sp[1], 'RVA', 'S-S 340'), (hr[2], hr[2] + 103 + 8, 'His d', 'HA 103')],
+    marks=[(hr[3], 'His p', 'H retrógrado')])
 
 # 5. Ho 2015 fig. 3: PJRT con captura ortodrómica del His (LC 521, estimulación 490)
 svt = [0, 521]; sp = [1000, 1490, 1980]
