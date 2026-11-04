@@ -84,14 +84,17 @@ S['ho15'] = dict(win=(-100, after[-1] + 380), pxms=0.2,
          (svt[2] - HV, A[2] + 8, 'His p', 'HA 335'), (A[-1] - 259, A[-1] + 8, 'His p', 'HA 259')],
     marks=[(A[-2] - 259, 'His d', 'H ortodr.')])
 
-# 6. Veenhuyzen 2012 fig. 4: índice VA (ápex 142 ms, base 120 ms)
-sa = [0, 600]; sb = [1350, 1950]
-S['veen12_vai'] = dict(win=(-100, 2350), src='intervalos de Veenhuyzen 2012, fig. 4',
-    beats=[(s, 'pa') for s in sa] + [(s, 'pb') for s in sb], spikes=sa + sb,
-    atr=[(s + 142, 'cs_mid', -1) for s in sa] + [(s + 120, 'cs_mid', -1) for s in sb],
-    h_retro=[s + 110 for s in sa] + [s + 140 for s in sb],
-    cal=[(sa[1], sa[1] + 142, 'CS 5-6', 'ápex: VA 142'), (sb[1], sb[1] + 120, 'CS 5-6', 'base: VA 120')],
-    marks=[(250, 'aVF', 'estimulación apical'), (1600, 'aVF', 'estimulación basal')])
+# 6. Veenhuyzen 2012 fig. 4: índice VA (ápex 142 ms, base 120 ms), estimulando en ritmo sinusal.
+#    Dos paneles: A, ápex del VD; B, VD posterobasal. LC de estimulación 600 ilustrativa.
+sp = [i * 600 for i in range(4)]
+S['veen12_vai_a'] = dict(win=(-100, sp[-1] + 400), pxms=0.3, title='A. Estimulación del ápex del VD: VA 142 ms',
+    src='Veenhuyzen 2012, fig. 4: VA 142 desde el ápex; LC de estimulación 600 ilustrativa',
+    beats=[(x, 'pa') for x in sp], spikes=sp, atr=[(x + 142, 'cs_mid', -1) for x in sp], h_retro=[x + 110 for x in sp],
+    cal=[(sp[1], sp[1] + 142, 'CS 5-6', 'VA 142'), (sp[0], sp[1], 'RVA', 'S-S 600')])
+S['veen12_vai_b'] = dict(win=(-100, sp[-1] + 400), pxms=0.3, title='B. Estimulación del VD posterobasal: VA 120 ms',
+    src='Veenhuyzen 2012, fig. 4: VA 120 desde la base; índice VA = 142 − 120 = +22 ms (> +10: vía septal)',
+    beats=[(x, 'pb') for x in sp], spikes=sp, atr=[(x + 120, 'cs_mid', -1) for x in sp], h_retro=[x + 140 for x in sp],
+    cal=[(sp[1], sp[1] + 120, 'CS 5-6', 'VA 120'), (sp[0], sp[1], 'RVA', 'S-S 600')])
 
 # 7. Veenhuyzen 2012 fig. 1: EV His refractaria que adelanta la A 19 ms (LC 444, vía derecha)
 svt = [0, 444, 888]; VA = 150
