@@ -12,11 +12,11 @@ taquicardias supraventriculares.
 - **Localizar**: localizadores de sustrato a partir del ECG: vía accesoria (algoritmo del autor, en `localizar/`),
   mapeo de vías oblicuas (Jackman), Kistler 2006 para focos auriculares y Enriquez 2019 para arritmias ventriculares idiopáticas.
 - **Maniobras**: 13 fichas (cómo se hace, qué medir, tabla de interpretación con puntos de corte y fuente, trampas,
-  esquemas de electrogramas).
+  casos publicados).
 - **Calculadora**: PPI−LC, cPPI−LC, SA−VA, ΔHA, encarrilamiento diferencial, ΔAH y AH TSV vs sinusal, con cortes de
   RP corto o largo.
 
-Figuras reales: solo de artículos de acceso abierto con licencia Creative Commons (carpeta `figs/`), con su atribución y licencia en la app. Del resto se muestran esquemas propios redibujados y el enlace a la figura original.
+Figuras reales: solo de artículos de acceso abierto con licencia Creative Commons (carpeta `figs/`), con su atribución y licencia en la app. Del resto se muestran los datos publicados y el enlace a la figura original; no se usan gráficos de elaboración propia.
 
 Archivos: `index.html` (todo el contenido), `manifest.json` + `sw.js` (instalable y sin conexión), `iconos/`.
 Está pensada para publicarse sola en GitHub Pages (por ejemplo, en un repositorio propio).

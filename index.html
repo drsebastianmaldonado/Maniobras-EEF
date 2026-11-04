@@ -107,19 +107,6 @@ td.dx{font-weight:700}
 .ped{background:color-mix(in srgb,var(--teal) 14%,var(--card));border-radius:14px;padding:12px 14px;font-size:14px}
 .refs{margin:0;padding-left:20px;font-size:13px;color:var(--ink2);display:flex;flex-direction:column;gap:4px}
 .refs b{color:var(--ink)}
-/* esquemas */
-.eg{width:100%;height:auto;display:block;background:color-mix(in srgb,var(--slate) 6%,var(--card));border-radius:12px}
-.eg text{font-family:var(--font);fill:var(--ink);font-size:17px}
-.eg .lab{fill:var(--ink2);font-weight:700;font-size:16px}
-.eg .base{stroke:var(--line);stroke-width:1.5}
-.eg .egm{stroke:var(--ink);stroke-width:2.5;fill:none}
-.eg .egA{stroke:var(--blue)}
-.eg .egH{stroke:var(--teal)}
-.eg .egV{stroke:var(--rose)}
-.eg .sp{stroke:var(--orange);stroke-width:3}
-.eg .br{stroke:var(--violet);stroke-width:2;fill:none}
-.eg .brt{fill:var(--violet);font-weight:700;font-size:17px}
-.eg .note{fill:var(--ink2);font-size:15px}
 .casos{display:flex;flex-direction:column;gap:14px;background:color-mix(in srgb,var(--blue) 7%,var(--card))}
 .caso{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
 .caso:first-of-type{border-top:0;padding-top:0}
@@ -144,7 +131,6 @@ ul.hl.ok li{border-color:var(--green)}ul.hl.fav li{border-color:var(--blue)}ul.h
 .lcard span:not(.lic2){font-size:14px;color:var(--ink2)}
 .lcard i{font-style:normal;font-weight:700;font-size:14px;color:var(--blue)}
 .lic2{align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:6px;padding:2px 7px;color:#fff;background:var(--c)}
-.egt{font-size:13px;font-weight:700;margin:4px 0 -2px}
 figure{margin:0;display:flex;flex-direction:column;gap:6px}
 figcaption{font-size:13px;color:var(--ink2)}
 /* calculadora */
@@ -401,59 +387,6 @@ const REFS = {
 const cite = ks => ks.map(k => `<span class="cit">${REFS[k][0]}</span>`).join(' · ');
 
 // ===============================================================================================================
-// Esquemas de electrogramas: canales horizontales con deflexiones (A, H, V), espigas de estimulación (S) y llaves
-// con la medida. Todo en coordenadas propias; colores desde las variables (funcionan en modo oscuro).
-// ===============================================================================================================
-function eg(rows, ev, brs, w = 640, notes = []) {
-  const O = 40; w += O; ev = ev.map(e => ({ ...e, x: e.x + O })); brs = brs.map(b => ({ ...b, x1: b.x1 + O, x2: b.x2 + O }));
-  const top = 26, gap = 58, h = top + rows.length * gap + 14 + (brs.some(b => b.below) ? 22 : 0);
-  let s = `<svg class="eg" viewBox="0 0 ${w} ${h}" role="img">`;
-  rows.forEach((r, i) => { const y = top + i * gap + 18; s += `<line class="base" x1="${O + 50}" x2="${w - 10}" y1="${y}" y2="${y}"/><text class="lab" x="8" y="${y + 4}">${r}</text>`; });
-  ev.forEach(e => {
-    const y = top + e.r * gap + 18;
-    if (e.t === 'S') s += `<line class="sp" x1="${e.x}" x2="${e.x}" y1="${y - 20}" y2="${y + 12}"/>`;
-    else {
-      const k = e.t === 'A' ? 'egA' : e.t === 'H' ? 'egH' : 'egV', a = e.t === 'V' ? 15 : e.t === 'H' ? 8 : 12;
-      s += `<path class="egm ${k}" d="M${e.x - 6} ${y} L${e.x - 2} ${y - a} L${e.x + 2} ${y + a * .7} L${e.x + 6} ${y}"/>`;
-      if (e.l) s += `<text x="${e.x - 6}" y="${y - a - 5}" class="note">${e.l}</text>`;
-    }
-  });
-  brs.forEach(b => {
-    const y = top + b.r * gap + (b.below ? 44 : 2);
-    s += `<path class="br" d="M${b.x1} ${y + (b.below ? -4 : 4)} V${y} H${b.x2} V${y + (b.below ? -4 : 4)}"/><text class="brt" x="${(b.x1 + b.x2) / 2}" y="${b.below ? y + 17 : y - 5}" text-anchor="middle">${b.t}</text>`;
-  });
-  let t = '';
-  notes.forEach(n => { if (n.top) t += `<div class="egt">${n.t}</div>`; else s += `<text class="note" x="${n.x + O}" y="${n.y}">${n.t}</text>`; });
-  return t + s + '</svg>';
-}
-const FIG = {
-  vop: () => `<figure>${eg(['A (His)', 'V (VD)'],
-    [{ r: 1, t: 'S', x: 90 }, { r: 0, t: 'A', x: 150 }, { r: 1, t: 'S', x: 210 }, { r: 0, t: 'A', x: 270, l: 'último A' }, { r: 1, t: 'V', x: 370 }, { r: 0, t: 'A', x: 430 }, { r: 1, t: 'V', x: 520 }],
-    [{ r: 0, x1: 270, x2: 370, t: 'A → V', below: true }], 640, [{ top: true, t: 'Respuesta A-V (excluye TA): el último A acelerado conduce al V de retorno' }])}
-    ${eg(['A (His)', 'V (VD)'],
-    [{ r: 1, t: 'S', x: 90 }, { r: 0, t: 'A', x: 150 }, { r: 1, t: 'S', x: 210 }, { r: 0, t: 'A', x: 270, l: 'último A' }, { r: 0, t: 'A', x: 380 }, { r: 1, t: 'V', x: 470 }, { r: 0, t: 'A', x: 560 }],
-    [{ r: 0, x1: 270, x2: 380, t: 'A → A', below: true }], 640, [{ top: true, t: 'Respuesta A-A-V (TA): después del último A acelerado viene otra A antes del V' }])}
-    <figcaption>Naranja = espiga de estimulación ventricular. Contá siempre desde el <b>último A acelerado a la LC de estimulación</b>, no desde el primer A después de la última espiga.</figcaption></figure>`,
-  pseudo: () => `<figure>${eg(['A (His)', 'V (VD)'],
-    [{ r: 1, t: 'S', x: 80 }, { r: 1, t: 'S', x: 180 }, { r: 0, t: 'A', x: 240, l: 'A₁' }, { r: 1, t: 'S', x: 280 }, { r: 0, t: 'A', x: 340, l: 'A₂' }, { r: 1, t: 'V', x: 450 }, { r: 0, t: 'A', x: 560 }],
-    [{ r: 0, x1: 240, x2: 340, t: 'A₁–A₂ = LC de estimulación', below: true }], 640, [{ top: true, t: 'Seudo A-A-V: el VA estimulado es más largo que la LC; A₂ es el último A acelerado → en realidad es A-V' }])}
-    <figcaption>Pista: el intervalo A₁–A₂ es igual a la LC de estimulación y la secuencia auricular es idéntica a la de la TSV. Es típico de la TRNAV atípica y de la PJRT (conducción retrógrada lenta).</figcaption></figure>`,
-  ppi: () => `<figure>${eg(['A (AD)', 'His', 'V (VD)'],
-    [{ r: 2, t: 'S', x: 90 }, { r: 2, t: 'S', x: 200 }, { r: 0, t: 'A', x: 300 }, { r: 1, t: 'H', x: 400 }, { r: 2, t: 'V', x: 440 }, { r: 0, t: 'A', x: 540 }, { r: 2, t: 'V', x: 600, l: '' }],
-    [{ r: 0, x1: 200, x2: 300, t: 'SA' }, { r: 2, x1: 200, x2: 440, t: 'PPI', below: true }, { r: 0, x1: 440, x2: 540, t: 'VA (TSV)', below: true }], 640)}
-    <figcaption>PPI: desde la última espiga hasta el primer EGM ventricular de retorno <b>en el canal que estimula</b>. SA: desde la última espiga hasta la A de referencia (la más precoz) del último latido encarrilado. VA: desde el inicio del QRS más precoz hasta esa misma A durante la TSV.</figcaption></figure>`,
-  parahis: () => `<figure>${eg(['His/estim.', 'A (SC prox)'],
-    [{ r: 0, t: 'S', x: 80 }, { r: 1, t: 'A', x: 170 }, { r: 0, t: 'S', x: 340 }, { r: 0, t: 'H', x: 390, l: 'H retr.' }, { r: 1, t: 'A', x: 470 }],
-    [{ r: 1, x1: 80, x2: 170, t: 'SA corto', below: true }, { r: 1, x1: 340, x2: 470, t: 'SA largo', below: true }], 640,
-    [{ x: 40, y: 18, t: 'His + miocardio (QRS angosto)' }, { x: 300, y: 18, t: 'Solo miocardio (QRS ancho)' }])}
-    <figcaption>Respuesta nodal: al perder la captura del His, el SA se alarga tanto como el SH y el HA no cambia. Con vía accesoria septal, el SA no cambia (el HA se acorta) y la secuencia auricular es la misma.</figcaption></figure>`,
-  ehr: () => `<figure>${eg(['A (His)', 'His', 'V (VD)'],
-    [{ r: 0, t: 'A', x: 80 }, { r: 1, t: 'H', x: 160 }, { r: 2, t: 'V', x: 200 }, { r: 0, t: 'A', x: 290 }, { r: 2, t: 'S', x: 360 }, { r: 1, t: 'H', x: 372, l: 'H esperado' }, { r: 0, t: 'A', x: 470, l: '¿cambia?' }],
-    [{ r: 2, x1: 322, x2: 372, t: 'hasta 35–55 ms antes del H', below: true }], 640)}
-    <figcaption>La EV es His refractaria si cae cuando el His ya se despolarizó o va a hacerlo en 35–55 ms, o si el QRS sale fusionado. A esa altura no puede llegar a la aurícula por el sistema de conducción: si modifica la A, existe una vía accesoria.</figcaption></figure>`
-};
-
-// ===============================================================================================================
 // Fichas de maniobras. g: grupo (O observación, V ventricular, A auricular, C concepto).
 // ===============================================================================================================
 const M = {
@@ -524,7 +457,7 @@ const M = {
       ['Estimulación simultánea AD + VD (80–90 % de la LC): 1.er EGM al cortar = A', 'TA', 'saba11'],
       ['Estimulación simultánea AD + VD: 1.er EGM al cortar = His', 'TRNAV (en TRAV la respuesta es variable)', 'saba11']],
     trampas: ['<b>Seudo A-A-V</b>: si el VA estimulado es más largo que la LC (TRNAV atípica, PJRT), el primer A tras la última espiga no es el último acelerado. Buscá el A₁–A₂ igual a la LC de estimulación y la secuencia idéntica a la TSV.', '<b>HV > HA</b> en la TRNAV: contá A-H en lugar de A-V para no leer un seudo A-A-V.', '<b>A-A-V verdadero en TRNAV atípica</b> con vía nodofascicular espectadora (doble respuesta retrógrada).', '<b>Disociación isorrítmica</b>: LC de estimulación insuficiente o TSV que se acelera; chequeá que la TSV vuelva a su LC al cortar.', 'Coexistencia de dos sustratos (por ejemplo, TRNAV y TA): una respuesta A-V no excluye otra taquicardia.', 'Una TA casi nunca termina con el encarrilamiento ventricular sin captura auricular previa.'],
-    fig: ['vop', 'pseudo'], refs: ['knight99', 'knight00', 'veen11', 'veen08', 'ormaetxe93', 'ho15', 'kaneko11', 'saba11', 'transz'] },
+    refs: ['knight99', 'knight00', 'veen11', 'veen08', 'ormaetxe93', 'ho15', 'kaneko11', 'saba11', 'transz'] },
 
   ppi: { g: 'V', t: 'PPI − LC (y PPI corregido)', s: 'Distancia del sitio de estimulación al circuito',
     para: 'Si el ventrículo es parte del circuito (TRAV), el retorno desde el VD es corto; en la TRNAV el estímulo tiene que subir y bajar por el His-Purkinje.',
@@ -539,7 +472,7 @@ const M = {
       ['Encarrilamiento para-Hisiano sin captura del His: PPI−LC > 100 ms', 'TRNAV (S 97 %, E 92 %)', 'perez08'],
       ['TSV con bloqueo VA: PPI−LC ≤ 125 ms', 'TRAV por vía nodoventricular (VPP y VPN 100 %); no discrimina la nodofascicular', 'nagashima20']],
     trampas: ['Vía libre izquierda: el ápex del VD queda lejos del circuito y alarga el PPI (falso TRNAV).', 'Vía decremental (PJRT): el decremento retrógrado alarga PPI y SA−VA; el cPPI puede ser incluso mayor que el no corregido.', 'Salto a la vía lenta durante el encarrilamiento: alarga el AH de retorno (por eso se corrige).', 'Estimulá lo más lento posible (10–40 ms por debajo de la LC) para minimizar el decremento.'],
-    fig: ['ppi'], refs: ['michaud01', 'gt06', 'veen08', 'veen11', 'ho15', 'perez08', 'bennett11'] },
+    refs: ['michaud01', 'gt06', 'veen08', 'veen11', 'ho15', 'perez08', 'bennett11'] },
 
   sava: { g: 'V', t: 'SA − VA (ΔVA)', s: 'Activación en serie vs en paralelo',
     para: 'En la TRNAV, A y V se activan en paralelo durante la TSV y en serie durante el encarrilamiento: el SA es mucho mayor que el VA. En la TRAV se activan en serie en ambas situaciones.',
@@ -552,7 +485,7 @@ const M = {
       ['Desde la base del VD: corte 80 ms', 'Sin superposición entre grupos', 'veen08'],
       ['Encarrilamiento para-Hisiano sin captura del His: SA−VA > 75 ms', 'TRNAV (S 97 %, E 100 %)', 'perez08']],
     trampas: ['No depende del decremento nodal anterógrado, pero sí del retrógrado: en la PJRT puede dar valores de TRNAV.', 'Lejos de una vía libre izquierda el SA−VA se alarga.', 'Medí siempre a la misma A (la más precoz) en el SA y en el VA.'],
-    fig: ['ppi'], refs: ['michaud01', 'gt11', 'veen08', 'veen11', 'perez08'] },
+    refs: ['michaud01', 'gt11', 'veen08', 'veen11', 'perez08'] },
 
   dha: { g: 'V', t: 'ΔHA', s: 'HA estimulando el ventrículo vs HA en taquicardia',
     para: 'En la TRNAV, el HA de la TSV es un seudointervalo (His y A se activan en paralelo desde el nodo); al estimular el ventrículo, His y A se activan en serie y el HA se alarga. En la TRAV, durante la TSV la activación es en serie (His → V → vía → A); al estimular, His y vía se activan en paralelo y el HA se acorta.',
@@ -608,7 +541,7 @@ const M = {
       ['RP largo: el V local se adelanta > 60 ms sin cambiar la A', 'Excluye una vía decremental participante', 'veen12'],
       ['TSV con V > A: la EV-HR adelanta o retrasa el siguiente His', 'Excluye TRNAV y taquicardia de la unión → vía nodoventricular o nodofascicular', 'veen12']],
     trampas: ['Poco sensible con vías libres izquierdas si se estimula desde el ápex del VD.', 'Una vía nodofascicular espectadora que se inserta en la vía lenta puede resetear una TRNAV atípica con retraso.', 'En la PJRT, la prematuridad puede quedar compensada por el decremento (falso negativo): entregá varias EV.', 'El cambio de la A debe superar la variabilidad espontánea de la LC.', 'Si la TSV parece TRNAV típica (VA ≤ 70 ms), la EV-HR no distingue TRNAV de TA: usá la sobreestimulación ventricular.'],
-    fig: ['ehr'], refs: ['veen12', 'ho15', 'arias10'] },
+    refs: ['veen12', 'ho15', 'arias10'] },
 
   parahis: { g: 'V', t: 'Estimulación para-Hisiana', s: 'En ritmo sinusal o como encarrilamiento para-Hisiano',
     para: 'Compara la conducción retrógrada con captura del His-rama derecha y sin ella. Por el nodo, perder la captura del His alarga el SA; por una vía septal, no.',
@@ -621,7 +554,7 @@ const M = {
       ['Encarrilamiento para-Hisiano sin captura del His: PPI−LC > 100 ms', 'TRNAV (S 97 %, E 92 %)', 'perez08'],
       ['Con captura del His', 'SA−VA y PPI−LC se acortan y no discriminan', 'perez08']],
     trampas: ['<b>Captura auricular</b>: espiga → A del SC proximal < 60 ms (o AD alta < 70 ms) indica captura casi segura; > 90 (o > 100) ms la descarta.', 'Vías alejadas (izquierdas) o lentas: la respuesta puede parecer nodal.', 'Captura del His sola, sin miocardio (para-Hisiana "inversa").', 'Pérdida de captura de la rama izquierda sola, o una conexión fasciculoventricular.', 'Una vía nodofascicular da una respuesta "nodal".', 'Demuestra la vía, no que participe en la TSV.'],
-    fig: ['parahis'], refs: ['hirao96', 'veen12', 'perez08', 'obey11', 'ho15'] },
+    refs: ['hirao96', 'veen12', 'perez08', 'obey11', 'ho15'] },
 
   aop: { g: 'A', t: 'Sobreestimulación auricular durante la TSV', s: 'VA linking, ΔAH y taquicardia de la unión',
     para: 'Estudia el brazo superior del circuito: si la aurícula está ligada a la activación ventricular (VA linking) y si el AH de la TSV es un intervalo real o un seudointervalo.',
@@ -700,7 +633,7 @@ const M = {
       ['Morfología de QRS que cambia (BRD con eje superior y luego inferior, o QRS angosto)', 'TV fascicular multiforme: pensá en el fascículo septal', 'sung13 sanchez21 wong23'],
       ['Falso tendón en el septum posterior con ecografía intracardíaca (100 % en una serie)', 'Sustrato anatómico de la TV posterior: P1 se registra en el tendón "culpable"', 'liuq23 nogami23']],
     trampas: ['La septal superior con conducción VA 1:1 imita una TRNAV o una TRAV, y también responde al verapamilo y se induce desde la aurícula: mirá la secuencia retrógrada del His y el HV más corto que en sinusal.', 'En la rama-rama el His precede a la rama izquierda; en la fascicular el HV es corto o negativo y sigue a la activación del fascículo.', 'La cardiopatía estructural no la descarta (por ejemplo, Kawasaki) si es sensible al verapamilo; la resonancia puede mostrar fibrosis septal, con más riesgo de recurrencia.', 'El catéter puede suprimir el circuito por contacto: buscá latidos de eco ventricular durante la estimulación auricular.', 'La estimulación en el sitio de P1 da mala concordancia: no es posible capturar P1 en forma selectiva.', 'En niños: la anterior se presentó de 4 a 14 años, con 50 % de recurrencia por sesión.'],
-    fig: [], refs: ['nogami10', 'nogami02', 'belhassen81', 'li23', 'chen16', 'sung13', 'sanchez21', 'wong23', 'liuq23', 'gopi15', 'herkommer14', 'talib16', 'suzuki14', 'kapa17', 'kuo03'] },
+    refs: ['nogami10', 'nogami02', 'belhassen81', 'li23', 'chen16', 'sung13', 'sanchez21', 'wong23', 'liuq23', 'gopi15', 'herkommer14', 'talib16', 'suzuki14', 'kapa17', 'kuo03'] },
 
   tvfabl: { g: 'V', t: 'TV fascicular: estrategias de ablación', s: 'P1, P2, abordaje anatómico y puntos finales',
     para: 'La ablación es tratamiento de primera línea. El blanco depende de si se registra P1, de si la TV es inducible y del subtipo.',
@@ -1068,57 +1001,20 @@ function locView(v) {
 const GRUPOS = { O: 'Observación', V: 'Ventricular', A: 'Auricular', F: 'Fármaco', C: 'Concepto' };
 
 // ===============================================================================================================
-// Casos publicados, redibujados. Los intervalos rotulados son los informados en el artículo; el resto del trazado es
-// ilustrativo (no se reproduce la figura original). Cada caso enlaza a la publicación.
-// Dibujo a escala: eventos en ms → {c: canal, t: ms, k: 'A'|'H'|'V'|'S' (espiga)|'P' (V estimulado), l: rótulo}.
+// Casos publicados: datos informados en cada artículo y enlace a la figura original. Solo se muestran figuras reales
+// de artículos de acceso abierto con licencia Creative Commons (carpeta figs/), con su atribución.
 // ===============================================================================================================
 const DOI = d => 'https://doi.org/' + d;
-function tl(chans, ev, br, o = {}) {
-  const W = 680, L = 92, R = 16, ts = ev.map(e => e.t).concat(br.flatMap(b => [b.t1, b.t2]));
-  const t0 = Math.min(...ts) - 40, t1 = Math.max(...ts) + 40, k = (W - L - R) / (t1 - t0), X = t => L + (t - t0) * k;
-  const top = 30, gap = 62, nb = br.filter(b => b.below).length ? 24 : 0, h = top + chans.length * gap + nb;
-  let s = `<svg class="eg" viewBox="0 0 ${W} ${h}" role="img">`;
-  chans.forEach((c, i) => { const y = top + i * gap + 18; s += `<line class="base" x1="${L - 6}" x2="${W - R}" y1="${y}" y2="${y}"/><text class="lab" x="6" y="${y + 5}">${c}</text>`; });
-  ev.forEach(e => {
-    const y = top + e.c * gap + 18, x = X(e.t);
-    if (e.k === 'S') s += `<line class="sp" x1="${x}" x2="${x}" y1="${y - 24}" y2="${y + 14}"/>`;
-    else if (e.k === 'P') s += `<line class="sp" x1="${x}" x2="${x}" y1="${y - 24}" y2="${y + 14}"/><path class="egm egV" d="M${x + 2} ${y} C${x + 8} ${y - 22},${x + 18} ${y - 22},${x + 22} ${y} S${x + 34} ${y + 14},${x + 40} ${y}"/>`;
-    else { const cl = e.k === 'A' ? 'egA' : e.k === 'H' ? 'egH' : 'egV', a = e.k === 'V' ? 16 : e.k === 'H' ? 8 : 12;
-      s += `<path class="egm ${cl}" d="M${x - 6} ${y} L${x - 2} ${y - a} L${x + 2} ${y + a * .7} L${x + 6} ${y}"/>`; }
-    if (e.l) s += `<text class="note" x="${x}" y="${y - 22}" text-anchor="middle">${e.l}</text>`;
-  });
-  br.forEach(b => {
-    const y = top + b.c * gap + (b.below ? 46 : 0), x1 = X(b.t1), x2 = X(b.t2), d = b.below ? -4 : 4;
-    s += `<path class="br" d="M${x1} ${y + d} V${y} H${x2} V${y + d}"/><text class="brt" x="${(x1 + x2) / 2}" y="${b.below ? y + 17 : y - 5}" text-anchor="middle">${b.t}</text>`;
-  });
-  return s + '</svg>';
-}
-// tren de estimulación ventricular: espigas + V estimulado en el canal c
-const tren = (t, pcl, n, c = 2) => Array.from({ length: n }, (_, i) => ({ c, t: t + i * pcl, k: 'P' }));
-
 const CASOS = [
   { m: 'vop', ref: 'knight99', fig: 'fig. 1 y 2', doi: '10.1016/S0735-1097(98)00614-7', t: 'Respuesta A-V en TRNAV típica y A-A-V en TA',
     vals: [['TRNAV: LC de la TSV / de estimulación', '430 / 370 ms → A-V'], ['TA: LC de la TSV / de estimulación', '260 / 230 ms → A-A-V']],
-    draw: () => tl(['AD alta', 'His', 'VD'], [
-      { c: 2, t: 0, k: 'V' }, { c: 1, t: -45, k: 'H' }, { c: 0, t: 30, k: 'A' },
-      ...tren(300, 370, 2), { c: 0, t: 440, k: 'A' }, { c: 0, t: 810, k: 'A', l: 'último A' },
-      { c: 1, t: 1060, k: 'H' }, { c: 2, t: 1105, k: 'V' }, { c: 0, t: 1135, k: 'A' }],
-      [{ c: 2, t1: 300, t2: 670, t: 'estim. 370' }, { c: 0, t1: 810, t2: 1105, t: 'A → V', below: true }]),
-    nota: 'Se dibuja la TRNAV (fig. 1). En la TA (fig. 2) el último A acelerado es seguido por otra A del foco antes del V.' },
+    nota: 'En la TRNAV el último A acelerado conduce al V; en la TA le sigue otra A del foco antes del V.' },
   { m: 'vop', ref: 'veen11', fig: 'fig. 3', doi: '10.1111/j.1540-8159.2011.03076.x', t: 'Seudo A-A-V en una TRNAV rápida-lenta',
     vals: [['LC TSV / estimulación', '380 / 360 ms'], ['SA / VA', '415 / 265 ms (SA−VA 150)'], ['PPI / cPPI−LC', '565 / 185 ms']],
-    draw: () => tl(['AD', 'His', 'VD'], [
-      { c: 2, t: 0, k: 'V' }, { c: 1, t: -45, k: 'H' }, { c: 0, t: 265, k: 'A' },
-      ...tren(380, 360, 2), { c: 0, t: 795, k: 'A', l: 'A₁' }, { c: 0, t: 1155, k: 'A', l: 'A₂' },
-      { c: 1, t: 1260, k: 'H' }, { c: 2, t: 1305, k: 'V' }],
-      [{ c: 0, t1: 0, t2: 265, t: 'VA 265' }, { c: 0, t1: 795, t2: 1155, t: 'A₁–A₂ 360', below: true }, { c: 1, t1: 740, t2: 1155, t: 'SA 415', below: true }, { c: 2, t1: 740, t2: 1305, t: 'PPI 565', below: true }]),
     nota: 'El SA (415) supera la LC de estimulación (360): A₁, el primer A tras la última espiga, viene de la penúltima; A₂ es el último A acelerado. Contando bien, la respuesta es A-V. PPI y SA−VA largos: TRNAV atípica.' },
   { m: 'ppi', ref: 'gt06', fig: 'fig. 2', doi: '10.1016/j.hrthm.2006.02.019', t: 'Cálculo del PPI corregido',
     vals: [['PPI / LC de la TSV', '440 / 300 ms'], ['AH 1.er retorno / AH TSV', '130 / 80 ms'], ['cPPI−LC', '440 − 300 − (130 − 80) = 90 ms → TRAV']],
-    draw: () => tl(['AD', 'His', 'VD'], [
-      { c: 2, t: 0, k: 'V' }, { c: 0, t: 175, k: 'A' }, { c: 1, t: 255, k: 'H' }, { c: 2, t: 300, k: 'V' },
-      ...tren(400, 270, 2), { c: 0, t: 665, k: 'A' }, { c: 0, t: 935, k: 'A', l: 'último A' }, { c: 1, t: 1065, k: 'H' }, { c: 2, t: 1110, k: 'V' }],
-      [{ c: 2, t1: 0, t2: 300, t: 'LC 300', below: true }, { c: 1, t1: 175, t2: 255, t: 'AH 80', below: true }, { c: 1, t1: 935, t2: 1065, t: 'AH 130', below: true }, { c: 2, t1: 670, t2: 1110, t: 'PPI 440', below: true }]) },
+ },
   { m: 'ppi', ref: 'veen11', fig: 'fig. 1B', doi: '10.1111/j.1540-8159.2011.03076.x', t: 'TRAV por vía izquierda: valores "límite" desde el ápex',
     vals: [['LC TSV / PPI', '380 / 520 ms (PPI−LC 140)'], ['cPPI−LC', '120 ms'], ['SA / VA', '285 / 210 ms (SA−VA 75)']],
     nota: 'Respuesta A-V. Los valores se acercan al corte de TRNAV por la distancia entre el ápex del VD y una vía lateral izquierda.' },
@@ -1134,18 +1030,9 @@ const CASOS = [
     nota: 'En la fusión oculta el QRS estimulado es igual al de la TSV: hay que descartar la disociación isorrítmica.' },
   { m: 'dha', ref: 'miller91', fig: 'fig. 2 y 3', url: 'https://pubmed.ncbi.nlm.nih.gov/?term=Miller+JM+Josephson+%22delta+HA%22+1991', t: 'ΔHA estimulando a la LC de la TSV',
     vals: [['TRNAV (LC 280)', 'HA TSV 75 → HA estimulado 86: ΔHA +11'], ['TRAV posteroseptal (LC 340)', 'HA TSV 199 → HA estimulado 103: ΔHA −96']],
-    draw: () => tl(['AD', 'His', 'VD'], [
-      { c: 1, t: 0, k: 'H' }, { c: 2, t: 45, k: 'V' }, { c: 0, t: 199, k: 'A' },
-      { c: 2, t: 600, k: 'P' }, { c: 1, t: 660, k: 'H' }, { c: 0, t: 763, k: 'A' }],
-      [{ c: 0, t1: 0, t2: 199, t: 'HA TSV 199', below: true }, { c: 0, t1: 660, t2: 763, t: 'HA estim. 103', below: true }]),
-    nota: 'Se dibuja la TRAV (a la derecha, estimulando: el His retrógrado precede a la A). Durante la TSV His → V → vía → A en serie; estimulando, His y vía se activan en paralelo y el HA se acorta.' },
+    nota: 'En la TRAV, durante la TSV His → V → vía → A en serie; estimulando, His y vía se activan en paralelo y el HA se acorta.' },
   { m: 'hisorto', ref: 'ho15', fig: 'fig. 3', doi: '10.1007/s11936-015-0370-5', t: 'PJRT: captura ortodrómica vs antidrómica del His',
     vals: [['LC TSV', '521 ms'], ['Ortodrómica (estim. 490)', 'VA 309 · HA 259'], ['Antidrómica (estim. 480)', 'VA 314 · HA 284'], ['TSV', 'VA 290 · HA 335'], ['Resultado', 'PPI−LC 71 · ΔVA 19 · ΔHA −76 → TRAV']],
-    draw: () => tl(['AD', 'His', 'VD'], [
-      { c: 1, t: -45, k: 'H' }, { c: 2, t: 0, k: 'V' }, { c: 0, t: 290, k: 'A' },
-      ...tren(600, 490, 2), { c: 1, t: 650, k: 'H', l: 'H ortodr.' }, { c: 0, t: 909, k: 'A' }, { c: 1, t: 1140, k: 'H' }, { c: 0, t: 1399, k: 'A' },
-      { c: 1, t: 1637, k: 'H' }, { c: 2, t: 1682, k: 'V' }],
-      [{ c: 0, t1: -45, t2: 290, t: 'HA 335' }, { c: 0, t1: 1140, t2: 1399, t: 'HA 259', below: true }, { c: 2, t1: 1090, t2: 1682, t: 'PPI 592', below: true }]),
     nota: 'Con captura ortodrómica, la morfología del His es igual a la de la TSV. Demuestra la vía y su participación.' },
   { m: 'diff', ref: 'segal09', fig: 'fig. 2 y 3', doi: '10.1016/j.hrthm.2008.12.033', t: 'Encarrilamiento diferencial en TRNAV y en TRAV',
     vals: [['TRNAV', 'ΔPPI−LC +42 · ΔVA +34 (base − ápex)'], ['TRAV', 'ΔPPI−LC −5 · ΔVA −39']] },
@@ -1154,13 +1041,9 @@ const CASOS = [
     nota: 'Vía posteroseptal lenta y decremental. Ablación exitosa de la vía.' },
   { m: 'vai', ref: 'veen12', fig: 'fig. 4', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'Índice VA positivo',
     vals: [['VA desde el ápex / la base', '142 / 120 ms'], ['Índice VA', '+22 ms → vía accesoria']],
-    draw: () => tl(['SC medio', 'VD'], [{ c: 1, t: 0, k: 'P' }, { c: 0, t: 142, k: 'A' }, { c: 1, t: 500, k: 'P' }, { c: 0, t: 620, k: 'A' }],
-      [{ c: 0, t1: 0, t2: 142, t: 'ápex 142' }, { c: 0, t1: 500, t2: 620, t: 'base 120' }]) },
+ },
   { m: 'ehr', ref: 'veen12', fig: 'fig. 1 y 2', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'EV con His refractario que adelanta y que retrasa la A',
     vals: [['TSV de LC 444 (vía derecha)', 'adelanta la A 19 ms; QRS fusionado 122 ms vs 144 estimulado puro'], ['RP largo de LC 473 (vía septal lenta)', 'retrasa la A 20 ms']],
-    draw: () => tl(['AD', 'His', 'VD'], [
-      { c: 2, t: 0, k: 'V' }, { c: 1, t: -45, k: 'H' }, { c: 0, t: 150, k: 'A' }, { c: 1, t: 399, k: 'H' }, { c: 2, t: 444, k: 'P' }, { c: 0, t: 575, k: 'A', l: '−19 ms' }],
-      [{ c: 0, t1: 150, t2: 575, t: '425 (esperado 444)', below: true }]),
     nota: 'La EV coincide con el His esperado y el QRS sale fusionado: es His refractaria. Adelanta la A sin cambiar la secuencia.' },
   { m: 'parahis', ref: 'veen12', fig: 'fig. 3', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'Para-Hisiana antes y después de ablacionar la vía',
     vals: [['Con vía para-Hisiana derecha', 'el SA no cambia al perder la captura del His'], ['Después de la ablación', 'el SA se alarga 61 ms (respuesta nodal)']] },
@@ -1248,11 +1131,10 @@ const CASOS = [
 function casosHTML(id) {
   const cs = CASOS.filter(c => c.m === id);
   if (!cs.length) return '';
-  return `<div class="box casos"><div class="bl">Casos publicados (redibujados)</div>${cs.map(c => `<div class="caso">
+  return `<div class="box casos"><div class="bl">Casos publicados</div>${cs.map(c => `<div class="caso">
     <div class="ct">${c.t}</div>
     <div class="tw"><table class="mini"><tbody>${c.vals.map(v => `<tr><td>${v[0]}</td><td class="dx">${v[1]}</td></tr>`).join('')}</tbody></table></div>
     ${c.img ? [].concat(c.img).map(g => `<figure class="real"><a href="${g.src}" target="_blank" rel="noopener" title="Ver en tamaño completo"><img src="${g.src}" alt="${g.alt}" loading="lazy"></a><figcaption>Tocá la imagen para verla en tamaño completo. ${g.cap}<br><span class="lic">${g.lic}</span></figcaption></figure>`).join('') : ''}
-    ${c.draw ? `<figure>${c.draw()}<figcaption>Redibujado a partir de ${REFS[c.ref][0]}${c.fig ? ', ' + c.fig : ''}. Los intervalos rotulados son los publicados; el resto del trazado es ilustrativo.</figcaption></figure>` : ''}
     ${c.nota ? `<p class="small" style="margin:0">${c.nota}</p>` : ''}
     <a class="btn lnk" href="${c.url || DOI(c.doi)}" target="_blank" rel="noopener noreferrer">Ver ${c.fig ? 'la ' + c.fig : 'el artículo'} en ${REFS[c.ref][0]} ↗</a>
   </div>`).join('')}</div>`;
@@ -1264,7 +1146,6 @@ function fichaHTML(id) {
   h += `<div class="box"><div class="bl">Cómo se hace</div><ol>${m.como.map(x => `<li>${x}</li>`).join('')}</ol></div>`;
   if (m.medir) h += `<div class="box"><div class="bl">Qué medir con la misma tira</div><ul>${m.medir.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
   h += `<div class="tw"><table><thead><tr><th>Hallazgo</th><th>Indica</th><th>Fuente</th></tr></thead><tbody>${m.interp.map(r => `<tr><td>${r[0]}</td><td class="dx">${r[1]}</td><td>${cite(r[2].split(' '))}</td></tr>`).join('')}</tbody></table></div>`;
-  if (m.fig) h += m.fig.map(f => FIG[f]()).join('');
   h += casosHTML(id);
   h += `<div class="box trap"><div class="bl">Trampas y limitaciones</div><ul>${m.trampas.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
   h += `<ol class="refs">${m.refs.map(k => `<li>${REFS[k][1]}</li>`).join('')}</ol></div>`;
