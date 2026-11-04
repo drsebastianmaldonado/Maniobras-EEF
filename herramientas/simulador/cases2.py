@@ -7,16 +7,22 @@ S = {}
 
 # A. Arias 2010: RP largo (vía posteroseptal lenta), encarrilamiento desde el ápex del VD.
 #    TSV LC 480, VA 296, HA 338; PPI−LC 144 (PPI 624), ΔVA 142 (SA 438), ΔHA 56 (HA 394).
+#    Encarrilamiento con 6 estímulos; la LC de estimulación (465) no está publicada.
 HVa = 42
-svt = [0, 480]; sp = [900, 1365, 1830]
-A = [v + 296 for v in svt] + [s + 438 for s in sp]
-ret = sp[-1] + 624; after = [ret, ret + 480]
-S['arias10'] = dict(win=(-120, 2900), pxms=0.26, src='intervalos de Arias 2010, figs. 1 y 2',
-    beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
-    atr=[(a, 'conc_cs', -1) for a in A + [v + 296 for v in after]],
-    h_ante=[v - HVa for v in svt + after], h_retro=[a - 394 for a in A[2:]],
-    cal=[(svt[1], svt[1] + 296 + 2, 'CS 9-10', 'VA 296'), (sp[-1], A[-1] + 2, 'CS 9-10', 'SA 438'),
-         (sp[-1], ret + 2, 'RVA', 'PPI 624')],
+LC, VA, SC = 480, 296, 465
+svt = [i * LC for i in range(3)]
+sp = [svt[-1] + SC * (i + 1) for i in range(6)]
+A = [v + VA for v in svt] + [s + 438 for s in sp]
+ret = sp[-1] + 624; after = [ret, ret + LC]
+S['arias10'] = dict(win=(-100, after[-1] + 380), pxms=0.2,
+    src='Arias 2010, figs. 1 y 2: LC 480, VA 296, HA 338, SA 438, HA 394, PPI 624; LC de estimulación 465 ilustrativa',
+    beats=[(v, 'n') for v in svt + after] + [(x, 'pa') for x in sp], spikes=sp,
+    atr=[(a, 'conc_cs', -1) for a in A + [v + VA for v in after]],
+    h_ante=[v - HVa for v in svt + after], h_retro=[a - 394 for a in A[3:]],
+    cal=[(svt[0], svt[1], 'RVA', 'LC 480'), (sp[0], sp[1], 'RVA', 'S-S 465'), (sp[-1], ret + 2, 'RVA', 'PPI 624'),
+         (A[5] + 38, A[6] + 38, 'HRA', 'A-A 465'), (A[6] + 38, A[7] + 38, 'HRA', 'A-A 465'),
+         (svt[2], svt[2] + VA + 2, 'CS 9-10', 'VA 296'), (sp[-1], A[-1] + 2, 'CS 9-10', 'SA 438'),
+         (svt[1] - HVa, A[1] + 8, 'His p', 'HA 338'), (A[-1] - 394, A[-1] + 8, 'His p', 'HA 394')],
     marks=[])
 
 # B. Veenhuyzen 2011, fig. 5: encarrilamiento manifiesto desde el VI basal (vía lateral izquierda).
