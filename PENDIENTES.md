@@ -19,10 +19,10 @@ Todos dicen "REGISTRO SIMULADO" y están en `figs/sim/`.
 - [ ] **Gardey 2021:** canales "Nodo sup." y "Nodo inf." y "AD lateral".
 - [ ] **Arias 2010:** la LC de estimulación no está publicada (no tiene calibre).
 
-## 2. Modo práctica (10 casos)
+## 2. Modo práctica (12 casos)
 
 - [ ] **Casos con intervalos publicados:** 4 (Veenhuyzen 2011, fig. 1B y 5), 5 (Veenhuyzen 2011, fig. 3), 6 (Ho 2015), 8 (Liu Q 2023, Liu 2015, Nogami 2010) y 9 (Arias 2010).
-- [ ] **Casos didácticos con valores ilustrativos** (coherentes con los cortes, pero no publicados): 1 (TRNAV típica: PPI−LC 170, SA−VA 150, ΔVA +35, EA que retrasa 14 ms), 2 (TRAV septal: PPI−LC 80 y SA−VA 40 de Michaud; ΔHA −45 y EV-HR que adelanta 25 ms son ilustrativos), 3 (TA), 7 (taquicardia de la unión: PPI−LC 175) y 10 (vía nodoventricular: LC 390).
+- [ ] **Casos didácticos con valores ilustrativos** (coherentes con los cortes, pero no publicados): 1 (TRNAV típica: PPI−LC 170, SA−VA 150, ΔVA +35, EA que retrasa 14 ms), 2 (TRAV septal: PPI−LC 80 y SA−VA 40 de Michaud; ΔHA −45 y EV-HR que adelanta 25 ms son ilustrativos), 3 (TA), 7 (taquicardia de la unión: PPI−LC 175), 10 (vía nodoventricular: LC 390), 11 (Mahaim: LC 300) y 12 (TRAV antidrómica: LC 280). Los casos 11 y 12 se apoyan en Josephson, Klein 1988, Sternick 2004 y tu presentación.
 - [ ] **Clasificación de cada resultado** como "clave", "útil" o "engañosa": revisar que coincida con tu criterio docente.
 - [ ] **Diagnósticos aceptados:** en el caso 9 valen PJRT y TRAV por vía septal.
 

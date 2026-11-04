@@ -1022,10 +1022,13 @@ const PMAN = [
   ['diff', 'Encarrilamiento diferencial (base vs ápex)', 'diff'], ['ehr', 'EV con His refractario', 'ehr'],
   ['aop', 'Sobreestimulación auricular (VA linking, ΔAH)', 'aop'], ['eha', 'EA con His refractario', 'eha'],
   ['parahis', 'Estimulación para-Hisiana en sinusal', 'parahis'], ['ado', 'Adenosina', 'ado'],
-  ['verap', 'Verapamilo IV', 'tvf'], ['map', 'Mapeo del septum del VI', 'tvf']];
+  ['verap', 'Verapamilo IV', 'tvf'], ['map', 'Mapeo del septum del VI', 'tvf'],
+  ['adec', 'Estimulación auricular decremental en sinusal', 'preex'], ['eapre', 'EA durante la taquicardia con la unión AV refractaria', 'preex'],
+  ['anillo', 'Mapeo del anillo tricuspídeo', 'preex']];
 const PDX = [['trnav_t', 'TRNAV típica'], ['trnav_a', 'TRNAV atípica'], ['trav_s', 'TRAV por vía septal'], ['trav_l', 'TRAV por vía libre'],
   ['pjrt', 'PJRT (vía septal lenta y decremental)'], ['ta', 'Taquicardia auricular'], ['jet', 'Taquicardia de la unión'],
-  ['nvrt', 'Vía nodoventricular o nodofascicular'], ['tvf', 'TV fascicular'], ['bbr', 'TV por reentrada rama-rama']];
+  ['nvrt', 'Vía nodoventricular o nodofascicular'], ['tvf', 'TV fascicular'], ['bbr', 'TV por reentrada rama-rama'],
+  ['antid', 'TRAV antidrómica'], ['mahaim', 'Mahaim (vía atriofascicular)'], ['bys', 'TSV con conducción por una vía espectadora']];
 const UTAG = { clave: ['Clave', 'var(--green)'], util: ['Útil', 'var(--blue)'], trampa: ['Engañosa', 'var(--orange)'] };
 const PCASOS = [
   { id: 'c1', t: 'Palpitaciones de inicio y fin bruscos', p: 'Adolescente de 15 años con palpitaciones paroxísticas. ECG basal normal, sin preexcitación.',
@@ -1121,7 +1124,26 @@ const PCASOS = [
       ehr: { r: 'Una EV con His refractario adelanta el His siguiente.', u: 'clave' },
       pre: { r: 'Doble fisiología nodal.' }, eha: { r: 'Sin efecto sobre el His.' },
       medidas: { r: 'PPI−LC 105 ms; el SA−VA no se interpreta con bloqueo VA.', u: 'util' } },
-    dx: ['nvrt'], ex: 'Con bloqueo VA, el diferencial es TRNAV con bloqueo superior vs vía nodoventricular o nodofascicular. Una sola TSV, Wenckebach VA y HH estable apoyan la vía; His ortodrómico, V-V-A y PPI−LC ≤ 125 la confirman, y la fusión constante indica nodoventricular.', refs: ['nagashima20', 'veen12'] }
+    dx: ['nvrt'], ex: 'Con bloqueo VA, el diferencial es TRNAV con bloqueo superior vs vía nodoventricular o nodofascicular. Una sola TSV, Wenckebach VA y HH estable apoyan la vía; His ortodrómico, V-V-A y PPI−LC ≤ 125 la confirman, y la fusión constante indica nodoventricular.', refs: ['nagashima20', 'veen12'] },
+  { id: 'c11', t: 'Taquicardia de QRS ancho con BRI en un corazón sano', p: 'Adolescente de 14 años con palpitaciones. ECG en sinusal normal, con patrón rS en DIII.',
+    h: ['Taquicardia de QRS ancho con BRI, eje normal o superior y transición tardía (después de V4); LC 300 ms', 'Relación AV 1:1', 'His retrógrado, después del inicio del QRS (HV negativo)', 'Activación auricular retrógrada concéntrica'],
+    m: { adec: { r: 'Con estimulación auricular decremental desde la AD aparece una preexcitación con BRI que aumenta: el AV se alarga y el HV se acorta hasta hacerse negativo.', u: 'clave' },
+      eapre: { r: 'Un EA desde la AD lateral, con la unión AV refractaria, adelanta el V siguiente sin cambiar el QRS y resetea la taquicardia. Desde el septum no la modifica.', u: 'clave' },
+      anillo: { r: 'Potencial de la vía en el anillo tricuspídeo lateral, entre la A y el V.', u: 'clave' },
+      pre: { r: 'Sin conducción retrógrada por la vía: la conducción VA es por el nodo, decremental y concéntrica.', u: 'util' },
+      vop: { r: 'Encarrilable desde el VD; respuesta A-V.', u: 'util' },
+      ado: { r: 'La taquicardia termina: la vía atriofascicular es sensible a la adenosina.' },
+      ehr: { r: 'No aplica: el QRS es preexcitado.' }, parahis: { r: 'No aplica.' } },
+    dx: ['mahaim'], ex: 'La preexcitación con BRI que aumenta mientras el AV se alarga (conducción decremental) y el HV que se hace negativo caracterizan a la vía atriofascicular. El EA desde la pared libre del AD, con la unión AV refractaria, que adelanta el V y resetea la taquicardia demuestra que la vía es el brazo anterógrado: TRAV antidrómica por Mahaim. Se ablaciona el potencial de la vía en el anillo tricuspídeo, no la inserción ventricular. El diferencial principal es una TV con BRI: la relación 1:1 y el reset por el EA la descartan.', refs: ['klein88', 'josephson', 'sternick04'] },
+  { id: 'c12', t: 'Taquicardia de QRS ancho con preexcitación máxima', p: 'Varón de 19 años con WPW (preexcitación manifiesta) y palpitaciones.',
+    h: ['Taquicardia de QRS ancho igual a la preexcitación máxima; LC 280 ms', 'Relación AV 1:1', 'His retrógrado antes de la A, después del inicio del QRS', 'Activación auricular retrógrada concéntrica, más precoz en el His'],
+    m: { eapre: { r: 'Un EA desde el SC distal, con la unión AV refractaria, adelanta el V siguiente con la misma morfología y también la A siguiente: resetea la taquicardia.', u: 'clave' },
+      pre: { r: 'Preexcitación lateral izquierda con AV corto que no se alarga con la estimulación (vía tipo Kent). Conducción VA concéntrica por el nodo.', u: 'clave' },
+      adec: { r: 'La preexcitación aumenta sin que se alargue el AV: la vía no es decremental.', u: 'util' },
+      vop: { r: 'Respuesta A-V: excluye la TA.', u: 'util' },
+      ado: { r: 'La taquicardia termina por bloqueo en el nodo.', u: 'trampa' },
+      aop: { r: 'VA linking presente.' }, ehr: { r: 'No aplica: el QRS es preexcitado.' }, parahis: { r: 'No aplica.' } },
+    dx: ['antid'], ex: 'Si una vía fuera espectadora, el EA adelantaría el V pero la taquicardia seguiría a su ritmo. Acá el EA con la unión AV refractaria resetea la taquicardia a través de la vía: la vía es el brazo anterógrado y la aurícula está en el circuito. El retorno es por el nodo (His retrógrado antes de la A, secuencia concéntrica): TRAV antidrómica por una vía tipo Kent. La terminación con adenosina no distingue: también terminaría una TRNAV con conducción por una vía espectadora.', refs: ['autor', 'josephson'] }
 ];
 let pState = {};
 try { pState = JSON.parse(localStorage.getItem('mef_prac') || '{}'); } catch (e) {}

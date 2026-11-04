@@ -13,7 +13,7 @@ taquicardias supraventriculares.
   mapeo de vías oblicuas (Jackman), Kistler 2006 para focos auriculares y Enriquez 2019 para arritmias ventriculares idiopáticas.
 - **Maniobras**: 13 fichas (cómo se hace, qué medir, tabla de interpretación con puntos de corte y fuente, trampas,
   casos publicados).
-- **Práctica**: 10 casos de taquicardias en los que se eligen maniobras, se ven sus resultados (con registros
+- **Práctica**: 12 casos de taquicardias en los que se eligen maniobras, se ven sus resultados (con registros
   simulados cuando los hay) y se decide el diagnóstico, con devolución de las maniobras clave y las engañosas.
 - **Calculadora**: PPI−LC, cPPI−LC, SA−VA, ΔHA, encarrilamiento diferencial, ΔAH y AH TSV vs sinusal, con cortes de
   RP corto o largo.
