@@ -97,25 +97,25 @@ S['gardey21'] = dict(win=(-60, 2300), pxms=0.30, src='intervalos de Gardey 2021,
     cal=[(As[1], hsup[1], 'Nodo sup.', 'AH 70'), (hsup[4], vs[4] + 4, 'Nodo sup.', 'HV 47'),
          (vs[2] + 4, hinf[2], 'Nodo inf.', 'VH 133'), (hinf[4], hinf[4] + 100, 'Nodo inf.', 'HA 100')])
 
-# G. TV fascicular posterior: LC 337 y P1-V 45 (Liu Q 2023); P2 ~30 ms antes del QRS (Liu 2015); His 5–30 ms después
+# G. TV fascicular posterior: LC 337 (Liu Q 2023); P1 mesodiastólico (P1-V 90 en LV 5-6, ilustrativo); P2 ~30 ms antes del QRS (Liu 2015); His 5–30 ms después
 #    del inicio del QRS (Nogami 2010); disociación AV con ritmo sinusal independiente.
 LC = 337
 vs = [i * LC for i in range(7)]
 lv = ['LV 9-10', 'LV 7-8', 'LV 5-6', 'LV 3-4', 'LV 1-2']
 ext = {}
 for i, n in enumerate(lv):  # 0 = proximal, 4 = distal
-    p1 = [v - 65 + 10 * i for v in vs]          # P1: proximal → distal; P1-V 45 en el canal medio (LV 5-6)
+    p1 = [v - 110 + 10 * i for v in vs]         # P1 mesodiastólico: proximal → distal; P1-V 90 en LV 5-6 (ilustrativo)
     p2 = [v - 14 - 4 * i for v in vs]          # P2: distal → proximal; ~30 ms antes del QRS en el distal
     a1 = [0.40, 0.30, 0.21, 0.04, 0.02][i]   # P1 domina en los 3 proximales y se achica; casi ausente en los distales
     a2 = [0.05, 0.07, 0.09, 0.50, 0.62][i]   # P2 casi no se ve en los proximales; visible en los 2 distales
     ext[n] = [(t, a1, 3.2) for t in p1] + [(t, a2, 0.7) for t in p2]   # P1 romo y ondulado; P2 agudo
 sinus = [130, 930, 1730]
-S['tvf_post'] = dict(win=(-60, 2200), pxms=0.32, src='intervalos de Liu Q 2023 (LC 337, P1-V 45), Liu 2015 y Nogami 2010',
+S['tvf_post'] = dict(win=(-60, 2200), pxms=0.32, src='Liu Q 2023 (LC 337), Liu 2015 (P2 ~30 ms antes del QRS) y Nogami 2010; P1-V 90 ilustrativo',
     channels=['HRA', 'His d'] + lv + ['RVA'],
     beats=[(v, 'rbs') for v in vs], atr=[(a, 'sinus', 1) for a in sinus], h_retro=[v + 15 for v in vs],
     extra=ext,
-    cal=[(vs[2], vs[3], 'RVA', 'LC 337'), (vs[4] - 45, vs[4], 'LV 5-6', 'P1-V 45')],
-    marks=[(vs[3] - 65, 'LV 9-10', 'P1'), (vs[3] - 30, 'LV 1-2', 'P2'), (vs[5] + 15, 'His d', 'H')])
+    cal=[(vs[2], vs[3], 'RVA', 'LC 337'), (vs[4] - 90, vs[4], 'LV 5-6', 'P1-V 90')],
+    marks=[(vs[3] - 110, 'LV 9-10', 'P1'), (vs[3] - 30, 'LV 1-2', 'P2'), (vs[5] + 15, 'His d', 'H')])
 
 # H. Burri 2012: doble disparo nodal. 134 lpm con RR levemente alternantes y relación P:QRS 1:2 (A-A ≈ 896).
 #    Publicado: frecuencia, relación 1:2 y secuencia sinusal. Ilustrativos: AH1 90, H1-H2 430 (rango de Peiker 2016: 265-520).
