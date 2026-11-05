@@ -55,18 +55,31 @@ S['veen12_eav'] = dict(win=(-100, vs[-1] + 300), pxms=0.27,
     cal=[(v[2] - HV, v[3] - HV, 'His d', 'H-H 412'), (v[3] - HV, h_next, 'His d', 'H-H 428 (+16)')],
     marks=[(apb, 'V1', 'EA (ostium del SC)'), (apb, 'His p', 'H')])
 
-# D. Veenhuyzen 2012, fig. 7: taquicardia de la unión (LC 560); EA desde la AD alta adelanta el His inmediato 38 ms y la TSV sigue.
+# D. Taquicardia de la unión (LC 560). Dos paneles:
+#    A. EA desde el ostium del SC con His refractario: no modifica el His siguiente (criterio de Padanilam 2008; ilustrativo).
+#    B. Veenhuyzen 2012, fig. 7: EA precoz desde la AD alta adelanta el His inmediato 38 ms y la TSV sigue.
 LC = 560
-hs = [-HV, LC - HV]
-h3 = 2 * LC - HV - 38
-apb = h3 - 125
-hs += [h3, h3 + LC, h3 + 2 * LC]
+hs = [i * LC - HV for i in range(7)]
 vs = [h + HV for h in hs]
-atr = [(vs[0], 'conc_his', -1), (vs[1], 'conc_his', -1), (apb + 4, 'sinus', 1), (vs[3], 'conc_his', -1), (vs[4], 'conc_his', -1)]
-S['veen12_jt'] = dict(win=(-100, 2360), pxms=0.30, src='intervalos de Veenhuyzen 2012, fig. 7',
-    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='HRA',
-    atr=atr, h_ante=hs,
-    cal=[(hs[0], hs[1], 'His d', 'H-H 560'), (hs[1], hs[2], 'His d', 'H-H 522 (−38)'), (hs[2], hs[3], 'His d', 'H-H 560')],
+apb = hs[4]                                     # en el momento del His esperado: His refractario
+atr = [(v, 'conc_his', -1) for k, v in enumerate(vs) if k != 4] + [(apb + 4, 'conc_cs', 1)]
+S['veen12_jt_a'] = dict(win=(-100, vs[-1] + 250), pxms=0.22,
+    title='A. EA con His refractario (ostium del SC): el His siguiente no cambia',
+    src='ilustrativo según Padanilam 2008: en la taquicardia de la unión, el EA con His refractario no modifica el His siguiente',
+    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='CS 9-10', atr=atr, h_ante=hs,
+    cal=[(hs[3], hs[4], 'His d', 'H-H 560'), (hs[4], hs[5], 'His d', 'H-H 560')],
+    marks=[(apb, 'V1', 'EA (ostium del SC)'), (apb, 'His p', 'H')])
+hs = [i * LC - HV for i in range(4)]
+h_adv = 4 * LC - HV - 38
+apb = h_adv - 125
+hs += [h_adv, h_adv + LC, h_adv + 2 * LC]
+vs = [h + HV for h in hs]
+atr = [(v, 'conc_his', -1) for k, v in enumerate(vs) if k != 4] + [(apb + 4, 'sinus', 1)]
+S['veen12_jt_b'] = dict(win=(-100, vs[-1] + 250), pxms=0.22,
+    title='B. EA precoz (AD alta): adelanta el His inmediato 38 ms y la taquicardia sigue',
+    src='Veenhuyzen 2012, fig. 7: LC 560; el EA precoz adelanta el His inmediato 38 ms y la taquicardia continúa',
+    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='HRA', atr=atr, h_ante=hs,
+    cal=[(hs[2], hs[3], 'His d', 'H-H 560'), (hs[3], hs[4], 'His d', 'H-H 522 (−38)'), (hs[4], hs[5], 'His d', 'H-H 560')],
     marks=[(apb, 'V1', 'EA (AD alta)')])
 
 # E. Kaneko 2011: TRNAV rápida-lenta con conducción AV 2:1 (AH 252, HA 136 → LC 388).
