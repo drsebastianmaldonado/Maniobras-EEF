@@ -106,9 +106,9 @@ ext = {}
 for i, n in enumerate(lv):  # 0 = proximal, 4 = distal
     p1 = [v - 65 + 10 * i for v in vs]          # P1: proximal → distal; P1-V 45 en el canal medio (LV 5-6)
     p2 = [v - 14 - 4 * i for v in vs]          # P2: distal → proximal; ~30 ms antes del QRS en el distal
-    a1 = [0.60, 0.45, 0.32, 0.06, 0.04][i]   # P1 domina en los 3 proximales y se achica; casi ausente en los distales
+    a1 = [0.40, 0.30, 0.21, 0.04, 0.02][i]   # P1 domina en los 3 proximales y se achica; casi ausente en los distales
     a2 = [0.05, 0.07, 0.09, 0.50, 0.62][i]   # P2 casi no se ve en los proximales; visible en los 2 distales
-    ext[n] = [(t, a1, 0.8) for t in p1] + [(t, a2, 0.7) for t in p2]
+    ext[n] = [(t, a1, 3.2) for t in p1] + [(t, a2, 0.7) for t in p2]   # P1 romo y ondulado; P2 agudo
 sinus = [130, 930, 1730]
 S['tvf_post'] = dict(win=(-60, 2200), pxms=0.32, src='intervalos de Liu Q 2023 (LC 337, P1-V 45), Liu 2015 y Nogami 2010',
     channels=['HRA', 'His d'] + lv + ['RVA'],

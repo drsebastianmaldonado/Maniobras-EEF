@@ -102,7 +102,9 @@ def render(sc, path):
             elif name.startswith('LV') or name.startswith('Nodo') or name.startswith('AD '):
                 y += egm(t, [(far_v(t0, typ, 4), 0.8) for t0, typ in beats], w=2.0, frac=1)
             if name in extra:
-                y += egm(t, [(tt, a) for tt, a, w in extra[name]], w=extra[name][0][2] if extra[name] else 1.0)
+                for tt, a, w in extra[name]:      # cada señal con su propio ancho (p. ej., P1 ondulado vs P2 agudo)
+                    if abs(t - tt) < 40 * w:
+                        y += egm(t, [(tt, a)], w=w)
             return y
         return f
 
