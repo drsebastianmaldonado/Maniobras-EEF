@@ -62,9 +62,10 @@ def parahis(sa_nc, title, lab):
     beats = [(s + HV if c else s, 'n' if c else 'pa') for s, c in zip(sp, cap)]
     A = [s + (90 if c else sa_nc) for s, c in zip(sp, cap)]
     return dict(win=(-80, 2150), pxms=0.34, title=title, channels=['HRA', 'His p', 'His d', 'CS 9-10', 'CS 1-2', 'RVA'],
-        src='Veenhuyzen 2012, fig. 3 (Δ 61 ms publicado); SA 90 ilustrativo', spikes=sp, pace_ch='His p',
+        src='Veenhuyzen 2012, fig. 3 (Δ 61 ms publicado); SA 90 y duración del QRS ilustrativos; sin captura del His el QRS se ensancha ≥ 40 ms', spikes=sp, pace_ch='His p',
         beats=beats, atr=[(a, 'conc_his', -1) for a in A],
-        cal=[(sp[0], A[0] + 2, 'His d', 'SA (H+V)'), (sp[1], A[1] + 2, 'His d', lab)],
+        cal=[(sp[0], A[0] + 2, 'His d', 'SA (H+V)'), (sp[1], A[1] + 2, 'His d', lab),
+             (sp[2] + HV, sp[2] + HV + 95, 'V1', 'QRS 95'), (sp[3], sp[3] + 150, 'V1', 'QRS 150 (+55)')],
         marks=[(sp[0] + 30, 'V1', 'captura del His'), (sp[1] + 40, 'V1', 'solo V')])
 S['parahis_a'] = parahis(90, 'A. Con la vía: el SA no cambia al perder la captura del His (respuesta extranodal)', 'SA igual')
 S['parahis_b'] = parahis(151, 'B. Después de ablacionar la vía: el SA se alarga 61 ms (respuesta nodal)', 'SA + 61')
