@@ -41,17 +41,19 @@ S['veen11_fusion'] = dict(win=(-100, 2180), pxms=0.34, src='intervalos de Veenhu
     marks=[(sp[0] + 10, 'V1', 'fusión'), (h_orto[0], 'His p', 'H ortodr.')])
 
 # C. Veenhuyzen 2012, fig. 6: TRNAV típica (LC 412); EA desde el ostium del SC con His refractario retrasa el His 16 ms.
+#    4 latidos de base antes del EA.
 LC = 412; VA = 15
-v = [0, 412, 824]
-apb = 2 * LC - HV                              # en el momento del His esperado
+v = [i * LC for i in range(4)]
+apb = v[3] - HV                                # en el momento del His esperado
 h_next = apb + LC + 16
 vs = v + [h_next + HV, h_next + HV + LC, h_next + HV + 2 * LC]
-atr = [(x + VA, 'conc_his', -1) for x in v[:2]] + [(apb + 4, 'conc_cs', 1)] + [(x + VA, 'conc_his', -1) for x in vs[3:]]
-S['veen12_eav'] = dict(win=(-100, 2380), pxms=0.30, src='intervalos de Veenhuyzen 2012, fig. 6',
+atr = [(x + VA, 'conc_his', -1) for x in v[:3]] + [(apb + 4, 'conc_cs', 1)] + [(x + VA, 'conc_his', -1) for x in vs[4:]]
+S['veen12_eav'] = dict(win=(-100, vs[-1] + 300), pxms=0.27,
+    src='Veenhuyzen 2012, fig. 6: TRNAV de LC 412; el EA con His refractario retrasa el His siguiente 16 ms',
     beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='CS 9-10',
     atr=atr, h_ante=[x - HV for x in vs],
-    cal=[(v[1] - HV, v[2] - HV, 'His d', 'H-H 412'), (v[2] - HV, h_next, 'His d', 'H-H 428 (+16)')],
-    marks=[(apb, 'V1', 'EA (ostium del SC)')])
+    cal=[(v[2] - HV, v[3] - HV, 'His d', 'H-H 412'), (v[3] - HV, h_next, 'His d', 'H-H 428 (+16)')],
+    marks=[(apb, 'V1', 'EA (ostium del SC)'), (apb, 'His p', 'H')])
 
 # D. Veenhuyzen 2012, fig. 7: taquicardia de la unión (LC 560); EA desde la AD alta adelanta el His inmediato 38 ms y la TSV sigue.
 LC = 560
