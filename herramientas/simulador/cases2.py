@@ -104,16 +104,18 @@ vs = [i * LC for i in range(7)]
 lv = ['LV 9-10', 'LV 7-8', 'LV 5-6', 'LV 3-4', 'LV 1-2']
 ext = {}
 for i, n in enumerate(lv):  # 0 = proximal, 4 = distal
-    p1 = [v - 85 + 10 * i for v in vs]          # P1: proximal → distal; P1-V 45 en el distal
+    p1 = [v - 65 + 10 * i for v in vs]          # P1: proximal → distal; P1-V 45 en el canal medio (LV 5-6)
     p2 = [v - 14 - 4 * i for v in vs]          # P2: distal → proximal; ~30 ms antes del QRS en el distal
-    ext[n] = [(t, 0.32, 0.8) for t in p1] + [(t, 0.55, 0.7) for t in p2]
+    a1 = [0.60, 0.45, 0.32, 0.06, 0.04][i]   # P1 domina en los 3 proximales y se achica; casi ausente en los distales
+    a2 = [0.05, 0.07, 0.09, 0.50, 0.62][i]   # P2 casi no se ve en los proximales; visible en los 2 distales
+    ext[n] = [(t, a1, 0.8) for t in p1] + [(t, a2, 0.7) for t in p2]
 sinus = [130, 930, 1730]
 S['tvf_post'] = dict(win=(-60, 2200), pxms=0.32, src='intervalos de Liu Q 2023 (LC 337, P1-V 45), Liu 2015 y Nogami 2010',
     channels=['HRA', 'His d'] + lv + ['RVA'],
     beats=[(v, 'rbs') for v in vs], atr=[(a, 'sinus', 1) for a in sinus], h_retro=[v + 15 for v in vs],
     extra=ext,
-    cal=[(vs[2], vs[3], 'RVA', 'LC 337'), (vs[4] - 45, vs[4], 'LV 1-2', 'P1-V 45')],
-    marks=[(vs[3] - 85, 'LV 9-10', 'P1'), (vs[3] - 30, 'LV 1-2', 'P2'), (vs[5] + 15, 'His d', 'H')])
+    cal=[(vs[2], vs[3], 'RVA', 'LC 337'), (vs[4] - 45, vs[4], 'LV 5-6', 'P1-V 45')],
+    marks=[(vs[3] - 65, 'LV 9-10', 'P1'), (vs[3] - 30, 'LV 1-2', 'P2'), (vs[5] + 15, 'His d', 'H')])
 
 # H. Burri 2012: doble disparo nodal. 134 lpm con RR levemente alternantes y relación P:QRS 1:2 (A-A ≈ 896).
 #    Publicado: frecuencia, relación 1:2 y secuencia sinusal. Ilustrativos: AH1 90, H1-H2 430 (rango de Peiker 2016: 265-520).
