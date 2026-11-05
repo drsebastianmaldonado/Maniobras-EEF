@@ -103,21 +103,21 @@ LC = 337
 vs = [i * LC for i in range(7)]
 lv = ['LV 9-10', 'LV 7-8', 'LV 5-6', 'LV 3-4', 'LV 1-2']
 ext = {}
-P1V = [110, 90, 65, 45, None]                  # P1-V por canal (proximal → distal); 45 publicado (Liu Q 2023), el resto ilustrativo
+P1V = [120, 100, 75, 55, None]                 # P1-V por canal (proximal → distal), ilustrativos (Liu Q 2023 informa 45 en el sitio de ablación)
 A1 = [0.42, 0.38, 0.25, 0.12, 0]               # P1 romo, decrece hacia distal; ausente en LV 1-2
 A2 = [0, 0, 0.12, 0.35, 0.62]                  # P2 agudo, aparece en LV 5-6 y crece hacia distal
 for i, n in enumerate(lv):  # 0 = proximal, 4 = distal
-    p2 = [v - 14 - 4 * i for v in vs]           # P2: distal → proximal; ~30 ms antes del QRS en el distal
+    p2 = [v - 4 - 4 * i for v in vs]            # P2: distal → proximal; ~20 ms antes del QRS en el distal
     ext[n] = [(t, A2[i], 0.7) for t in p2] if A2[i] else []
     if P1V[i]:
         ext[n] += [(v - P1V[i], A1[i], 3.2) for v in vs]
 sinus = [130, 930, 1730]
-S['tvf_post'] = dict(win=(-60, 2200), pxms=0.32, src='Liu Q 2023 (LC 337, P1-V 45), Liu 2015 (P2 ~30 ms antes del QRS) y Nogami 2010; P1-V 90 y 65 ilustrativos',
+S['tvf_post'] = dict(win=(-60, 2200), pxms=0.32, src='Liu Q 2023 (LC 337), Liu 2015 y Nogami 2010; los P1-V y el P2-V (~20 ms) son ilustrativos',
     channels=['HRA', 'His d'] + lv + ['RVA'],
     beats=[(v, 'rbs') for v in vs], atr=[(a, 'sinus', 1) for a in sinus], h_retro=[v + 15 for v in vs],
     extra=ext,
-    cal=[(vs[2], vs[3], 'RVA', 'LC 337'), (vs[1] - 90, vs[1], 'LV 7-8', 'P1-V 90'), (vs[3] - 65, vs[3], 'LV 5-6', 'P1-V 65'), (vs[5] - 45, vs[5], 'LV 3-4', 'P1-V 45')],
-    marks=[(vs[2] - 110, 'LV 9-10', 'P1'), (vs[4] - 30, 'LV 1-2', 'P2'), (vs[5] + 15, 'His d', 'H')])
+    cal=[(vs[2], vs[3], 'RVA', 'LC 337'), (vs[1] - 100, vs[1], 'LV 7-8', 'P1-V 100'), (vs[3] - 75, vs[3], 'LV 5-6', 'P1-V 75'), (vs[5] - 55, vs[5], 'LV 3-4', 'P1-V 55')],
+    marks=[(vs[2] - 120, 'LV 9-10', 'P1'), (vs[4] - 20, 'LV 1-2', 'P2'), (vs[5] + 15, 'His d', 'H')])
 
 # H. Burri 2012: doble disparo nodal. 134 lpm con RR levemente alternantes y relación P:QRS 1:2 (A-A ≈ 896).
 #    Publicado: frecuencia, relación 1:2 y secuencia sinusal. Ilustrativos: AH1 90, H1-H2 430 (rango de Peiker 2016: 265-520).
