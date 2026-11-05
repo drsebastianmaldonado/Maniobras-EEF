@@ -38,18 +38,21 @@ S['ado_term'] = dict(win=(-80, 2050), pxms=0.36, channels=CH6,
     marks=[(A[-1] + 70, 'His p', 'termina en A'), (sin_a, 'V1', 'sinusal')])
 
 # 3. SA−VA: TRAV posteroseptal (Michaud 2001): estimulación del ápex a 440, SA−VA 40, PPI−LC 80. LC 470 y VA 120 ilustrativos.
-LC, VA = 470, 120
-svt = [0, LC]; sp = [800, 1240, 1680]
+#    Encarrilamiento con 6 estímulos.
+LC, VA, SC = 470, 120, 440
+svt = [i * LC for i in range(3)]
+sp = [svt[-1] + SC * (k + 1) for k in range(6)]
 A = [v + VA for v in svt] + [s + VA + 40 for s in sp]
 ret = sp[-1] + LC + 80; after = [ret, ret + LC]
-S['michaud01'] = dict(win=(-80, 2750), pxms=0.27, channels=['HRA', 'His p', 'His d'] + ['CS 9-10', 'CS 5-6', 'CS 1-2', 'RVA'],
+S['michaud01'] = dict(win=(-80, after[-1] + 330), pxms=0.2, channels=['HRA', 'His p', 'His d'] + ['CS 9-10', 'CS 5-6', 'CS 1-2', 'RVA'],
     src='Michaud 2001: estimulación del ápex a 440, SA−VA 40 y PPI−LC 80 (TRAV posteroseptal); LC 470 y VA 120 ilustrativos',
     beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
     atr=[(a, 'conc_cs', -1) for a in A + [v + VA for v in after]],
     h_ante=[v - HV for v in svt + after],
-    cal=[(svt[1], svt[1] + VA + 2, 'CS 9-10', 'VA'), (sp[-1], A[-1] + 2, 'CS 9-10', 'SA'), (sp[-1], ret + 2, 'RVA', 'PPI'),
-         (sp[0], sp[1], 'RVA', 'estim. 440')],
-    marks=[(sp[1] + 200, 'I', 'SA − VA 40 · PPI − LC 80 → TRAV')])
+    cal=[(svt[0], svt[1], 'RVA', 'LC 470'), (sp[0], sp[1], 'RVA', 'S-S 440'), (sp[-1], ret + 2, 'RVA', 'PPI 550'),
+         (A[5] + 38, A[6] + 38, 'HRA', 'A-A 440'), (A[6] + 38, A[7] + 38, 'HRA', 'A-A 440'),
+         (svt[2], svt[2] + VA + 2, 'CS 9-10', 'VA 120'), (sp[-1], A[-1] + 2, 'CS 9-10', 'SA 160')],
+    marks=[(after[0] + 200, 'His p', 'SA − VA 40 · PPI − LC 80 → TRAV')])
 
 # 4. Para-Hisiana (Veenhuyzen 2012, fig. 3): con vía para-Hisiana el SA no cambia al perder la captura del His;
 #    después de la ablación se alarga 61 ms. SA 90 ilustrativo.
