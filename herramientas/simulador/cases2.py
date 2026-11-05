@@ -82,16 +82,6 @@ S['veen12_jt_b'] = dict(win=(-100, vs[-1] + 250), pxms=0.22,
     cal=[(hs[2], hs[3], 'His d', 'H-H 560'), (hs[3], hs[4], 'His d', 'H-H 522 (−38)'), (hs[4], hs[5], 'His d', 'H-H 560')],
     marks=[(apb, 'V1', 'EA (AD alta)')])
 
-# E. Kaneko 2011: TRNAV rápida-lenta con conducción AV 2:1 (AH 252, HA 136 → LC 388).
-LC = 388
-As = [i * LC for i in range(7)]
-cond = As[::2]
-hs = [a + 252 for a in cond]
-S['kaneko11'] = dict(win=(-100, 2550), pxms=0.28, src='intervalos de Kaneko 2011, fig. 1',
-    beats=[(h + HV, 'n') for h in hs], atr=[(a, 'conc_cs', -1) for a in As], h_ante=hs,
-    cal=[(As[2] + 8, hs[1], 'His d', 'AH 252'), (hs[1], As[3] + 8, 'His d', 'HA 136'), (As[3], As[4], 'HRA', 'A-A 388')],
-    marks=[(As[1] + 180, 'aVF', 'A sin V')])
-
 # F. Gardey 2021: nodos AV gemelos. Baja por el nodo superior (AH 70, HV 47) y sube por el inferior (VH 133, HA 100) → LC 350.
 LC = 350
 As = [i * LC for i in range(7)]

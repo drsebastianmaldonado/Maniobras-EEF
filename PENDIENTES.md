@@ -7,7 +7,7 @@ Este archivo es una copia de referencia; las marcas se llevan en el issue.
 
 ## 1. Registros simulados (revisión clínica)
 
-Son 43 trazados sintéticos. Todos dicen "REGISTRO SIMULADO". Tocá **ver** para abrir cada imagen.
+Son 42 trazados sintéticos. Todos dicen "REGISTRO SIMULADO". Tocá **ver** para abrir cada imagen.
 En todos conviene mirar las amplitudes y la morfología del QRS, la visibilidad del His y la ubicación de la A en cada canal.
 
 ### Fichas de maniobras (casos publicados)
@@ -23,7 +23,6 @@ En todos conviene mirar las amplitudes y la morfología del QRS, la visibilidad 
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_ehr.png) **Veenhuyzen 2012, fig. 1** (EV con His refractario): A-A previo 444 y A-A adelantado 425 (−19); secuencia auricular de la vía derecha y QRS fusionado. VA 150 ilustrativo.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_eav.png) **Veenhuyzen 2012, fig. 6** (EA con His refractario en la TRNAV): 4 latidos de base, H-H 412 y H-H 428 (+16).
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/veen12_jt.png) **Veenhuyzen 2012, fig. 7** (taquicardia de la unión): dos paneles. A: EA con His refractario desde el ostium del SC que no modifica el His siguiente (ilustrativo, criterio de Padanilam 2008). B: EA precoz desde la AD alta que adelanta el His inmediato 38 ms y la taquicardia sigue (publicado).
-- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/kaneko11.png) **Kaneko 2011** (2:1): asumí bloqueo por encima del His (sin H en los ciclos bloqueados).
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/gardey21.png) **Gardey 2021** (nodos gemelos): canales "Nodo sup.", "Nodo inf." y "AD lateral".
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/tvf_post.png) **TV fascicular posterior**: ubicación de P1 y P2; combina Liu Q 2023, Liu 2015 y Nogami 2010.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/sim/burri12.png) **Burri 2012** (doble disparo): el AH1 (90 ms) y el H1–H2 (430 ms) son ilustrativos.
