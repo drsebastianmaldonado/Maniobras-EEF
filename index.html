@@ -1707,6 +1707,30 @@ $('#clr').onclick = () => { F.forEach(k => $('#' + k).value = ''); calc(); };
 try { const s = JSON.parse(localStorage.getItem('mef_calc') || 'null'); if (s) { rp = s.rp || 'corto'; F.forEach(k => $('#' + k).value = s.d[k] || ''); $('#rpSel').querySelectorAll('button').forEach(x => x.classList.toggle('on', x.dataset.rp === rp)); } } catch (e) {}
 
 // ---------- pestañas
+// Vista de revisión (#revision-N): el caso completo, con todas las respuestas, para revisar el contenido docente
+function renderReview(n) {
+  const c = PCASOS[n - 1];
+  if (!c) return false;
+  const rows = PMAN.filter(x => c.m[x[0]]).map(x => { const r = c.m[x[0]], tag = r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><b>${x[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div><p>${r.r}</p>${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro simulado" loading="lazy"></a><figcaption>Versión del modo práctica (sin diagnóstico ni cuentas). Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('');
+  const sin = PMAN.filter(x => !c.m[x[0]]).map(x => x[1]);
+  const nav = `<div class="ctrl">${n > 1 ? `<a class="btn" style="text-decoration:none" href="#revision-${n - 1}">← Caso ${n - 1}</a>` : ''}${n < PCASOS.length ? `<a class="btn" style="text-decoration:none" href="#revision-${n + 1}">Caso ${n + 1} →</a>` : ''}</div>`;
+  $('#pracBody').innerHTML = `<div class="card" style="padding:10px 14px"><b>Revisión del caso ${n} de ${PCASOS.length}</b><p class="small" style="margin:2px 0 0">Vista para revisar: muestra todas las maniobras con su clasificación, el diagnóstico y la explicación. El alumno no la ve así.</p></div>${nav}
+    <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${n}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
+    <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div></div>
+    <div class="card leaf"><div class="lt">Diagnóstico</div><h3>${PDX.find(x => x[0] === c.dx[0])[1]}${c.dx.length > 1 ? ' (también vale: ' + c.dx.slice(1).map(d => PDX.find(x => x[0] === d)[1]).join(', ') + ')' : ''}</h3>
+    <div class="box"><div class="bl">Por qué</div><p>${c.ex}</p></div><p class="small" style="margin:0">${cite(c.refs)}</p></div>
+    <h2 class="sec">Maniobras con resultado</h2><div class="panel">${rows}</div>
+    ${sin.length ? `<p class="small">Responden "No aporta información en este caso": ${sin.join(', ')}.</p>` : ''}${nav}`;
+  return true;
+}
+function checkReview() {
+  const m = location.hash.match(/^#revision-(\d+)$/);
+  if (!m) return false;
+  tab('prac'); pCur = null;
+  if (renderReview(+m[1])) scrollTo({ top: $('#p-prac').offsetTop - 70 });
+  return true;
+}
+addEventListener('hashchange', checkReview);
 function tab(p) {
   document.querySelectorAll('.seg button').forEach(b => { const on = b.dataset.p === p; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
   ['algo', 'arr', 'man', 'loc', 'calc', 'prac'].forEach(x => $('#p-' + x).hidden = x !== p);
@@ -1721,6 +1745,7 @@ $('#arrQ').addEventListener('input', e => { arrQ = e.target.value; renderArr(); 
 $('#goEnr').onclick = () => locView('enr'); $('#goObl').onclick = () => openFicha('obl'); $('#goKis').onclick = () => locView('kis');
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => locView('hub'));
 try { const t = location.hash === '#localizar' ? 'loc' : localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
+checkReview();
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
