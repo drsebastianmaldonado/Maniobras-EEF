@@ -7,11 +7,21 @@ Este archivo es una copia de referencia; las marcas se llevan en el issue.
 
 ## 1. Modo práctica (13 casos)
 
-- [ ] **Casos con datos publicados:** 4 (Veenhuyzen 2011, fig. 1B y 5), 5 (Veenhuyzen 2011, fig. 3), 6 (Ho 2015), 8 (Liu Q 2023, Liu 2015, Nogami 2010), 9 (Arias 2010) y 13 (Burri 2012, doble disparo nodal).
-- [ ] **Caso 13:** las respuestas a la atropina y a la adenosina no están en el caso publicado; las escribí como lo esperable según Peiker 2016.
-- [ ] **Casos didácticos con valores ilustrativos** (coherentes con los cortes, pero no publicados): 1 (TRNAV típica: PPI−LC 170, SA−VA 150, ΔVA +35, EA que retrasa 14 ms), 2 (TRAV septal: PPI−LC 80 y SA−VA 40 de Michaud; ΔHA −45 y EV-HR que adelanta 25 ms son ilustrativos), 3 (TA), 7 (taquicardia de la unión: PPI−LC 175), 10 (vía nodoventricular: LC 390), 11 (Mahaim: LC 300) y 12 (TRAV antidrómica: LC 280). Los casos 11 y 12 se apoyan en Josephson, Klein 1988, Sternick 2004 y tu presentación.
-- [ ] **Clasificación de cada resultado** como "clave", "útil" o "engañosa": revisar que coincida con tu criterio docente.
-- [ ] **Diagnósticos aceptados:** en el caso 9 ("TRAV septal que imita una TRNAV atípica") valen PJRT y TRAV por vía septal. Revisar la explicación reescrita.
+Cada link abre el caso en una vista de revisión: hallazgos, diagnóstico, explicación y todas las maniobras con su clasificación (clave, útil o engañosa) y su registro. En cada caso, revisá que la clasificación coincida con tu criterio docente.
+
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-1) **Caso 1: Palpitaciones de inicio y fin bruscos**. Didáctico (TRNAV típica); ilustrativos: PPI−LC 170, SA−VA 150, ΔVA +35 y EA que retrasa 14 ms.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-2) **Caso 2: TSV de RP corto con VA de 110 ms**. Didáctico (TRAV septal); PPI−LC 80 y SA−VA 40 de Michaud; ΔHA −45 y EV-HR que adelanta 25 ms son ilustrativos.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-3) **Caso 3: Taquicardia incesante con disfunción ventricular**. Didáctico (TA).
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-4) **Caso 4: TSV con activación excéntrica**. Datos publicados: Veenhuyzen 2011, fig. 1B y 5.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-5) **Caso 5: TSV de RP largo con "A-A-V"**. Datos publicados: Veenhuyzen 2011, fig. 3.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-6) **Caso 6: Taquicardia incesante y miocardiopatía**. Datos publicados: Ho 2015.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-7) **Caso 7: Taquicardia con A y V simultáneos**. Didáctico (taquicardia de la unión); PPI−LC 175 ilustrativo.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-8) **Caso 8: Taquicardia de QRS ancho que terminó con verapamilo**. Datos publicados: Liu Q 2023, Liu 2015 y Nogami 2010.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-9) **Caso 9: TRAV septal que imita una TRNAV atípica**. Datos publicados: Arias 2010. Valen PJRT y TRAV por vía septal; revisar la explicación reescrita.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-10) **Caso 10: TSV con bloqueo VA tipo Wenckebach**. Didáctico (vía nodoventricular); LC 390 ilustrativa.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-11) **Caso 11: Taquicardia de QRS ancho con BRI en un corazón sano**. Didáctico (Mahaim); LC 300 ilustrativa. Se apoya en Josephson, Klein 1988, Sternick 2004 y tu presentación.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-12) **Caso 12: Taquicardia de QRS ancho con preexcitación máxima**. Didáctico (TRAV antidrómica); LC 280 ilustrativa. Mismo respaldo que el 11.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-13) **Caso 13: Una P y dos QRS**. Datos publicados: Burri 2012 (doble disparo nodal). La atropina y la adenosina no están en el caso; las escribí como lo esperable según Peiker 2016.
 
 ## 2. Bibliografía que no estaba en el material base
 
