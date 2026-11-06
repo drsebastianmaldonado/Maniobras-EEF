@@ -38,7 +38,6 @@ Las agregué yo; verificá los datos con tus copias o reemplazalas por artículo
 - [ ] **Singh 2016** (*Card Electrophysiol Clin*): sin volumen ni páginas; solo DOI.
 - [ ] **Wang 2011** (*PACE* 34:1671): citado desde las revisiones, no tengo el original.
 - [ ] **Atropina en el doble disparo:** Peiker la toma de una cita (Kim 1987); no tengo el original.
-
 - [ ] **Nogami 2010** (*Eur Cardiol* 6:79): sin DOI; el caso enlaza a una búsqueda de PubMed.
 - [ ] **Miller 1991** (*Am J Cardiol* 68:1037): sin DOI; enlaza a PubMed.
 - [ ] **Nogami 2002** (*Card Electrophysiol Rev*): el PDF es escaneado y no pude leerlo; el contenido sale de Nogami 2010.
@@ -48,7 +47,6 @@ Las agregué yo; verificá los datos con tus copias o reemplazalas por artículo
 ## 4. Contenido para tu revisión
 
 - [ ] **Doble disparo nodal (nuevo):** ficha, buscador, rama del algoritmo (relación AV "Una A seguida de dos V") y caso 13. Revisar el diferencial de la pregunta 1:2 (bigeminia auricular, extrasístoles de la unión, TSV subnodal con bloqueo 2:1).
-
 - [ ] **Ficha de adenosina:** se basa en tu presentación; no tiene artículo de respaldo.
 - [ ] **Tu presentación:** escribir la fórmula del índice VA (ápex − base, > +10 ms = vía) para que el "< 10" no se lea al revés.
 - [ ] **Tu presentación, diapositiva 3:** en la columna de TA, la LC > 500 ms y "HH no predice AA" están a favor de TA, y "termina con BAV" en contra.
@@ -56,6 +54,7 @@ Las agregué yo; verificá los datos con tus copias o reemplazalas por artículo
 - [ ] **Algoritmo de Kistler:** es la transcripción de la figura 6; conviene cotejarla.
 - [ ] **Algoritmo de Enriquez:** transcripción de la tabla 1 y la figura 3; conviene cotejarla.
 - [ ] **Puntos de corte pediátricos:** casi todos son de adultos. Si tenés cortes propios, los sumo.
+- [ ] **Para-Hisiana en sinusal:** usé el corte de ≥ 40 ms de ensanchamiento del QRS (Pérez-Rodón 2008 lo definió para el encarrilamiento para-Hisiano). Confirmá si querés otro criterio.
 
 ## 5. Localizador de vía accesoria (copiado de la app de prácticas)
 
@@ -72,6 +71,7 @@ Las agregué yo; verificá los datos con tus copias o reemplazalas por artículo
 - [ ] **Tus trazados**, sin nombre, fecha, número de historia ni datos del equipo.
 - [ ] **Revisión 2024** (*J Arrhythm* 40:767): el link de Google no abrió desde la sesión; hace falta el PDF.
 - [ ] **Casos que no simulé por falta de intervalos:** Segal 2009, Veenhuyzen 2012 fig. 2 (EV-HR que retrasa la A) y Lim 2011.
+- [ ] **Ficha de observaciones en la taquicardia:** quedó sin imagen al sacar el registro de Kaneko 2011.
 
 ## 8. Configuración
 
