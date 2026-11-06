@@ -114,8 +114,9 @@ S['pm_doppa'] = dict(win=(-100, 1800), pxms=0.42, channels=['His d', 'Abl d', 'A
     src='ilustrativo según Doppalapudi 2008: BRD con eje superior, QRS 136–170 ms, sin potencial de Purkinje previo',
     beats=[(s + 160, 'n') for s in sin] + [(pvc, 'pm')], atr=[(s, 'sinus', 1) for s in sin], h_ante=[s + 115 for s in sin],
     extra={'Abl d': [(s + 160 + 35, 0.9, 1.4) for s in sin] + [(pvc - 22, 1.3, 1.6)],
-           'Abl p': [(s + 160 + 42, 0.8, 1.4) for s in sin] + [(pvc - 10, 1.1, 1.6)]},
-    cal=[(pvc - 22, pvc, 'Abl d', 'V local −22')],
+           'Abl p': [(s + 160 + 42, 0.8, 1.4) for s in sin] + [(pvc - 10, 1.1, 1.6)],
+           'His d': [(pvc + 75, 0.55, 0.6)]},                  # His retrógrado de la EV, después del inicio del QRS (ilustrativo)
+    cal=[(pvc - 22, pvc, 'Abl d', 'V local −22'), (pvc, pvc + 75, 'His d', 'H retrógrado (V-H 75)')],
     marks=[(pvc + 60, 'I', 'EV: BRD, eje superior'), (pvc - 30, 'Abl p', 'sin potencial de Purkinje previo')])
 
 # 8. Anillo mitral anterolateral (Tada 2005): R en V1 (transición en V1), eje inferior, QRS ~154 ms.
