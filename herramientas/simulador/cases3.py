@@ -124,8 +124,9 @@ S['pm_doppa'] = dict(win=(-100, 1800), pxms=0.42, channels=['His d', 'Abl d', 'A
 S['tada05'] = dict(win=(-100, 1800), pxms=0.42, channels=['His d', 'CS 1-2', 'Abl d', 'RVA'],
     src='ilustrativo según Tada 2005: transición en V1, eje inferior, QRS ~154 ms; electrograma auricular pequeño en el anillo',
     beats=[(s + 160, 'n') for s in sin] + [(pvc, 'mal')], atr=[(s, 'sinus', 1) for s in sin], h_ante=[s + 115 for s in sin],
-    extra={'Abl d': [(s + 70, 0.25, 1.0) for s in sin] + [(s + 160 + 45, 1.0, 1.4) for s in sin] + [(pvc - 25, 1.4, 1.6)]},
-    cal=[(pvc - 25, pvc, 'Abl d', 'V local −25')],
+    extra={'Abl d': [(s + 70, 0.25, 1.0) for s in sin] + [(s + 160 + 45, 1.0, 1.4) for s in sin] + [(pvc - 25, 1.4, 1.6)],
+           'His d': [(pvc + 95, 0.55, 0.6)]},                  # His retrógrado de la EV, después del inicio del QRS (ilustrativo)
+    cal=[(pvc - 25, pvc, 'Abl d', 'V local −25'), (pvc, pvc + 95, 'His d', 'H retrógrado (V-H 95)')],
     marks=[(pvc + 60, 'I', 'EV: R en V1, eje inferior'), (sin[1] + 70, 'Abl d', 'A pequeña, V grande')])
 
 # 9. Vía oblicua (Jackman 1988): durante una TRAV por vía lateral izquierda, catéter ortogonal sobre la vía:
