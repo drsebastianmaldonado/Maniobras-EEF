@@ -129,15 +129,15 @@ S['tada05'] = dict(win=(-100, 1800), pxms=0.42, channels=['His d', 'CS 1-2', 'Ab
     cal=[(pvc - 25, pvc, 'Abl d', 'V local −25'), (pvc, pvc + 95, 'His d', 'H retrógrado (V-H 95)')],
     marks=[(pvc + 60, 'I', 'EV: R en V1, eje inferior'), (sin[1] + 70, 'Abl d', 'A pequeña, V grande')])
 
-# 9. Vía oblicua (Jackman 1988): durante una TRAV por vía lateral izquierda, catéter ortogonal sobre la vía:
-#    V, potencial de la vía y A. Tiempos ilustrativos.
+# 9. Vía oblicua (Jackman 1988): TRAV ortodrómica por una vía lateral izquierda. SC completo; el potencial de la vía
+#    se registra en SC 5-6, entre el V y la A, que es la más precoz en ese mismo par. Tiempos ilustrativos.
 LC, VA = 340, 115
 vs = [i * LC for i in range(5)]
-S['jackman88'] = dict(win=(-60, 1600), pxms=0.48, channels=['HRA', 'His d', 'CS 9-10', 'CS 5-6', 'CS 1-2', 'Abl d', 'RVA'],
-    src='ilustrativo según Jackman 1988: potencial de la vía entre el V y la A con un catéter orientado sobre el anillo',
-    beats=[(v, 'n') for v in vs], atr=[(v + VA, 'left', -1) for v in vs], h_ante=[v - HV for v in vs],
-    extra={'Abl d': [(v + 35, 0.9, 1.4) for v in vs] + [(v + 80, 0.55, 0.5) for v in vs] + [(v + VA + 2, 1.0, 1.0) for v in vs]},
-    marks=[(vs[2] + 80, 'Abl d', 'potencial de la vía'), (vs[2] + VA, 'CS 1-2', 'A más precoz')])
+S['jackman88'] = dict(win=(-60, 1600), pxms=0.48, channels=['HRA', 'His d', 'CS 9-10', 'CS 7-8', 'CS 5-6', 'CS 3-4', 'CS 1-2', 'RVA'],
+    src='ilustrativo según Jackman 1988: potencial de la vía entre el V y la A en el SC 5-6, donde la A es más precoz',
+    beats=[(v, 'n') for v in vs], atr=[(v + VA, 'cs_mid', -1) for v in vs], h_ante=[v - HV for v in vs],
+    extra={'CS 5-6': [(v + 85, 0.6, 0.45) for v in vs]},
+    marks=[(vs[2] + 85, 'CS 5-6', 'potencial de la vía'), (vs[3] + VA, 'CS 5-6', 'A más precoz')])
 
 if __name__ == '__main__':
     only = sys.argv[3:] or list(S)
