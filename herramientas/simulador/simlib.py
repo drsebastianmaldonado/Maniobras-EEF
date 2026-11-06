@@ -81,10 +81,13 @@ def render(sc, path):
     def far_v(t0, typ, extra):
         return v_local(t0, typ) + extra
 
+    custom = sc.get('custom', [])                 # canales que solo muestran lo que se les pasa en extra
     def channel(name):
         def f(t):
             y = 0.0
-            if name == 'HRA':
+            if name in custom:
+                pass
+            elif name == 'HRA':
                 y += egm(t, [(ta + ch_atrial_offset(seq, 'HRA'), 0.9) for ta, seq, pol in atr])
                 y += egm(t, [(far_v(t0, typ, 8), 0.12) for t0, typ in beats], w=3)
             elif name.startswith('His'):

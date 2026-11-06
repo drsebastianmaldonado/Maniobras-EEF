@@ -88,16 +88,23 @@ S['veen12_aop'] = dict(win=(-80, 2800), pxms=0.27, channels=CH6,
     cal=[(vs[0], vs[1], 'RVA', 'LC 350'), (sp[1], sp[2], 'HRA', 'estim. 340'), (vs[0], A[0] + 2, 'CS 9-10', 'VA'), (pv[-1], lastA + 2, 'CS 9-10', 'VA igual')],
     marks=[(sp[2] + 200, 'His p', 'PR > RR: vía lenta'), (lastA + 60, 'His p', 'VA linking')])
 
-# 6. Rama-rama (Cáceres 1989): HV 80 durante la TV, disociación AV, His → rama derecha → V. LC 300 ilustrativa.
-LC = 300
-vs = [i * LC for i in range(8)]
+# 6. Rama-rama (Cáceres 1989): His → rama derecha → V, disociación AV. Cáceres publica HV 80 y la disociación;
+#    en el registro HV 85 y RD-V 60 (ilustrativos), LC ~300 con oscilación en la que el H-H precede y predice al V-V.
+#    His p: A pequeña, His y V. His d: potencial de rama derecha (RD) 60 ms antes del V. Sin canal de rama derecha aparte.
+cl = [300, 300, 310, 290, 300, 300, 300]
+vs = [0]
+for c in cl: vs.append(vs[-1] + c)
+hs = [v - 85 for v in vs]
 sin_a = [150, 950, 1750]
-S['caceres89'] = dict(win=(-80, 2150), pxms=0.34, channels=['HRA', 'His d', 'RB', 'RVA'],
-    src='Cáceres 1989: HV 80 ms y disociación AV (publicados); LC 300 y H-RB ilustrativos',
-    beats=[(v, 'lb') for v in vs], atr=[(a, 'sinus', 1) for a in sin_a], h_ante=[v - 80 for v in vs],
-    extra={'RB': [(v - 50, 0.8, 0.6) for v in vs] + [(v + 20, 0.5, 2.0) for v in vs]},
-    cal=[(vs[3] - 80, vs[3], 'His d', 'HV 80'), (vs[1], vs[2], 'RVA', 'LC 300')],
-    marks=[(vs[5] - 80, 'His d', 'H'), (vs[5] - 50, 'RB', 'RB'), (sin_a[1] + 30, 'aVF', 'A disociada')])
+S['caceres89'] = dict(win=(-130, vs[-1] + 260), pxms=0.32, channels=['HRA', 'His p', 'His d', 'RVA'], custom=['His p', 'His d'],
+    src='Cáceres 1989 (HV 80 y disociación AV); en el registro HV 85, RD-V 60 y LC ilustrativos',
+    beats=[(v, 'lb') for v in vs], atr=[(a, 'sinus', 1) for a in sin_a],
+    extra={'His p': [(a + 28, 0.18, 1.2) for a in sin_a] + [(h, 0.6, 0.6) for h in hs] + [(v + 30, 0.9, 1.8) for v in vs],
+           'His d': [(v - 60, 0.75, 0.5) for v in vs] + [(v + 30, 1.2, 1.8) for v in vs]},
+    cal=[(hs[1], vs[1], 'His p', 'HV 85'), (vs[4] - 60, vs[4], 'His d', 'RD-V 60'),
+         (hs[2], hs[3], 'His p', 'H-H 310'), (hs[3], hs[4], 'His p', 'H-H 290'),
+         (vs[2], vs[3], 'RVA', 'V-V 310'), (vs[3], vs[4], 'RVA', 'V-V 290')],
+    marks=[(hs[6], 'His p', 'H'), (vs[6] - 60, 'His d', 'RD'), (sin_a[1] + 28, 'HRA', 'A disociada')])
 
 # 7. Músculo papilar posteromedial (Doppalapudi 2008): EV con BRD y eje superior, QRS ancho; en el sitio de origen
 #    el V local precede al QRS sin potencial de Purkinje previo. Tiempos ilustrativos.
