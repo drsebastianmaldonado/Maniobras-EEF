@@ -30,6 +30,23 @@ def smooth(pts):
     return d
 
 
+def wavy(p0, p1, p2, p3, amp=5, waves=6, off=0, n=90):
+    """Trayecto tortuoso (vía lenta): bezier con ondulación perpendicular. off desplaza en paralelo."""
+    import math
+    pts = []
+    for i in range(n + 1):
+        u = i / n
+        x = (1-u)**3*p0[0] + 3*(1-u)**2*u*p1[0] + 3*(1-u)*u**2*p2[0] + u**3*p3[0]
+        y = (1-u)**3*p0[1] + 3*(1-u)**2*u*p1[1] + 3*(1-u)*u**2*p2[1] + u**3*p3[1]
+        dx = -3*(1-u)**2*p0[0] + 3*(1-u)**2*p1[0] - 6*(1-u)*u*p1[0] + 6*(1-u)*u*p2[0] - 3*u**2*p2[0] + 3*u**2*p3[0]
+        dy = -3*(1-u)**2*p0[1] + 3*(1-u)**2*p1[1] - 6*(1-u)*u*p1[1] + 6*(1-u)*u*p2[1] - 3*u**2*p2[1] + 3*u**2*p3[1]
+        L = math.hypot(dx, dy) or 1
+        nx, ny = -dy / L, dx / L
+        w = amp * math.sin(2 * math.pi * waves * u) * math.sin(math.pi * u) ** 0.5 + off
+        pts.append((x + nx * w, y + ny * w))
+    return 'M' + ' L'.join(f'{x:.1f},{y:.1f}' for x, y in pts)
+
+
 def circ(*pts):        # circuito de la taquicardia (azul punteado)
     return f'<path d="{smooth(pts)}" stroke="{BLUE}" stroke-width="3" fill="none" marker-end="url(#ab)" stroke-dasharray="6 4"/>'
 
@@ -135,12 +152,14 @@ F['basal'] = (
      'El impulso recorre el VI y sube por la vía: V y A se activan|en serie (VA > 70); la A más precoz está en el SC distal.'), LEG)
 
 F['pre'] = (
-    ('A. Salto del AH (doble vía nodal)', spark((200, 236), 'S2 auricular', -150, 4)
-     + '<path d="M210,240 C230,222 256,230 266,250" stroke="#2e7d32" stroke-width="3" fill="none"/>'
-     + '<path d="M210,244 C222,284 256,290 272,272" stroke="#b71c1c" stroke-width="3" fill="none" stroke-dasharray="2 3"/>'
-     + xmark((236, 226), 'vía rápida refractaria', 150, -16) + front((214, 252), (236, 282), (262, 284), (276, 274), (290, 310))
-     + note(100, 330, 'baja por la vía lenta:|AH salta ≥ 50 ms', ORANGE) + box('Salto del AH', 'doble fisiología nodal'),
-     'El S2 encuentra la vía rápida refractaria y baja por la lenta:|el AH salta y puede aparecer el eco.'),
+    ('A. Salto del AH (doble vía nodal)', spark((196, 238), 'S2 auricular', -110, -22)
+     + '<path d="M206,240 C228,214 256,226 266,250" stroke="#2e7d32" stroke-width="3" fill="none"/>'
+     + f'<path d="{wavy((204, 248), (110, 262), (200, 286), (262, 270), 4, 6)}" stroke="#b71c1c" stroke-width="3.2" fill="none" stroke-linecap="round"/>'
+     + f'<path d="{wavy((204, 248), (110, 262), (200, 286), (262, 270), 4, 6, off=-8)}" stroke="{ORANGE}" stroke-width="3" fill="none"/>'
+     + note(96, 250, 'vía lenta', '#b71c1c') + note(292, 262, 'nodo AV', '#6d4c41')
+     + xmark((236, 226), 'vía rápida refractaria', 150, -16) + front((276, 278), (286, 292), (291, 310))
+     + note(80, 360, 'baja por la vía lenta:|AH salta ≥ 50 ms', ORANGE) + box('Salto del AH', 'doble fisiología nodal'),
+     'El S2 encuentra la vía rápida refractaria y baja por la lenta:|el AH salta y puede aparecer el eco.', ('his',)),
     ('B. Conducción VA por la vía', spark(APEX, 'estimulación del VD') + via(LAT, 'vía lateral', lx=-70, ly=-22)
      + front((180, 575), (330, 470), (470, 380), (525, 300)) + front((527, 270), (480, 210), (420, 180))
      + faint((175, 560), (260, 420), (290, 320), (270, 262)) + box('A excéntrica', 'no decremental: vía', True),
