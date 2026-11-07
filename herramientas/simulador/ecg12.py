@@ -87,7 +87,11 @@ def render(key, sc, path):
 # P retrógrada: (desfase desde el inicio del QRS, ancho, amplitud) por derivación.
 P_TRNAV = {'II': (45, 9, -0.28), 'III': (45, 9, -0.30), 'aVF': (45, 9, -0.30), 'aVR': (45, 9, 0.18),
            'V1': (45, 7, 0.30), 'I': (45, 9, 0.02), 'aVL': (45, 9, 0.10)}       # seudo r' en V1, seudo S inferior
+P_PJRT = {'II': (215, 16, -0.22), 'III': (215, 16, -0.24), 'aVF': (215, 16, -0.24), 'aVR': (215, 16, 0.12),
+          'aVL': (215, 16, 0.08), 'V1': (215, 14, 0.06), 'V4': (215, 16, -0.10), 'V5': (215, 16, -0.12), 'V6': (215, 16, -0.12)}  # P negativa inferior, RP largo
 TAQ = {
+    'c14_ecg': dict(lc=300, qrs=SIN, t=SIN_T, p=P_PJRT, title='ECG de 12 derivaciones durante la taquicardia',
+                    src='caso 14 (didáctico): LC 300 ms, ilustrativo'),
     'c1_ecg': dict(lc=430, qrs=SIN, t=SIN_T, p=P_TRNAV, title='ECG de 12 derivaciones durante la taquicardia',
                    src='caso 1 (didáctico): LC 430 ms, ilustrativo'),
 }

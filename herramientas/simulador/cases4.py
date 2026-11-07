@@ -36,8 +36,7 @@ S['p2_ehr'] = ehr(280, 110, 'conc_cs', 25, src='caso 2 (didáctico): LC 280, VA 
 S['p5_ehr'] = ehr(460, 300, 'conc_cs', 0, early=25, src='caso 5 (LC 460 como el ECG real, VA 300); EV-HR con el V local adelantado > 60 ms, sin cambio de la A',
                   lab='A-A 460 (sin cambio)')
 # Caso 6: PJRT, LC 521, VA 290; EV-HR retrasa la A 20 ms.
-S['p6_ehr'] = ehr(521, 290, 'conc_cs', -20, src='Ho 2015 (LC 521, VA 290); EV-HR que retrasa la A 20 ms', lab='A-A 541 (+20)')
-S['p6_ehr']['pxms'] = 0.24
+S['p6_ehr'] = ehr(300, 190, 'conc_cs', -20, src='caso 6 (LC 300 como el ECG real, VA 190); EV-HR que retrasa la A 20 ms', lab='A-A 320 (+20)')
 # Caso 9: PJRT (Arias 2010), LC 480, VA 296; EV-HR adelanta la A (magnitud ilustrativa).
 S['p9_ehr'] = ehr(480, 296, 'conc_cs', 20, src='Arias 2010 (LC 480, VA 296); EV-HR que adelanta la A (el valor de 20 ms es ilustrativo)', lab='A adelantada')
 S['p9_ehr']['pxms'] = 0.25
@@ -63,20 +62,21 @@ S['p3_ado'] = dict(win=(-80, A[-1] + 300), pxms=0.29, channels=CH, src='caso 3 (
     beats=[(h + HV, 'n') for h in hs], atr=[(a, 'cs_mid', 1) for a in A], h_ante=hs,
     cal=[(A[3], A[4], 'HRA', f'A-A {LC}')], marks=[(A[3] + 30, 'aVF', 'A sin V'), (A[5] + 30, 'aVF', 'A sin V')])
 
-# Caso 6: sobreestimulación auricular en la PJRT (Ho 2015): LC 521, HA 335 → AH 186; ΔAH 10 ms.
-LC, VA, AH = 521, 290, 186
-vs = [0, LC]
+# Caso 6: sobreestimulación auricular en la PJRT (LC 300 como el ECG real; ΔAH 10 de Ho 2015). Estimulación a 280, 6 estímulos.
+LC, VA, AH = 300, 190, 65
+vs = [0, LC, 2 * LC]
 A = [v + VA for v in vs]
-sp = [A[-1] + 420, A[-1] + 910, A[-1] + 1400]
+sp = [A[-1] + 230 + 280 * k for k in range(6)]
 pv = [s + 28 + AH + 10 + HV for s in sp]
 last = pv[-1]
-vs2 = [last + LC]
-S['p6_aop'] = dict(win=(-80, vs2[0] + 380), pxms=0.22, channels=CH, src='Ho 2015 (LC 521, HA 335 → AH 186; ΔAH 10 ms); LC de estimulación 490 ilustrativa',
+vs2 = [last + LC, last + 2 * LC]
+S['p6_aop'] = dict(win=(-80, vs2[-1] + 300), pxms=0.25, channels=CH, title='Sobreestimulación auricular desde la AD alta a 280 ms',
+    src='caso 6: valores ilustrativos (ΔAH 10 ms de Ho 2015)',
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
-    atr=[(a, 'conc_cs', -1) for a in A] + [(s + 5, 'sinus', 1) for s in sp] + [(last + VA, 'conc_cs', -1), (vs2[0] + VA, 'conc_cs', -1)],
+    atr=[(a, 'conc_cs', -1) for a in A] + [(s + 5, 'sinus', 1) for s in sp] + [(v + VA, 'conc_cs', -1) for v in [last] + vs2],
     h_ante=[v - HV for v in vs + pv + vs2],
-    cal=[(A[0] + 8, vs[1] - HV, 'His d', 'AH 186'), (sp[-1] + 28, pv[-1] - HV, 'His d', 'AH 196')],
-    marks=[(sp[1], 'V1', 'estimulación de la AD'), (pv[-1] + 40, 'I', 'ΔAH 10 → la aurícula está en el circuito')])
+    cal=[(A[1] + 8, vs[2] - HV, 'His d', f'AH {AH}'), (sp[-1] + 28, pv[-1] - HV, 'His d', f'AH {AH + 10}'), (sp[-2], sp[-1], 'HRA', 'S-S 280')],
+    marks=[(pv[-1] + 40, 'I', 'ΔAH 10 → la aurícula está en el circuito')])
 
 # Caso 9: encarrilamiento diferencial (Arias 2010): ΔVA −28 (base − ápex). SA y LC absolutos ilustrativos (SA ápex 438 publicado a otra LC).
 def diff(sa, typ, pace, title):

@@ -246,6 +246,38 @@ S['p5_vop'] = dict(win=(-100, after[-1] + 340), pxms=0.22, title='Encarrilamient
          (A[-3] + 38, A[-2] + 38, 'HRA', f'A-A {SC5}'), (A[-2] + 38, A[-1] + 38, 'HRA', f'A-A {SC5}')],
     marks=[(A[-2] + 38, 'His p', 'A₁'), (A[-1] + 38, 'His p', 'A₂')])
 
+# Caso 6 (PJRT, LC 300 como el ECG real). Relaciones de Ho 2015 (PPI−LC 71, ΔVA +19, ΔHA −76, His ortodrómico).
+LC6, VA6 = 300, 190
+S['c6_basal'] = basal('caso 6: AH 70, HV 45, ilustrativos', ah=70, cl=600)
+# Inducción con extraestímulo ventricular: la conducción VA por la vía se alarga (decremental) y empieza la TSV.
+sp = [0, 600, 900]
+A = [sp[0] + 150, sp[1] + 150, sp[2] + 215]
+hs = []
+for _ in range(5):
+    hs.append(A[-1] + 8 + 57)
+    A.append(hs[-1] + HV + VA6)
+vs = [h + HV for h in hs]
+S['c6_ind'] = dict(win=(-80, vs[-1] + 260), pxms=0.27, title='Inducción: extraestímulo ventricular (S1-S2 600-300)', channels=CH6,
+    src='caso 6: valores ilustrativos', beats=[(s, 'pa') for s in sp] + [(v, 'n') for v in vs], spikes=sp,
+    atr=[(a, 'conc_cs', -1) for a in A], h_ante=hs, h_retro=[s + 110 for s in sp],
+    cal=[(sp[1], sp[2], 'RVA', 'S2 300'), (sp[1], A[1] + 2, 'CS 9-10', 'SA 150'), (sp[2], A[2] + 2, 'CS 9-10', 'SA 215'),
+         (vs[2], vs[3], 'RVA', f'LC {LC6}'), (vs[2], A[5] + 2, 'HRA', f'VA {VA6}')])
+# Encarrilamiento desde el ápex a 280 con captura ortodrómica del His (6 estímulos). VA 209, HA 159, PPI 371.
+svt = [i * LC6 for i in range(3)]
+sp = [svt[-1] + 280 * (k + 1) for k in range(6)]
+A = [v + VA6 for v in svt] + [s + 209 for s in sp]
+ret = sp[-1] + 371
+after = [ret, ret + LC6]
+S['p6_vop'] = dict(win=(-100, after[-1] + 300), pxms=0.25, title='Encarrilamiento desde el ápex del VD a 280 ms', channels=CH6,
+    src='caso 6: valores ilustrativos según las relaciones de Ho 2015',
+    beats=[(v, 'n') for v in svt + after] + [(x, 'pa') for x in sp], spikes=sp,
+    atr=[(a, 'conc_cs', -1) for a in A + [v + VA6 for v in after]],
+    h_ante=[v - HV for v in svt + after] + [a - 159 for a in A[3:]],
+    cal=[(svt[0], svt[1], 'RVA', f'LC {LC6}'), (sp[0], sp[1], 'RVA', 'S-S 280'), (sp[-1], ret + 2, 'RVA', 'PPI 371'),
+         (A[5] + 8, A[6] + 8, 'HRA', 'A-A 280'), (A[6] + 8, A[7] + 8, 'HRA', 'A-A 280'),
+         (svt[2] - HV, A[2] + 8, 'His p', f'HA {HV + VA6}'), (A[-1] - 159, A[-1] + 8, 'His p', 'HA 159'),
+         (svt[1], A[1] + 8, 'CS 9-10', f'VA {VA6}'), (sp[-1], A[-1] + 8, 'CS 9-10', 'SA 209')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')

@@ -1124,9 +1124,10 @@ const PCASOS = [
       ado: { r: 'La TSV termina con un V (bloqueo en el brazo retrógrado).' }, parahis: { r: 'Respuesta nodal.' } },
     dx: ['trnav_a'], ex: 'Es un seudo A-A-V: el SA (450) supera la LC de estimulación (430), así que A₂ es el último A acelerado y la respuesta es A-V. PPI−LC > 125 y SA−VA > 85 con EV-HR negativa y ΔAH > 40 indican TRNAV atípica rápida-lenta.', refs: ['veen11', 'ho15', 'man95'] },
   { id: 'c6', t: 'Taquicardia incesante y miocardiopatía', p: 'Niño de 6 años con taquicardia incesante y FEVI de 35 %. ECG: P negativa en las inferiores, RP largo.',
-    h: ['TSV de QRS angosto, LC 521 ms, relación 1:1', 'VA 290 ms, HA 335 ms', 'A más precoz en el ostium del SC'],
-    m: { vop: { r: 'Estimulando a 490 ms el His se captura en forma ortodrómica (misma morfología que en la TSV). Respuesta A-V.', u: 'clave', img: 'figs/sim/prac/ho15.png' },
-      medidas: { r: 'PPI−LC 71 ms; ΔVA 19 ms; ΔHA −76 ms.', u: 'clave', img: 'figs/sim/prac/ho15.png' },
+    ecg: 'figs/sim/casos/c6_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c6_basal.png', ind: 'figs/sim/casos/c6_ind.png',
+    h: ['TSV de QRS angosto, LC 300 ms, relación 1:1', 'VA 190 ms, HA 235 ms', 'A más precoz en el ostium del SC'],
+    m: { vop: { r: 'Estimulando a 280 ms el His se captura en forma ortodrómica (misma morfología que en la TSV). Respuesta A-V.', u: 'clave', img: 'figs/sim/prac/p6_vop.png' },
+      medidas: { r: 'PPI−LC 71 ms; ΔVA 19 ms; ΔHA −76 ms.', u: 'clave', img: 'figs/sim/prac/p6_vop.png' },
       ehr: { r: 'Una EV con His refractario retrasa la A 20 ms sin cambiar la secuencia.', u: 'clave', img: 'figs/sim/prac/p6_ehr.png' },
       aop: { r: 'ΔAH 10 ms.', u: 'clave', img: 'figs/sim/prac/p6_aop.png' }, diff: { r: 'ΔVA (base − ápex) −15 ms.', u: 'util' },
       ado: { r: 'La TSV termina con un V: bloqueo en la vía.', u: 'trampa' },
@@ -1200,7 +1201,7 @@ const PCASOS = [
       ehr: { r: 'No aplica: no hay taquicardia reentrante que resetear.' } },
     dx: ['dfire'], ex: 'Una P y dos QRS: el diferencial es bigeminia auricular, bigeminia de la unión, TRNAV con bloqueo retrógrado 2:1 y doble disparo nodal. El catéter de la AD descartó la bigeminia auricular (una sola A); la arritmia sostenida, con acoplamiento fijo y sin P retrógradas, hizo improbable la bigeminia de la unión; y la secuencia auricular sinusal (alta → baja) descartó la TRNAV con bloqueo 2:1. Cada A conduce por la vía rápida y por una vía muy lenta. La ablación de la vía lenta la cura. No hacen falta maniobras de encarrilamiento: no hay circuito.', refs: ['burri12', 'peiker16'] },
   { id: 'c14', t: 'Lactante con taquicardia incesante', p: 'Lactante de 8 meses con taquicardia casi permanente desde hace semanas y FEVI de 40 %.',
-    ecg: 'figs/sim/casos/c14_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c14_basal.png', ind: 'figs/sim/casos/c14_ind.png',
+    ecg: 'figs/sim/casos/c14_ecg.png', basal: 'figs/sim/casos/c14_basal.png', ind: 'figs/sim/casos/c14_ind.png',
     h: ['TSV de QRS angosto, LC 300 ms, relación 1:1', 'RP largo: VA 190 ms, AH 70 ms', 'A más precoz en el ostium del SC (concéntrica)', 'Incesante: se reinicia sola después de pocos latidos sinusales, sin extrasístoles ni cambio del AH'],
     m: { ehr: { r: 'Una EV con His refractario (270 ms después del V previo, 10 ms después del His) no llega a la A y termina la TSV.', u: 'clave', img: 'figs/sim/prac/p14_ehr.png' },
       vop: { r: 'Las A se aceleran a la LC de estimulación con la misma secuencia; al cortar, respuesta A-V.', u: 'util' },
@@ -1219,7 +1220,7 @@ let pCur = null, pLog = [], pDone = null;
 const pSave = () => { try { localStorage.setItem('mef_prac', JSON.stringify(pState)); } catch (e) {} };
 function renderPracList() {
   const ok = Object.values(pState).filter(x => x.ok).length;
-  $('#pracBody').innerHTML = `<div class="card" style="padding:14px 16px"><b>Cómo funciona</b><p class="small" style="margin:4px 0 0">Cada caso empieza con los hallazgos de la taquicardia. Elegí las maniobras que harías, en el orden que quieras, y cuando tengas el diagnóstico, decidilo. Al final ves qué maniobras eran clave y cuáles engañaban. Los casos 4, 5, 6, 8, 9 y 13 usan datos publicados; los demás son didácticos (el 14 con un ECG real), con valores coherentes con los puntos de corte. Resueltos: ${ok} de ${PCASOS.length}.</p></div>` +
+  $('#pracBody').innerHTML = `<div class="card" style="padding:14px 16px"><b>Cómo funciona</b><p class="small" style="margin:4px 0 0">Cada caso empieza con los hallazgos de la taquicardia. Elegí las maniobras que harías, en el orden que quieras, y cuando tengas el diagnóstico, decidilo. Al final ves qué maniobras eran clave y cuáles engañaban. Los casos 4, 5, 6, 8, 9 y 13 usan datos publicados; los demás son didácticos, con valores coherentes con los puntos de corte. Resueltos: ${ok} de ${PCASOS.length}.</p></div>` +
     PCASOS.map((c, i) => { const st = pState[c.id]; return `<button class="card lcard" type="button" data-c="${i}"><span class="lic2" style="--c:${st ? (st.ok ? 'var(--green)' : 'var(--orange)') : 'var(--slate)'}">${st ? (st.ok ? 'Resuelto · ' + st.n + ' maniobras' : 'A revisar') : 'Caso ' + (i + 1)}</span><b>${c.t}</b><span>${c.p}</span></button>`; }).join('');
   $('#pracBody').querySelectorAll('[data-c]').forEach(b => b.onclick = () => startCase(+b.dataset.c));
 }
