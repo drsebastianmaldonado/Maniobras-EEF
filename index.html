@@ -1622,6 +1622,7 @@ function fichaHTML(id) {
   const m = M[id];
   let h = `<div class="ficha"><p class="para">${m.para}</p>`;
   h += `<div class="box"><div class="bl">Cómo se hace</div><ol>${m.como.map(x => `<li>${x}</li>`).join('')}</ol></div>`;
+  h += `<figure class="real esq"><a href="figs/esq/${id}.jpg" target="_blank" rel="noopener"><img src="figs/esq/${id}.jpg" alt="Esquema de la maniobra" loading="lazy"></a><figcaption>Esquema: corazón en OAI ~30° con el sistema de conducción. Tocá para ampliar.</figcaption></figure>`;
   if (m.medir) h += `<div class="box"><div class="bl">Qué medir con la misma tira</div><ul>${m.medir.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
   h += `<div class="tw"><table><thead><tr><th>Hallazgo</th><th>Indica</th><th>Fuente</th></tr></thead><tbody>${m.interp.map(r => `<tr><td>${r[0]}</td><td class="dx">${r[1]}</td><td>${cite(r[2].split(' '))}</td></tr>`).join('')}</tbody></table></div>`;
   h += casosHTML(id);
