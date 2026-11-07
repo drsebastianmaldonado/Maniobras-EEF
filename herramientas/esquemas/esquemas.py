@@ -131,7 +131,7 @@ F['basal'] = (
      + note(120, 120, 'A y V salen juntos|del nodo', BLUE) + box('VA septal ≤ 70 ms', 'excluye la TRAV'),
      'A y V se activan casi a la vez desde el circuito:|el impulso no necesita recorrer el ventrículo.'),
     ('B. Activación en serie (TRAV por vía lateral izq.)', TRAV_L + via(LAT, 'vía lateral', lx=-70, ly=-22)
-     + note(440, 210, 'A más precoz|en el SC distal', BLUE) + box('Activación en serie', 'VA > 70: TRAV'),
+     + note(440, 210, 'A más precoz|en el SC distal', BLUE) + box('Activación en serie', 'VA > 70 ms'),
      'El impulso recorre el VI y sube por la vía: V y A se activan|en serie (VA > 70); la A más precoz está en el SC distal.'), LEG)
 
 F['pre'] = (
