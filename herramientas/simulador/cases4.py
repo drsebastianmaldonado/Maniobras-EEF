@@ -136,18 +136,19 @@ S['p11_adec'] = dict(win=(-80, 1620), pxms=0.40, channels=['HRA', 'His p', 'His 
     marks=[(qrs[1], 'V1', 'BRI incipiente'), (qrs[3], 'V1', 'BRI completo'), (hs[3], 'His p', 'H después del QRS')])
 
 # Caso 11: EA desde la AD lateral con la unión refractaria adelanta el V sin cambiar el QRS y resetea (TRAV antidrómica por Mahaim).
-LC = 300
-vs = [0, LC, 2 * LC]
-A = [v + 150 for v in vs]
-ea = A[2] + 2                       # en el momento de la A septal: la unión está refractaria
-v_new = 3 * LC - 25
+# LC 260 como el ECG real del caso; AV por la vía 150, VA por el nodo 110. El EA cae 30 ms antes de la A esperada.
+LC, VA = 260, 110
+vs = [0, LC, 2 * LC, 3 * LC]
+A = [v + VA for v in vs[:3]]
+ea = vs[3] + VA - 30
+v_new = 4 * LC - 25
 after = [v_new + i * LC for i in range(3)]
-A += [v + 150 for v in after]
+A += [v + VA for v in after]
 S['p11_eapre'] = dict(win=(-80, after[-1] + 220), pxms=0.30, channels=['HRA', 'AD lat', 'His p', 'His d', 'CS 9-10', 'RVA'],
-    src='caso 11 (didáctico): TRAV antidrómica por vía atriofascicular, LC 300; EA desde la AD lateral que adelanta el V 25 ms',
-    beats=[(v, 'lb') for v in vs + after], aspikes=[ea], apace_ch='AD lat', atr=[(a, 'conc_his', -1) for a in A],
+    src='caso 11 (didáctico): LC 260; EA desde la AD lateral que adelanta el V 25 ms',
+    beats=[(v, 'lb') for v in vs + after], aspikes=[ea], apace_ch='AD lat', atr=[(a, 'conc_his', -1) for a in A] + [(ea + 3, 'right', 1)],
     h_retro=[v + 25 for v in vs + after], extra={'AD lat': [(a + 30, 0.9, 1.0) for a in A]},
-    cal=[(vs[2], v_new, 'RVA', 'V-V 275 (−25), mismo QRS')], marks=[(ea, 'V1', 'EA (AD lateral)')])
+    cal=[(vs[2], vs[3], 'RVA', f'V-V {LC}'), (vs[3], v_new, 'RVA', f'V-V {LC - 25} (−25), mismo QRS')], marks=[(ea, 'V1', 'EA (AD lateral)')])
 
 # Caso 11: potencial de la vía atriofascicular en el anillo tricuspídeo lateral (entre la A y el V), durante estimulación auricular.
 sp = [0, 600, 1200]

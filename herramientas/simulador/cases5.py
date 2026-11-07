@@ -300,6 +300,24 @@ S['c12_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='Inducción: extra
     h_retro=[v + 120 for v in vs[2:]], extra={'AD lat': [(s + 30, 0.8, 1.0) for s in sp] + [(x + 25, 0.8, 1.0) for x in A[:-1]]},
     cal=[(sp[1], sp[2], 'HRA', 'S2 280'), (vs[3], vs[4], 'RVA', f'LC {vs[4] - vs[3]}'), (vs[3], A[1] + 2, 'HRA', 'VA 160')])
 
+# Caso 11 (Mahaim, LC 260 como el ECG real). Basal sin preexcitación evidente; inducción con extraestímulo auricular.
+S['c11_basal'] = basal('caso 11 (didáctico): AH 90, HV 45, ilustrativos', ah=90, cl=700)
+S['c11_basal']['win'] = (-80, 2 * 700 + 330)
+sp = [0, 600, 860]
+hs0 = [s + 28 + 90 for s in sp[:2]]
+vs = [h + HV for h in hs0] + [sp[2] + 170]
+A = []
+for _ in range(5):
+    A.append(vs[-1] + 110)
+    vs.append(A[-1] + 150)
+S['c11_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='Inducción: extraestímulo auricular (S1-S2 600-260)',
+    channels=['HRA', 'AD lat', 'His p', 'His d', 'CS 9-10', 'RVA'], src='caso 11 (didáctico): valores ilustrativos',
+    beats=[(v, 'n') for v in vs[:2]] + [(v, 'lb') for v in vs[2:]], aspikes=sp, apace_ch='HRA',
+    atr=[(s + 5, 'sinus', 1) for s in sp] + [(x, 'conc_his', -1) for x in A[:-1]], h_ante=hs0, h_retro=[v + 25 for v in vs[2:]],
+    extra={'AD lat': [(s + 30, 0.8, 1.0) for s in sp] + [(x + 30, 0.8, 1.0) for x in A[:-1]]},
+    cal=[(sp[1], sp[2], 'HRA', 'S2 260'), (sp[2], vs[2], 'HRA', 'AV 170'), (vs[3], vs[4], 'RVA', f'LC {vs[4] - vs[3]}'),
+         (vs[3], A[1] + 2, 'CS 9-10', 'VA 110')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')
