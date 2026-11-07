@@ -14,3 +14,10 @@ Uso:
     node png.js <carpeta de salida>
 
 Después se convierten a escala de grises y se copian a `figs/sim/`.
+
+Orden de los canales: `simlib.distal_primero` los muestra de distal a proximal (His d antes que His p, Abl d antes que Abl p,
+SC 1-2 primero), como en el polígrafo del autor.
+
+Para regenerar todo de una vez (fichas, modo práctica y presentación de los casos):
+
+    python3 build_all.py <carpeta temporal>

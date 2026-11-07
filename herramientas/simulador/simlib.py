@@ -40,6 +40,23 @@ SEQ = {
     'fus_l':    {'HRA': 32, 'His': 15, 'CS': [20, 21, 14, 7, 0]},       # fusión: SC distal por la vía + septum por la vía rápida
 }
 
+import re as _re
+def distal_primero(names):
+    """Ordena los canales de distal a proximal, como en el polígrafo del autor: His d antes que His p, Abl d antes que Abl p,
+    y en el SC y el VI el par de menor número (distal) primero. Cada grupo conserva las posiciones que ocupaba."""
+    def grupo(n):
+        m = _re.match(r'^(CS|LV) (\d+)-\d+$', n)
+        if m: return m.group(1), int(m.group(2))
+        m = _re.match(r'^(His|Abl) ([dp])$', n)
+        if m: return m.group(1), 0 if m.group(2) == 'd' else 1
+        return None
+    out = list(names)
+    for g in {grupo(n)[0] for n in names if grupo(n)}:
+        pos = [i for i, n in enumerate(names) if grupo(n) and grupo(n)[0] == g]
+        orden = sorted((names[i] for i in pos), key=lambda n: grupo(n)[1])
+        for i, n in zip(pos, orden): out[i] = n
+    return out
+
 def render(sc, path):
     random.seed(sc.get('seed', 3))
     T0, T1 = sc['win']
@@ -114,6 +131,7 @@ def render(sc, path):
         return f
 
     names = sc.get('channels', ['HRA', 'His p', 'His d'] + CS_NAMES + ['RVA'])
+    names = distal_primero(names)
     channels = [('I', lambda t: surface(t, 'I'), 'surf', 26), ('aVF', lambda t: surface(t, 'aVF'), 'surf', 26),
                 ('V1', lambda t: surface(t, 'V1'), 'surf', 26)] + \
                [(n, channel(n), 'icd', 14 if n.startswith('CS') else 16) for n in names]
