@@ -361,6 +361,24 @@ S['c13_ind'] = dict(win=(-80, As[-1] + 750), pxms=0.22, title='Ritmo sinusal al 
     beats=[(v, 'n') for v in vs], atr=[(a, 'sinus', 1) for a in As], h_ante=sorted(h1 + h2),
     cal=[(As[1], As[2], 'HRA', 'A-A 900'), (As[2] + 28, h1[2], 'His d', 'AH 90'), (h1[3], h2[1], 'His d', 'H-H 430')])
 
+# Caso 10 (vía nodoventricular con bloqueo VA tipo Wenckebach, LC 390). Basal con doble vía; inducción con salto AH.
+S['c10_basal'] = basal('caso 10 (didáctico): AH 85, HV 45, ilustrativos', ah=85, cl=750)
+S['c10_basal']['win'] = (-80, 2 * 750 + 330)
+LC10 = 390
+sp = [0, 600, 900]
+hs = [s + 28 + a for s, a in zip(sp, [85, 85, 245])]
+for _ in range(6):
+    hs.append(hs[-1] + LC10)
+vs = [h + HV for h in hs]
+va = [110, 150, 175, None, 110, 150, 175]          # VA que se alarga hasta que una V no conduce a la A
+A = [v + d for v, d in zip(vs[2:], va) if d is not None]
+S['c10_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.25, title='Inducción: extraestímulo auricular (S1-S2 600-300)', channels=CH6,
+    src='caso 10 (didáctico): valores ilustrativos', beats=[(v, 'n') for v in vs], aspikes=sp, apace_ch='HRA',
+    atr=[(s + 5, 'sinus', 1) for s in sp] + [(a, 'conc_his', -1) for a in A], h_ante=hs,
+    cal=[(sp[1] + 28, hs[1], 'His d', 'AH 85'), (sp[2] + 28, hs[2], 'His d', 'AH 245'), (sp[1], sp[2], 'HRA', 'S2 300'),
+         (hs[4], hs[5], 'His d', f'H-H {LC10}'), (hs[5], hs[6], 'His d', f'H-H {LC10}'),
+         (vs[2], A[0] + 2, 'CS 9-10', 'VA 110'), (vs[3], A[1] + 2, 'CS 9-10', 'VA 150'), (vs[4], A[2] + 2, 'CS 9-10', 'VA 175')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')

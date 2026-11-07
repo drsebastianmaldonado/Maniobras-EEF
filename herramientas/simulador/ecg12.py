@@ -89,7 +89,11 @@ P_TRNAV = {'II': (45, 9, -0.28), 'III': (45, 9, -0.30), 'aVF': (45, 9, -0.30), '
            'V1': (45, 7, 0.30), 'I': (45, 9, 0.02), 'aVL': (45, 9, 0.10)}       # seudo r' en V1, seudo S inferior
 P_PJRT = {'II': (215, 16, -0.22), 'III': (215, 16, -0.24), 'aVF': (215, 16, -0.24), 'aVR': (215, 16, 0.12),
           'aVL': (215, 16, 0.08), 'V1': (215, 14, 0.06), 'V4': (215, 16, -0.10), 'V5': (215, 16, -0.12), 'V6': (215, 16, -0.12)}  # P negativa inferior, RP largo
+P_NV = {'II': (0, 12, -0.42), 'III': (0, 12, -0.45), 'aVF': (0, 12, -0.45), 'aVR': (0, 12, 0.28), 'aVL': (0, 12, 0.12),
+        'I': (0, 12, 0.05), 'V1': (0, 10, 0.25), 'V2': (0, 11, 0.15), 'V5': (0, 12, -0.15), 'V6': (0, 12, -0.15)}
 TAQ = {
+    'c10_ecg': dict(lc=390, qrs=SIN, t=SIN_T, p=P_NV, rp=[110, 150, 175, None], title='ECG de 12 derivaciones durante la taquicardia',
+                    src='caso 10 (didáctico): LC 390 ms; P retrógrada con RP que se alarga hasta que falta una P (ilustrativo)'),
     'c14_ecg': dict(lc=300, qrs=SIN, t=SIN_T, p=P_PJRT, title='ECG de 12 derivaciones durante la taquicardia',
                     src='caso 14 (didáctico): LC 300 ms, ilustrativo'),
     'c1_ecg': dict(lc=430, qrs=SIN, t=SIN_T, p=P_TRNAV, title='ECG de 12 derivaciones durante la taquicardia',
@@ -117,11 +121,14 @@ def render_taq(key, sc, path):
         pts = []
         for ms in range(T0, T1):
             v = 0.0
-            for b in beats + [beats[0] - sc['lc']]:
+            for k, b in enumerate([beats[0] - sc['lc']] + beats):
+                seq = sc.get('rp')                    # RP por latido (None = sin P): bloqueo VA tipo Wenckebach
                 v += sum(g(ms, b + m, s, a) for m, s, a in sc['qrs'][L])
                 v += g(ms, b + 200, 40, sc['t'][L])
-                if L in sc['p']:
+                if L in sc['p'] and (not seq or seq[k % len(seq)] is not None):
                     m, s, a = sc['p'][L]
+                    if seq:
+                        m = seq[k % len(seq)]
                     v += g(ms, b + m, s, a)
             v = v * 17 + random.gauss(0, 0.15)
             pts.append(f'{X(ms):.1f},{y0 - v:.1f}')
