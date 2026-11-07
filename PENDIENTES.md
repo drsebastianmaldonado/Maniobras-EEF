@@ -86,7 +86,7 @@ Las agregué yo; verificá los datos con tus copias o reemplazalas por artículo
 
 Cada link abre el esquema (corazón en OAI ~30°, dos paneles). En la app está en cada ficha de la pestaña Maniobras, debajo de "Cómo se hace".
 
-- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/basal.jpg) **Observaciones en la taquicardia**: VA ≤ 70 (TRNAV típica) / activación excéntrica.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/basal.jpg) **Observaciones en la taquicardia**: VA ≤ 70 (TRNAV típica) / activación en serie (TRAV).
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/pre.jpg) **Estudio basal**: salto del AH / conducción VA por la vía.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/ado.jpg) **Adenosina**: termina / la TA sigue con bloqueo AV.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/vop.jpg) **Sobreestimulación ventricular**: A-V / A-A-V.

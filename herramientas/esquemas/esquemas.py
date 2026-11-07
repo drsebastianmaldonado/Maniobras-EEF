@@ -130,9 +130,9 @@ F['basal'] = (
     ('A. VA ≤ 70 ms (TRNAV típica)', TRNAV + front((268, 262), (240, 200), (190, 140), w=3) + front((285, 285), (292, 320), (300, 420), w=3)
      + note(120, 120, 'A y V salen juntos|del nodo', BLUE) + box('VA septal ≤ 70 ms', 'excluye la TRAV'),
      'A y V se activan casi a la vez desde el circuito:|el impulso no necesita recorrer el ventrículo.'),
-    ('B. Activación excéntrica (vía lateral izq.)', TRAV_L + via(LAT, 'vía lateral', lx=-70, ly=-22)
-     + note(440, 210, 'A más precoz|en el SC distal', BLUE) + box('Excéntrica, VA > 70', 'vía libre o TA', 'warn'),
-     'El impulso recorre el VI y sube por la vía lateral:|la A más precoz está en el SC distal.'), LEG)
+    ('B. Activación en serie (TRAV por vía lateral izq.)', TRAV_L + via(LAT, 'vía lateral', lx=-70, ly=-22)
+     + note(440, 210, 'A más precoz|en el SC distal', BLUE) + box('Activación en serie', 'VA > 70: TRAV'),
+     'El impulso recorre el VI y sube por la vía: V y A se activan|en serie (VA > 70); la A más precoz está en el SC distal.'), LEG)
 
 F['pre'] = (
     ('A. Salto del AH (doble vía nodal)', spark((200, 236), 'S2 auricular', -150, 4)
