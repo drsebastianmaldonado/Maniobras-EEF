@@ -379,6 +379,24 @@ S['c10_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.25, title='Inducción: extra
          (hs[4], hs[5], 'His d', f'H-H {LC10}'), (hs[5], hs[6], 'His d', f'H-H {LC10}'),
          (vs[2], A[0] + 2, 'CS 9-10', 'VA 110'), (vs[3], A[1] + 2, 'CS 9-10', 'VA 150'), (vs[4], A[2] + 2, 'CS 9-10', 'VA 175')])
 
+# Caso 15 (TRAV por vía lateral izquierda decremental, registros reales): sobreestimulación auricular SIMULADA.
+# LC 311 (real); VA 140 ilustrativo, A más precoz en el SC distal. Estimulación desde la AD alta a 280 (6 estímulos):
+# al cortar, el VA del primer latido de retorno es igual al de la TSV (VA linking).
+LC15, VA15 = 311, 140
+vs = [0, LC15, 2 * LC15]
+A = [v + VA15 for v in vs]
+sp = [A[-1] + 230 + 280 * k for k in range(6)]
+hs_p = [s + 28 + 150 for s in sp]
+vp = [h + HV for h in hs_p]
+after = [vp[-1] + LC15 * k for k in range(1, 3)]
+S['p15_aop'] = dict(win=(-80, after[-1] + 260), pxms=0.25, title='Sobreestimulación auricular desde la AD alta a 280 ms', channels=CH6,
+    src='caso 15: registro simulado (LC 311 del estudio real; VA 140 ilustrativo)',
+    beats=[(v, 'n') for v in vs + vp + after], aspikes=sp, apace_ch='HRA',
+    atr=[(a, 'left', -1) for a in A] + [(s + 5, 'sinus', 1) for s in sp] + [(v + VA15, 'left', -1) for v in [vp[-1]] + after],
+    h_ante=[v - HV for v in vs] + hs_p + [v - HV for v in after],
+    cal=[(vs[1], vs[2], 'RVA', f'LC {LC15}'), (vs[1], A[1] + 2, 'CS 1-2', f'VA {VA15}'), (sp[-2], sp[-1], 'HRA', 'S-S 280'),
+         (vp[-1], vp[-1] + VA15 + 2, 'CS 1-2', f'VA {VA15}')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')

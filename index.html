@@ -1218,15 +1218,15 @@ const PCASOS = [
       ado: { r: 'La TSV termina después de un V, sin A.', u: 'util' },
       eha: { r: 'Un EA con His refractario desde la AD alta no modifica el His siguiente.' } },
     dx: ['pjrt', 'trav_s'], ex: 'Una taquicardia incesante de RP largo en un lactante, que se reinicia sola sin extrasístoles ni alargamiento del AH, orienta a PJRT. La EV con His refractario que termina la TSV sin llegar a la A demuestra una vía accesoria que participa en el circuito (excluye TRNAV y TA). El PPI−LC y el SA−VA salen "de TRNAV" porque la vía es decremental y la para-Hisiana da respuesta nodal por la misma razón: las dos engañan.', refs: ['ho15', 'veen12'] },
-  { id: 'c15', t: 'TSV con conducción VA decremental', p: 'Paciente con TSV recurrentes. ECG basal sin preexcitación. Registros reales del polígrafo y del mapeo.',
-    ecg: 'figs/sim/casos/c15_ecg.jpg', ecgReal: true, ecgt: 'ECG de 12 derivaciones en ritmo sinusal (polígrafo)',
-    h: ['TSV de QRS angosto, LC 311 ms, relación 1:1', 'Sin preexcitación en sinusal'],
+  { id: 'c15', t: 'TSV con conducción VA decremental', p: 'Varón de 7 años con TSV recurrentes. ECG basal sin preexcitación. Registros reales del polígrafo y del mapeo.',
+    ecg: 'figs/sim/casos/c15_ecg.jpg', ecgReal: true, ecgt: 'ECG de 12 derivaciones en ritmo sinusal (polígrafo)', ind: 'figs/sim/casos/c15_ind.jpg', indReal: true,
+    h: ['TSV de QRS angosto, LC 311 ms, relación 1:1', 'Inducida con estimulación auricular desde el SC 5-6 (S1-S1 260 ms)', 'Activación auricular excéntrica: el EGM auricular más precoz está en el SC 1-2', 'Sin preexcitación en sinusal'],
     m: { vop: { r: 'Encarrilamiento desde el VD a 280 ms (estimulación VENT D). Al cortar: PPI 371 ms con LC 311 ms.', u: 'clave', img: 'figs/sim/casos/c15_vop.jpg', real: true },
       medidas: { r: 'PPI−LC 60 ms.', u: 'clave', img: 'figs/sim/casos/c15_vop.jpg', real: true },
-      pre: { r: 'Extraestímulos ventriculares con S1 600: el intervalo estímulo-A se alarga de 152 ms (S2 390) a 162 (S2 370), 174 (S2 350), 178 (S2 340) y 184 ms (S2 320). Conducción VA decremental.', u: 'util', img: 'figs/sim/casos/c15_pre.jpg', real: true },
-      aop: { r: 'Estimulación auricular desde el SC 5-6 a 260 ms durante la taquicardia.', img: 'figs/sim/casos/c15_aop.jpg', real: true },
-      mapa: { r: 'Mapa de activación auricular (LAT isocrónico) durante la taquicardia: la A más precoz está en la pared lateral izquierda (anillo mitral), donde se marcó un potencial.', u: 'clave', img: 'figs/sim/casos/c15_mapa.jpg', real: true } },
-    dx: ['trav_l'], ex: 'El PPI−LC de 60 ms (< 115) después del encarrilamiento desde el VD pone al ventrículo dentro del circuito: es una TRAV (excluye TRNAV y TA). La conducción VA decremental no distingue el nodo de una vía decremental; el mapa de activación auricular durante la taquicardia, con la A más precoz en la pared lateral izquierda y un potencial de la vía, la ubica. TRAV ortodrómica por una vía lateral izquierda con conducción decremental (poco frecuente: las vías decrementales suelen ser posteroseptales).', refs: ['michaud01', 'veen11'] }
+      pre: { r: 'Extraestímulos ventriculares con S1 600: el intervalo estímulo-A se alarga de 152 ms (S2 390) a 162 (S2 370), 174 (S2 350), 178 (S2 340), 184–191 (S2 320), 197 (S2 310) y 210 ms (S2 300). Conducción VA decremental, excéntrica.', u: 'util', img: 'figs/sim/casos/c15_pre.jpg', real: true },
+      aop: { r: 'Estimulando la AD alta a 280 ms durante la taquicardia, al cortar el VA del primer latido de retorno es igual al de la TSV (VA linking): la A depende del V. Excluye la TA. (Registro simulado: esta maniobra no se hizo en el estudio real.)', u: 'util', img: 'figs/sim/prac/p15_aop.png' },
+      mapa: { r: 'Mapa de activación auricular (LAT isocrónico) durante la taquicardia: la A más precoz está en la pared lateral izquierda (anillo mitral), donde se marcó un potencial. La radiofrecuencia en la hora 4 del anillo mitral eliminó la vía.', u: 'clave', img: 'figs/sim/casos/c15_mapa.jpg', real: true } },
+    dx: ['trav_l'], ex: 'El PPI−LC de 60 ms (< 115) después del encarrilamiento desde el VD pone al ventrículo dentro del circuito: es una TRAV (excluye TRNAV y TA). La conducción VA decremental no distingue el nodo de una vía decremental; el mapa de activación auricular durante la taquicardia, con la A más precoz en la pared lateral izquierda (SC 1-2) y un potencial de la vía, la ubica; se ablacionó en la hora 4 del anillo mitral. TRAV ortodrómica por una vía lateral izquierda con conducción decremental (poco frecuente: las vías decrementales suelen ser posteroseptales).', refs: ['michaud01', 'veen11'] }
 ];
 let pState = {};
 try { pState = JSON.parse(localStorage.getItem('mef_prac') || '{}'); } catch (e) {}
@@ -1240,7 +1240,7 @@ function renderPracList() {
 }
 function presFigs(c) {
   const f = (src, lab, real) => src ? `<figure class="real${real ? '' : ' sim'}"><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${lab}" loading="lazy"></a><figcaption>${lab}. ${real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : '';
-  return f(c.ecg, c.ecgt || 'ECG de la taquicardia', c.ecgReal) + f(c.ecg2, c.ecg2t || 'ECG en ritmo sinusal, después de la conversión', c.ecgReal) + f(c.basal, 'Estudio basal') + f(c.ind, 'Inducción');
+  return f(c.ecg, c.ecgt || 'ECG de la taquicardia', c.ecgReal) + f(c.ecg2, c.ecg2t || 'ECG en ritmo sinusal, después de la conversión', c.ecgReal) + f(c.basal, 'Estudio basal') + f(c.ind, 'Inducción', c.indReal);
 }
 function startCase(i) { pCur = i; pLog = []; pDone = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
 function renderCase() {
