@@ -213,18 +213,18 @@ S['p3_vop'] = dict(win=(-80, v_after + 420), pxms=0.27, channels=CH,
     cal=[(sp[0], sp[1], 'RVA', 'estim. 330'), (Aret[-1], focal, 'HRA', 'A-A')],
     marks=[(Aret[-1], 'His p', 'A'), (focal, 'His p', 'A'), (v_after, 'aVF', 'V')])
 
-# Caso 8: TV fascicular posterior (LC 337). Con verapamilo se alarga la LC: P1-P2 y P2-P1 se alargan; P2-QRS no cambia.
+# Caso 8: TV fascicular posterior (LC 420, como el ECG real del caso). Con verapamilo se alarga la LC: P1-P2 y P2-P1 se alargan; P2-QRS no cambia.
 def tvf(LC, p1p2, title):
     vs = [i * LC for i in range(6)]
     p2 = [v - 30 for v in vs]
     p1 = [x - p1p2 for x in p2]
     ext = {'LV 1-2': [(t, 0.32, 0.8) for t in p1] + [(t, 0.55, 0.7) for t in p2]}
     return dict(win=(-60, vs[-1] + 150), pxms=0.30, title=title, channels=['HRA', 'His d', 'LV 1-2', 'RVA'],
-        src='caso 8 (Liu Q 2023: LC 337); el alargamiento con verapamilo es ilustrativo, P2-QRS 30 ms en ambos',
+        src='caso 8: LC 420 como el ECG real; el alargamiento con verapamilo es ilustrativo, P2-QRS 30 ms en ambos',
         beats=[(v, 'rbs') for v in vs], atr=[(a, 'sinus', 1) for a in [130, 930, 1730] if a < vs[-1]], h_retro=[v + 15 for v in vs],
         extra=ext, cal=[(vs[1], vs[2], 'RVA', f'LC {LC}'), (p1[3], p2[3], 'LV 1-2', f'P1-P2 {p1p2}'), (p2[4], vs[4], 'LV 1-2', 'P2-V 30')])
-S['p8_verap_a'] = tvf(337, 110, 'A. Antes del verapamilo')
-S['p8_verap_b'] = tvf(400, 160, 'B. Con verapamilo: se alargan la LC y el P1-P2; el P2-QRS no cambia')
+S['p8_verap_a'] = tvf(420, 110, 'A. Antes del verapamilo')
+S['p8_verap_b'] = tvf(480, 160, 'B. Con verapamilo: se alargan la LC y el P1-P2; el P2-QRS no cambia')
 
 if __name__ == '__main__':
     only = sys.argv[3:] or list(S)

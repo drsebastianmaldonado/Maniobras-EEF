@@ -1141,7 +1141,8 @@ const PCASOS = [
       ado: { r: 'Enlentece transitoriamente, con bloqueo VA, sin terminar.' }, parahis: { r: 'Respuesta nodal.' } },
     dx: ['jet'], ex: 'Un EA precoz que adelanta el His inmediato sin cortar la taquicardia no es compatible con TRNAV (dejaría la vía rápida refractaria). Sin doble vía y sin conducción por la vía lenta en la sobreestimulación auricular, el diagnóstico es taquicardia de la unión.', refs: ['padanilam08', 'fan11', 'veen12'] },
   { id: 'c8', t: 'Taquicardia de QRS ancho que terminó con verapamilo', p: 'Varón de 17 años, corazón sano. En la guardia, una taquicardia de QRS ancho terminó con verapamilo.',
-    h: ['Taquicardia de QRS 130 ms, BRD con eje superior, LC 337 ms', 'Disociación AV (más V que A)', 'His retrógrado 15 ms después del inicio del QRS'],
+    ecg: 'figs/sim/casos/c8_ecg.jpg', ecgReal: true, ecg2: 'figs/sim/casos/c8_ecg_sin.jpg', basal: 'figs/sim/casos/c8_basal.png', ind: 'figs/sim/casos/c8_ind.png',
+    h: ['Taquicardia de QRS 140 ms, BRD con eje superior, LC 420 ms', 'Disociación AV (más V que A)', 'His retrógrado 15 ms después del inicio del QRS'],
     m: { map: { r: 'En el septum medio: P1 mesodiastólico (proximal → distal) y P2 presistólico (distal → proximal); P1-V 100 → 75 → 55 ms de proximal a distal.', u: 'clave', img: 'figs/sim/prac/tvf_post.png' },
       verap: { r: 'Verapamilo 0,03 mg/kg alarga la LC; P1-P2 y P2-P1 se alargan y P2-QRS no cambia.', u: 'clave', img: 'figs/sim/prac/p8_verap.png' },
       vop: { r: 'Encarrilable desde el VD; el encarrilamiento captura P1 en forma ortodrómica.', u: 'util' },
@@ -1221,7 +1222,7 @@ function renderPracList() {
 }
 function presFigs(c) {
   const f = (src, lab, real) => src ? `<figure class="real${real ? '' : ' sim'}"><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${lab}" loading="lazy"></a><figcaption>${lab}. ${real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : '';
-  return f(c.ecg, 'ECG de la taquicardia', c.ecgReal) + f(c.basal, 'Estudio basal') + f(c.ind, 'Inducción');
+  return f(c.ecg, 'ECG de la taquicardia', c.ecgReal) + f(c.ecg2, 'ECG en ritmo sinusal, después de la conversión', c.ecgReal) + f(c.basal, 'Estudio basal') + f(c.ind, 'Inducción');
 }
 function startCase(i) { pCur = i; pLog = []; pDone = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
 function renderCase() {
