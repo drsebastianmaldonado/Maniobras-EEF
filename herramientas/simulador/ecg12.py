@@ -83,7 +83,60 @@ def render(key, sc, path):
     open(path, 'w').write('\n'.join(out))
 
 
+# --- ECG de 12 derivaciones durante la taquicardia (presentación de los casos de práctica) ---
+# P retrógrada: (desfase desde el inicio del QRS, ancho, amplitud) por derivación.
+P_TRNAV = {'II': (45, 9, -0.28), 'III': (45, 9, -0.30), 'aVF': (45, 9, -0.30), 'aVR': (45, 9, 0.18),
+           'V1': (45, 7, 0.30), 'I': (45, 9, 0.02), 'aVL': (45, 9, 0.10)}       # seudo r' en V1, seudo S inferior
+TAQ = {
+    'c1_ecg': dict(lc=430, qrs=SIN, t=SIN_T, p=P_TRNAV, title='ECG de 12 derivaciones durante la taquicardia',
+                   src='caso 1 (didáctico): LC 430 ms, ilustrativo'),
+}
+
+
+def render_taq(key, sc, path):
+    random.seed(11)
+    T0, T1, PX = 0, 2600, 0.36
+    LEFT, TOP, ROWH = 60, 34, 46
+    W = int(LEFT + (T1 - T0) * PX + 20)
+    H = TOP + ROWH * len(LEADS) + 46
+    X = lambda t: LEFT + (t - T0) * PX
+    beats = list(range(150, T1, sc['lc']))
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" font-family="Helvetica,Arial,sans-serif">',
+           f'<rect width="{W}" height="{H}" fill="#fff"/>',
+           f'<text x="8" y="17" font-size="11.5" font-weight="700" fill="#0a58ca">{sc["title"]}</text>']
+    t = 100
+    while t < T1:
+        out.append(f'<line x1="{X(t):.1f}" x2="{X(t):.1f}" y1="{TOP - 6}" y2="{H - 40}" stroke="#eef0f4" stroke-width="0.6"/>')
+        t += 100
+    for i, L in enumerate(LEADS):
+        y0 = TOP + ROWH * i + ROWH / 2
+        pts = []
+        for ms in range(T0, T1):
+            v = 0.0
+            for b in beats + [beats[0] - sc['lc']]:
+                v += sum(g(ms, b + m, s, a) for m, s, a in sc['qrs'][L])
+                v += g(ms, b + 200, 40, sc['t'][L])
+                if L in sc['p']:
+                    m, s, a = sc['p'][L]
+                    v += g(ms, b + m, s, a)
+            v = v * 17 + random.gauss(0, 0.15)
+            pts.append(f'{X(ms):.1f},{y0 - v:.1f}')
+        out.append(f'<text x="8" y="{y0 + 4:.1f}" font-size="10.5" font-weight="700" fill="#333">{L}</text>')
+        out.append(f'<polyline fill="none" stroke="#151515" stroke-width="0.8" stroke-linejoin="round" points="{" ".join(pts)}"/>')
+    yq = TOP + ROWH * 6 + 6
+    b0, b1 = beats[1], beats[2]
+    out.append(f'<line x1="{X(b0):.1f}" x2="{X(b1):.1f}" y1="{yq}" y2="{yq}" stroke="#0a58ca" stroke-width="0.9"/>')
+    for tt in (b0, b1):
+        out.append(f'<line x1="{X(tt):.1f}" x2="{X(tt):.1f}" y1="{yq - 4}" y2="{yq + 4}" stroke="#0a58ca" stroke-width="0.9"/>')
+    out.append(f'<text x="{X((b0 + b1) / 2):.1f}" y="{yq - 3}" font-size="9.5" text-anchor="middle" fill="#0a58ca">LC {sc["lc"]}</text>')
+    out.append(f'<line x1="{W - 20 - 100 * PX:.1f}" x2="{W - 20}" y1="{H - 34}" y2="{H - 34}" stroke="#333" stroke-width="1.2"/>')
+    out.append(f'<text x="{W - 20 - 50 * PX:.1f}" y="{H - 22}" font-size="9.5" text-anchor="middle" fill="#333">100 ms</text>')
+    out.append(f'<text x="{LEFT}" y="{H - 8}" font-size="9.5" fill="#666">REGISTRO SIMULADO · {sc["src"]}</text>')
+    out.append('</svg>')
+    open(path, 'w').write('\n'.join(out))
+
+
 if __name__ == '__main__':
-    for k in (sys.argv[3:] or list(ECGS)):
-        render(k, ECGS[k], f'{OUT}/{k}.svg')
+    for k in (sys.argv[3:] or list(ECGS) + list(TAQ)):
+        (render if k in ECGS else render_taq)(k, {**ECGS, **TAQ}[k], f'{OUT}/{k}.svg')
         print(k)

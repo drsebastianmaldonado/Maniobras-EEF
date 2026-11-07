@@ -1069,6 +1069,7 @@ const PDX = [['trnav_t', 'TRNAV típica'], ['trnav_a', 'TRNAV atípica'], ['trav
 const UTAG = { clave: ['Clave', 'var(--green)'], util: ['Útil', 'var(--blue)'], trampa: ['Engañosa', 'var(--orange)'] };
 const PCASOS = [
   { id: 'c1', t: 'Palpitaciones de inicio y fin bruscos', p: 'Adolescente de 15 años con palpitaciones paroxísticas. ECG basal normal, sin preexcitación.',
+    ecg: 'figs/sim/casos/c1_ecg.png', basal: 'figs/sim/casos/c1_basal.png', ind: 'figs/sim/casos/c1_ind.png',
     h: ['TSV de QRS angosto inducida con extraestímulos auriculares, LC 430 ms', 'Relación AV 1:1', 'VA septal 40 ms: la A cae casi junto con el V', 'Activación auricular concéntrica (más precoz en el His y el SC proximal)'],
     m: { vop: { r: 'Estimulando a 370 ms las A se aceleran con la misma secuencia; al cortar, respuesta A-V (A-H).', u: 'clave', img: 'figs/sim/prac/knight99.png' },
       medidas: { r: 'PPI−LC 170 ms; SA−VA 150 ms.', u: 'util' }, diff: { r: 'ΔVA (base − ápex) +35 ms.', u: 'util' },
@@ -1203,13 +1204,17 @@ function renderPracList() {
     PCASOS.map((c, i) => { const st = pState[c.id]; return `<button class="card lcard" type="button" data-c="${i}"><span class="lic2" style="--c:${st ? (st.ok ? 'var(--green)' : 'var(--orange)') : 'var(--slate)'}">${st ? (st.ok ? 'Resuelto · ' + st.n + ' maniobras' : 'A revisar') : 'Caso ' + (i + 1)}</span><b>${c.t}</b><span>${c.p}</span></button>`; }).join('');
   $('#pracBody').querySelectorAll('[data-c]').forEach(b => b.onclick = () => startCase(+b.dataset.c));
 }
+function presFigs(c) {
+  const f = (src, lab) => src ? `<figure class="real sim"><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${lab}" loading="lazy"></a><figcaption>${lab}. Registro simulado (no es un registro real). Tocá para ampliar.</figcaption></figure>` : '';
+  return f(c.ecg, 'ECG de la taquicardia') + f(c.basal, 'Estudio basal') + f(c.ind, 'Inducción');
+}
 function startCase(i) { pCur = i; pLog = []; pDone = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
 function renderCase() {
   const c = PCASOS[pCur];
   const res = k => c.m[k] || { r: 'No aporta información en este caso.' };
   let h = `<div class="ctrl"><button class="btn" id="pBack">← Casos</button></div>
     <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${pCur + 1}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
-    <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div></div>`;
+    <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div>${presFigs(c)}</div>`;
   if (pLog.length) h += `<h2 class="sec">Estudio</h2><div class="panel">${pLog.map((k, n) => { const r = res(k), tag = pDone && r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><span class="n">${n + 1}</span><b>${PMAN.find(x => x[0] === k)[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div><p>${r.r}</p>${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro simulado" loading="lazy"></a><figcaption>Registro simulado (no es un registro real). Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('')}</div>`;
   if (!pDone) {
     const left = PMAN.filter(x => !pLog.includes(x[0]));
@@ -1716,7 +1721,7 @@ function renderReview(n) {
   const nav = `<div class="ctrl">${n > 1 ? `<a class="btn" style="text-decoration:none" href="#revision-${n - 1}">← Caso ${n - 1}</a>` : ''}${n < PCASOS.length ? `<a class="btn" style="text-decoration:none" href="#revision-${n + 1}">Caso ${n + 1} →</a>` : ''}</div>`;
   $('#pracBody').innerHTML = `<div class="card" style="padding:10px 14px"><b>Revisión del caso ${n} de ${PCASOS.length}</b><p class="small" style="margin:2px 0 0">Vista para revisar: muestra todas las maniobras con su clasificación, el diagnóstico y la explicación. El alumno no la ve así.</p></div>${nav}
     <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${n}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
-    <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div></div>
+    <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div>${presFigs(c)}</div>
     <div class="card leaf"><div class="lt">Diagnóstico</div><h3>${PDX.find(x => x[0] === c.dx[0])[1]}${c.dx.length > 1 ? ' (también vale: ' + c.dx.slice(1).map(d => PDX.find(x => x[0] === d)[1]).join(', ') + ')' : ''}</h3>
     <div class="box"><div class="bl">Por qué</div><p>${c.ex}</p></div><p class="small" style="margin:0">${cite(c.refs)}</p></div>
     <h2 class="sec">Maniobras con resultado</h2><div class="panel">${rows}</div>
