@@ -171,6 +171,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .legend span{display:inline-flex;align-items:center;gap:4px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px}
 @media (max-width:420px){.seg button{font-size:12.5px;padding:10px 2px}.step .q{font-size:18px}}
+.mec{display:grid;gap:10px}.mec p,.mec ul{margin:0}.mec ul{padding-left:18px;display:grid;gap:6px}
 </style>
 </head>
 <body>
@@ -798,6 +799,16 @@ const ARR = [
     desc: [['ΔAH > 40 ms o AH de la TSV < AH en sinusal (circuito superior intranodal)', 'aop', 'ho15'], ['La TSV sigue con bloqueo AV', 'basal', 'ho15'], ['EV-HR sin efecto adelantando el V local > 60 ms', 'ehr', 'veen12']],
     trampa: 'Los valores de encarrilamiento pueden ser largos (falso TRNAV) y la adenosina puede bloquear la vía.' },
   { id: 'nfrt', n: 'Vía nodofascicular o nodoventricular (NFRT / NVRT)', al: 'nodofascicular nodoventricular NFRT NVRT ONFRT ONVRT NV NF disociación VA bloqueo VA', dif: 'TRNAV con bloqueo del haz común superior, TRNAV con vía espectadora, taquicardia de la unión, PJRT y TV (incluida la rama-rama).',
+    mec: `<p><b>Circuito.</b> En la forma ortodrómica (la habitual) el impulso baja por el nodo AV y el His (QRS angosto), llega al ventrículo, sube por la vía nodoventricular hasta el nodo y vuelve a bajar. <b>El ventrículo es parte del circuito y la aurícula no:</b> se activa desde el nodo como espectadora, por eso puede haber bloqueo VA o disociación sin que la taquicardia se corte. Con bloqueo VA el diferencial es la TRNAV con bloqueo de la vía final común superior y la taquicardia de la unión, donde el ventrículo no participa. Por eso el resultado de las maniobras se mira en el <b>His</b>, no en la A.</p>
+      <p><b>EV con His refractario.</b> Se da cuando el His ya se activó en forma anterógrada y se mira el His siguiente. Como el His está refractario, la EV no puede subir por el sistema de conducción. En la TRNAV o la unión el circuito está arriba del His y el ventrículo no tiene otra entrada: el His siguiente llega a tiempo. En la vía nodoventricular la EV entra por la inserción ventricular de la vía y llega al nodo antes que el frente de la taquicardia: <b>adelanta</b> el His (resetea), lo <b>retrasa</b> (vía decremental) o <b>termina</b> la TSV (bloquea en la vía). Cualquier cambio del His prueba que el ventrículo está en el circuito por una vía distinta del His. Estimulá cerca de la inserción presunta (base, septum): desde lejos hay falsos negativos.</p>
+      <p><b>Sobreestimulación ventricular (encarrilamiento).</b></p>
+      <ul>
+        <li><b>His ortodrómico:</b> el frente estimulado sube por la vía al nodo y baja al His en sentido anterógrado, con la misma secuencia y morfología que en la TSV. En la TRNAV el His se activa retrógrado desde el ventrículo.</li>
+        <li><b>V-V-A al cortar:</b> el último V estimulado sube por la vía, baja por el His y da el V de retorno antes de que se active la aurícula. En la TRNAV el último V conduce hasta la aurícula y recién después sale el V (V-A-V).</li>
+        <li><b>PPI−LC corto (≤ 115–125 ms):</b> el sitio de estimulación está cerca del circuito. En la TRNAV y la unión el ventrículo está lejos y el retorno es largo. No separa bien la nodofascicular de la TRNAV.</li>
+        <li><b>Fusión del QRS constante:</b> el frente estimulado choca con el ortodrómico que sale por el His. Con inserción en el miocardio (nodoventricular) el choque es en el ventrículo y se ve fusión. Con inserción en un fascículo (nodofascicular) es dentro del sistema de conducción y no se ve; un HA de la TSV mayor que el HA estimulando el VD también apoya la nodofascicular.</li>
+      </ul>
+      <p><b>En resumen:</b> el bloqueo VA con la TSV que sigue te pone en la pista; la EV con His refractario y el encarrilamiento confirman que el ventrículo está en el circuito, y la fusión dice si la vía se inserta en el miocardio o en un fascículo. Lo muestra el caso 10 de práctica.</p>`,
     conf: [['La EV con His refractario adelanta o retrasa el His o termina la TSV (en TSV con bloqueo VA)', 'ehr', 'veen12 nagashima20'], ['Durante la sobreestimulación del VD: His capturado ortodrómicamente (VPP 100 %, VPN 98 %)', 'hisorto', 'nagashima20'], ['Respuesta V-V-A: SA mayor que la LC de la TSV, con la A después del His (VPP 100 %, VPN 95 %)', 'vop', 'nagashima20'], ['PPI−LC ≤ 125 ms en TSV con bloqueo VA → nodoventricular (VPP y VPN 100 %; no discrimina la nodofascicular)', 'ppi', 'nagashima20'], ['Fusión del QRS constante durante el encarrilamiento → nodoventricular; sin fusión, o HA de la TSV > HA estimulando el VD → nodofascicular', 'vop conc dha', 'nagashima20 veen12'], ['RP largo: circuito inferior de TRAV (PPI−LC < 125) con ΔAH > 40 ms o AH de la TSV < AH en sinusal → NFRT', 'ppi aop', 'ho15']],
     apoya: [['Se induce una sola TSV (VPP 69 %, VPN 100 %)', 'basal', 'nagashima20'], ['Bloqueo VA tipo Wenckebach durante la TSV (VPP 70 %, VPN 87 %)', 'basal', 'nagashima20'], ['HH estable aunque haya bloqueo VA (VPP 70 %, VPN 85 %)', 'basal', 'nagashima20'], ['cPPI−LC ≤ 110 ms; TSV que parece TRNAV con valores demasiado cortos', 'ppi', 'nagashima20 veen12'], ['AH de la TSV muy corto (seudointervalo)', 'aop', 'ho15']],
     desc: [['Se inducen varias TSV con distinto VA (75 % de las TRNAV, ninguna NV/NF)', 'basal', 'nagashima20'], ['El HH se alarga ≥ 10 ms en el latido que sigue al bloqueo VA (79 % de las TRNAV)', 'basal', 'nagashima20'], ['EV con His refractario sin efecto sobre el His', 'ehr', 'veen12'], ['Durante la sobreestimulación ventricular la A sigue a la LC de la TSV (V disociado): el ventrículo no es parte del circuito (vía espectadora)', 'vop', 'sriramoju22']],
@@ -873,6 +884,7 @@ function renderArr() {
   const q = norm(arrQ.trim());
   const list = ARR.filter(a => !q || norm(a.n + ' ' + a.al).includes(q));
   $('#arrList').innerHTML = list.length ? list.map(a => `<details class="card ref arr" id="a-${a.id}"${q && list.length <= 2 ? ' open' : ''}><summary><span class="sumt"><span>${a.n}</span><small>Diferencial: ${a.dif}</small></span></summary><div class="refb">
+    ${a.mec ? `<div class="box"><div class="bl">Cómo y por qué se reconoce</div><div class="mec">${a.mec}</div></div>` : ''}
     <div class="box"><div class="bl ok">Lo confirma</div>${arrRows(a.conf, 'ok')}</div>
     <div class="box"><div class="bl fav">Lo apoya</div>${arrRows(a.apoya, 'fav')}</div>
     <div class="box"><div class="bl no">Lo descarta</div>${arrRows(a.desc, 'no')}</div>
