@@ -54,14 +54,14 @@ S['p4_pre'] = dict(win=(-80, 2150), pxms=0.30, channels=CH, src='caso 4: conducc
     cal=[(sp[1], sp[1] + 122, 'CS 1-2', 'SA 120'), (sp[3], sp[3] + 122, 'CS 1-2', 'SA 120'), (sp[0], sp[1], 'RVA', '500'), (sp[2], sp[3], 'RVA', '400')],
     marks=[(sp[1] + 120, 'CS 9-10', 'A más precoz en el SC distal')])
 
-# Caso 3: TA, LC 360; adenosina: bloqueo AV 2:1 y la TA sigue.
-LC = 360
-A = [i * LC for i in range(7)]
-cond = [0, 1, 2, 4, 6]
-hs = [A[i] + 160 for i in cond]
-S['p3_ado'] = dict(win=(-80, 2350), pxms=0.29, channels=CH, src='caso 3 (didáctico): TA de LC 360 con bloqueo AV 2:1 transitorio con adenosina',
-    beats=[(h + HV, 'n') for h in hs], atr=[(a, 'conc_his', -1) for a in A], h_ante=hs,
-    cal=[(A[3], A[4], 'HRA', 'A-A 360')], marks=[(A[3] + 30, 'aVF', 'A sin V'), (A[5] + 30, 'aVF', 'A sin V')])
+# Caso 3: TA (LC 270, como el ECG real del caso); adenosina: bloqueo AV 2:1 y la TA sigue.
+LC = 270
+A = [i * LC for i in range(9)]
+cond = [0, 1, 2, 4, 6, 7, 8]
+hs = [A[i] + 100 for i in cond]
+S['p3_ado'] = dict(win=(-80, A[-1] + 300), pxms=0.29, channels=CH, src='caso 3 (didáctico): valores ilustrativos',
+    beats=[(h + HV, 'n') for h in hs], atr=[(a, 'cs_mid', 1) for a in A], h_ante=hs,
+    cal=[(A[3], A[4], 'HRA', f'A-A {LC}')], marks=[(A[3] + 30, 'aVF', 'A sin V'), (A[5] + 30, 'aVF', 'A sin V')])
 
 # Caso 6: sobreestimulación auricular en la PJRT (Ho 2015): LC 521, HA 335 → AH 186; ΔAH 10 ms.
 LC, VA, AH = 521, 290, 186
@@ -196,22 +196,23 @@ S['p13_abll'] = dict(win=(-80, As[-1] + 450), pxms=0.22, channels=['HRA', 'His p
     marks=[(h2[1], 'His d', 'H2'), (As[2] + 300, 'aVF', 'un solo QRS por P')])
 
 
-# Caso 3: TA (LC 360). Sobreestimulación del VD a 330: las A se aceleran con secuencia retrógrada (distinta de la TA);
+# Caso 3: TA (LC 270). Sobreestimulación del VD a 240 (6 estímulos): las A se aceleran con secuencia retrógrada (distinta de la TA);
 # al cortar, A-A-V: después del último A acelerado sale otra A del foco antes del V.
-LC = 360
-A0 = [0, LC]
-vs0 = [a + 160 + HV for a in A0]
-sp = [700, 1030, 1360]
+LC, SC = 270, 240
+A0 = [0, LC, 2 * LC]
+vs0 = [a + 100 + HV for a in A0]
+sp = [vs0[-1] + 200 + SC * k for k in range(6)]
 Aret = [s + 120 for s in sp]
-focal = Aret[-1] + 380
-v_after = focal + 160 + HV
-S['p3_vop'] = dict(win=(-80, v_after + 420), pxms=0.27, channels=CH,
-    src='caso 3 (didáctico): TA de LC 360; estimulación del VD a 330, A aceleradas con secuencia retrógrada y respuesta A-A-V',
+focal = Aret[-1] + 330
+v_after = focal + 100 + HV
+S['p3_vop'] = dict(win=(-80, v_after + 380), pxms=0.25, channels=CH, title='Sobreestimulación ventricular desde el ápex del VD a 240 ms',
+    src='caso 3 (didáctico): valores ilustrativos',
     beats=[(v, 'n') for v in vs0] + [(s, 'pa') for s in sp] + [(v_after, 'n'), (v_after + LC, 'n')], spikes=sp,
     atr=[(a, 'cs_mid', 1) for a in A0] + [(a, 'conc_his', -1) for a in Aret] + [(focal, 'cs_mid', 1), (focal + LC, 'cs_mid', 1)],
-    h_ante=[v - HV for v in vs0] + [v_after - HV, v_after + LC - HV],
-    cal=[(sp[0], sp[1], 'RVA', 'estim. 330'), (Aret[-1], focal, 'HRA', 'A-A')],
+    h_ante=[v - HV for v in vs0] + [v_after - HV, v_after + LC - HV], h_retro=[s + 110 for s in sp],
+    cal=[(A0[0], A0[1], 'HRA', f'A-A {LC}'), (Aret[-2], Aret[-1], 'HRA', f'A-A {SC}'), (Aret[-1], focal, 'CS 9-10', f'A-A {focal - Aret[-1]}')],
     marks=[(Aret[-1], 'His p', 'A'), (focal, 'His p', 'A'), (v_after, 'aVF', 'V')])
+
 
 # Caso 8: TV fascicular posterior (LC 420, como el ECG real del caso). Con verapamilo se alarga la LC: P1-P2 y P2-P1 se alargan; P2-QRS no cambia.
 def tvf(LC, p1p2, title):

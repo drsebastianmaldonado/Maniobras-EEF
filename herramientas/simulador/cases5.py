@@ -198,6 +198,20 @@ S['p2_vop'] = dict(win=(-80, after[-1] + 220), pxms=0.28, title='Encarrilamiento
          (A[-2] + 2, A[-1] + 2, 'HRA', f'A-A {SC2}'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {SA2}'),
          (sp[-1], ret + 2, 'RVA', f'PPI {PPI2}')])
 
+# Caso 3 (TA incesante en una niña de 2 años, LC 270 como el ECG real). Inicio espontáneo con calentamiento.
+S['c3_basal'] = basal('caso 3 (didáctico): AH 80, HV 45, ilustrativos', ah=80, cl=550)
+a_sin = [0, 550, 1100]
+A_ta = [1100 + 340]
+for d in (310, 290, 280, 270, 270, 270):
+    A_ta.append(A_ta[-1] + d)
+hs = [a + 28 + 80 for a in a_sin] + [a + 100 for a in A_ta]
+vs = [h + HV for h in hs]
+S['c3_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='Inicio de la taquicardia (espontáneo)', channels=CH6,
+    src='caso 3 (didáctico): valores ilustrativos', beats=[(v, 'n') for v in vs],
+    atr=[(a, 'sinus', 1) for a in a_sin] + [(a, 'cs_mid', 1) for a in A_ta], h_ante=hs,
+    cal=[(a_sin[1], a_sin[2], 'HRA', 'A-A 550'), (A_ta[0], A_ta[1], 'HRA', f'A-A {A_ta[1] - A_ta[0]}'),
+         (A_ta[4], A_ta[5], 'HRA', 'A-A 270'), (A_ta[5] + 20, hs[8], 'His d', 'AH 80')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')

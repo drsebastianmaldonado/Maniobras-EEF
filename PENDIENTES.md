@@ -11,7 +11,7 @@ Cada link abre el caso en una vista de revisión: hallazgos, diagnóstico, expli
 
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-1) **Caso 1: Palpitaciones de inicio y fin bruscos**. Didáctico (TRNAV típica); ilustrativos: PPI−LC 170, SA−VA 150, ΔVA +35 y EA que retrasa 14 ms.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-2) **Caso 2: TSV de RP corto con VA de 110 ms**. Didáctico (TRAV septal) con tu ECG real: la LC pasó de 360 a 280; PPI−LC 80 y SA−VA 40 de Michaud; ΔHA −45 y EV-HR que adelanta 25 ms son ilustrativos.
-- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-3) **Caso 3: Taquicardia incesante con disfunción ventricular**. Didáctico (TA).
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-3) **Caso 3: Taquicardia incesante con disfunción ventricular**. Didáctico (TA) con tu ECG real de TAE incesante: pasó a una niña de 2 años con LC 270; el resto ilustrativo.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-4) **Caso 4: TSV con activación excéntrica**. Datos publicados: Veenhuyzen 2011, fig. 1B y 5.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-5) **Caso 5: TSV de RP largo con "A-A-V"**. Datos publicados: Veenhuyzen 2011, fig. 3.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-6) **Caso 6: Taquicardia incesante y miocardiopatía**. Datos publicados: Ho 2015.
