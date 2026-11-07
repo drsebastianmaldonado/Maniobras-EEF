@@ -114,8 +114,8 @@ DEFS = '''<defs>
 </defs>'''
 
 
-def panel(x, title, body, cap, rot=('nodo', 'his')):
-    return (f'<g transform="translate({x},70)"><text x="300" y="0" font-size="18" font-weight="700" text-anchor="middle" fill="#0a58ca">{E(title)}</text>'
+def panel(x, title, body, cap, rot=('nodo', 'his'), y=70):
+    return (f'<g transform="translate({x},{y})"><text x="300" y="0" font-size="18" font-weight="700" text-anchor="middle" fill="#0a58ca">{E(title)}</text>'
             f'<g filter="url(#sh)">{heart(tuple(r for r in rot if r != "sin_nodo"), "sin_nodo" not in rot)}</g>{body}'
             + ''.join(f'<text x="300" y="{690 + 20 * i}" font-size="14" text-anchor="middle" fill="#333">{l}</text>' for i, l in enumerate(E(cap).split('|')))
             + '</g>')
@@ -131,6 +131,26 @@ def figure(*args):
             + ''.join(panel(600 * i, *p) for i, p in enumerate(ps))
             + ''.join(f'<line x1="{600 * i}" y1="50" x2="{600 * i}" y2="790" stroke="#e0e0e0"/>' for i in range(1, len(ps)))
             + '</svg>')
+
+
+def grid_figure(rows, legend, row_titles=()):
+    """Varias filas de paneles (cada fila, una secuencia que se lee de izquierda a derecha)."""
+    n = max(len(r) for r in rows)
+    W, H = 600 * n, 830 * len(rows)
+    leg = ''.join(f'<text x="{x}" y="24" fill="{c}">{t}</text>' for x, c, t in legend)
+    s = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" font-family="Helvetica,Arial,sans-serif">'
+         '<style>text{paint-order:stroke;stroke:#fff;stroke-width:3.5px;stroke-linejoin:round}</style>'
+         f'{DEFS}<rect width="{W}" height="{H}" fill="#fff"/><g font-size="12" fill="#555"><text x="20" y="24">OAI ~30°</text>{leg}</g>')
+    for i, r in enumerate(rows):
+        y0 = 830 * i
+        if i:
+            s += f'<line x1="20" y1="{y0 + 5}" x2="{W - 20}" y2="{y0 + 5}" stroke="#bdbdbd" stroke-width="2"/>'
+        for j, p in enumerate(r):
+            s += panel(600 * j, *p, y=y0 + 85)
+            if j:
+                s += (f'<line x1="{600 * j}" y1="{y0 + 60}" x2="{600 * j}" y2="{y0 + 820}" stroke="#e0e0e0"/>'
+                      f'<path d="M{600 * j - 16},{y0 + 400} l26,14 l-26,14 z" fill="#90a4ae"/>')
+    return s + '</svg>'
 
 
 L_TSV = (120, BLUE, '- - circuito de la taquicardia')
@@ -211,25 +231,36 @@ def ladder(x, y, after, tag, ok):
     return s
 
 
-F['vop'] = (
-    ('A. Respuesta A-V (TRNAV o TRAV)', TRNAV + spark(APEX, 'sobreestimulación del VD', -60, 35)
+F['vop'] = {'grid': ([[
+    ('A1. TRNAV o TRAV: durante la estimulación', TRNAV + spark(APEX, 'sobreestimulación del VD', -60, 35)
      + front((175, 575), (250, 430), (288, 320), (268, 270), (220, 190))
-     + note(40, 120, '1. estimulo el VD más rápido que la TSV:|cada V arrastra una A (sube por el circuito)', ORANGE)
+     + note(40, 120, 'estimulo el VD más rápido que la TSV:|cada V sube por el circuito y arrastra una A', ORANGE)
+     + ladder(395, 590, [], '', True)
+     + box('Las A siguen al V', 'se aceleran a la LC estimulada', False),
+     'Cada estímulo ventricular entra al circuito y activa la A:|la taquicardia queda encarrilada.'),
+    ('A2. TRNAV o TRAV: al cortar', TRNAV
+     + '<ellipse cx="150" cy="185" rx="70" ry="55" fill="#64b5f6" opacity="0.3"/>'
+     + note(40, 120, 'la última A arrastrada|queda dentro del circuito', BLUE)
      + f'<path d="{smooth([(290, 290), (304, 360), (330, 440)])}" stroke="{BLUE}" stroke-width="4" fill="none" marker-end="url(#ab)"/>'
-     + note(338, 400, '2. al cortar: la última A|sigue en el circuito y baja:|sale un V', BLUE)
+     + note(338, 400, 'el circuito sigue girando|y baja: sale un V', BLUE)
      + ladder(395, 590, [('AV', 70, 112)], 'A-V', True)
      + box('A-V', 'excluye la TA'),
-     'El V arrastra la A a través del circuito; al cortar, la última A|vuelve a bajar por el mismo circuito y sale un V: A-V.'),
-    ('B. Respuesta A-A-V (TA)', focus((140, 150), 'foco') + spark(APEX, 'sobreestimulación del VD', -60, 35)
-     + front((175, 575), (250, 430), (288, 320), (268, 270), (230, 210))
-     + note(40, 105, '1. cada V arrastra una A por el nodo,|pero esa A no tiene circuito: se agota', ORANGE)
+     'La última A vuelve a bajar por el mismo circuito|y sale un V: respuesta A-V.')],
+    [('B1. TA: durante la estimulación', focus((140, 150), 'foco') + spark(APEX, 'sobreestimulación del VD', -60, 35)
+     + front((175, 575), (250, 430), (288, 320), (268, 270), (220, 190))
+     + note(40, 105, 'cada V sube por el nodo|y arrastra una A', ORANGE)
+     + ladder(395, 590, [], '', True)
+     + box('Las A siguen al V', 'se aceleran a la LC estimulada', False),
+     'Las A se activan desde el V a través del nodo;|el foco queda reseteado por esas A.'),
+    ('B2. TA: al cortar', focus((140, 150), 'foco')
+     + note(40, 105, 'la última A arrastrada no tiene|circuito: no vuelve a bajar', '#546e7a')
      + circ((150, 165), (200, 215), (250, 250))
-     + note(40, 222, '2. al cortar: el foco|dispara otra A', '#c62828')
+     + note(40, 222, 'el foco dispara|otra A', '#c62828')
      + f'<path d="{smooth([(290, 290), (304, 360), (330, 440)])}" stroke="{BLUE}" stroke-width="4" fill="none" marker-end="url(#ab)"/>'
-     + note(338, 400, '3. recién esa A|baja al V', BLUE)
+     + note(338, 400, 'recién esa A|baja al V', BLUE)
      + ladder(395, 590, [('AAV', 108, 140)], 'A-A-V', False)
      + box('A-A-V', 'taquicardia auricular', 'warn'),
-     'La última A llegó desde el V y no tiene circuito para seguir;|el foco dispara otra A antes del V: A-A-V.'), LEG)
+     'Después de la última A arrastrada el foco dispara|otra A antes del V: respuesta A-A-V.')]], LEG)}
 
 F['ppi'] = (
     ('A. PPI−LC corto (TRAV)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, 'VD', -30, -20)
@@ -420,5 +451,6 @@ F['conc'] = (
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     for k in (sys.argv[2:] or list(F)):
-        open(os.path.join(OUT, k + '.svg'), 'w').write(figure(*F[k]))
+        svg = grid_figure(*F[k]['grid']) if isinstance(F[k], dict) else figure(*F[k])
+        open(os.path.join(OUT, k + '.svg'), 'w').write(svg)
         print(k)
