@@ -427,6 +427,49 @@ S['bys_c'] = dict(win=(-80, vs[-1] + 250), pxms=0.30, title='C. EV con His refra
     cal=[(vs[2] - HV, vs[3] - HV, 'His d', f'H-H {LCb}'), (vs[3] - HV, vs[4] - HV, 'His d', f'H-H {LCb}'), (vs[2] + VAb + 42, T + 5, 'CS 1-2', f'A-A {T + 5 - vs[2] - VAb - 42} (−{LCb - (T + 5 - vs[2] - VAb - 42)})')],
     marks=[(pvc, 'V1', 'EV-HR'), (T + 5, 'CS 3-4', 'A del SC distal adelantada')])
 
+# Caso 17 (registros reales) — maniobras SIMULADAS con la LC real de cada TSV.
+CH17 = ['HRA', 'His p', 'His d', 'CS 9-10', 'CS 5-6', 'CS 3-4', 'CS 1-2', 'RVA']
+# TRAV por vía izquierda: LC 390 (real), VA 130 (ilustrativo), A más precoz en el SC 3-4. Encarrilamiento desde el ápex a 360:
+# SA 210, PPI 490 (PPI−LC 100, SA−VA 80).
+LCt, VAt = 390, 130
+svt = [0, LCt]
+sp = [svt[-1] + 330 + 360 * k for k in range(6)]
+A = [v + VAt for v in svt] + [s + 210 for s in sp]
+ret = sp[-1] + 490
+after = [ret, ret + LCt]
+S['c17s_vop_a'] = dict(win=(-80, after[-1] + 250), pxms=0.20, title='A. TSV 1 (LC 390): encarrilamiento desde el ápex del VD a 360 ms', channels=CH17,
+    src='caso 17: registro simulado; LC 390 del estudio real, el resto ilustrativo',
+    beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
+    atr=[(a, 'left34', -1) for a in A + [v + VAt for v in after]], h_ante=[v - HV for v in svt + after], h_retro=[s + 110 for s in sp],
+    cal=[(svt[0], svt[1], 'RVA', f'LC {LCt}'), (svt[1], svt[1] + VAt + 2, 'CS 3-4', f'VA {VAt}'), (A[-2], A[-1], 'HRA', 'A-A 360'),
+         (sp[-1], A[-1] + 2, 'CS 3-4', 'SA 210'), (sp[-1], ret + 2, 'RVA', 'PPI 490')])
+# TRNAV típica: LC 230 (real), VA 20 (ilustrativo), concéntrica. Encarrilamiento desde el ápex a 210: SA 170, PPI 400.
+LCn, VAn = 230, 20
+svt = [0, LCn, 2 * LCn]
+sp = [svt[-1] + 200 + 210 * k for k in range(6)]
+A = [v + VAn for v in svt] + [s + 170 for s in sp]
+ret = sp[-1] + 400
+after = [ret, ret + LCn, ret + 2 * LCn]
+S['c17s_vop_b'] = dict(win=(-80, after[-1] + 200), pxms=0.26, title='B. TSV 2 (LC 230): encarrilamiento desde el ápex del VD a 210 ms', channels=CH17,
+    src='caso 17: registro simulado; LC 230 del estudio real, el resto ilustrativo',
+    beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
+    atr=[(a, 'conc_his', -1) for a in A + [v + VAn for v in after]], h_ante=[v - HV for v in svt + after], h_retro=[s + 100 for s in sp],
+    cal=[(svt[0], svt[1], 'RVA', f'LC {LCn}'), (svt[1], svt[1] + VAn + 2, 'His d', f'VA {VAn}'), (A[-2], A[-1], 'HRA', 'A-A 210'),
+         (sp[-1], A[-1] + 2, 'CS 9-10', 'SA 170'), (sp[-1], ret + 2, 'RVA', 'PPI 400')])
+# EV con His refractario en la TSV 1: adelanta la A 20 ms con la misma secuencia y resetea.
+vs = [i * LCt for i in range(3)]
+pvc = 3 * LCt - HV - 10
+a_new = 3 * LCt + VAt - 20
+nxt = a_new + (LCt - VAt)
+after = [nxt, nxt + LCt]
+S['c17s_ehr'] = dict(win=(-80, after[-1] + 220), pxms=0.26, title='C. TSV 1: EV con His refractario', channels=CH17,
+    src='caso 17: registro simulado; LC 390 del estudio real, el resto ilustrativo',
+    beats=[(v, 'n') for v in vs] + [(pvc, 'pa')] + [(v, 'n') for v in after], spikes=[pvc],
+    atr=[(v + VAt, 'left34', -1) for v in vs] + [(a_new, 'left34', -1)] + [(v + VAt, 'left34', -1) for v in after],
+    h_ante=[v - HV for v in vs] + [3 * LCt - HV] + [v - HV for v in after],
+    cal=[(vs[1] + VAt, vs[2] + VAt, 'CS 3-4', f'A-A {LCt}'), (vs[2] + VAt, a_new, 'CS 3-4', f'A-A {LCt - 20} (−20)')],
+    marks=[(pvc, 'V1', 'EV-HR')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')

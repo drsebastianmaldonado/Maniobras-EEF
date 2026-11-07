@@ -36,6 +36,7 @@ SEQ = {
     'right':    {'HRA': 0, 'His': 22, 'CS': [32, 40, 48, 56, 64]},     # más precoz en la pared libre derecha (AD alta)
     'sinus':    {'HRA': 0, 'His': 28, 'CS': [38, 46, 54, 62, 70]},
     'left':     {'HRA': 60, 'His': 40, 'CS': [36, 28, 18, 8, 0]},       # más precoz en el SC distal (vía izquierda)
+    'left34':   {'HRA': 58, 'His': 38, 'CS': [32, 24, 12, 0, 8]},      # más precoz en el SC 3-4 (vía posterolateral izquierda)
     'fus_l':    {'HRA': 32, 'His': 15, 'CS': [20, 21, 14, 7, 0]},       # fusión: SC distal por la vía + septum por la vía rápida
 }
 
