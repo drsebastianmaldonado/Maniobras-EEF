@@ -121,12 +121,16 @@ def panel(x, title, body, cap, rot=('nodo', 'his')):
             + '</g>')
 
 
-def figure(a, b, legend):
+def figure(*args):
+    *ps, legend = args
+    W = 600 * len(ps)
     leg = ''.join(f'<text x="{x}" y="24" fill="{c}">{t}</text>' for x, c, t in legend)
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" font-family="Helvetica,Arial,sans-serif">'
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} 800" width="{W}" height="800" font-family="Helvetica,Arial,sans-serif">'
             '<style>text{paint-order:stroke;stroke:#fff;stroke-width:3.5px;stroke-linejoin:round}</style>'
-            f'{DEFS}<rect width="1200" height="800" fill="#fff"/><g font-size="12" fill="#555"><text x="20" y="24">OAI ~30°</text>{leg}</g>'
-            f'{panel(0, *a)}{panel(600, *b)}<line x1="600" y1="50" x2="600" y2="790" stroke="#e0e0e0"/></svg>')
+            f'{DEFS}<rect width="{W}" height="800" fill="#fff"/><g font-size="12" fill="#555"><text x="20" y="24">OAI ~30°</text>{leg}</g>'
+            + ''.join(panel(600 * i, *p) for i, p in enumerate(ps))
+            + ''.join(f'<line x1="{600 * i}" y1="50" x2="{600 * i}" y2="790" stroke="#e0e0e0"/>' for i in range(1, len(ps)))
+            + '</svg>')
 
 
 L_TSV = (120, BLUE, '- - circuito de la taquicardia')
@@ -166,7 +170,7 @@ F['pre'] = (
      'Estimulando el ventrículo la A más precoz sale por la vía|(SC distal) y no se alarga con la frecuencia.'), [L_EST, L_PAS, L_CS])
 
 F['ado'] = (
-    ('A. TRNAV o TRAV: termina', TRNAV
+    ('A. TRNAV: termina', TRNAV
      + '<ellipse cx="150" cy="185" rx="70" ry="55" fill="#64b5f6" opacity="0.3"/><ellipse cx="380" cy="200" rx="70" ry="55" fill="#64b5f6" opacity="0.3"/>'
      + f'<path d="{smooth([(252, 238), (215, 205), (180, 192)])}" stroke="{BLUE}" stroke-width="4" fill="none" marker-end="url(#ab)"/>'
      + f'<path d="{smooth([(288, 236), (330, 215), (375, 205)])}" stroke="{BLUE}" stroke-width="4" fill="none" marker-end="url(#ab)"/>'
@@ -174,7 +178,15 @@ F['ado'] = (
      + xmark((283, 286), None) + note(318, 330, '2. bloqueo anterógrado|en el nodo: no baja al V', RED)
      + box('Termina', 'con una A (bloqueo AV)', True),
      'El nodo es parte del circuito: la adenosina lo bloquea|y la taquicardia termina (excluye la TA si termina en A).'),
-    ('B. TA: sigue con bloqueo AV', focus((140, 150), 'foco auricular') + circ((150, 165), (200, 210), (250, 250)) + xmark(NODO) + note(320, 232, 'bloqueo AV', RED)
+    ('B. TRAV (vía lateral izq.): termina', TRAV_L + via(LAT, 'vía lateral', lx=-70, ly=-22)
+     + '<ellipse cx="150" cy="185" rx="70" ry="55" fill="#64b5f6" opacity="0.3"/><ellipse cx="380" cy="200" rx="70" ry="55" fill="#64b5f6" opacity="0.3"/>'
+     + f'<path d="{smooth([(527, 262), (470, 205), (400, 190)])}" stroke="{BLUE}" stroke-width="4" fill="none" marker-end="url(#ab)"/>'
+     + f'<path d="{smooth([(360, 185), (270, 170), (185, 185)])}" stroke="{BLUE}" stroke-width="4" fill="none" marker-end="url(#ab)"/>'
+     + note(70, 145, '1. último latido: sube por la vía|y activa la A (A final)', BLUE)
+     + xmark((283, 286), None) + note(140, 330, '2. bloqueo anterógrado|en el nodo: no baja al V', RED, 'start')
+     + box('Termina', 'con una A (bloqueo AV)', True),
+     'El nodo es el brazo anterógrado del circuito: la A llega|por la vía, el nodo bloqueado no la conduce y termina.'),
+    ('C. TA: sigue con bloqueo AV', focus((140, 150), 'foco auricular') + circ((150, 165), (200, 210), (250, 250)) + xmark(NODO) + note(320, 232, 'bloqueo AV', RED)
      + note(330, 380, 'el V no participa', '#546e7a') + box('La TA sigue', 'con bloqueo AV', 'warn'),
      'El nodo no forma parte del mecanismo:|el foco auricular sigue disparando con bloqueo AV.'), LEG)
 
@@ -376,6 +388,5 @@ F['conc'] = (
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     for k in (sys.argv[2:] or list(F)):
-        a, b, leg = F[k]
-        open(os.path.join(OUT, k + '.svg'), 'w').write(figure(a, b, leg))
+        open(os.path.join(OUT, k + '.svg'), 'w').write(figure(*F[k]))
         print(k)
