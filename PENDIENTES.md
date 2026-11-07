@@ -81,3 +81,32 @@ Las agregué yo; verificá los datos con tus copias o reemplazalas por artículo
 
 - [ ] La dirección de la app lleva **M mayúscula**: https://drsebastianmaldonado.github.io/Maniobras-EEF/
 - [ ] Si querés que lea PubMed directamente, hay que habilitar `ncbi.nlm.nih.gov` en la configuración de red del entorno.
+
+## 9. Esquemas de maniobras (24)
+
+Cada link abre el esquema (corazón en OAI ~30°, dos paneles). En la app está en cada ficha de la pestaña Maniobras, debajo de "Cómo se hace".
+
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/basal.jpg) **Observaciones en la taquicardia**: VA ≤ 70 (TRNAV típica) / activación excéntrica.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/pre.jpg) **Estudio basal**: salto del AH / conducción VA por la vía.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/ado.jpg) **Adenosina**: termina / la TA sigue con bloqueo AV.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/vop.jpg) **Sobreestimulación ventricular**: A-V / A-A-V.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/ppi.jpg) **PPI − LC**: TRAV / TRNAV.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/sava.jpg) **SA − VA**: TRAV / TRNAV.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/dha.jpg) **ΔHA**: TRAV / TRNAV.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/hisorto.jpg) **Captura ortodrómica del His**: ortodrómico / antidrómico.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/diff.jpg) **Encarrilamiento diferencial**: ΔVA ≤ 20 / > 20.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/vai.jpg) **Índice VA**: vía / nodo.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/ehr.jpg) **EV con His refractario**: A adelantada / A sin cambio.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/parahis.jpg) **Para-Hisiana**: nodal / extranodal.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/aop.jpg) **Sobreestimulación auricular**: VA linking / VA variable.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/preex.jpg) **Estimulación auricular en preexcitadas**: EA desde AD lateral (Mahaim) / desde el septum.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/eha.jpg) **EA con His refractario**: TRNAV / taquicardia de la unión.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/bbr.jpg) **Rama-rama**: circuito por las ramas / TV miocárdica.
+- [x] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/twin.jpg) **Nodos gemelos**: nodo anterosuperior y posteroinferior / reentrada.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/tvf.jpg) **TV fascicular**: posterior / septal superior.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/tvfabl.jpg) **Ablación de la TV fascicular**: P1-P2 / línea anatómica.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/pm.jpg) **Músculo papilar**: posteromedial / anterolateral.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/ma.jpg) **Anillo mitral**: anterolateral / posterior.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/obl.jpg) **Vía oblicua**: estimulación ventricular / auricular.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/dfire.jpg) **Doble disparo nodal**: vía rápida H1 / vía lenta H2.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/figs/esq/conc.jpg) **Reset y encarrilamiento**: fusión oculta / manifiesta.
