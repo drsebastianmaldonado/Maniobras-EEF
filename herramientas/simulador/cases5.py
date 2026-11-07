@@ -212,6 +212,40 @@ S['c3_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='Inicio de la taqui
     cal=[(a_sin[1], a_sin[2], 'HRA', 'A-A 550'), (A_ta[0], A_ta[1], 'HRA', f'A-A {A_ta[1] - A_ta[0]}'),
          (A_ta[4], A_ta[5], 'HRA', 'A-A 270'), (A_ta[5] + 20, hs[8], 'His d', 'AH 80')])
 
+# Caso 5 (TRNAV atípica rápida-lenta, LC 460 como el ECG real). Relaciones de Veenhuyzen 2011, fig. 3:
+# SA > LC de estimulación (seudo A-A-V), SA−VA 150, PPI−LC 185. VA 300, AH en la TSV 115.
+LC5, VA5, SC5, SA5, PPI5 = 460, 300, 430, 450, 645
+S['c5_basal'] = basal('caso 5: AH 90, HV 45, ilustrativos', ah=90, cl=750)
+S['c5_basal']['win'] = (-80, 2 * 750 + 330)
+# Inducción con extraestímulo ventricular S1-S2 600-320: la conducción VA salta a la vía lenta (VA 300) y empieza la TSV.
+sp = [0, 600, 920]
+A = [sp[0] + 120, sp[1] + 120, sp[2] + 300]
+hs = []
+for _ in range(4):
+    hs.append(A[-1] + 115)
+    A.append(hs[-1] + HV + VA5)
+vs = [h + HV for h in hs]
+S['c5_ind'] = dict(win=(-80, vs[-1] + 330), pxms=0.27, title='Inducción: extraestímulo ventricular (S1-S2 600-320)', channels=CH6,
+    src='caso 5: valores ilustrativos', beats=[(s, 'pa') for s in sp] + [(v, 'n') for v in vs], spikes=sp,
+    atr=[(a, 'conc_cs', -1) for a in A], h_ante=hs, h_retro=[s + 110 for s in sp],
+    cal=[(sp[1], sp[2], 'RVA', 'S2 320'), (sp[1], A[1] + 2, 'CS 9-10', 'SA 120'), (sp[2], A[2] + 2, 'CS 9-10', 'SA 300'),
+         (vs[1], vs[2], 'RVA', f'LC {LC5}'), (vs[1], A[4] + 2, 'HRA', f'VA {VA5}')])
+# Encarrilamiento desde el ápex a 430 (6 estímulos): después de la última espiga hay dos A antes del V.
+svt = [0, LC5]
+sp = [svt[-1] + 380 + SC5 * k for k in range(6)]
+A = [v + VA5 for v in svt] + [s + SA5 for s in sp]
+ret = sp[-1] + PPI5
+after = [ret, ret + LC5]
+S['p5_vop'] = dict(win=(-100, after[-1] + 340), pxms=0.22, title='Encarrilamiento desde el ápex del VD a 430 ms', channels=CH6,
+    src='caso 5: valores ilustrativos según las relaciones de Veenhuyzen 2011, fig. 3',
+    beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
+    atr=[(a, 'conc_cs', -1) for a in A + [v + VA5 for v in after]],
+    h_ante=[v - HV for v in svt + after], h_retro=[s + 120 for s in sp],
+    cal=[(svt[0], svt[1], 'RVA', f'LC {LC5}'), (svt[1], svt[1] + VA5 + 2, 'CS 9-10', f'VA {VA5}'), (sp[0], sp[1], 'RVA', f'S-S {SC5}'),
+         (sp[-1], ret + 2, 'RVA', f'PPI {PPI5}'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {SA5}'),
+         (A[-3] + 38, A[-2] + 38, 'HRA', f'A-A {SC5}'), (A[-2] + 38, A[-1] + 38, 'HRA', f'A-A {SC5}')],
+    marks=[(A[-2] + 38, 'His p', 'A₁'), (A[-1] + 38, 'His p', 'A₂')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')

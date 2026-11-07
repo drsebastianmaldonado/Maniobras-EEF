@@ -33,8 +33,8 @@ def ehr(LC, VA, seq, d, k_spike=3, early=0, typ='pa', pace='RVA', n_after=2, tit
 S['p2_ehr'] = ehr(280, 110, 'conc_cs', 25, src='caso 2 (didáctico): LC 280, VA 110; la EV con His refractario adelanta la A 25 ms',
                   lab='A-A 255 (−25)')
 # Caso 5: TRNAV atípica, LC 380, VA 265; EV-HR adelanta el V local > 60 ms y no cambia la A.
-S['p5_ehr'] = ehr(380, 265, 'conc_cs', 0, early=25, src='Veenhuyzen 2011 (LC 380, VA 265); EV-HR con el V local adelantado > 60 ms, sin cambio de la A',
-                  lab='A-A 380 (sin cambio)')
+S['p5_ehr'] = ehr(460, 300, 'conc_cs', 0, early=25, src='caso 5 (LC 460 como el ECG real, VA 300); EV-HR con el V local adelantado > 60 ms, sin cambio de la A',
+                  lab='A-A 460 (sin cambio)')
 # Caso 6: PJRT, LC 521, VA 290; EV-HR retrasa la A 20 ms.
 S['p6_ehr'] = ehr(521, 290, 'conc_cs', -20, src='Ho 2015 (LC 521, VA 290); EV-HR que retrasa la A 20 ms', lab='A-A 541 (+20)')
 S['p6_ehr']['pxms'] = 0.24
