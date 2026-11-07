@@ -190,14 +190,46 @@ F['ado'] = (
      + note(330, 380, 'el V no participa', '#546e7a') + box('La TA sigue', 'con bloqueo AV', 'warn'),
      'El nodo no forma parte del mecanismo:|el foco auricular sigue disparando con bloqueo AV.'), LEG)
 
+def ladder(x, y, after, tag, ok):
+    """Mini diagrama en escalera: 3 V estimulados que arrastran la A y lo que pasa al cortar."""
+    c = GREEN if ok else '#e65100'
+    s = (f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
+         '<text x="-28" y="4" font-size="12" font-weight="700" fill="#6d4c41">A</text><text x="-28" y="44" font-size="12" font-weight="700" fill="#6d4c41">V</text>'
+         '<line x1="-12" y1="0" x2="180" y2="0" stroke="#bdbdbd"/><line x1="-12" y1="40" x2="180" y2="40" stroke="#bdbdbd"/>')
+    for i in range(3):
+        vx = 4 + 30 * i
+        s += (f'<line x1="{vx}" y1="40" x2="{vx + 10}" y2="0" stroke="{ORANGE}" stroke-width="2.4"/>'
+              f'<text x="{vx}" y="56" font-size="10" text-anchor="middle" fill="{ORANGE}" font-weight="700">S</text>')
+    s += '<line x1="84" y1="-18" x2="84" y2="58" stroke="#9e9e9e" stroke-dasharray="3 3"/><text x="84" y="-20" font-size="9.5" text-anchor="middle" fill="#757575">corte</text>'
+    for kind, ax, vx in after:
+        if kind == 'AV':
+            s += f'<line x1="{ax}" y1="0" x2="{vx}" y2="40" stroke="{BLUE}" stroke-width="2.4"/>'
+        else:
+            s += (f'<g transform="translate({ax},0)"><path d="M0,-7 L2,-2 L7,-2 L3,1 L5,6 L0,3 L-5,6 L-3,1 L-7,-2 L-2,-2 Z" fill="#fdd835" stroke="#c62828"/></g>'
+                  f'<line x1="{ax}" y1="0" x2="{vx}" y2="40" stroke="{BLUE}" stroke-width="2.4"/>')
+    s += f'<text x="140" y="-12" font-size="13" font-weight="700" text-anchor="middle" fill="{c}">{tag}</text></g>'
+    return s
+
+
 F['vop'] = (
-    ('A. Respuesta A-V (TRNAV o TRAV)', TRNAV + spark(APEX, 'sobreestimulación del VD') + front((175, 575), (250, 430), (288, 320), (268, 270), (220, 190))
-     + note(50, 98, 'último A: llega desde el V|y vuelve al circuito', ORANGE) + box('A-V', 'excluye la TA'),
-     'Las A se aceleran desde el V a través del circuito; al cortar,|el último A vuelve al circuito y sale un V: A-V.'),
-    ('B. Respuesta A-A-V (TA)', focus((140, 150), 'foco') + spark(APEX, 'sobreestimulación del VD')
-     + front((175, 575), (250, 430), (288, 320), (268, 270), (230, 210)) + circ((150, 165), (190, 215), (240, 250))
-     + note(320, 215, 'al cortar dispara el foco:|otra A antes del V', BLUE) + box('A-A-V', 'taquicardia auricular', 'warn'),
-     'El último A llegó desde el V pero no puede volver;|el foco dispara otra A antes del V: A-A-V.'), LEG)
+    ('A. Respuesta A-V (TRNAV o TRAV)', TRNAV + spark(APEX, 'sobreestimulación del VD', -60, 35)
+     + front((175, 575), (250, 430), (288, 320), (268, 270), (220, 190))
+     + note(40, 120, '1. estimulo el VD más rápido que la TSV:|cada V arrastra una A (sube por el circuito)', ORANGE)
+     + f'<path d="{smooth([(290, 290), (304, 360), (330, 440)])}" stroke="{BLUE}" stroke-width="4" fill="none" marker-end="url(#ab)"/>'
+     + note(338, 400, '2. al cortar: la última A|sigue en el circuito y baja:|sale un V', BLUE)
+     + ladder(395, 590, [('AV', 70, 112)], 'A-V', True)
+     + box('A-V', 'excluye la TA'),
+     'El V arrastra la A a través del circuito; al cortar, la última A|vuelve a bajar por el mismo circuito y sale un V: A-V.'),
+    ('B. Respuesta A-A-V (TA)', focus((140, 150), 'foco') + spark(APEX, 'sobreestimulación del VD', -60, 35)
+     + front((175, 575), (250, 430), (288, 320), (268, 270), (230, 210))
+     + note(40, 105, '1. cada V arrastra una A por el nodo,|pero esa A no tiene circuito: se agota', ORANGE)
+     + circ((150, 165), (200, 215), (250, 250))
+     + note(40, 222, '2. al cortar: el foco|dispara otra A', '#c62828')
+     + f'<path d="{smooth([(290, 290), (304, 360), (330, 440)])}" stroke="{BLUE}" stroke-width="4" fill="none" marker-end="url(#ab)"/>'
+     + note(338, 400, '3. recién esa A|baja al V', BLUE)
+     + ladder(395, 590, [('AAV', 108, 140)], 'A-A-V', False)
+     + box('A-A-V', 'taquicardia auricular', 'warn'),
+     'La última A llegó desde el V y no tiene circuito para seguir;|el foco dispara otra A antes del V: A-A-V.'), LEG)
 
 F['ppi'] = (
     ('A. PPI−LC corto (TRAV)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, 'VD', -30, -20)
