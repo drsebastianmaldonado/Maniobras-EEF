@@ -1394,7 +1394,13 @@ const PCASOS = [
       aop: { r: 'VA linking: el VA del primer latido de retorno es igual al de la TSV.', u: 'util' },
       parahis: { r: 'En sinusal, respuesta extranodal: al perder la captura del His el SA no cambia.', u: 'trampa' },
       ado: { r: 'La TSV termina con una A (bloqueo AV).' } },
-    dx: ['trnav_t', 'bys'], ex: 'Durante la TSV el VA septal es de 20 ms y la activación es concéntrica: una TSV así no puede usar una vía lateral izquierda (el impulso tardaría unos 100–130 ms en pasar por el ventrículo y la vía), y el VA ≤ 70 ms excluye la TRAV. La vía existe (conducción VA excéntrica al estimular el ventrículo), pero no participa: la EV con His refractario adelanta una A con otra secuencia sin resetear la taquicardia, y al cortar la sobreestimulación la respuesta es A-V con vuelta a la secuencia concéntrica. TRNAV típica con una vía izquierda espectadora: se ablaciona la vía lenta y también la vía.', refs: ['knight00', 'veen12'] }
+    dx: ['trnav_t', 'bys'], ex: 'Durante la TSV el VA septal es de 20 ms y la activación es concéntrica: una TSV así no puede usar una vía lateral izquierda (el impulso tardaría unos 100–130 ms en pasar por el ventrículo y la vía), y el VA ≤ 70 ms excluye la TRAV. La vía existe (conducción VA excéntrica al estimular el ventrículo), pero no participa: la EV con His refractario adelanta una A con otra secuencia sin resetear la taquicardia, y al cortar la sobreestimulación la respuesta es A-V con vuelta a la secuencia concéntrica. TRNAV típica con una vía izquierda espectadora: se ablaciona la vía lenta y también la vía.', refs: ['knight00', 'veen12'] },
+  { id: 'c17', t: 'Dos taquicardias en un paciente de 9 años', p: 'Paciente de 9 años con TSV recurrentes. Registros reales del polígrafo.',
+    basal: 'figs/sim/casos/c17_vbasal.jpg', basalReal: true, ind: 'figs/sim/casos/c17_ind.jpg', indReal: true,
+    h: ['Se inducen dos TSV de QRS angosto distintas', 'TSV 1: LC 390 ms, activación auricular excéntrica, más precoz en el SC 3-4', 'TSV 2: LC ~230 ms, inducida con estimulación desde el SC; conduce con aberrancia en algunos tramos'],
+    m: { pre: { r: 'Estimulación del VD en ritmo sinusal (tren y extraestímulo S1 600 / S2 300): conducción retrógrada excéntrica, con la A precoz en el SC lateral. Extraestímulos desde el SC con S1 600: salto del AH.', u: 'clave', img: 'figs/sim/casos/c17_salto.jpg', real: true },
+      vop: { r: 'TSV 1 (LC 390): encarrilamiento desde el VD a 370 ms, con la misma secuencia excéntrica (A más precoz en el SC 3-4).', u: 'clave', img: 'figs/sim/casos/c17_trav.jpg', real: true } },
+    dx: ['trav_l', 'trnav_t'], ex: 'Hay dos sustratos en el mismo paciente. La conducción retrógrada excéntrica al estimular el ventrículo demuestra una vía izquierda, y la TSV de LC 390 con la A más precoz en el SC 3-4 es una TRAV ortodrómica por esa vía. El salto del AH con extraestímulos desde el SC demuestra doble fisiología nodal, y la segunda TSV (LC ~230), inducida con estimulación desde el SC, es una TRNAV típica. Cada taquicardia tiene su propio tratamiento: ablación de la vía y de la vía lenta.', refs: ['knight00', 'veen11'] }
 ];
 let pState = {};
 try { pState = JSON.parse(localStorage.getItem('mef_prac') || '{}'); } catch (e) {}
@@ -1408,7 +1414,7 @@ function renderPracList() {
 }
 function presFigs(c) {
   const f = (src, lab, real) => src ? `<figure class="real${real ? '' : ' sim'}"><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${lab}" loading="lazy"></a><figcaption>${lab}. ${real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : '';
-  return f(c.ecg, c.ecgt || 'ECG de la taquicardia', c.ecgReal) + f(c.ecg2, c.ecg2t || 'ECG en ritmo sinusal, después de la conversión', c.ecgReal) + f(c.basal, 'Estudio basal') + f(c.ind, 'Inducción', c.indReal);
+  return f(c.ecg, c.ecgt || 'ECG de la taquicardia', c.ecgReal) + f(c.ecg2, c.ecg2t || 'ECG en ritmo sinusal, después de la conversión', c.ecgReal) + f(c.basal, 'Estudio basal', c.basalReal) + f(c.ind, 'Inducción', c.indReal);
 }
 function startCase(i) { pCur = i; pLog = []; pDone = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
 function renderCase() {
