@@ -349,6 +349,18 @@ S['p9_vop'] = dict(win=(-100, after[-1] + 300), pxms=0.24, title='Encarrilamient
          (svt[2], svt[2] + VA9 + 2, 'CS 9-10', f'VA {VA9}'), (sp[-1], A[-1] + 2, 'CS 9-10', 'SA 280'),
          (svt[1] - HV9, A[1] + 8, 'His p', f'HA {HV9 + VA9}'), (A[-1] - 262, A[-1] + 8, 'His p', 'HA 262')])
 
+# Caso 13 (doble disparo nodal; AH1 90 y H1–H2 430 de Burri 2012). Basal y paso de 1:1 a 1:2 en sinusal.
+S['c13_basal'] = basal('caso 13: AH 90, HV 45 (AH de Burri 2012)', ah=90, cl=900)
+S['c13_basal']['win'] = (-80, 2 * 900 + 330)
+As = [0, 900, 1800, 2700, 3600]
+h1 = [a + 28 + 90 for a in As]
+h2 = [h1[k] + 430 for k in (2, 3, 4)]
+vs = sorted([h + HV for h in h1 + h2])
+S['c13_ind'] = dict(win=(-80, As[-1] + 750), pxms=0.22, title='Ritmo sinusal al inicio del estudio',
+    channels=['HRA', 'His p', 'His d', 'CS 9-10', 'RVA'], src='caso 13: AH1 90 y H1–H2 430 de Burri 2012; el resto ilustrativo',
+    beats=[(v, 'n') for v in vs], atr=[(a, 'sinus', 1) for a in As], h_ante=sorted(h1 + h2),
+    cal=[(As[1], As[2], 'HRA', 'A-A 900'), (As[2] + 28, h1[2], 'His d', 'AH 90'), (h1[3], h2[1], 'His d', 'H-H 430')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')

@@ -1192,8 +1192,9 @@ const PCASOS = [
       ado: { r: 'La taquicardia termina por bloqueo en el nodo.', u: 'trampa' },
       aop: { r: 'VA linking presente.' }, ehr: { r: 'No aplica: el QRS es preexcitado.' }, parahis: { r: 'No aplica.' } },
     dx: ['antid'], ex: 'Si una vía fuera espectadora, el EA adelantaría el V pero la taquicardia seguiría a su ritmo. Acá el EA con la unión AV refractaria resetea la taquicardia a través de la vía: la vía es el brazo anterógrado y la aurícula está en el circuito. El retorno es por el nodo (His retrógrado antes de la A, secuencia concéntrica): TRAV antidrómica por una vía tipo Kent. La terminación con adenosina no distingue: también terminaría una TRNAV con conducción por una vía espectadora.', refs: ['autor', 'josephson'] },
-  { id: 'c13', t: 'Una P y dos QRS', p: 'Mujer de 69 años, sin antecedentes, con palpitaciones recurrentes.',
-    h: ['Taquicardia de QRS angosto a 134 lpm, con RR levemente alternantes', 'Ondas P sinusales (se ven bien en V1), relación P:QRS 1:2', 'Sin ondas P retrógradas; el patrón se mantiene con acoplamiento fijo'],
+  { id: 'c13', t: 'Una P y dos QRS', p: 'Varón de 15 años, sin cardiopatía, con palpitaciones recurrentes.',
+    ecg: 'figs/sim/casos/c13_ecg.png', ecgt: 'ECG con las palpitaciones', ecgReal: true, ecg2: 'figs/sim/casos/c13_ecg_abl.png', ecg2t: 'ECG en ritmo sinusal (otro registro)', basal: 'figs/sim/casos/c13_basal.png', ind: 'figs/sim/casos/c13_ind.png',
+    h: ['Ritmo irregular de QRS angosto a ~100 lpm, con latidos agrupados de a dos', 'Algunos latidos con QRS ancho (aberrancia)', 'Una sola P sinusal por cada par de QRS; sin P retrógradas'],
     m: { regah: { r: 'La AD registra una sola A por cada par de QRS, con secuencia alta → baja (sinusal). En el His, cada A conduce por la vía rápida y después por una vía muy lenta: A-H1-V1-H2-V2.', u: 'clave', img: 'figs/sim/prac/burri12.png' },
       abll: { r: 'La radiofrecuencia en la vía lenta (como en la TRNAV) interrumpió la taquicardia en 10 s; después no se indujo más.', u: 'clave', img: 'figs/sim/prac/p13_abll.png' },
       pre: { r: 'No hay datos basales en el caso publicado. El salto AH muchas veces no se puede demostrar porque la doble conducción ya está manifiesta.' },
@@ -1229,7 +1230,7 @@ function renderPracList() {
 }
 function presFigs(c) {
   const f = (src, lab, real) => src ? `<figure class="real${real ? '' : ' sim'}"><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${lab}" loading="lazy"></a><figcaption>${lab}. ${real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : '';
-  return f(c.ecg, 'ECG de la taquicardia', c.ecgReal) + f(c.ecg2, c.ecg2t || 'ECG en ritmo sinusal, después de la conversión', c.ecgReal) + f(c.basal, 'Estudio basal') + f(c.ind, 'Inducción');
+  return f(c.ecg, c.ecgt || 'ECG de la taquicardia', c.ecgReal) + f(c.ecg2, c.ecg2t || 'ECG en ritmo sinusal, después de la conversión', c.ecgReal) + f(c.basal, 'Estudio basal') + f(c.ind, 'Inducción');
 }
 function startCase(i) { pCur = i; pLog = []; pDone = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
 function renderCase() {
