@@ -111,6 +111,45 @@ S['p14_ehr'] = dict(win=(-80, sin_a + 28 + AH14 + HV14 + 250), pxms=0.30, title=
          (vs[-1], sp, 'RVA', f'V-EV {sp - vs[-1]}')],
     marks=[(sp, 'HRA', 'EV')])
 
+# Caso 7 (didáctico, taquicardia de la unión en una lactante): LC 425 como el ECG real. A y V simultáneos.
+S['c7_basal'] = basal('caso 7 (didáctico): AH 80, HV 45, ilustrativos', ah=80, cl=600)
+
+# Inicio espontáneo: tres sinusales (A-A 600) y aparecen latidos de la unión que se aceleran (H-H 480, 450, 435, 425).
+a_sin = [0, 600, 1200]
+hs = [a + 28 + 80 for a in a_sin]
+for d in (480, 450, 435, 425, 425):
+    hs.append(hs[-1] + d)
+vs = [h + HV for h in hs]
+S['c7_ind'] = dict(win=(-80, vs[-1] + 220), pxms=0.28, title='Inicio de la taquicardia (espontáneo)', channels=CH6,
+    src='caso 7 (didáctico): valores ilustrativos', beats=[(v, 'n') for v in vs],
+    atr=[(a, 'sinus', 1) for a in a_sin] + [(v, 'conc_his', -1) for v in vs[3:]], h_ante=hs,
+    cal=[(a_sin[1], a_sin[2], 'HRA', 'A-A 600'), (a_sin[2] + 28, hs[2], 'His d', 'AH 80'),
+         (hs[2], hs[3], 'His p', 'H-H 480'), (hs[6], hs[7], 'His p', 'H-H 425')])
+
+# EA durante la taquicardia (LC 425), dos paneles como la ficha:
+# A. EA con His refractario desde el ostium del SC: el His siguiente no cambia.  B. EA precoz desde la AD alta: adelanta el His 38 ms y sigue.
+LC7 = 425
+hs = [i * LC7 - HV for i in range(7)]
+vs = [h + HV for h in hs]
+apb = hs[4]
+S['p7_eha_a'] = dict(win=(-100, vs[-1] + 250), pxms=0.25, title='A. EA con His refractario (ostium del SC)', channels=CH6,
+    src='caso 7 (didáctico): valores ilustrativos',
+    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='CS 9-10',
+    atr=[(v, 'conc_his', -1) for k, v in enumerate(vs) if k != 4] + [(apb + 4, 'conc_cs', 1)], h_ante=hs,
+    cal=[(hs[3], hs[4], 'His d', f'H-H {LC7}'), (hs[4], hs[5], 'His d', f'H-H {LC7}')],
+    marks=[(apb, 'V1', 'EA')])
+hs = [i * LC7 - HV for i in range(4)]
+h_adv = 4 * LC7 - HV - 38
+apb = h_adv - 125
+hs += [h_adv, h_adv + LC7, h_adv + 2 * LC7]
+vs = [h + HV for h in hs]
+S['p7_eha_b'] = dict(win=(-100, vs[-1] + 250), pxms=0.25, title='B. EA precoz (AD alta)', channels=CH6,
+    src='caso 7 (didáctico): valores ilustrativos',
+    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='HRA',
+    atr=[(v, 'conc_his', -1) for k, v in enumerate(vs) if k != 4] + [(apb + 4, 'sinus', 1)], h_ante=hs,
+    cal=[(hs[2], hs[3], 'His d', f'H-H {LC7}'), (hs[3], hs[4], 'His d', f'H-H {hs[4] - hs[3]}'), (hs[4], hs[5], 'His d', f'H-H {LC7}')],
+    marks=[(apb, 'V1', 'EA')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')
