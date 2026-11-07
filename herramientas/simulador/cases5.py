@@ -428,7 +428,7 @@ S['bys_c'] = dict(win=(-80, vs[-1] + 250), pxms=0.30, title='C. EV con His refra
     marks=[(pvc, 'V1', 'EV-HR'), (T + 5, 'CS 3-4', 'A del SC distal adelantada')])
 
 # Caso 17 (registros reales) — maniobras SIMULADAS con la LC real de cada TSV.
-CH17 = ['HRA', 'His p', 'His d', 'CS 9-10', 'CS 5-6', 'CS 3-4', 'CS 1-2', 'RVA']
+CH17 = ['HRA', 'His d', 'His p', 'CS 1-2', 'CS 3-4', 'CS 5-6', 'CS 9-10', 'RVA']   # de distal a proximal, como en el polígrafo del autor
 # TRAV por vía izquierda: LC 390 (real), VA 130 (ilustrativo), A más precoz en el SC 3-4. Encarrilamiento desde el ápex a 360:
 # SA 210, PPI 490 (PPI−LC 100, SA−VA 80).
 LCt, VAt = 390, 130
