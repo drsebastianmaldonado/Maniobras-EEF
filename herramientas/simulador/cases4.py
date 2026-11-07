@@ -158,29 +158,32 @@ S['p11_anillo'] = dict(win=(-80, 1600), pxms=0.42, channels=['HRA', 'Abl d', 'Ab
            'Abl p': [(s + 30, 0.8, 1.0) for s in sp] + [(s + 225, 0.4, 1.6) for s in sp]},
     marks=[(sp[1] + 75, 'Abl d', 'potencial M'), (sp[1] + 25, 'Abl p', 'A')])
 
-# Caso 12: TRAV antidrómica por vía lateral izquierda (LC 280). EA desde el SC distal con la unión refractaria adelanta el V y la A.
-LC = 280
-vs = [0, LC, 2 * LC]
-A = [v + 160 for v in vs]
-ea = A[2]
-v_new = 3 * LC - 30
+# Caso 12: TRAV antidrómica por una vía derecha (LC 245, como el ECG real del caso). EA desde la AD lateral con la unión
+# refractaria adelanta el V y la A 30 ms. QRS preexcitado con V1 negativo.
+LC = 245
+vs = [0, LC, 2 * LC, 3 * LC]
+A = [v + 160 for v in vs[:3]]
+ea = vs[3] + 130                         # 30 ms antes de la A esperada: el His ya se activó en forma retrógrada (unión refractaria)
+v_new = 4 * LC - 30
 after = [v_new + i * LC for i in range(3)]
 A2 = [v + 160 for v in after]
-S['p12_eapre'] = dict(win=(-80, after[-1] + 220), pxms=0.32, channels=CH,
-    src='caso 12 (didáctico): TRAV antidrómica por vía lateral izquierda, LC 280; EA desde el SC distal que adelanta el V y la A 30 ms',
-    beats=[(v, 'lv') for v in vs + after], aspikes=[ea], apace_ch='CS 1-2', atr=[(a, 'conc_his', -1) for a in A + A2],
-    h_retro=[v + 120 for v in vs + after],
-    cal=[(vs[2], v_new, 'RVA', 'V-V 250 (−30)'), (A[2], A2[0], 'HRA', 'A-A 250 (−30)')],
-    marks=[(ea, 'V1', 'EA (SC distal)'), (v_new, 'aVF', 'mismo QRS')])
+S['p12_eapre'] = dict(win=(-80, after[-1] + 220), pxms=0.32, channels=['HRA', 'AD lat', 'His p', 'His d', 'CS 9-10', 'RVA'],
+    src='caso 12 (didáctico): LC 245; EA desde la AD lateral que adelanta el V y la A 30 ms',
+    beats=[(v, 'lb') for v in vs + after], aspikes=[ea], apace_ch='AD lat',
+    atr=[(x, 'conc_his', -1) for x in A + A2] + [(ea + 3, 'right', 1)],
+    h_retro=[v + 120 for v in vs + after], extra={'AD lat': [(x + 25, 0.8, 1.0) for x in A + A2]},
+    cal=[(vs[2], vs[3], 'RVA', f'V-V {LC}'), (vs[3], v_new, 'RVA', f'V-V {LC - 30} (−30)'), (A[2], ea, 'HRA', f'A-A {LC - 30}')],
+    marks=[(ea, 'V1', 'EA (AD lateral)'), (v_new, 'aVF', 'mismo QRS')])
 
-# Caso 12: estimulación auricular en ritmo sinusal: preexcitación lateral izquierda con AV corto que no se alarga (vía tipo Kent).
+# Caso 12: estimulación auricular en ritmo sinusal: preexcitación con AV corto que no se alarga (vía tipo Kent).
 sp = [0, 500, 900, 1250]
 hs = [s + 28 + a for s, a in zip(sp, [90, 120, 160, 210])]
-S['p12_pre'] = dict(win=(-80, 1600), pxms=0.40, channels=['HRA', 'His d', 'CS 9-10', 'CS 1-2', 'RVA'],
-    src='caso 12 (didáctico): estimulación de la AD a 500, 400 y 350 ms; el AV por la vía se mantiene en 110 ms mientras el AH se alarga',
-    beats=[(s + 110, 'lv') for s in sp], aspikes=sp, apace_ch='HRA', atr=[(s + 5, 'sinus', 1) for s in sp], h_ante=hs,
-    cal=[(sp[1], sp[1] + 110, 'HRA', 'AV 110'), (sp[3], sp[3] + 110, 'HRA', 'AV 110')],
-    marks=[(sp[3] + 110, 'V1', 'preexcitación máxima'), (hs[3], 'His d', 'H dentro del QRS')])
+S['p12_pre'] = dict(win=(-80, 1600), pxms=0.40, channels=['HRA', 'AD lat', 'His d', 'CS 9-10', 'RVA'],
+    src='caso 12 (didáctico): estimulación de la AD a 500, 400 y 350 ms; el AV por la vía se mantiene en 95 ms mientras el AH se alarga',
+    beats=[(s + 95, 'lb') for s in sp], aspikes=sp, apace_ch='HRA', atr=[(s + 5, 'sinus', 1) for s in sp], h_ante=hs,
+    extra={'AD lat': [(s + 30, 0.8, 1.0) for s in sp] + [(s + 95 + 20, 0.9, 1.6) for s in sp]},
+    cal=[(sp[1], sp[1] + 95, 'HRA', 'AV 95'), (sp[3], sp[3] + 95, 'HRA', 'AV 95')],
+    marks=[(sp[3] + 95, 'V1', 'preexcitación máxima'), (hs[3], 'His d', 'H dentro del QRS')])
 
 # Caso 13: ablación de la vía lenta en el doble disparo: desaparece el segundo His.
 AA, AH1, H12 = 896, 90, 430

@@ -278,6 +278,28 @@ S['p6_vop'] = dict(win=(-100, after[-1] + 300), pxms=0.25, title='Encarrilamient
          (svt[2] - HV, A[2] + 8, 'His p', f'HA {HV + VA6}'), (A[-1] - 159, A[-1] + 8, 'His p', 'HA 159'),
          (svt[1], A[1] + 8, 'CS 9-10', f'VA {VA6}'), (sp[-1], A[-1] + 8, 'CS 9-10', 'SA 209')])
 
+# Caso 12 (TRAV antidrómica por una vía derecha, LC 245 como el ECG real). Basal preexcitado e inducción con extraestímulo auricular.
+a = [0, 640, 1280]
+hs = [x + 28 + 85 for x in a]
+S['c12_basal'] = dict(win=(-80, 1280 + 360), pxms=0.40, title='Estudio basal: ritmo sinusal', channels=['HRA', 'AD lat', 'His d', 'CS 9-10', 'RVA'],
+    src='caso 12 (didáctico): valores ilustrativos', beats=[(x + 95, 'lb') for x in a], atr=[(x, 'sinus', 1) for x in a], h_ante=hs,
+    extra={'AD lat': [(x + 30, 0.8, 1.0) for x in a] + [(x + 95 + 20, 0.9, 1.6) for x in a]},
+    cal=[(a[0], a[1], 'HRA', 'A-A 640'), (a[1], a[1] + 95, 'HRA', 'AV 95'), (a[1] + 28, hs[1], 'His d', 'AH 85')],
+    marks=[(hs[1], 'His p' if False else 'His d', '')])
+S['c12_basal'].pop('marks')
+sp = [0, 600, 880]
+vs = [s + 95 for s in sp[:2]] + [sp[2] + 95]
+A = [vs[2] + 160]
+for _ in range(5):
+    vs.append(A[-1] + 85)
+    A.append(vs[-1] + 160)
+S['c12_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='Inducción: extraestímulo auricular (S1-S2 600-280)',
+    channels=['HRA', 'AD lat', 'His p', 'His d', 'CS 9-10', 'RVA'], src='caso 12 (didáctico): valores ilustrativos',
+    beats=[(v, 'lb') for v in vs], aspikes=sp, apace_ch='HRA',
+    atr=[(s + 5, 'sinus', 1) for s in sp] + [(x, 'conc_his', -1) for x in A[:-1]], h_ante=[s + 28 + 90 for s in sp[:2]],
+    h_retro=[v + 120 for v in vs[2:]], extra={'AD lat': [(s + 30, 0.8, 1.0) for s in sp] + [(x + 25, 0.8, 1.0) for x in A[:-1]]},
+    cal=[(sp[1], sp[2], 'HRA', 'S2 280'), (vs[3], vs[4], 'RVA', f'LC {vs[4] - vs[3]}'), (vs[3], A[1] + 2, 'HRA', 'VA 160')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')

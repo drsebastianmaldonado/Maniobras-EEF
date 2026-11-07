@@ -1181,9 +1181,10 @@ const PCASOS = [
       ehr: { r: 'No aplica: el QRS es preexcitado.' }, parahis: { r: 'No aplica.' } },
     dx: ['mahaim'], ex: 'La preexcitación con BRI que aumenta mientras el AV se alarga (conducción decremental) y el HV que se hace negativo caracterizan a la vía atriofascicular. El EA desde la pared libre del AD, con la unión AV refractaria, que adelanta el V y resetea la taquicardia demuestra que la vía es el brazo anterógrado: TRAV antidrómica por Mahaim. Se ablaciona el potencial de la vía en el anillo tricuspídeo, no la inserción ventricular. El diferencial principal es una TV con BRI: la relación 1:1 y el reset por el EA la descartan.', refs: ['klein88', 'josephson', 'sternick04'] },
   { id: 'c12', t: 'Taquicardia de QRS ancho con preexcitación máxima', p: 'Varón de 19 años con WPW (preexcitación manifiesta) y palpitaciones.',
-    h: ['Taquicardia de QRS ancho igual a la preexcitación máxima; LC 280 ms', 'Relación AV 1:1', 'His retrógrado antes de la A, después del inicio del QRS', 'Activación auricular retrógrada concéntrica, más precoz en el His'],
-    m: { eapre: { r: 'Un EA desde el SC distal, con la unión AV refractaria, adelanta el V siguiente con la misma morfología y también la A siguiente: resetea la taquicardia.', u: 'clave', img: 'figs/sim/prac/p12_eapre.png' },
-      pre: { r: 'Preexcitación lateral izquierda con AV corto que no se alarga con la estimulación (vía tipo Kent). Conducción VA concéntrica por el nodo.', u: 'clave', img: 'figs/sim/prac/p12_pre.png' },
+    ecg: 'figs/sim/casos/c12_ecg.jpg', ecgReal: true, ecg2: 'figs/sim/casos/c12_ecg_sin.jpg', ecg2t: 'ECG en ritmo sinusal', basal: 'figs/sim/casos/c12_basal.png', ind: 'figs/sim/casos/c12_ind.png',
+    h: ['Taquicardia de QRS ancho igual a la preexcitación máxima; LC 245 ms', 'Relación AV 1:1', 'His retrógrado antes de la A, después del inicio del QRS', 'Activación auricular retrógrada concéntrica, más precoz en el His'],
+    m: { eapre: { r: 'Un EA desde la AD lateral, con la unión AV refractaria, adelanta el V siguiente con la misma morfología y también la A siguiente: resetea la taquicardia.', u: 'clave', img: 'figs/sim/prac/p12_eapre.png' },
+      pre: { r: 'Preexcitación derecha (V1 negativo) con AV corto que no se alarga con la estimulación (vía tipo Kent). Conducción VA concéntrica por el nodo.', u: 'clave', img: 'figs/sim/prac/p12_pre.png' },
       adec: { r: 'La preexcitación aumenta sin que se alargue el AV: la vía no es decremental.', u: 'util' },
       vop: { r: 'Respuesta A-V: TRNAV o TRAV (excluye la TA).', u: 'util' },
       ado: { r: 'La taquicardia termina por bloqueo en el nodo.', u: 'trampa' },
@@ -1226,7 +1227,7 @@ function renderPracList() {
 }
 function presFigs(c) {
   const f = (src, lab, real) => src ? `<figure class="real${real ? '' : ' sim'}"><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${lab}" loading="lazy"></a><figcaption>${lab}. ${real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : '';
-  return f(c.ecg, 'ECG de la taquicardia', c.ecgReal) + f(c.ecg2, 'ECG en ritmo sinusal, después de la conversión', c.ecgReal) + f(c.basal, 'Estudio basal') + f(c.ind, 'Inducción');
+  return f(c.ecg, 'ECG de la taquicardia', c.ecgReal) + f(c.ecg2, c.ecg2t || 'ECG en ritmo sinusal, después de la conversión', c.ecgReal) + f(c.basal, 'Estudio basal') + f(c.ind, 'Inducción');
 }
 function startCase(i) { pCur = i; pLog = []; pDone = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
 function renderCase() {

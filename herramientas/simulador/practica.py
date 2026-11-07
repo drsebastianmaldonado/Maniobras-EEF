@@ -24,7 +24,7 @@ RENOMBRAR = {'LC TSV 430': 'LC 430', 'VA': 'VA 120', 'SA': 'SA 160', 'PPI': 'PPI
 
 # Calibres agregados: la LC (o el A-A) de la TSV, para que se pueda calcular
 EXTRA = {'p10_vop': [(0, 390, 'RVA', 'LC 390')], 'p10_ehr': [(0, 390, 'RVA', 'LC 390')],
-         'p11_eapre': [(0, 300, 'His d', 'LC 300')], 'p12_eapre': [(0, 280, 'His d', 'LC 280')]}
+         'p11_eapre': [(0, 300, 'His d', 'LC 300')], 'p12_eapre': []}
 EHR = ['p2_ehr', 'p4_ehr_a', 'p4_ehr_b', 'p5_ehr', 'p6_ehr', 'p9_ehr']   # se agrega el A-A de la TSV
 
 
