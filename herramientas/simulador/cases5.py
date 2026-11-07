@@ -397,6 +397,36 @@ S['p15_aop'] = dict(win=(-80, after[-1] + 260), pxms=0.25, title='Sobreestimulac
     cal=[(vs[1], vs[2], 'RVA', f'LC {LC15}'), (vs[1], A[1] + 2, 'CS 1-2', f'VA {VA15}'), (sp[-2], sp[-1], 'HRA', 'S-S 280'),
          (vp[-1], vp[-1] + VA15 + 2, 'CS 1-2', f'VA {VA15}')])
 
+# TRNAV típica con vía lateral izquierda espectadora (didáctico): LC 350, VA 20 concéntrico.
+LCb, VAb = 350, 20
+CHb = ['HRA', 'His p', 'His d', 'CS 9-10', 'CS 7-8', 'CS 5-6', 'CS 3-4', 'CS 1-2', 'RVA']
+vs = [i * LCb for i in range(6)]
+S['bys_a'] = dict(win=(-80, vs[-1] + 250), pxms=0.30, title='A. TRNAV típica: VA 20 ms, activación concéntrica', channels=CHb,
+    src='didáctico: valores ilustrativos', beats=[(v, 'n') for v in vs], atr=[(v + VAb, 'conc_his', -1) for v in vs],
+    h_ante=[v - HV for v in vs],
+    cal=[(vs[1], vs[2], 'RVA', f'LC {LCb}'), (vs[2], vs[2] + VAb + 2, 'His d', f'VA {VAb}')])
+# B. Sobreestimulación del VD a 320 (6 estímulos): retrógrada por la vía (excéntrica, SA 150); al cortar A-V y vuelve la concéntrica.
+svt = [0, LCb]
+sp = [svt[-1] + 280 + 320 * k for k in range(6)]
+ret = sp[-1] + 500
+after = [ret, ret + LCb]
+S['bys_b'] = dict(win=(-80, after[-1] + 250), pxms=0.22, title='B. Sobreestimulación del VD a 320 ms: secuencia excéntrica durante el tren', channels=CHb,
+    src='didáctico: valores ilustrativos', beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
+    atr=[(v + VAb, 'conc_his', -1) for v in svt + after] + [(s + 150, 'left', -1) for s in sp],
+    h_ante=[v - HV for v in svt + after], h_retro=[s + 90 for s in sp],
+    cal=[(sp[-2], sp[-1], 'RVA', 'S-S 320'), (sp[-1], sp[-1] + 152, 'CS 1-2', 'SA 150'), (sp[-1], ret + 2, 'RVA', 'PPI 500')],
+    marks=[(sp[-1] + 150, 'CS 9-10', 'último A (excéntrico)'), (ret + VAb, 'CS 9-10', 'A concéntrica')])
+# C. EV con His refractario (95 ms antes del V esperado): adelanta la A del SC distal (fusión excéntrica) y la TSV no cambia.
+vs = [i * LCb for i in range(6)]
+T = vs[3]
+pvc = T - 95
+S['bys_c'] = dict(win=(-80, vs[-1] + 250), pxms=0.30, title='C. EV con His refractario: adelanta la A del SC distal, el His siguiente no cambia', channels=CHb,
+    src='didáctico: valores ilustrativos', beats=[(v, 'n') for k, v in enumerate(vs) if k != 3] + [(pvc, 'lv')], spikes=[pvc], pace_ch='RVA',
+    atr=[(v + VAb, 'conc_his', -1) for k, v in enumerate(vs) if k != 3] + [(T + 5, 'fus_l', -1)],
+    h_ante=[v - HV for v in vs],
+    cal=[(vs[2] - HV, vs[3] - HV, 'His d', f'H-H {LCb}'), (vs[3] - HV, vs[4] - HV, 'His d', f'H-H {LCb}'), (vs[2] + VAb + 42, T + 5, 'CS 1-2', f'A-A {T + 5 - vs[2] - VAb - 42} (−{LCb - (T + 5 - vs[2] - VAb - 42)})')],
+    marks=[(pvc, 'V1', 'EV-HR'), (T + 5, 'CS 3-4', 'A del SC distal adelantada')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')
