@@ -1069,9 +1069,9 @@ const PDX = [['trnav_t', 'TRNAV típica'], ['trnav_a', 'TRNAV atípica'], ['trav
 const UTAG = { clave: ['Clave', 'var(--green)'], util: ['Útil', 'var(--blue)'], trampa: ['Engañosa', 'var(--orange)'] };
 const PCASOS = [
   { id: 'c1', t: 'Palpitaciones de inicio y fin bruscos', p: 'Adolescente de 15 años con palpitaciones paroxísticas. ECG basal normal, sin preexcitación.',
-    ecg: 'figs/sim/casos/c1_ecg.png', basal: 'figs/sim/casos/c1_basal.png', ind: 'figs/sim/casos/c1_ind.png',
-    h: ['TSV de QRS angosto inducida con extraestímulos auriculares, LC 430 ms', 'Relación AV 1:1', 'VA septal 40 ms: la A cae casi junto con el V', 'Activación auricular concéntrica (más precoz en el His y el SC proximal)'],
-    m: { vop: { r: 'Estimulando a 370 ms las A se aceleran con la misma secuencia; al cortar, respuesta A-V (A-H).', u: 'clave', img: 'figs/sim/prac/knight99.png' },
+    ecg: 'figs/sim/casos/c1_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c1_basal.png', ind: 'figs/sim/casos/c1_ind.png',
+    h: ['TSV de QRS angosto inducida con extraestímulos auriculares, LC 340 ms', 'Relación AV 1:1', 'VA septal 40 ms: la A cae casi junto con el V', 'Activación auricular concéntrica (más precoz en el His y el SC proximal)'],
+    m: { vop: { r: 'Estimulando a 310 ms las A se aceleran con la misma secuencia; al cortar, respuesta A-V (A-H).', u: 'clave', img: 'figs/sim/prac/p1_vop.png' },
       medidas: { r: 'PPI−LC 170 ms; SA−VA 150 ms.', u: 'util' }, diff: { r: 'ΔVA (base − ápex) +35 ms.', u: 'util' },
       aop: { r: 'VA linking: el VA del primer latido de retorno es igual al de la TSV.', u: 'util' },
       pre: { r: 'Salto AH de 60 ms con extraestímulos auriculares y eco nodal.', u: 'util' },
@@ -1205,8 +1205,8 @@ function renderPracList() {
   $('#pracBody').querySelectorAll('[data-c]').forEach(b => b.onclick = () => startCase(+b.dataset.c));
 }
 function presFigs(c) {
-  const f = (src, lab) => src ? `<figure class="real sim"><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${lab}" loading="lazy"></a><figcaption>${lab}. Registro simulado (no es un registro real). Tocá para ampliar.</figcaption></figure>` : '';
-  return f(c.ecg, 'ECG de la taquicardia') + f(c.basal, 'Estudio basal') + f(c.ind, 'Inducción');
+  const f = (src, lab, real) => src ? `<figure class="real${real ? '' : ' sim'}"><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${lab}" loading="lazy"></a><figcaption>${lab}. ${real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : '';
+  return f(c.ecg, 'ECG de la taquicardia', c.ecgReal) + f(c.basal, 'Estudio basal') + f(c.ind, 'Inducción');
 }
 function startCase(i) { pCur = i; pLog = []; pDone = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
 function renderCase() {

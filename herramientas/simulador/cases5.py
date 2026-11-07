@@ -19,13 +19,14 @@ def basal(src, ah=90, hv=HV, cl=700, title='Estudio basal: ritmo sinusal', typ='
                      (hs[1], hs[1] + hv, 'His p', f'HV {hv}')])
 
 
-# Caso 1 (didáctico, TRNAV típica): AH 90, HV 45; inducción con S1-S2 600-300, AH 280 (salto), LC 430, VA 40.
+# Caso 1 (didáctico, TRNAV típica): LC 340 (como el ECG real del caso), VA 40, AH 90, HV 45.
+# Inducción con S1-S2 600-300: AH 280 (salto); en la TSV el AH se acomoda a 255.
 S['c1_basal'] = basal('caso 1 (didáctico): AH 90, HV 45, ilustrativo')
 
+LC, VA = 340, 40
 sp = [0, 600, 900]
 hs = [s + 28 + a for s, a in zip(sp, [90, 90, 280])]
-VA, LC = 40, 430
-for _ in range(4):
+for _ in range(5):
     hs.append(hs[-1] + LC)
 vs = [h + HV for h in hs]
 A_echo = [v + VA for v in vs[2:]]
@@ -34,7 +35,23 @@ S['c1_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='Inducción: extrae
     beats=[(v, 'n') for v in vs], aspikes=sp, apace_ch='HRA',
     atr=[(s + 5, 'sinus', 1) for s in sp] + [(a, 'conc_his', -1) for a in A_echo], h_ante=hs,
     cal=[(sp[1] + 28, hs[1], 'His d', 'AH 90'), (sp[2] + 28, hs[2], 'His d', 'AH 280'),
-         (sp[1], sp[2], 'HRA', 'S2 300'), (vs[3], vs[4], 'RVA', f'LC {LC}')])
+         (sp[1], sp[2], 'HRA', 'S2 300'), (vs[4], vs[5], 'RVA', f'LC {LC}')])
+
+# Caso 1: sobreestimulación ventricular desde el ápex a 310 (6 estímulos). A-V; SA 190, PPI 510 (PPI−LC 170, SA−VA 150).
+SC, SA, PPI = 310, 190, 510
+svt = [0, LC, 2 * LC]
+sp = [svt[-1] + 290 + SC * k for k in range(6)]
+A = [v + VA for v in svt] + [s + SA for s in sp]
+ret = sp[-1] + PPI
+after = [ret, ret + LC]
+S['p1_vop'] = dict(win=(-80, after[-1] + 250), pxms=0.25, title='Sobreestimulación ventricular desde el ápex del VD a 310 ms', channels=CH6,
+    src='caso 1 (didáctico): valores ilustrativos',
+    beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
+    atr=[(a, 'conc_his', -1) for a in A + [v + VA for v in after]],
+    h_ante=[v - HV for v in svt + after], h_retro=[s + 120 for s in sp],
+    cal=[(svt[0], svt[1], 'RVA', f'LC {LC}'), (svt[1], svt[1] + VA, 'CS 9-10', f'VA {VA}'),
+         (A[-2], A[-1], 'HRA', f'A-A {SC}'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {SA}'),
+         (sp[-1], ret + 2, 'RVA', f'PPI {PPI}')])
 
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
