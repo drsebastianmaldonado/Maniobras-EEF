@@ -5,7 +5,7 @@ Listado de lo que queda por chequear en **Maniobras en el EEF**. Se actualiza co
 https://github.com/drsebastianmaldonado/Maniobras-EEF/issues/1
 Este archivo es una copia de referencia; las marcas se llevan en el issue.
 
-## 1. Modo práctica (13 casos)
+## 1. Modo práctica (14 casos)
 
 Cada link abre el caso en una vista de revisión: hallazgos, diagnóstico, explicación y todas las maniobras con su clasificación (clave, útil o engañosa) y su registro. En cada caso, revisá que la clasificación coincida con tu criterio docente.
 
@@ -22,6 +22,7 @@ Cada link abre el caso en una vista de revisión: hallazgos, diagnóstico, expli
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-11) **Caso 11: Taquicardia de QRS ancho con BRI en un corazón sano**. Didáctico (Mahaim); LC 300 ilustrativa. Se apoya en Josephson, Klein 1988, Sternick 2004 y tu presentación.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-12) **Caso 12: Taquicardia de QRS ancho con preexcitación máxima**. Didáctico (TRAV antidrómica); LC 280 ilustrativa. Mismo respaldo que el 11.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-13) **Caso 13: Una P y dos QRS**. Datos publicados: Burri 2012 (doble disparo nodal). La atropina y la adenosina no están en el caso; las escribí como lo esperable según Peiker 2016.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-14) **Caso 14: Lactante con taquicardia incesante** (nuevo). Didáctico (PJRT) armado sobre tu ECG real (LC ~300); LC 300, VA 190, AH 70, HV 40 y todos los resultados de las maniobras son ilustrativos.
 
 ## 2. Bibliografía que no estaba en el material base
 

@@ -77,6 +77,40 @@ S['c4_ind'] = dict(win=(-80, vs[-1] + 220), pxms=0.27, title='Inducción: extrae
          (vs[3], vs[4], 'RVA', f'LC {vs[4] - vs[3]}'), (vs[3], A[1], 'CS 1-2', f'VA {A[1] - vs[3]}'),
          (vs[6], vs[7], 'RVA', f'LC {vs[7] - vs[6]}'), (vs[6], A[4], 'CS 1-2', f'VA {A[4] - vs[6]}')])
 
+# Caso 14 (didáctico, PJRT en un lactante): LC 300, VA 190, AH 70, HV 40. Valores ilustrativos.
+HV14, VA14, AH14, LC14 = 40, 190, 70, 300
+S['c14_basal'] = basal('caso 14 (didáctico): AH 70, HV 40, ilustrativos', ah=AH14, hv=HV14, cl=480)
+S['c14_basal']['win'] = (-80, 2 * 480 + 330)
+
+# Reinicio espontáneo: tres sinusales (A-A 480) y la TSV arranca sola, sin extrasístole ni cambio del AH.
+a_sin = [0, 480, 960]
+hs = [a + 28 + AH14 for a in a_sin]
+A_ret = []
+for _ in range(5):
+    A_ret.append(hs[-1] + HV14 + VA14)
+    hs.append(A_ret[-1] + 8 + AH14 - 8)          # en la TSV la A más precoz es la del ostium del SC
+vs = [h + HV14 for h in hs]
+S['c14_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='Reinicio espontáneo de la taquicardia', channels=CH6,
+    src='caso 14 (didáctico): valores ilustrativos', beats=[(v, 'n') for v in vs],
+    atr=[(a, 'sinus', 1) for a in a_sin] + [(a, 'conc_cs', -1) for a in A_ret], h_ante=hs,
+    cal=[(a_sin[1], a_sin[2], 'HRA', 'A-A 480'), (a_sin[2] + 28, hs[2], 'His d', f'AH {AH14}'),
+         (vs[2], A_ret[0] + 2, 'CS 9-10', f'VA {VA14}'), (vs[4], vs[5], 'RVA', f'LC {LC14}')])
+
+# EV con His refractario: el estímulo cae 30 ms antes del V esperado (el His ya se activó); no hay A y la TSV termina.
+vs = [i * LC14 for i in range(4)]
+A = [v + VA14 for v in vs]
+h_exp = vs[-1] + LC14 - HV14
+sp = h_exp + 10
+sin_a = sp + 620
+hs = [v - HV14 for v in vs] + [h_exp, sin_a + 28 + AH14]
+S['p14_ehr'] = dict(win=(-80, sin_a + 28 + AH14 + HV14 + 250), pxms=0.30, title='EV con His refractario durante la taquicardia', channels=CH6,
+    src='caso 14 (didáctico): valores ilustrativos',
+    beats=[(v, 'n') for v in vs] + [(sp, 'pa'), (sin_a + 28 + AH14 + HV14, 'n')], spikes=[sp],
+    atr=[(a, 'conc_cs', -1) for a in A] + [(sin_a, 'sinus', 1)], h_ante=hs,
+    cal=[(vs[1], vs[2], 'RVA', f'LC {LC14}'), (vs[2], A[2] + 2, 'CS 9-10', f'VA {VA14}'),
+         (vs[-1], sp, 'RVA', f'V-EV {sp - vs[-1]}')],
+    marks=[(sp, 'HRA', 'EV')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')
