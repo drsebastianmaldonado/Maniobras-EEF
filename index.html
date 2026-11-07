@@ -1060,7 +1060,7 @@ const PMAN = [
   ['verap', 'Verapamilo IV', 'tvf'], ['map', 'Mapeo del septum del VI', 'tvf'],
   ['adec', 'Estimulación auricular decremental en sinusal', 'preex'], ['eapre', 'EA durante la taquicardia con la unión AV refractaria', 'preex'],
   ['anillo', 'Mapeo del anillo tricuspídeo', 'preex'],
-  ['regah', 'Registrar la A y el His (AD alta y His)', 'dfire'], ['atrop', 'Atropina', 'dfire'], ['abll', 'Ablación de la vía lenta', 'dfire']];
+  ['mapa', 'Mapa de activación auricular durante la taquicardia', 'pre'], ['regah', 'Registrar la A y el His (AD alta y His)', 'dfire'], ['atrop', 'Atropina', 'dfire'], ['abll', 'Ablación de la vía lenta', 'dfire']];
 const PDX = [['trnav_t', 'TRNAV típica'], ['trnav_a', 'TRNAV atípica'], ['trav_s', 'TRAV por vía septal'], ['trav_l', 'TRAV por vía libre'],
   ['pjrt', 'PJRT (vía septal lenta y decremental)'], ['ta', 'Taquicardia auricular'], ['jet', 'Taquicardia de la unión'],
   ['nvrt', 'Vía nodoventricular o nodofascicular'], ['tvf', 'TV fascicular'], ['bbr', 'TV por reentrada rama-rama'],
@@ -1217,7 +1217,16 @@ const PCASOS = [
       parahis: { r: 'Respuesta nodal: al perder la captura del His el SA se alarga sin cambiar la secuencia.', u: 'trampa' },
       ado: { r: 'La TSV termina después de un V, sin A.', u: 'util' },
       eha: { r: 'Un EA con His refractario desde la AD alta no modifica el His siguiente.' } },
-    dx: ['pjrt', 'trav_s'], ex: 'Una taquicardia incesante de RP largo en un lactante, que se reinicia sola sin extrasístoles ni alargamiento del AH, orienta a PJRT. La EV con His refractario que termina la TSV sin llegar a la A demuestra una vía accesoria que participa en el circuito (excluye TRNAV y TA). El PPI−LC y el SA−VA salen "de TRNAV" porque la vía es decremental y la para-Hisiana da respuesta nodal por la misma razón: las dos engañan.', refs: ['ho15', 'veen12'] }
+    dx: ['pjrt', 'trav_s'], ex: 'Una taquicardia incesante de RP largo en un lactante, que se reinicia sola sin extrasístoles ni alargamiento del AH, orienta a PJRT. La EV con His refractario que termina la TSV sin llegar a la A demuestra una vía accesoria que participa en el circuito (excluye TRNAV y TA). El PPI−LC y el SA−VA salen "de TRNAV" porque la vía es decremental y la para-Hisiana da respuesta nodal por la misma razón: las dos engañan.', refs: ['ho15', 'veen12'] },
+  { id: 'c15', t: 'TSV con conducción VA decremental', p: 'Paciente con TSV recurrentes. ECG basal sin preexcitación. Registros reales del polígrafo y del mapeo.',
+    ecg: 'figs/sim/casos/c15_ecg.jpg', ecgReal: true, ecgt: 'ECG de 12 derivaciones en ritmo sinusal (polígrafo)',
+    h: ['TSV de QRS angosto, LC 311 ms, relación 1:1', 'Sin preexcitación en sinusal'],
+    m: { vop: { r: 'Encarrilamiento desde el VD a 280 ms (estimulación VENT D). Al cortar: PPI 371 ms con LC 311 ms.', u: 'clave', img: 'figs/sim/casos/c15_vop.jpg', real: true },
+      medidas: { r: 'PPI−LC 60 ms.', u: 'clave', img: 'figs/sim/casos/c15_vop.jpg', real: true },
+      pre: { r: 'Extraestímulos ventriculares con S1 600: el intervalo estímulo-A se alarga de 152 ms (S2 390) a 162 (S2 370), 174 (S2 350), 178 (S2 340) y 184 ms (S2 320). Conducción VA decremental.', u: 'util', img: 'figs/sim/casos/c15_pre.jpg', real: true },
+      aop: { r: 'Estimulación auricular desde el SC 5-6 a 260 ms durante la taquicardia.', img: 'figs/sim/casos/c15_aop.jpg', real: true },
+      mapa: { r: 'Mapa de activación auricular (LAT isocrónico) durante la taquicardia: la A más precoz está en la región posteroseptal izquierda, donde se marcó un potencial.', u: 'clave', img: 'figs/sim/casos/c15_mapa.jpg', real: true } },
+    dx: ['trav_s', 'pjrt'], ex: 'El PPI−LC de 60 ms (< 115) después del encarrilamiento desde el VD pone al ventrículo dentro del circuito: es una TRAV (excluye TRNAV y TA). La conducción VA decremental no distingue el nodo de una vía decremental; el mapa de activación auricular durante la taquicardia, con la A más precoz en la región posteroseptal izquierda y un potencial de la vía, la ubica. TRAV ortodrómica por una vía posteroseptal izquierda con conducción decremental.', refs: ['michaud01', 'veen11'] }
 ];
 let pState = {};
 try { pState = JSON.parse(localStorage.getItem('mef_prac') || '{}'); } catch (e) {}
@@ -1240,7 +1249,7 @@ function renderCase() {
   let h = `<div class="ctrl"><button class="btn" id="pBack">← Casos</button></div>
     <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${pCur + 1}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
     <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div>${presFigs(c)}</div>`;
-  if (pLog.length) h += `<h2 class="sec">Estudio</h2><div class="panel">${pLog.map((k, n) => { const r = res(k), tag = pDone && r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><span class="n">${n + 1}</span><b>${PMAN.find(x => x[0] === k)[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div><p>${r.r}</p>${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro simulado" loading="lazy"></a><figcaption>Registro simulado (no es un registro real). Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('')}</div>`;
+  if (pLog.length) h += `<h2 class="sec">Estudio</h2><div class="panel">${pLog.map((k, n) => { const r = res(k), tag = pDone && r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><span class="n">${n + 1}</span><b>${PMAN.find(x => x[0] === k)[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div><p>${r.r}</p>${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro" loading="lazy"></a><figcaption>${r.real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('')}</div>`;
   if (!pDone) {
     const left = PMAN.filter(x => !pLog.includes(x[0]));
     h += `<h2 class="sec">¿Qué hacés?</h2><div class="pgrid">${left.map(x => `<button class="opt pm" data-k="${x[0]}">${x[1]}</button>`).join('')}</div>
@@ -1741,7 +1750,7 @@ try { const s = JSON.parse(localStorage.getItem('mef_calc') || 'null'); if (s) {
 function renderReview(n) {
   const c = PCASOS[n - 1];
   if (!c) return false;
-  const rows = PMAN.filter(x => c.m[x[0]]).map(x => { const r = c.m[x[0]], tag = r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><b>${x[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div><p>${r.r}</p>${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro simulado" loading="lazy"></a><figcaption>Versión del modo práctica (sin diagnóstico ni cuentas). Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('');
+  const rows = PMAN.filter(x => c.m[x[0]]).map(x => { const r = c.m[x[0]], tag = r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><b>${x[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div><p>${r.r}</p>${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro simulado" loading="lazy"></a><figcaption>${r.real ? "Registro real, anonimizado" : "Versión del modo práctica (sin diagnóstico ni cuentas)"}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('');
   const sin = PMAN.filter(x => !c.m[x[0]]).map(x => x[1]);
   const nav = `<div class="ctrl">${n > 1 ? `<a class="btn" style="text-decoration:none" href="#revision-${n - 1}">← Caso ${n - 1}</a>` : ''}${n < PCASOS.length ? `<a class="btn" style="text-decoration:none" href="#revision-${n + 1}">Caso ${n + 1} →</a>` : ''}</div>`;
   $('#pracBody').innerHTML = `<div class="card" style="padding:10px 14px"><b>Revisión del caso ${n} de ${PCASOS.length}</b><p class="small" style="margin:2px 0 0">Vista para revisar: muestra todas las maniobras con su clasificación, el diagnóstico y la explicación. El alumno no la ve así.</p></div>${nav}
