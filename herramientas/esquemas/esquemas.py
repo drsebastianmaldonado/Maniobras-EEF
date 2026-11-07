@@ -166,7 +166,13 @@ F['pre'] = (
      'Estimulando el ventrículo la A más precoz sale por la vía|(SC distal) y no se alarga con la frecuencia.'), [L_EST, L_PAS, L_CS])
 
 F['ado'] = (
-    ('A. TRNAV o TRAV: termina', TRNAV + xmark(NODO) + note(320, 232, 'bloqueo en el nodo', RED) + box('Termina', 'con una A (bloqueo AV)', True),
+    ('A. TRNAV o TRAV: termina', TRNAV
+     + '<ellipse cx="150" cy="185" rx="70" ry="55" fill="#64b5f6" opacity="0.3"/><ellipse cx="380" cy="200" rx="70" ry="55" fill="#64b5f6" opacity="0.3"/>'
+     + f'<path d="{smooth([(252, 238), (215, 205), (180, 192)])}" stroke="{BLUE}" stroke-width="4" fill="none" marker-end="url(#ab)"/>'
+     + f'<path d="{smooth([(288, 236), (330, 215), (375, 205)])}" stroke="{BLUE}" stroke-width="4" fill="none" marker-end="url(#ab)"/>'
+     + note(70, 145, '1. último latido: el circuito|activa la A (A final)', BLUE)
+     + xmark((283, 286), None) + note(318, 330, '2. bloqueo anterógrado|en el nodo: no baja al V', RED)
+     + box('Termina', 'con una A (bloqueo AV)', True),
      'El nodo es parte del circuito: la adenosina lo bloquea|y la taquicardia termina (excluye la TA si termina en A).'),
     ('B. TA: sigue con bloqueo AV', focus((140, 150), 'foco auricular') + circ((150, 165), (200, 210), (250, 250)) + xmark(NODO) + note(320, 232, 'bloqueo AV', RED)
      + note(330, 380, 'el V no participa', '#546e7a') + box('La TA sigue', 'con bloqueo AV', 'warn'),
