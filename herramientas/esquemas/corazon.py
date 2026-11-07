@@ -21,7 +21,7 @@ def purkinje(x, y, ang, length, w, depth, out):
     for d in (-0.45, 0.4):
         purkinje(x2, y2, ang + d + random.uniform(-0.15, 0.15), length * random.uniform(0.6, 0.78), w * 0.68, depth - 1, out)
 
-def heart(rotulos=('nodo', 'his')):
+def heart(rotulos=('nodo', 'his'), nodo=True):
     random.seed(4)
     o = []
     # aurículas grandes y redondeadas
@@ -43,10 +43,11 @@ def heart(rotulos=('nodo', 'his')):
     # ---- sistema de conducción ----
     cs = []
     # nodo AV compacto (forma de media luna) y extensiones
-    cs.append('<path d="M250,262 C255,250 275,248 284,258 C288,266 280,274 268,273 C258,272 248,270 250,262 Z" fill="url(#gnode)" stroke="#9a7300" stroke-width="1.5"/>')
-    # His penetrante
-    His = bez((282, 270), (288, 282), (292, 292), (293, 308))
-    cs.append('<path d="M' + ' L'.join(f'{x:.1f},{y:.1f}' for x, y in His) + '" stroke="url(#gcs)" stroke-width="7" fill="none" stroke-linecap="round"/>')
+    if nodo:
+        cs.append('<path d="M250,262 C255,250 275,248 284,258 C288,266 280,274 268,273 C258,272 248,270 250,262 Z" fill="url(#gnode)" stroke="#9a7300" stroke-width="1.5"/>')
+        # His penetrante
+        His = bez((282, 270), (288, 282), (292, 292), (293, 308))
+        cs.append('<path d="M' + ' L'.join(f'{x:.1f},{y:.1f}' for x, y in His) + '" stroke="url(#gcs)" stroke-width="7" fill="none" stroke-linecap="round"/>')
     # rama derecha: cordón fino por el septum del VD y la banda moderadora
     rb = bez((290, 308), (284, 380), (270, 450), (238, 500))
     cs.append('<path d="M' + ' L'.join(f'{x:.1f},{y:.1f}' for x, y in rb) + '" stroke="url(#gcs)" stroke-width="3" fill="none" stroke-linecap="round"/>')

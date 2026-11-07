@@ -99,7 +99,7 @@ DEFS = '''<defs>
 
 def panel(x, title, body, cap, rot=('nodo', 'his')):
     return (f'<g transform="translate({x},70)"><text x="300" y="0" font-size="18" font-weight="700" text-anchor="middle" fill="#0a58ca">{E(title)}</text>'
-            f'<g filter="url(#sh)">{heart(rot)}</g>{body}'
+            f'<g filter="url(#sh)">{heart(tuple(r for r in rot if r != "sin_nodo"), "sin_nodo" not in rot)}</g>{body}'
             + ''.join(f'<text x="300" y="{690 + 20 * i}" font-size="14" text-anchor="middle" fill="#333">{l}</text>' for i, l in enumerate(E(cap).split('|')))
             + '</g>')
 
@@ -278,14 +278,20 @@ F['bbr'] = (
      + box('His pasivo', 'el VV cambia antes que el HH', 'warn'),
      'El circuito está en el miocardio: el His se activa|en forma pasiva y no predice el VV.'), [L_TSV, L_PAS, L_CS])
 
-TWIN = '<ellipse cx="300" cy="300" rx="11" ry="7" fill="url(#gnode)" stroke="#9a7300" stroke-width="1.5"/>'
+def _nodo(x, y):
+    return f'<path d="M{x-18},{y} C{x-13},{y-12} {x+7},{y-14} {x+16},{y-4} C{x+20},{y+4} {x+12},{y+12} {x},{y+11} C{x-10},{y+10} {x-20},{y+8} {x-18},{y} Z" fill="url(#gnode)" stroke="#9a7300" stroke-width="1.5"/>'
+# nodo anterosuperior y posteroinferior en la AD, cada uno con su His, unidos al septum (cabestrillo de Mönckeberg)
+TWIN = ('<path d="M246,186 C268,215 286,260 293,308" stroke="url(#gcs)" stroke-width="6" fill="none" stroke-linecap="round"/>'
+        '<path d="M232,268 C255,282 278,292 293,308" stroke="url(#gcs)" stroke-width="6" fill="none" stroke-linecap="round"/>'
+        + _nodo(238, 180) + _nodo(222, 264))
+TWL = note(225, 152, 'nodo anterosuperior', '#6d4c41') + note(130, 300, 'nodo posteroinferior', '#6d4c41')
 F['twin'] = (
-    ('A. Dos nodos AV', TWIN + note(318, 300, 'nodo anterior', '#6d4c41') + note(160, 246, 'nodo posterior', '#6d4c41')
-     + box('Dos His separados', 'cada uno con su QRS'),
-     'En la heterotaxia o el canal AV hay dos nodos con su His;|cada uno da un QRS distinto.', ('his',)),
-    ('B. Taquicardia entre los dos nodos', TWIN + circ((268, 262), (280, 300), (296, 306)) + circ((304, 296), (300, 240), (276, 248))
+    ('A. Dos nodos AV', TWIN + TWL + box('Dos His separados', 'cada uno con su QRS'),
+     'En la heterotaxia o el canal AV malalineado hay dos nodos en la AD,|uno anterosuperior y otro posteroinferior, cada uno con su His.', ('sin_nodo',)),
+    ('B. Taquicardia entre los dos nodos', TWIN + TWL + circ((246, 192), (270, 240), (288, 296)) + circ((282, 304), (256, 286), (230, 276))
+     + circ((214, 256), (220, 220), (234, 194))
      + box('Reentrada', 'baja por uno, sube por el otro'),
-     'El circuito baja por un sistema de conducción y sube|por el otro (taquicardia por nodos gemelos).', ('his',)), [L_TSV, L_CS])
+     'El circuito baja por un sistema de conducción y sube|por el otro (taquicardia por nodos gemelos).', ('sin_nodo',)), [L_TSV, L_CS])
 
 TVFP = circ((330, 420), (360, 470), (395, 515)) + circ((405, 530), (380, 470), (345, 430))
 F['tvf'] = (
