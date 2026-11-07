@@ -38,7 +38,7 @@ S['p5_ehr'] = ehr(460, 300, 'conc_cs', 0, early=25, src='caso 5 (LC 460 como el 
 # Caso 6: PJRT, LC 521, VA 290; EV-HR retrasa la A 20 ms.
 S['p6_ehr'] = ehr(300, 190, 'conc_cs', -20, src='caso 6 (LC 300 como el ECG real, VA 190); EV-HR que retrasa la A 20 ms', lab='A-A 320 (+20)')
 # Caso 9: PJRT (Arias 2010), LC 480, VA 296; EV-HR adelanta la A (magnitud ilustrativa).
-S['p9_ehr'] = ehr(480, 296, 'conc_cs', 20, src='Arias 2010 (LC 480, VA 296); EV-HR que adelanta la A (el valor de 20 ms es ilustrativo)', lab='A adelantada')
+S['p9_ehr'] = ehr(310, 180, 'conc_cs', 20, src='caso 9 (LC 310 como el ECG real, VA 180); EV-HR que adelanta la A 20 ms', lab='A-A 290 (−20)')
 S['p9_ehr']['pxms'] = 0.25
 # Caso 4: TRAV lateral izquierda, LC 340, VA 115; desde el ápex no cambia la A, desde el VI basal la adelanta 20 ms.
 S['p4_ehr_a'] = ehr(340, 115, 'left', 0, title='A. EV-HR desde el ápex del VD: la A no cambia', src='caso 4 (Veenhuyzen 2011: LC 340, VA 115); adelanto de 20 ms del caso',
@@ -80,18 +80,19 @@ S['p6_aop'] = dict(win=(-80, vs2[-1] + 300), pxms=0.25, channels=CH, title='Sobr
 
 # Caso 9: encarrilamiento diferencial (Arias 2010): ΔVA −28 (base − ápex). SA y LC absolutos ilustrativos (SA ápex 438 publicado a otra LC).
 def diff(sa, typ, pace, title):
-    LC, VA = 480, 296
-    svt = [0, LC]; sp = [800, 1230, 1660]
+    LC, VA = 310, 180
+    svt = [0, LC]; sp = [600 + 295 * k for k in range(6)]
     A = [v + VA for v in svt] + [s + sa for s in sp]
     ret = A[-1] + (LC - VA)
-    return dict(win=(-80, ret + 520), pxms=0.25, channels=CH, title=title, spikes=sp, pace_ch=pace,
-        src='Arias 2010: ΔVA −28 y ΔcPPI−LC −18 (base − ápex); el SA del ápex (438) es el publicado a LC 480, el de la base es el que da ΔVA −28',
+    return dict(win=(-80, ret + 520), pxms=0.22, channels=CH, title=title, spikes=sp, pace_ch=pace,
+        src='caso 9 (LC 310 como el ECG real): ΔVA −28 (base − ápex) de Arias 2010; SA ilustrativos, estimulación a 295',
         beats=[(v, 'n') for v in svt] + [(s, typ) for s in sp] + [(ret, 'n'), (ret + LC, 'n')],
         atr=[(a, 'conc_cs', -1) for a in A] + [(ret + VA, 'conc_cs', -1), (ret + LC + VA, 'conc_cs', -1)],
         h_ante=[v - HV for v in svt] + [ret - HV, ret + LC - HV],
-        cal=[(svt[1], svt[1] + VA + 2, 'CS 9-10', 'VA 296'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {sa}')])
-S['p9_diff_a'] = diff(438, 'pa', 'RVA', 'A. Desde el ápex del VD: SA − VA 142')
-S['p9_diff_b'] = diff(410, 'lv', 'RVA', 'B. Desde la base: SA − VA 114 → ΔVA (base − ápex) −28: TRAV')
+        cal=[(svt[1], svt[1] + VA + 2, 'CS 9-10', f'VA {VA}'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {sa}'),
+             (A[-2] + 38, A[-1] + 38, 'HRA', 'A-A 295'), (svt[0], svt[1], 'RVA', f'LC {LC}')])
+S['p9_diff_a'] = diff(280, 'pa', 'RVA', 'A. Desde el ápex del VD: SA − VA 100')
+S['p9_diff_b'] = diff(252, 'lv', 'RVA', 'B. Desde la base: SA − VA 72 → ΔVA (base − ápex) −28: TRAV')
 
 # Caso 10: vía nodoventricular. LC 390; EV-HR adelanta el His siguiente.
 LC = 390
