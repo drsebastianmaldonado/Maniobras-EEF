@@ -5,7 +5,7 @@ Listado de lo que queda por chequear en **Maniobras en el EEF**. Se actualiza co
 https://github.com/drsebastianmaldonado/Maniobras-EEF/issues/1
 Este archivo es una copia de referencia; las marcas se llevan en el issue.
 
-## 1. Modo práctica (15 casos)
+## 1. Modo práctica (16 casos)
 
 Cada link abre el caso en una vista de revisión: hallazgos, diagnóstico, explicación y todas las maniobras con su clasificación (clave, útil o engañosa) y su registro. En cada caso, revisá que la clasificación coincida con tu criterio docente.
 
@@ -24,6 +24,7 @@ Cada link abre el caso en una vista de revisión: hallazgos, diagnóstico, expli
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-13) **Caso 13: Una P y dos QRS**. Datos publicados: Burri 2012 (doble disparo nodal). Con tus ECG reales (varón de 15 años: doble disparo intermitente y sinusal de otro registro); los registros del polígrafo siguen siendo los de Burri (AH1 90, H1–H2 430). La atropina y la adenosina no están en el caso; las escribí como lo esperable según Peiker 2016.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-14) **Caso 14: Lactante con taquicardia incesante** (nuevo). Didáctico (PJRT). Tu ECG real pasó al caso 6; este quedó con un ECG simulado. LC 300, VA 190, AH 70, HV 40 y todos los resultados de las maniobras son ilustrativos.
 - [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-15) **Caso 15: TSV con conducción VA decremental** (nuevo, con tus registros reales). Varón de 7 años, vía lateral izquierda decremental ablacionada en la hora 4 del anillo mitral: ECG basal del polígrafo, inducción desde el SC 5-6 (S1-S1 260), encarrilamiento desde el VD (PPI 371, LC 311), extraestímulos ventriculares (VA 152 → 210), mapas de activación (A más precoz en el SC 1-2). La sobreestimulación auricular (VA linking) es simulada: no se hizo en el estudio.
+- [ ] [ver](https://drsebastianmaldonado.github.io/Maniobras-EEF/#revision-16) **Caso 16: TSV concéntrica en un paciente con conducción VA excéntrica** (nuevo). Didáctico (TRNAV típica con vía izquierda espectadora): todos los registros y valores son simulados e ilustrativos.
 
 ## 2. Bibliografía que no estaba en el material base
 
