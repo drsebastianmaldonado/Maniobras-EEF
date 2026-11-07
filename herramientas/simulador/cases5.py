@@ -53,6 +53,30 @@ S['p1_vop'] = dict(win=(-80, after[-1] + 250), pxms=0.25, title='Sobreestimulaci
          (A[-2], A[-1], 'HRA', f'A-A {SC}'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {SA}'),
          (sp[-1], ret + 2, 'RVA', f'PPI {PPI}')])
 
+# Caso 4 (Veenhuyzen 2011: LC 340, VA 115; con BRI funcional VA +35 y LC +30). Inducción con S1-S2 600-280:
+# los primeros latidos con BRI (VA 150, LC 370), después QRS angosto (VA 115, LC 340). Secuencia excéntrica (SC distal).
+CH7 = ['HRA', 'His d', 'CS 9-10', 'CS 5-6', 'CS 1-2', 'RVA']
+S['c4_basal'] = basal('caso 4: AH 90, HV 45, ilustrativos')
+S['c4_basal']['channels'] = CH7
+S['c4_basal']['cal'] = [c if c[2] != 'His p' else (c[0], c[1], 'RVA', c[3]) for c in S['c4_basal']['cal']]
+sp = [0, 600, 880]
+hs = [s + 28 + a for s, a in zip(sp, [90, 90, 170])]
+typ = ['n', 'n', 'lb', 'lb', 'lb', 'n', 'n', 'n']
+A = []
+for i in range(2, len(typ)):
+    va = 150 if typ[i] == 'lb' else 115
+    A.append(hs[i] + HV + va)
+    if i + 1 < len(typ):
+        hs.append(A[-1] + (175 if typ[i + 1] == 'lb' else 180))
+vs = [h + HV for h in hs]
+S['c4_ind'] = dict(win=(-80, vs[-1] + 220), pxms=0.27, title='Inducción: extraestímulo auricular (S1-S2 600-280)', channels=CH7,
+    src='caso 4: LC y VA de Veenhuyzen 2011; el resto ilustrativo',
+    beats=[(v, k) for v, k in zip(vs, typ)], aspikes=sp, apace_ch='HRA',
+    atr=[(s + 5, 'sinus', 1) for s in sp] + [(a, 'left', -1) for a in A], h_ante=hs,
+    cal=[(sp[1], sp[2], 'HRA', 'S2 280'), (sp[2] + 28, hs[2], 'His d', 'AH 170'),
+         (vs[3], vs[4], 'RVA', f'LC {vs[4] - vs[3]}'), (vs[3], A[1], 'CS 1-2', f'VA {A[1] - vs[3]}'),
+         (vs[6], vs[7], 'RVA', f'LC {vs[7] - vs[6]}'), (vs[6], A[4], 'CS 1-2', f'VA {A[4] - vs[6]}')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')
