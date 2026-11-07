@@ -152,11 +152,11 @@ F['basal'] = (
      'El impulso recorre el VI y sube por la vía: V y A se activan|en serie (VA > 70); la A más precoz está en el SC distal.'), LEG)
 
 F['pre'] = (
-    ('A. Salto del AH (doble vía nodal)', spark((196, 238), 'S2 auricular', -110, -22)
+    ('A. Salto del AH (doble vía nodal)', spark(HRA, 'S2 auricular (AD alta)', -60, -20) + front((135, 132), (175, 190), (200, 236))
      + '<path d="M206,240 C228,214 256,226 266,250" stroke="#2e7d32" stroke-width="3" fill="none"/>'
-     + f'<path d="{wavy((204, 248), (110, 262), (200, 286), (262, 270), 4, 6)}" stroke="#b71c1c" stroke-width="3.2" fill="none" stroke-linecap="round"/>'
-     + f'<path d="{wavy((204, 248), (110, 262), (200, 286), (262, 270), 4, 6, off=-8)}" stroke="{ORANGE}" stroke-width="3" fill="none"/>'
-     + note(96, 250, 'vía lenta', '#b71c1c') + note(292, 262, 'nodo AV', '#6d4c41')
+     + f'<path d="{wavy((204, 248), (110, 262), (200, 286), (262, 270), 4, 6)}" stroke="#7f1d1d" stroke-width="6" fill="none" stroke-linecap="round"/>'
+     + f'<path d="{wavy((204, 248), (110, 262), (200, 286), (262, 270), 4, 6)}" stroke="{ORANGE}" stroke-width="3" fill="none" stroke-linecap="round"/>'
+     + note(96, 250, 'vía lenta', '#7f1d1d') + note(292, 262, 'nodo AV', '#6d4c41')
      + xmark((236, 226), 'vía rápida refractaria', 150, -16) + front((276, 278), (286, 292), (291, 310))
      + note(80, 360, 'baja por la vía lenta:|AH salta ≥ 50 ms', ORANGE) + box('Salto del AH', 'doble fisiología nodal'),
      'El S2 encuentra la vía rápida refractaria y baja por la lenta:|el AH salta y puede aparecer el eco.', ('his',)),
