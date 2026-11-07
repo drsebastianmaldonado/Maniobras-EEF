@@ -165,6 +165,39 @@ S['c8_ind'] = dict(win=(-80, vt[-1] + 200), pxms=0.27, title='Inducción: extrae
     extra={'LV 1-2': [(t, 0.32, 0.8) for t in p1] + [(t, 0.55, 0.7) for t in p2]},
     cal=[(sp[1], sp[2], 'RVA', 'S2 280'), (vt[2], vt[3], 'RVA', f'LC {LC8}'), (a_sin[1], a_sin[2], 'HRA', 'A-A 800')])
 
+# Caso 2 (didáctico, TRAV septal en una niña de 10 años): LC 280 como el ECG real, VA 110, AH en la TSV 125.
+S['c2_basal'] = basal('caso 2 (didáctico): AH 80, HV 45, ilustrativos', ah=80, cl=650)
+sp = [0, 600, 900]
+hs = [s + 28 + a for s, a in zip(sp, [80, 80, 150])]
+A = []
+for _ in range(6):
+    A.append(hs[-1] + HV + 110)
+    hs.append(A[-1] + 8 + 117)                       # A más precoz en el ostium del SC
+vs = [h + HV for h in hs]
+S['c2_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='Inducción: extraestímulo auricular (S1-S2 600-300)', channels=CH6,
+    src='caso 2 (didáctico): valores ilustrativos', beats=[(v, 'n') for v in vs], aspikes=sp, apace_ch='HRA',
+    atr=[(s + 5, 'sinus', 1) for s in sp] + [(a, 'conc_cs', -1) for a in A[:-1]], h_ante=hs[:-1],
+    cal=[(sp[1], sp[2], 'HRA', 'S2 300'), (sp[2] + 28, hs[2], 'His d', 'AH 150'),
+         (vs[3], A[1] + 2, 'CS 9-10', 'VA 110'), (vs[5], vs[6], 'RVA', f'LC {vs[6] - vs[5]}')])
+S['c2_ind']['beats'] = S['c2_ind']['beats'][:-1]
+S['c2_ind']['win'] = (-80, vs[-2] + 220)
+
+# Caso 2: encarrilamiento desde el ápex a 250 (6 estímulos). LC 280, VA 110, SA 150, PPI 360 (SA−VA 40 y PPI−LC 80 de Michaud).
+LC2, VA2, SC2, SA2, PPI2 = 280, 110, 250, 150, 360
+svt = [0, LC2, 2 * LC2]
+sp = [svt[-1] + 230 + SC2 * k for k in range(6)]
+A = [v + VA2 for v in svt] + [s + SA2 for s in sp]
+ret = sp[-1] + PPI2
+after = [ret, ret + LC2]
+S['p2_vop'] = dict(win=(-80, after[-1] + 220), pxms=0.28, title='Encarrilamiento desde el ápex del VD a 250 ms', channels=CH6,
+    src='caso 2 (didáctico): valores ilustrativos',
+    beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
+    atr=[(a, 'conc_cs', -1) for a in A + [v + VA2 for v in after]],
+    h_ante=[v - HV for v in svt + after], h_retro=[s + 110 for s in sp],
+    cal=[(svt[0], svt[1], 'RVA', f'LC {LC2}'), (svt[1], svt[1] + VA2 + 2, 'CS 9-10', f'VA {VA2}'),
+         (A[-2] + 2, A[-1] + 2, 'HRA', f'A-A {SC2}'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {SA2}'),
+         (sp[-1], ret + 2, 'RVA', f'PPI {PPI2}')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or list(S)):
         render(S[k], f'{OUT}/{k}.svg')

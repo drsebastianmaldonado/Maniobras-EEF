@@ -29,9 +29,9 @@ def ehr(LC, VA, seq, d, k_spike=3, early=0, typ='pa', pace='RVA', n_after=2, tit
                 marks=[(sp, 'V1', mark), (h_exp, 'His p', 'H')])
 
 
-# Caso 2: TRAV septal, LC 360, VA 110; EV-HR adelanta la A 25 ms.
-S['p2_ehr'] = ehr(360, 110, 'conc_cs', 25, src='caso 2 (didáctico): LC 360, VA 110; la EV con His refractario adelanta la A 25 ms',
-                  lab='A-A 335 (−25)')
+# Caso 2: TRAV septal, LC 280 (como el ECG real del caso), VA 110; EV-HR adelanta la A 25 ms.
+S['p2_ehr'] = ehr(280, 110, 'conc_cs', 25, src='caso 2 (didáctico): LC 280, VA 110; la EV con His refractario adelanta la A 25 ms',
+                  lab='A-A 255 (−25)')
 # Caso 5: TRNAV atípica, LC 380, VA 265; EV-HR adelanta el V local > 60 ms y no cambia la A.
 S['p5_ehr'] = ehr(380, 265, 'conc_cs', 0, early=25, src='Veenhuyzen 2011 (LC 380, VA 265); EV-HR con el V local adelantado > 60 ms, sin cambio de la A',
                   lab='A-A 380 (sin cambio)')
