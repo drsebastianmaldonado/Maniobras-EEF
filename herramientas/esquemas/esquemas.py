@@ -770,11 +770,50 @@ F['twin'] = (
      'El circuito baja por un sistema de conducción y sube|por el otro (taquicardia por nodos gemelos).', ('sin_nodo',)), [L_TSV, L_CS])
 
 TVFP = circ((330, 420), (360, 470), (395, 515)) + circ((405, 530), (380, 470), (345, 430))
-F['tvf'] = (
-    ('A. TV fascicular posterior', TVFP + note(410, 470, 'P1 baja por|el falso tendón', BLUE) + note(310, 470, 'P2: sube por el|fascículo posterior', BLUE, 'end')
-     + box('BRD + eje superior', 'P1 y P2 en el septum medio'), 'Reentrada entre el fascículo posterior y tejido de Purkinje|anómalo (P1): sensible al verapamilo.', ('nodo', 'his', 'fp')),
-    ('B. TV fascicular septal superior', circ((300, 315), (318, 345), (330, 330)) + circ((322, 318), (308, 300)) + faint((300, 320), (288, 296))
-     + box('QRS angosto', 'His retrógrado, HV corto', 'warn'), 'El circuito usa el fascículo septal superior cerca del His:|baja por los dos fascículos y da un QRS angosto.', ('nodo', 'his', 'fa', 'fp')), [L_TSV, L_PAS, L_CS])
+def p1p2(x, y):
+    """Mini registro del catéter septal: P1 mesodiastólico (prox → dist) y P2 presistólico (dist → prox)."""
+    s = (f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
+         '<text x="-30" y="-10" font-size="9.5" font-weight="700" fill="#6d4c41">prox</text>'
+         '<text x="-30" y="44" font-size="9.5" font-weight="700" fill="#6d4c41">dist</text>')
+    for i in range(4):
+        yy = -12 + 17 * i
+        s += f'<line x1="0" y1="{yy}" x2="182" y2="{yy}" stroke="#eeeeee"/>'
+        s += f'<rect x="{6}" y="{yy - 6}" width="10" height="12" rx="2" fill="#6d4c41"/><rect x="{160}" y="{yy - 6}" width="10" height="12" rx="2" fill="#6d4c41"/>'
+        p1x = 60 + 12 * i
+        p2x = 134 - 10 * i
+        s += (f'<line x1="{p1x}" y1="{yy - 5}" x2="{p1x}" y2="{yy + 5}" stroke="#1565c0" stroke-width="2.5"/>'
+              f'<line x1="{p2x}" y1="{yy - 5}" x2="{p2x}" y2="{yy + 5}" stroke="{ORANGE}" stroke-width="2.5"/>')
+    s += (f'<text x="78" y="56" font-size="9.5" text-anchor="middle" fill="#1565c0" font-weight="700">P1 ↓</text>'
+          f'<text x="120" y="56" font-size="9.5" text-anchor="middle" fill="{ORANGE}" font-weight="700">P2 ↑</text>'
+          '<text x="11" y="56" font-size="9" text-anchor="middle" fill="#6d4c41">QRS</text><text x="165" y="56" font-size="9" text-anchor="middle" fill="#6d4c41">QRS</text>'
+          )
+    return s + '</g>'
+
+
+CATH = ('<path d="M318,400 L418,532" stroke="#455a64" stroke-width="4" stroke-linecap="round"/>'
+        + ''.join(f'<rect x="{318 + 25 * i - 4}" y="{400 + 33 * i - 4}" width="8" height="8" fill="#212121"/>' for i in range(5)))
+USC = circ((300, 315), (318, 345), (330, 330)) + circ((322, 318), (308, 300))
+F['tvf'] = {'grid': ([[
+    ('A1. TV fascicular posterior: el circuito', TVFP + note(410, 470, 'P1 baja por|tejido de Purkinje|anómalo', BLUE) + note(310, 470, 'P2: sube por el|fascículo posterior', BLUE, 'end')
+     + front((400, 530), (430, 560), (470, 540))
+     + note(40, 120, 'reentrada entre el fascículo posterior y|tejido de Purkinje anómalo (P1, decremental|y sensible al verapamilo); sale por el septum|inferior: BRD + eje superior', BLUE)
+     + box('BRD + eje superior', 'verapamilo la termina', False),
+     'El circuito está en el septum medio-inferior del VI|y sale cerca del fascículo posterior.', ('nodo', 'his', 'fp')),
+    ('A2. TV fascicular posterior: qué se registra', TVFP + CATH + note(430, 400, 'catéter|multipolar|en el septum', '#455a64')
+     + note(40, 120, 'en el septum medio: P1 mesodiastólico|(de proximal a distal) y P2 presistólico|(de distal a proximal)', BLUE)
+     + p1p2(395, 590)
+     + box('P1 + P2', 'TV fascicular posterior'),
+     'P1 y P2 se activan en sentidos opuestos:|son los dos brazos del circuito.', ('nodo', 'his', 'fp'))],
+    [('B1. TV fascicular septal superior: el circuito', USC + front((330, 335), (380, 380), (425, 410)) + front((325, 345), (340, 420), (390, 510)) + faint((300, 320), (288, 296))
+     + note(40, 120, 'el circuito usa el fascículo septal superior,|cerca del His: baja por los dos fascículos|a la vez y da un QRS angosto', BLUE)
+     + box('QRS angosto', 'parece una TSV', 'warn'),
+     'La activación baja por los dos fascículos:|QRS angosto, eje normal.', ('nodo', 'his', 'fa', 'fp')),
+    ('B2. TV fascicular septal superior: qué se registra', USC + faint((300, 320), (288, 296))
+     + '<path d="M286,300 L322,340" stroke="#455a64" stroke-width="4" stroke-linecap="round"/>'
+     + note(40, 120, 'His retrógrado y HV más corto que en sinusal;|el potencial más precoz está a ≤ 7 mm|del His izquierdo, sin P1', BLUE)
+     + intbar(395, 590, [('sinusal', BLUE, 60, 0), ('TV', ORANGE, 25, 0)], True, 'HV más corto', 'el His se activa tarde (retrógrado)')
+     + box('HV < sinusal', 'TV septal superior'),
+     'Con QRS angosto, un HV más corto que en sinusal|descarta la TSV: es una TV fascicular.', ('nodo', 'his', 'fa', 'fp'))]], [L_TSV, L_EST, L_PAS, L_CS])}
 
 F['tvfabl'] = (
     ('A. Ablación en P1 / P2', TVFP + focus((365, 470), 'sitio de ablación') + box('P1-P2 se alarga', 'y la TV termina'),
