@@ -71,6 +71,9 @@ h2.sec{margin:8px 4px -6px;font-size:13px;font-weight:700;letter-spacing:.07em;t
 .box .bl{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px}
 .box ul,.box ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px;font-size:15px}
 .box p{margin:0;font-size:15px}
+.esqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:4px}
+.esqs a{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:var(--ink2);font-size:12.5px;line-height:1.25}
+.esqs img{width:100%;aspect-ratio:3/2;object-fit:cover;object-position:top;border-radius:8px;border:1px solid var(--line,#ddd);background:#fff}
 .mlinks{display:flex;flex-wrap:wrap;gap:6px}
 .ml{appearance:none;border:1px solid color-mix(in srgb,var(--violet) 40%,var(--line));background:var(--card);color:var(--violet);font:inherit;font-size:13px;font-weight:700;border-radius:99px;padding:5px 11px;cursor:pointer}
 .ml::before{content:"⚡ ";font-size:11px}
@@ -1034,11 +1037,30 @@ function arrRows(xs, cls) {
   return `<ul class="hl ${cls}">${xs.map(x => `<li><span>${x[0]}</span><span class="hm">${x[1].split(' ').map(k => `<button class="ml" data-m="${k}">${M[k].t}</button>`).join('')}<span class="cit">${x[2].split(' ').map(r => REFS[r][0]).join(' · ')}</span></span></li>`).join('')}</ul>`;
 }
 let arrQ = '';
+// Esquemas de maniobras (figs/esq/<clave de M>.jpg) mostrados como miniaturas que abren la imagen completa.
+function esqStrip(keys) {
+  const ks = [...new Set(keys || [])].filter(k => M[k]);
+  return ks.length ? `<div class="esqs">${ks.map(k => `<a href="figs/esq/${k}.jpg" target="_blank" rel="noopener"><img src="figs/esq/${k}.jpg" alt="Esquema: ${M[k].t}" loading="lazy"><span>${M[k].t}</span></a>`).join('')}</div>` : '';
+}
+const AESQ = {
+  trnavt: ['basal', 'pre', 'ado', 'vop', 'ppi', 'sava', 'dha', 'diff', 'ehr', 'eha'],
+  trnavbys: ['basal', 'ehr', 'ppi', 'sava', 'diff', 'vai'],
+  trnava: ['pre', 'vop', 'ppi', 'sava', 'dha', 'diff', 'ehr', 'parahis'],
+  travs: ['basal', 'ppi', 'sava', 'dha', 'hisorto', 'diff', 'vai', 'ehr', 'parahis'],
+  travl: ['basal', 'ehr', 'ppi', 'sava', 'obl', 'ado'],
+  pjrt: ['ado', 'ehr', 'ppi', 'sava', 'dha', 'diff', 'aop'],
+  nfrt: ['ehr', 'aop', 'ppi', 'hisorto', 'preex'],
+  nvbys: ['ehr', 'pre', 'dfire'],
+  fv: ['preex', 'parahis'],
+  ta: ['ado', 'vop', 'aop', 'basal'],
+  jet: ['eha', 'aop', 'vop'],
+};
 function renderArr() {
   const q = norm(arrQ.trim());
   const list = ARR.filter(a => !q || norm(a.n + ' ' + a.al).includes(q));
   $('#arrList').innerHTML = list.length ? list.map(a => `<details class="card ref arr" id="a-${a.id}"${q && list.length <= 2 ? ' open' : ''}><summary><span class="sumt"><span>${a.n}</span><small>Diferencial: ${a.dif}</small></span></summary><div class="refb">
     ${a.mec ? `<div class="box"><div class="bl">Cómo y por qué se reconoce</div><div class="mec">${a.mec}</div>${a.img ? `<figure class="real sim"><a href="${a.img}" target="_blank" rel="noopener"><img src="${a.img}" alt="Registro simulado" loading="lazy"></a><figcaption>${a.imgcap || ''} Registro simulado (no es un registro real). Tocá para ampliar.</figcaption></figure>` : ''}</div>` : ''}
+    ${AESQ[a.id] ? `<div class="box"><div class="bl">Esquemas de las maniobras útiles</div>${esqStrip(AESQ[a.id])}<p class="small" style="margin:6px 0 0">Tocá un esquema para ampliarlo.</p></div>` : ''}
     <div class="box"><div class="bl ok">Lo confirma</div>${arrRows(a.conf, 'ok')}</div>
     <div class="box"><div class="bl fav">Lo apoya</div>${arrRows(a.apoya, 'fav')}</div>
     <div class="box"><div class="bl no">Lo descarta</div>${arrRows(a.desc, 'no')}</div>
@@ -1450,6 +1472,7 @@ function renderCase() {
       <div class="box"><div class="bl">Por qué</div><p>${c.ex}</p></div>
       <div class="box"><div class="bl">Tu estudio</div><ul><li>Hiciste ${pLog.length} maniobra${pLog.length === 1 ? '' : 's'}.</li><li>Maniobras clave: ${claves.map(k => `${pLog.includes(k) ? '✓' : '○'} ${PMAN.find(x => x[0] === k)[1]}`).join(' · ')}</li>${trampas.length ? `<li>Resultados engañosos que viste: ${trampas.map(k => PMAN.find(x => x[0] === k)[1]).join(', ')}.</li>` : ''}</ul></div>
       <div class="mlinks">${[...new Set(claves.map(k => PMAN.find(x => x[0] === k)[2]))].map(m => `<button class="ml" data-m="${m}">${M[m].t}</button>`).join('')}</div>
+      <div class="box"><div class="bl">Esquemas de las maniobras clave</div>${esqStrip(claves.flatMap(k => k === 'medidas' ? ['ppi', 'sava', 'dha'] : [PMAN.find(x => x[0] === k)[2]]))}</div>
       <p class="small" style="margin:0">${cite(c.refs)}</p>
       <div class="ctrl"><button class="btn" id="pRetry">Reintentar</button>${pCur < PCASOS.length - 1 ? '<button class="btn" id="pNext">Siguiente caso →</button>' : ''}</div></div>`;
   }
