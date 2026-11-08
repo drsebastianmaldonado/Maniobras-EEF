@@ -880,20 +880,19 @@ F['obl'] = (
      + box('V más precoz', 'en la inserción ventricular'),
      'Con estimulación auricular el V más precoz marca la inserción|ventricular: invertir el frente ayuda a ubicarlas.'), LEG)
 
-SLOW = wavy((204, 248), (110, 262), (200, 290), (262, 270), 5.5, 8)
+SLOW = wavy((200, 250), (215, 276), (245, 282), (264, 270), 4.5, 7)
 FAST = '<path d="M206,240 C228,214 256,226 266,250" stroke="#2e7d32" stroke-width="3" fill="none"/>'
 F['dfire'] = (
     ('A. Por la vía rápida: H1', spark(HRA, 'A sinusal', -40, -20) + front((135, 132), (175, 190), (200, 236))
      + FAST + front((214, 236), (240, 220), (262, 244), w=3.2)
-     + f'<path d="{SLOW}" stroke="#b71c1c" stroke-width="3" fill="none" opacity=".45"/>'
-     + note(96, 250, 'vía lenta', '#7f1d1d') + note(236, 206, 'vía rápida', GREEN)
+     + f'<path d="{SLOW}" stroke="#8e24aa" stroke-width="3" fill="none" opacity=".4"/>'
+     + note(194, 266, 'vía lenta', '#6a1b9a', 'end') + note(236, 206, 'vía rápida', GREEN)
      + front((285, 285), (292, 320), (300, 400))
      + box('H1 – V1', 'AH corto'), 'La A conduce primero por la vía rápida:|primer His y primer V.', ('his',)),
     ('B. Por la vía lenta: H2', spark(HRA, 'la misma A', -40, -20) + front((135, 132), (175, 190), (200, 236))
      + FAST.replace('stroke-width="3"', 'stroke-width="3" opacity=".4"')
-     + f'<path d="{SLOW}" stroke="#7f1d1d" stroke-width="6" fill="none" stroke-linecap="round"/>'
-     + f'<path d="{SLOW}" stroke="{ORANGE}" stroke-width="3" fill="none" stroke-linecap="round"/>'
-     + note(96, 250, 'vía lenta', '#7f1d1d') + note(70, 320, 'recorrido tortuoso y lento:|llega al His cuando ya se recuperó', ORANGE)
+     + f'<path d="{SLOW}" stroke="#8e24aa" stroke-width="4.5" fill="none" stroke-linecap="round"/>'
+     + note(194, 266, 'vía lenta', '#6a1b9a', 'end') + note(70, 330, 'recorrido tortuoso y lento:|llega al His cuando ya se recuperó', '#6a1b9a')
      + front((276, 278), (286, 292), (291, 310)) + front((292, 322), (296, 360), (300, 400))
      + box('H2 – V2', 'H1–H2 fijo (400–500 ms)'), 'La misma A baja más tarde por la vía lenta y llega al His|cuando ya se recuperó: segundo His y segundo V.', ('his',)), [L_EST, L_CS])
 
