@@ -826,17 +826,49 @@ F['tvfabl'] = (
      + note(300, 525, 'línea perpendicular al|fascículo posterior', RED) + box('TV no inducible', 'línea de 1–2 cm'),
      'Si no se induce: línea perpendicular al fascículo|posterior en el septum medio-inferior.', ('nodo', 'his', 'fp')), [L_TSV, L_CS])
 
+def papilar(base, tip, w, leaflet):
+    """Músculo papilar: masa cónica redondeada que nace de la pared del VI, con cuerdas tendinosas a la valva mitral."""
+    (bx, by), (tx, ty) = base, tip
+    dx, dy = tx - bx, ty - by
+    n = (dx * dx + dy * dy) ** .5
+    ux, uy = dx / n, dy / n          # eje base → punta
+    px, py = -uy, ux                 # perpendicular
+    def pt(a, b):                    # a: a lo largo del eje (0 base, 1 punta); b: lateral en múltiplos de w
+        return (bx + dx * a + px * w * b, by + dy * a + py * w * b)
+    P = [pt(-.05, 1.25), pt(.35, 1.05), pt(.8, .55), pt(1.0, .22), pt(1.04, 0), pt(1.0, -.22), pt(.8, -.55), pt(.35, -1.05), pt(-.05, -1.25)]
+    f = lambda q: f'{q[0]:.0f},{q[1]:.0f}'
+    d = (f'M{f(P[0])} C{f(P[1])} {f(P[2])} {f(P[3])} Q{f(P[4])} {f(P[5])} C{f(P[6])} {f(P[7])} {f(P[8])} '
+         f'Q{f(pt(-.22, 0))} {f(P[0])} Z')
+    s = (f'<defs><linearGradient id="gpm{bx}" x1="0" x2="1"><stop offset="0" stop-color="#8e3b2f"/><stop offset=".45" stop-color="#c06a58"/>'
+         f'<stop offset="1" stop-color="#7d3127"/></linearGradient></defs>'
+         f'<path d="{d}" fill="url(#gpm{bx})" stroke="#5d221a" stroke-width="1.4"/>')
+    for k in (-.45, 0, .45):        # estrías musculares
+        a0, a1 = pt(.1, k * 1.6), pt(.85, k * .6)
+        s += f'<path d="M{f(a0)} L{f(a1)}" stroke="#d98f7c" stroke-width="1.2" opacity=".5"/>'
+    lx0, lx1, ly = leaflet
+    s += f'<path d="M{lx0},{ly} Q{(lx0 + lx1) / 2},{ly + 16} {lx1},{ly}" stroke="#e8c9a8" stroke-width="5" fill="none" stroke-linecap="round"/>'
+    for i in range(6):
+        cx = lx0 + (lx1 - lx0) * (i + .5) / 6
+        cy = ly + 6 + 4 * (1 - abs(i - 2.5) / 2.5)
+        s += f'<line x1="{tx:.0f}" y1="{ty:.0f}" x2="{cx:.0f}" y2="{cy:.0f}" stroke="#f3e5d0" stroke-width="1.1"/>'
+    return s
+
+
 F['pm'] = (
-    ('A. Músculo papilar posteromedial', '<ellipse cx="400" cy="540" rx="20" ry="34" fill="#b85a4b" stroke="#7b2f24"/>' + focus((400, 540), 'foco')
+    ('A. Músculo papilar posteromedial', papilar((392, 590), (408, 472), 20, (380, 470, 318)) + focus((406, 492), 'foco')
+     + note(478, 336, 'valva mitral|y cuerdas', '#6d4c41')
      + box('BRD + eje superior', 'QRS ancho, focal'), 'Foco en el músculo papilar posteromedial:|BRD con eje superior, no reentrante.'),
-    ('B. Músculo papilar anterolateral', '<ellipse cx="470" cy="430" rx="18" ry="32" fill="#b85a4b" stroke="#7b2f24"/>' + focus((470, 430), 'foco')
+    ('B. Músculo papilar anterolateral', papilar((500, 505), (468, 412), 18, (440, 530, 316)) + focus((474, 432), 'foco')
+     + note(432, 336, 'valva mitral|y cuerdas', '#6d4c41', 'end')
      + box('BRD + eje inferior', 'QRS ancho, focal'), 'Foco en el músculo papilar anterolateral:|BRD con eje inferior.'), [L_CS])
 
 F['ma'] = (
-    ('A. Anillo mitral anterolateral', focus((520, 290), 'foco') + box('R de V1 a V6', 'S en V6, eje inferior'),
-     'Foco en el anillo mitral anterolateral:|R en V1, concordancia positiva, DI negativo.'),
-    ('B. Anillo mitral posterior', focus((420, 296), 'foco') + box('R de V1 a V6', 'eje superior'),
-     'Foco en el anillo mitral posterior o posteroseptal:|R en V1, eje superior.'), [L_CS])
+    ('A. Anillo mitral anterolateral', focus((515, 320), 'foco') + note(470, 345, 'justo debajo del anillo', RED, 'end')
+     + box('R de V1 a V6', 'S en V6, eje inferior'),
+     'Foco en el anillo mitral anterolateral (lado ventricular):|R en V1, concordancia positiva, DI negativo.'),
+    ('B. Anillo mitral posterior', focus((420, 322), 'foco') + note(400, 350, 'justo debajo del anillo', RED, 'end')
+     + box('R de V1 a V6', 'eje superior'),
+     'Foco en el anillo mitral posterior o posteroseptal|(lado ventricular): R en V1, eje superior.'), [L_CS])
 
 OBL = '<path d="M520,262 C510,280 495,296 478,310" stroke="#7e57c2" stroke-width="7" fill="none" stroke-linecap="round"/>'
 F['obl'] = (
