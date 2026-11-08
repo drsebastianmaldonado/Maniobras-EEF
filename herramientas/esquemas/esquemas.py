@@ -822,8 +822,8 @@ F['tvf'] = {'grid': ([[
 F['tvfabl'] = (
     ('A. Ablación en P1 / P2', TVFP + focus((365, 470), 'sitio de ablación') + box('P1-P2 se alarga', 'y la TV termina'),
      'Con la TV inducible, se ablaciona en P1 (tercio apical) o|en el P2 más precoz; durante la RF el P1-P2 se alarga.', ('nodo', 'his', 'fp')),
-    ('B. Línea anatómica', '<path d="M330,470 L420,500" stroke="#c62828" stroke-width="6" stroke-dasharray="2 6" stroke-linecap="round"/>'
-     + note(330, 520, 'línea en el septum|medio-inferior', RED) + box('TV no inducible', 'línea de 1–2 cm'),
+    ('B. Línea anatómica', '<path d="M341,490 L396,458" stroke="#c62828" stroke-width="6" stroke-dasharray="2 6" stroke-linecap="round"/>'
+     + note(300, 525, 'línea perpendicular al|fascículo posterior', RED) + box('TV no inducible', 'línea de 1–2 cm'),
      'Si no se induce: línea perpendicular al fascículo|posterior en el septum medio-inferior.', ('nodo', 'his', 'fp')), [L_TSV, L_CS])
 
 F['pm'] = (
