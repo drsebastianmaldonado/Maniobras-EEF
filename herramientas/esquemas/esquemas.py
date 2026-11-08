@@ -482,15 +482,61 @@ F['vai'] = {'grid': ([[
      + box('Índice VA ≤ +10', 'conducción por el nodo', False),
      'El VA desde el ápex es igual o más corto que desde la base:|índice VA (ápex − base) ≤ +10 ms.')]], [L_EST, L_CS])}
 
-F['ehr'] = (
-    ('A. TRAV por vía septal', TRAV_S + via(SEPT, 'vía posteroseptal', 14, -16) + spark(APEX, 'EV (ápex del VD)')
-     + front((175, 575), (240, 470), (306, 352)) + front((313, 270), (330, 190), (382, 128)) + xmark(HIS, 'His refractario')
-     + box('A adelantada', 'misma secuencia'),
-     'La EV sube por el miocardio, entra por la vía|y adelanta la A: la vía forma parte del circuito.'),
-    ('B. TRNAV', TRNAV + note(320, 232, 'circuito en el nodo', BLUE) + spark(APEX, 'EV (ápex del VD)')
-     + front((178, 572), (240, 460), (290, 326)) + front((190, 584), (300, 500), (362, 350)) + note(372, 452, 'el anillo aísla:|no hay otra entrada')
-     + xmark(HIS, 'His refractario') + box('A sin cambio', 'llega a su tiempo', False),
-     'El His refractario bloquea el frente y no hay vía:|la EV no llega al nodo ni a la aurícula.'), LEG)
+def tline(x, y, ev, shift, ok, tag):
+    """Mini línea de tiempo A / His / V: ventana refractaria del His, EV y la A siguiente."""
+    c = GREEN if ok else '#546e7a'
+    s = f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
+    rows = [('A', -4), ('His', 20), ('V', 44)]
+    for lab, yy in rows:
+        s += (f'<text x="-30" y="{yy + 4}" font-size="10" font-weight="700" fill="#6d4c41">{lab}</text>'
+              f'<line x1="0" y1="{yy}" x2="182" y2="{yy}" stroke="#e0e0e0"/>')
+    s += ('<rect x="14" y="13" width="62" height="14" rx="3" fill="#c62828" opacity=".15"/>'
+          '<text x="80" y="24" font-size="9" fill="#c62828">refractario</text>'
+          f'<line x1="14" y1="12" x2="14" y2="28" stroke="{BLUE}" stroke-width="3"/>'
+          f'<line x1="34" y1="36" x2="34" y2="52" stroke="{BLUE}" stroke-width="3"/>')
+    if ev:
+        s += (f'<g transform="translate(58,44)"><circle r="7" fill="{ORANGE}"/><path d="M1,-4 L-2,1 L1,1 L-1,5" stroke="#fff" stroke-width="1.5" fill="none"/></g>'
+              f'<text x="58" y="64" font-size="9" text-anchor="middle" fill="{ORANGE}" font-weight="700">EV</text>')
+    if shift:
+        s += (f'<line x1="150" y1="-12" x2="150" y2="4" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="2 2"/>'
+              f'<line x1="{150 - shift}" y1="-12" x2="{150 - shift}" y2="4" stroke="{ORANGE}" stroke-width="3"/>'
+              f'<text x="{150 - shift / 2}" y="-15" font-size="9" text-anchor="middle" fill="{ORANGE}">adelantada</text>')
+    else:
+        s += f'<line x1="150" y1="-12" x2="150" y2="4" stroke="{BLUE}" stroke-width="3"/>'
+        if ev:
+            s += f'<text x="160" y="-15" font-size="9" text-anchor="middle" fill="{BLUE}">a su tiempo</text>'
+    if tag:
+        s += f'<text x="-30" y="-14" font-size="12.5" font-weight="700" fill="{c}">{E(tag)}</text>'
+    return s + '</g>'
+
+
+F['ehr'] = {'grid': ([[
+    ('A1. TRAV: en taquicardia', TRAV_S + via(SEPT, 'vía septal', 14, -22)
+     + solid([(272, 266), (286, 300), (294, 340)])
+     + note(40, 120, 'el His se acaba de activar desde el nodo:|queda refractario unos ms', BLUE)
+     + tline(395, 590, False, 0, None, '')
+     + box('Momento del EV', 'justo con el His', False),
+     'Se busca el momento en que el His ya se activó (refractario)|y el EV no puede entrar al sistema de conducción.'),
+    ('A2. TRAV: EV con His refractario', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(APEX, 'EV (ápex del VD)', -60, 35)
+     + front((180, 575), (250, 470), (296, 390), (312, 330), (316, 255), (338, 190)) + xmark(HIS, None)
+     + note(40, 120, 'el EV no puede subir por el His,|pero entra por la vía y adelanta la A', ORANGE)
+     + note(120, 330, 'His refractario', RED)
+     + tline(395, 590, True, 28, True, 'A adelantada')
+     + box('A adelantada', 'hay vía (y conduce)'),
+     'Si el EV llega a la A con el His refractario,|solo pudo hacerlo por una vía accesoria.')],
+    [('B1. TRNAV: en taquicardia', TRNAV
+     + solid([(276, 270), (288, 300), (296, 340)])
+     + note(40, 120, 'el His se acaba de activar desde el nodo:|queda refractario unos ms', BLUE)
+     + tline(395, 590, False, 0, None, '')
+     + box('Momento del EV', 'justo con el His', False),
+     'Mismo momento: el His ya se activó y está refractario.'),
+    ('B2. TRNAV: EV con His refractario', TRNAV + spark(APEX, 'EV (ápex del VD)', -60, 35)
+     + front((178, 572), (240, 460), (284, 330)) + front((190, 584), (300, 500), (362, 350)) + xmark(HIS, None)
+     + note(120, 330, 'His refractario', RED)
+     + note(40, 120, 'el His refractario bloquea el frente|y el anillo aísla: sin vía,|el EV no llega a la A', ORANGE)
+     + tline(395, 590, True, 0, False, 'A sin cambio')
+     + box('A sin cambio', 'no hay vía', False),
+     'Sin vía el EV no tiene por dónde llegar a la A:|la A siguiente sale a su tiempo.')]], LEG)}
 
 F['parahis'] = (
     ('A. Respuesta nodal', spark((300, 320), 'para-Hisiana', 10, 0) + front((296, 316), (288, 290), (270, 262), (220, 200))
