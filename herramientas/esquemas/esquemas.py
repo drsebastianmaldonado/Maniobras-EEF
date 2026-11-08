@@ -315,12 +315,12 @@ def intbar(x, y, rows, ok, tag, extra_label=''):
     s = f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
     for i, (lab, col, base, extra) in enumerate(rows):
         yy = -6 + 34 * i
-        s += (f'<text x="-28" y="{yy + 10}" font-size="11" font-weight="700" fill="{col}">{E(lab)}</text>'
-              f'<rect x="0" y="{yy}" width="{base}" height="12" rx="3" fill="{BLUE}" opacity=".8"/>')
+        s += (f'<text x="-28" y="{yy + 10}" font-size="10" font-weight="700" fill="{col}">{E(lab)}</text>'
+              f'<rect x="22" y="{yy}" width="{base}" height="12" rx="3" fill="{BLUE}" opacity=".8"/>')
         if extra:
-            s += f'<rect x="{base}" y="{yy}" width="{extra}" height="12" rx="3" fill="{ORANGE}"/>'
+            s += f'<rect x="{22 + base}" y="{yy}" width="{extra}" height="12" rx="3" fill="{ORANGE}"/>'
             if extra_label:
-                s += f'<text x="{base + extra / 2}" y="{yy + 30}" font-size="10" text-anchor="middle" fill="{ORANGE}">{E(extra_label)}</text>'
+                s += f'<text x="{22 + base + extra / 2}" y="{yy + 30}" font-size="10" text-anchor="middle" fill="{ORANGE}">{E(extra_label)}</text>'
     if tag:
         s += f'<text x="94" y="-14" font-size="12.5" font-weight="700" text-anchor="middle" fill="{c}">{E(tag)}</text>'
     return s + '</g>'
@@ -356,14 +356,32 @@ F['sava'] = {'grid': ([[
      + box('SA − VA > 85', 'TRNAV', False),
      'Estimulando el V la A espera el ascenso por el His y el nodo:|el SA es mucho mayor que el VA.')]], LEG)}
 
-F['dha'] = (
-    ('A. ΔHA < 0 (TRAV)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(APEX, 'VD')
-     + front((180, 575), (285, 420), (312, 320), (313, 260)) + faint((180, 560), (250, 430), (290, 330))
-     + note(330, 420, 'estimulando: His y A|en paralelo (HA corto)', ORANGE) + box('ΔHA < 0', 'His y A en paralelo'),
-     'En la TSV His y A se activan en serie (V → vía → A);|estimulando el V, en paralelo: el HA se acorta.'),
-    ('B. ΔHA > 0 (TRNAV)', TRNAV + spark(APEX, 'VD') + front((175, 575), (255, 430), (290, 320), (270, 268), (230, 200))
-     + note(330, 420, 'estimulando: primero el His,|después la A (en serie)', ORANGE) + box('ΔHA > 0', 'His y A en serie', False),
-     'En la TSV His y A salen en paralelo del nodo (HA corto);|estimulando el V se activan en serie: el HA se alarga.'), LEG)
+F['dha'] = {'grid': ([[
+    ('A1. TRAV: en taquicardia (HA)', TRAV_S + via(SEPT, 'vía septal', 14, -22)
+     + solid([(290, 300), (300, 345)]) + solid([(310, 352), (316, 300), (320, 240), (340, 190)])
+     + note(40, 120, 'HA: His → V → vía → A|His y A se activan en serie', BLUE)
+     + intbar(395, 590, [('HA TSV', BLUE, 110, 0)], True, '')
+     + box('HA de la TSV', 'largo (en serie)', False),
+     'En la TSV el impulso baja por el His, recorre el V|y sube por la vía: el HA incluye todo ese trayecto.'),
+    ('A2. TRAV: estimulando el VD (HA)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(APEX, 'estímulo en el VD', -60, 35)
+     + front((180, 575), (250, 470), (296, 390), (312, 330), (316, 260), (338, 190))
+     + front((182, 560), (240, 450), (275, 370), (288, 318))
+     + note(40, 120, 'desde el V el frente llega al His|y a la vía a la vez: en paralelo', ORANGE)
+     + intbar(395, 590, [('HA TSV', BLUE, 110, 0), ('HA est.', ORANGE, 45, 0)], True, 'ΔHA < 0')
+     + box('ΔHA < 0', 'HA estimulado más corto'),
+     'Estimulando el V, His y A se activan en paralelo:|el HA se acorta (ΔHA negativo).')],
+    [('B1. TRNAV: en taquicardia (HA)', TRNAV
+     + solid([(262, 252), (230, 210), (190, 175)]) + solid([(290, 290), (298, 330)])
+     + note(40, 120, 'His y A salen juntos del nodo:|en paralelo', BLUE)
+     + intbar(395, 590, [('HA TSV', BLUE, 30, 0)], True, '')
+     + box('HA de la TSV', 'corto (en paralelo)', False),
+     'En la TSV el His y la A se activan casi a la vez|desde el circuito en el nodo.'),
+    ('B2. TRNAV: estimulando el VD (HA)', TRNAV + spark(APEX, 'estímulo en el VD', -60, 35)
+     + front((175, 575), (255, 430), (290, 320), (270, 268), (230, 200))
+     + note(40, 120, 'estimulando: primero el His,|después el nodo y la A (en serie)', ORANGE)
+     + intbar(395, 590, [('HA TSV', BLUE, 30, 0), ('HA est.', ORANGE, 30, 80)], False, 'ΔHA > 0', 'His → nodo → A')
+     + box('ΔHA > 0', 'HA estimulado más largo', False),
+     'Estimulando el V, el His y la A se activan en serie:|el HA se alarga (ΔHA positivo).')]], LEG)}
 
 F['hisorto'] = (
     ('A. His ortodrómico (vía en el circuito)', TRAV_S + via(SEPT, 'vía', 14, -22) + spark(APEX, 'VD')
