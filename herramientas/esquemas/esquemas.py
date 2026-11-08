@@ -566,15 +566,61 @@ F['parahis'] = {'grid': ([[
      + box('SA no cambia', 'conducción por la vía'),
      'La vía no depende del His: el SA queda igual|con y sin captura del His (respuesta extranodal).')]], [L_EST, L_PAS, L_CS])}
 
-F['aop'] = (
-    ('A. VA linking (TRNAV o TRAV)', TRNAV + spark(HRA, 'sobreestimulación auricular', -60, -20)
-     + front((135, 132), (220, 210), (262, 250)) + front((285, 285), (292, 330), (290, 400)) + faint((262, 250), (230, 200), (180, 160))
-     + note(330, 420, 'el retorno: A después|del V a VA fijo', ORANGE) + box('VA linking', 'VA de retorno fijo'),
-     'El último A estimulado entra al circuito; la A de retorno|depende del V: el VA del retorno es el de la TSV.'),
-    ('B. Sin VA linking (TA)', focus((150, 160), 'foco') + spark(CSOS, 'sobreestimulación auricular', -70, 50)
-     + front((240, 270), (210, 230), (170, 180)) + circ((160, 175), (200, 215), (250, 250))
-     + note(330, 420, 'la A de retorno sale del foco:|VA variable', BLUE) + box('VA variable', '> 14 ms entre sitios', 'warn'),
-     'La A de retorno depende del foco, no del V:|el VA cambia según el sitio de estimulación.'), LEG)
+def ladder_a(x, y, mode, ok, tag):
+    """Escalera A / V: 3 A estimuladas que conducen al V; al cortar, la A de retorno."""
+    c = GREEN if ok else '#e65100'
+    s = (f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
+         '<text x="-28" y="4" font-size="12" font-weight="700" fill="#6d4c41">A</text><text x="-28" y="44" font-size="12" font-weight="700" fill="#6d4c41">V</text>'
+         '<line x1="-12" y1="0" x2="182" y2="0" stroke="#bdbdbd"/><line x1="-12" y1="40" x2="182" y2="40" stroke="#bdbdbd"/>')
+    for i in range(3):
+        ax = 2 + 28 * i
+        s += (f'<line x1="{ax}" y1="0" x2="{ax + 14}" y2="40" stroke="{ORANGE}" stroke-width="2.4"/>'
+              f'<text x="{ax}" y="-6" font-size="10" text-anchor="middle" fill="{ORANGE}" font-weight="700">S</text>')
+    lastv = 2 + 28 * 2 + 14
+    if mode != 'none':
+        s += f'<line x1="{lastv + 6}" y1="-18" x2="{lastv + 6}" y2="58" stroke="#9e9e9e" stroke-dasharray="3 3"/><text x="{lastv + 6}" y="-20" font-size="9.5" text-anchor="middle" fill="#757575">corte</text>'
+    if mode == 'link':
+        ra = lastv + 34
+        s += (f'<line x1="{lastv}" y1="40" x2="{ra}" y2="0" stroke="{BLUE}" stroke-width="2.4" stroke-dasharray="4 3"/>'
+              f'<line x1="{ra}" y1="0" x2="{ra + 18}" y2="40" stroke="{BLUE}" stroke-width="2.4"/>'
+              f'<path d="M{lastv},50 v4 H{ra} v-4" stroke="#424242" fill="none"/>'
+              f'<text x="{(lastv + ra) / 2}" y="64" font-size="9.5" text-anchor="middle" fill="#424242">VA = el de la TSV</text>')
+    elif mode == 'free':
+        ra = lastv + 62
+        s += (f'<g transform="translate({ra},0)"><path d="M0,-7 L2,-2 L7,-2 L3,1 L5,6 L0,3 L-5,6 L-3,1 L-7,-2 L-2,-2 Z" fill="#fdd835" stroke="#c62828"/></g>'
+              f'<line x1="{ra}" y1="0" x2="{ra + 18}" y2="40" stroke="{BLUE}" stroke-width="2.4"/>'
+              f'<path d="M{lastv},50 v4 H{ra} v-4" stroke="#424242" fill="none"/>'
+              f'<text x="{(lastv + ra) / 2}" y="64" font-size="9.5" text-anchor="middle" fill="#424242">VA distinto (variable)</text>')
+    if tag:
+        s += f'<text x="140" y="-12" font-size="12.5" font-weight="700" text-anchor="middle" fill="{c}">{E(tag)}</text>'
+    return s + '</g>'
+
+
+F['aop'] = {'grid': ([[
+    ('A1. TRNAV o TRAV: durante la estimulación', TRNAV + spark(HRA, 'estimulación AD alta', -60, -20)
+     + front((135, 132), (220, 210), (262, 250)) + front((285, 285), (292, 330), (290, 400))
+     + note(40, 300, 'cada A estimulada entra al circuito|y baja al V (la TSV queda encarrilada)', ORANGE)
+     + ladder_a(395, 590, 'none', True, '')
+     + box('Encarrilada', 'desde la AD alta', False),
+     'Estimulo la AD alta más rápido que la TSV:|cada A baja por el nodo y arrastra el V.'),
+    ('A2. TRNAV o TRAV: al cortar', TRNAV
+     + solid([(262, 252), (230, 210), (190, 175)]) + solid([(290, 290), (298, 350), (310, 420)])
+     + note(40, 300, 'el circuito sigue girando: la A de retorno|sale "atada" al último V, con el mismo VA|que en la TSV', BLUE)
+     + ladder_a(395, 590, 'link', True, 'VA linking')
+     + box('VA linking', 'VA de retorno = TSV'),
+     'La A de retorno depende del V (sale del circuito):|el VA del primer latido es el de la TSV.')],
+    [('B1. TA: durante la estimulación', focus((150, 160), 'foco') + spark(HRA, 'estimulación AD alta', -60, -20)
+     + front((135, 132), (220, 210), (262, 250)) + front((285, 285), (292, 330), (290, 400))
+     + note(40, 300, 'las A estimuladas suprimen el foco|y bajan al V', ORANGE)
+     + ladder_a(395, 590, 'none', True, '')
+     + box('Encarrilada', 'desde la AD alta', False),
+     'Mismo sitio y misma LC: las A estimuladas|bajan por el nodo al V.'),
+    ('B2. TA: al cortar', focus((150, 160), 'foco')
+     + circ((160, 175), (210, 220), (255, 252)) + solid([(290, 290), (298, 350), (310, 420)])
+     + note(40, 300, 'la A de retorno la dispara el foco|cuando se recupera: no depende del V,|el VA no es el de la TSV', '#c62828')
+     + ladder_a(395, 590, 'free', False, 'sin VA linking')
+     + box('VA variable', 'taquicardia auricular', 'warn'),
+     'El V no tiene cómo activar la A: el VA del primer latido|es distinto al de la TSV y cambia entre intentos.')]], LEG)}
 
 MAHAIM = '<path d="M104,292 C120,360 142,440 172,505" stroke="#7e57c2" stroke-width="5" fill="none" stroke-linecap="round" opacity=".9"/>'
 F['preex'] = (
