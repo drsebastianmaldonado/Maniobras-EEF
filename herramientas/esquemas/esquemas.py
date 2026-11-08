@@ -880,13 +880,22 @@ F['obl'] = (
      + box('V más precoz', 'en la inserción ventricular'),
      'Con estimulación auricular el V más precoz marca la inserción|ventricular: invertir el frente ayuda a ubicarlas.'), LEG)
 
+SLOW = wavy((204, 248), (110, 262), (200, 290), (262, 270), 5.5, 8)
+FAST = '<path d="M206,240 C228,214 256,226 266,250" stroke="#2e7d32" stroke-width="3" fill="none"/>'
 F['dfire'] = (
-    ('A. Por la vía rápida: H1', spark(HRA, 'A sinusal', -40, -20) + front((140, 140), (220, 210), (258, 248))
-     + '<path d="M240,252 C246,236 262,236 270,250" stroke="#2e7d32" stroke-width="3" fill="none"/>' + front((285, 285), (292, 320), (300, 400))
-     + box('H1 – V1', 'AH corto'), 'La A conduce primero por la vía rápida:|primer His y primer V.'),
-    ('B. Por la vía lenta: H2', spark(HRA, 'la misma A', -40, -20)
-     + front((140, 140), (200, 200), (236, 262)) + '<path d="M240,268 C244,290 266,292 274,272" stroke="#b71c1c" stroke-width="3" fill="none"/>' + front((285, 285), (292, 320), (300, 400))
-     + box('H2 – V2', 'H1–H2 fijo (400–500 ms)'), 'La misma A baja más tarde por la vía lenta y llega al His|cuando ya se recuperó: segundo His y segundo V.'), [L_EST, L_CS])
+    ('A. Por la vía rápida: H1', spark(HRA, 'A sinusal', -40, -20) + front((135, 132), (175, 190), (200, 236))
+     + FAST + front((214, 236), (240, 220), (262, 244), w=3.2)
+     + f'<path d="{SLOW}" stroke="#b71c1c" stroke-width="3" fill="none" opacity=".45"/>'
+     + note(96, 250, 'vía lenta', '#7f1d1d') + note(236, 206, 'vía rápida', GREEN)
+     + front((285, 285), (292, 320), (300, 400))
+     + box('H1 – V1', 'AH corto'), 'La A conduce primero por la vía rápida:|primer His y primer V.', ('his',)),
+    ('B. Por la vía lenta: H2', spark(HRA, 'la misma A', -40, -20) + front((135, 132), (175, 190), (200, 236))
+     + FAST.replace('stroke-width="3"', 'stroke-width="3" opacity=".4"')
+     + f'<path d="{SLOW}" stroke="#7f1d1d" stroke-width="6" fill="none" stroke-linecap="round"/>'
+     + f'<path d="{SLOW}" stroke="{ORANGE}" stroke-width="3" fill="none" stroke-linecap="round"/>'
+     + note(96, 250, 'vía lenta', '#7f1d1d') + note(70, 320, 'recorrido tortuoso y lento:|llega al His cuando ya se recuperó', ORANGE)
+     + front((276, 278), (286, 292), (291, 310)) + front((292, 322), (296, 360), (300, 400))
+     + box('H2 – V2', 'H1–H2 fijo (400–500 ms)'), 'La misma A baja más tarde por la vía lenta y llega al His|cuando ya se recuperó: segundo His y segundo V.', ('his',)), [L_EST, L_CS])
 
 F['conc'] = (
     ('A. Encarrilamiento oculto', TRAV_S + via(SEPT, 'vía', 14, -22) + spark(BASE_VD, 'estímulo', -60, -18)
