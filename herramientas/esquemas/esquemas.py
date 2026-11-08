@@ -454,15 +454,33 @@ F['diff'] = {'grid': ([[
      + box('ΔVA > 20', 'nodo (TRNAV)', False),
      'El VA desde la base es más largo que desde el ápex:|ΔVA (base − ápex) > 20 ms.')]], LEG)}
 
-F['vai'] = (
-    ('A. Índice VA > +10 (vía)', via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, 'base', -40, -18) + spark(APEX, 'ápex')
-     + front((242, 342), (295, 318), (313, 290), (313, 250), (330, 190)) + faint((178, 575), (260, 450), (300, 340))
-     + box('VA ápex > VA base', 'conducción por la vía'),
-     'En ritmo sinusal, desde la base el frente llega antes a la vía:|el VA desde el ápex es más largo.'),
-    ('B. Índice VA < +10 (nodo)', spark(BASE_VD, 'base', -40, -18) + spark(APEX, 'ápex')
-     + front((178, 575), (240, 470), (288, 320), (270, 262), (220, 200)) + faint((242, 345), (262, 380), (285, 330))
-     + box('VA ápex ≤ VA base', 'conducción por el nodo', False),
-     'Desde el ápex el frente entra a la red de Purkinje y sube|por el His: el VA es igual o más corto que desde la base.'), [L_EST, L_PAS, L_CS])
+F['vai'] = {'grid': ([[
+    ('A1. Vía septal: estimulando la base', via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, 'base del VD', -95, -18)
+     + front((242, 345), (290, 348), (312, 310), (316, 250), (338, 190))
+     + note(40, 120, 'ritmo sinusal (sin taquicardia):|la base está al lado de la vía,|el frente llega enseguida a la A', ORANGE)
+     + intbar(395, 590, [('VA base', ORANGE, 55, 0)], True, '')
+     + box('VA desde la base', 'corto', False),
+     'Estimulando la base el frente entra a la vía|casi sin recorrer ventrículo.'),
+    ('A2. Vía septal: estimulando el ápex', via(SEPT, 'vía septal', 14, -22) + spark(APEX, 'ápex del VD', -60, 35)
+     + front((180, 575), (250, 470), (296, 390), (312, 330), (316, 255), (338, 190))
+     + note(40, 120, 'desde el ápex el frente recorre|el V hasta la vía: tarda más', '#ad1457')
+     + intbar(395, 590, [('VA base', ORANGE, 55, 0), ('VA ápex', '#ad1457', 85, 0)], True, 'Índice VA > +10', 'índice = ápex − base')
+     + box('Índice VA > +10', 'conducción por la vía'),
+     'El VA desde el ápex es más largo que desde la base:|índice VA (ápex − base) > +10 ms.')],
+    [('B1. Nodo: estimulando la base', spark(BASE_VD, 'base del VD', -95, -18)
+     + front((236, 350), (205, 410), (185, 465), (174, 500))
+     + front((176, 512), (210, 516), (240, 500), (270, 450), (285, 380), (291, 320), (272, 268), (230, 200))
+     + note(40, 120, '1. el frente baja por el miocardio|hasta la punta del VD|2. entra a la RD por su parte distal|y sube por el His y el nodo', ORANGE)
+     + note(96, 548, 'entrada distal a la RD', ORANGE)
+     + intbar(395, 590, [('VA base', ORANGE, 120, 0)], True, '')
+     + box('VA desde la base', 'largo', False),
+     'Sin vía, la A solo se activa por el nodo: desde la base|el frente recorre toda la RD antes de subir.'),
+    ('B2. Nodo: estimulando el ápex', spark(APEX, 'ápex del VD', -60, 35)
+     + front((168, 578), (172, 520), (210, 516), (240, 500), (270, 450), (285, 380), (291, 320), (272, 268), (230, 200))
+     + note(40, 120, 'el ápex está al lado de la RD distal:|el frente entra enseguida y sube por el His', '#ad1457')
+     + intbar(395, 590, [('VA base', ORANGE, 120, 0), ('VA ápex', '#ad1457', 85, 0)], False, 'Índice VA ≤ +10', 'índice = ápex − base')
+     + box('Índice VA ≤ +10', 'conducción por el nodo', False),
+     'El VA desde el ápex es igual o más corto que desde la base:|índice VA (ápex − base) ≤ +10 ms.')]], [L_EST, L_CS])}
 
 F['ehr'] = (
     ('A. TRAV por vía septal', TRAV_S + via(SEPT, 'vía posteroseptal', 14, -16) + spark(APEX, 'EV (ápex del VD)')
