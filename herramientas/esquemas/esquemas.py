@@ -281,15 +281,17 @@ LOOP_TRAV = (f'<path d="{smooth([(250, 348), (296, 352), (318, 318), (316, 262),
              f'stroke="{BLUE}" stroke-width="4" fill="none" marker-end="url(#ab)"/>')
 
 F['ppi'] = {'grid': ([[
-    ('A1. TRAV: durante el encarrilamiento', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, 'estímulo en el VD', -120, -20)
-     + front((240, 345), (275, 345), (300, 345))
-     + note(40, 120, 'el V es parte del circuito:|cada estímulo entra directo al circuito', ORANGE)
+    ('A1. TRAV: durante el encarrilamiento', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(APEX, 'estímulo en el VD', -60, 35)
+     + front((180, 575), (250, 470), (292, 395), (304, 360))
+     + note(40, 120, 'el V es parte del circuito: el frente|llega por el miocardio y entra al circuito', ORANGE)
      + box('Encarrilada', 'la TSV sigue a la LC estimulada', False),
-     'Estimulo el VD algo más rápido que la TSV:|el estímulo entra al circuito sin trayecto extra.'),
-    ('A2. TRAV: al cortar (retorno)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, None)
+     'Estimulo el VD algo más rápido que la TSV:|el frente entra al circuito por el ventrículo.'),
+    ('A2. TRAV: al cortar (retorno)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(APEX, None)
+     + faint((180, 575), (250, 470), (292, 395), (300, 362))
      + LOOP_TRAV
-     + note(40, 120, 'el retorno es una sola vuelta|al circuito: V → vía → A → nodo → V', BLUE)
-     + ppibar(395, 590, 6, True, 'PPI − LC < 115')
+     + f'<path d="{smooth([(262, 345), (240, 420), (210, 500), (186, 566)])}" stroke="{ORANGE}" stroke-width="4" fill="none" marker-end="url(#ao)"/>'
+     + note(40, 120, 'el retorno es una vuelta al circuito|(V → vía → A → nodo → V) más una ida|y vuelta corta por el miocardio del VD', BLUE)
+     + ppibar(395, 590, 15, True, 'PPI − LC < 115')
      + box('PPI − LC < 115', 'el V está en el circuito'),
      'El primer latido de retorno tarda lo mismo que una vuelta|del circuito: PPI ≈ LC.')],
     [('B1. TRNAV: durante el encarrilamiento', TRNAV + spark(APEX, 'estímulo en el VD', -60, 35)
@@ -308,8 +310,8 @@ F['ppi'] = {'grid': ([[
      'El retorno suma la ida y la vuelta entre el VD y el nodo|a la vuelta del circuito: PPI mucho mayor que la LC.')]], LEG)}
 
 F['sava'] = (
-    ('A. SA − VA corto (TRAV)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, 'VD', -30, -20)
-     + front((240, 345), (290, 330), (313, 300), (313, 255), (330, 190)) + note(345, 230, 'S→A por la vía:|igual que en la TSV', ORANGE)
+    ('A. SA − VA corto (TRAV)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(APEX, 'VD')
+     + front((180, 575), (250, 470), (296, 390), (312, 330), (313, 260), (330, 190)) + note(345, 230, 'S→A por la vía:|igual que en la TSV', ORANGE)
      + box('SA − VA < 85', 'vía en el circuito'),
      'Estimulando el V, la A llega por la misma vía que en la TSV:|el SA es apenas mayor que el VA.'),
     ('B. SA − VA largo (TRNAV)', TRNAV + spark(APEX, 'VD') + front((175, 575), (255, 430), (290, 320), (270, 270), (230, 200))
@@ -326,8 +328,8 @@ F['dha'] = (
      'En la TSV His y A salen en paralelo del nodo (HA corto);|estimulando el V se activan en serie: el HA se alarga.'), LEG)
 
 F['hisorto'] = (
-    ('A. His ortodrómico (vía en el circuito)', TRAV_S + via(SEPT, 'vía', 14, -22) + spark(BASE_VD, 'VD', -30, -20)
-     + front((240, 345), (300, 330), (313, 290), (313, 255)) + front((300, 236), (276, 246), (284, 280), (292, 304))
+    ('A. His ortodrómico (vía en el circuito)', TRAV_S + via(SEPT, 'vía', 14, -22) + spark(APEX, 'VD')
+     + front((180, 575), (250, 470), (296, 390), (312, 330), (313, 255)) + front((300, 236), (276, 246), (284, 280), (292, 304))
      + note(330, 420, 'el His se activa desde arriba,|como en la TSV', ORANGE) + box('His ortodrómico', 'vía que participa'),
      'El frente sube por la vía, pasa por la aurícula y baja|al His en sentido anterógrado: el V está en el circuito.'),
     ('B. His antidrómico (TRNAV)', TRNAV + spark(APEX, 'VD') + front((175, 575), (255, 430), (290, 330), (286, 280))
