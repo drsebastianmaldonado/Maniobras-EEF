@@ -778,7 +778,7 @@ def p1p2(x, y):
          '<text x="-30" y="44" font-size="9.5" font-weight="700" fill="#6d4c41">dist</text>')
     ys = [-12 + 17 * i for i in range(4)]
     p1 = [(52 + 16 * i, ys[i]) for i in range(3)]            # canales 1-3
-    p2 = [(104 + 16 * k, ys[3 - k]) for k in range(3)]       # canales 4 → 2
+    p2 = [(136 + 5 * k, ys[3 - k]) for k in range(3)]        # canales 4 → 2, progresión sutil y presistólica
     for yy in ys:
         s += (f'<line x1="0" y1="{yy}" x2="182" y2="{yy}" stroke="#eeeeee"/>'
               f'<rect x="6" y="{yy - 6}" width="10" height="12" rx="2" fill="#6d4c41"/><rect x="164" y="{yy - 6}" width="10" height="12" rx="2" fill="#6d4c41"/>')
@@ -789,7 +789,7 @@ def p1p2(x, y):
     s += (f'<path d="M{p1[0][0]},{p1[0][1]} L{p1[2][0]},{p1[2][1]} L{p2[0][0]},{p2[0][1]}" stroke="#1565c0" stroke-width="1.4" stroke-dasharray="3 2" fill="none"/>'
           f'<path d="M{p2[0][0]},{p2[0][1]} L{p2[2][0]},{p2[2][1]}" stroke="{ORANGE}" stroke-width="1.4" stroke-dasharray="3 2" fill="none" marker-end="url(#ao)"/>'
           f'<text x="40" y="57" font-size="9.5" fill="#1565c0" font-weight="700">P1: prox → dist</text>'
-          f'<text x="112" y="-18" font-size="9.5" fill="{ORANGE}" font-weight="700">P2: dist → prox</text>'
+          f'<text x="158" y="-18" font-size="9.5" text-anchor="end" fill="{ORANGE}" font-weight="700">P2: dist → prox</text>'
           '<text x="11" y="57" font-size="9" text-anchor="middle" fill="#6d4c41">QRS</text><text x="169" y="57" font-size="9" text-anchor="middle" fill="#6d4c41">QRS</text>')
     return s + '</g>'
 
