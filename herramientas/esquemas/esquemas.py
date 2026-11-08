@@ -227,7 +227,7 @@ def ladder(x, y, after, tag, ok):
         else:
             s += (f'<g transform="translate({ax},0)"><path d="M0,-7 L2,-2 L7,-2 L3,1 L5,6 L0,3 L-5,6 L-3,1 L-7,-2 L-2,-2 Z" fill="#fdd835" stroke="#c62828"/></g>'
                   f'<line x1="{ax}" y1="0" x2="{vx}" y2="40" stroke="{BLUE}" stroke-width="2.4"/>')
-    s += f'<text x="140" y="-12" font-size="13" font-weight="700" text-anchor="middle" fill="{c}">{tag}</text></g>'
+    s += f'<text x="140" y="-12" font-size="13" font-weight="700" text-anchor="middle" fill="{c}">{E(tag)}</text></g>'
     return s
 
 
@@ -262,15 +262,50 @@ F['vop'] = {'grid': ([[
      + box('A-A-V', 'taquicardia auricular', 'warn'),
      'Después de la última A arrastrada el foco dispara|otra A antes del V: respuesta A-A-V.')]], LEG)}
 
-F['ppi'] = (
-    ('A. PPI−LC corto (TRAV)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, 'VD', -30, -20)
-     + front((240, 345), (275, 340), (300, 340)) + note(330, 420, 'el sitio está en el circuito:|vuelve enseguida', ORANGE)
+def ppibar(x, y, extra, ok, tag):
+    """Barras LC vs PPI: el PPI es una vuelta al circuito más el trayecto de ida y vuelta."""
+    c = GREEN if ok else '#e65100'
+    s = (f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
+         f'<text x="-28" y="4" font-size="11" font-weight="700" fill="{BLUE}">LC</text>'
+         f'<rect x="0" y="-6" width="100" height="12" rx="3" fill="{BLUE}" opacity=".8"/>'
+         f'<text x="-28" y="38" font-size="11" font-weight="700" fill="{ORANGE}">PPI</text>'
+         f'<rect x="0" y="28" width="100" height="12" rx="3" fill="{BLUE}" opacity=".8"/>')
+    if extra:
+        s += (f'<rect x="100" y="28" width="{extra}" height="12" rx="3" fill="{ORANGE}"/>'
+              f'<text x="{100 + extra / 2}" y="58" font-size="10" text-anchor="middle" fill="{ORANGE}">ida + vuelta</text>')
+    s += f'<text x="94" y="-14" font-size="12.5" font-weight="700" text-anchor="middle" fill="{c}">{E(tag)}</text></g>'
+    return s
+
+
+LOOP_TRAV = (f'<path d="{smooth([(250, 348), (296, 352), (318, 318), (316, 262), (292, 236), (262, 244), (270, 300), (262, 336)])}" '
+             f'stroke="{BLUE}" stroke-width="4" fill="none" marker-end="url(#ab)"/>')
+
+F['ppi'] = {'grid': ([[
+    ('A1. TRAV: durante el encarrilamiento', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, 'estímulo en el VD', -120, -20)
+     + front((240, 345), (275, 345), (300, 345))
+     + note(40, 120, 'el V es parte del circuito:|cada estímulo entra directo al circuito', ORANGE)
+     + box('Encarrilada', 'la TSV sigue a la LC estimulada', False),
+     'Estimulo el VD algo más rápido que la TSV:|el estímulo entra al circuito sin trayecto extra.'),
+    ('A2. TRAV: al cortar (retorno)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, None)
+     + LOOP_TRAV
+     + note(40, 120, 'el retorno es una sola vuelta|al circuito: V → vía → A → nodo → V', BLUE)
+     + ppibar(395, 590, 6, True, 'PPI − LC < 115')
      + box('PPI − LC < 115', 'el V está en el circuito'),
-     'El ventrículo es parte del circuito: el frente estimulado|entra y sale sin trayecto extra (PPI ≈ LC).'),
-    ('B. PPI−LC largo (TRNAV)', TRNAV + spark(APEX, 'VD') + front((175, 575), (255, 430), (288, 320), (280, 275))
-     + faint((260, 280), (240, 400), (182, 560)) + note(330, 420, 'ida y vuelta por el|sistema de conducción', ORANGE)
-     + box('PPI − LC > 115', 'el V está lejos', False),
-     'El frente tiene que subir al nodo y volver al ventrículo:|el retorno suma dos veces ese trayecto.'), LEG)
+     'El primer latido de retorno tarda lo mismo que una vuelta|del circuito: PPI ≈ LC.')],
+    [('B1. TRNAV: durante el encarrilamiento', TRNAV + spark(APEX, 'estímulo en el VD', -60, 35)
+     + front((175, 575), (255, 430), (288, 320), (280, 275))
+     + note(40, 120, 'el V está fuera del circuito:|el frente sube por el His hasta el nodo', ORANGE)
+     + box('Encarrilada', 'la TSV sigue a la LC estimulada', False),
+     'El estímulo tiene que recorrer el V y el His|para llegar al circuito en el nodo.'),
+    ('B2. TRNAV: al cortar (retorno)', TRNAV + spark(APEX, None)
+     + faint((175, 575), (255, 430), (285, 320), (276, 280))
+     + note(40, 120, '1. ida: VD → His → nodo', '#546e7a')
+     + note(40, 150, '2. una vuelta al circuito', BLUE)
+     + f'<path d="{smooth([(296, 300), (300, 420), (250, 520), (192, 572)])}" stroke="{ORANGE}" stroke-width="4" fill="none" marker-end="url(#ao)"/>'
+     + note(300, 470, '3. vuelta: nodo → His → VD', ORANGE)
+     + ppibar(395, 590, 60, False, 'PPI − LC > 115')
+     + box('PPI − LC > 115', 'el V está lejos del circuito', False),
+     'El retorno suma la ida y la vuelta entre el VD y el nodo|a la vuelta del circuito: PPI mucho mayor que la LC.')]], LEG)}
 
 F['sava'] = (
     ('A. SA − VA corto (TRAV)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, 'VD', -30, -20)
