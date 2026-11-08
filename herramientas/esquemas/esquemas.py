@@ -623,15 +623,33 @@ F['aop'] = {'grid': ([[
      'El V no tiene cómo activar la A: el VA del primer latido|es distinto al de la TSV y cambia entre intentos.')]], LEG)}
 
 MAHAIM = '<path d="M104,292 C120,360 142,440 172,505" stroke="#7e57c2" stroke-width="5" fill="none" stroke-linecap="round" opacity=".9"/>'
-F['preex'] = (
-    ('A. EA desde la pared libre del AD', MAHAIM + note(150, 330, 'vía atriofascicular', PURPLE) + spark(ADLAT, 'EA (AD lateral)', -60, -22)
-     + front((82, 215), (100, 285), (128, 390), (168, 495)) + xmark(HIS, 'unión refractaria')
-     + box('V adelantado', 'mismo QRS: Mahaim'),
-     'El EA entra por la vía atriofascicular (AD lateral)|y adelanta el V aun con la unión refractaria.'),
-    ('B. EA desde el septum', MAHAIM + spark(CSOS, 'EA (septum)', -140, 40)
-     + front((240, 270), (262, 268), (282, 290)) + xmark(HIS, 'unión refractaria')
-     + box('V sin cambio', 'el septum está lejos de la vía', False),
-     'Desde el septum el EA choca con la unión refractaria|y no llega a la vía: el V no cambia.'), LEG)
+KENT_D = (88, 300)   # vía lateral derecha (Kent)
+F['preex'] = {'grid': ([[
+    ('A1. Mahaim: EA desde la AD lateral, LC lenta', MAHAIM + note(150, 330, 'vía atriofascicular', PURPLE) + spark(ADLAT, 'EA (AD lateral)', -60, -22)
+     + front((82, 215), (100, 285), (128, 390), (168, 495)) + faint((95, 210), (200, 240), (262, 258), (288, 300))
+     + note(40, 560, 'el EA baja por la vía hasta la RD distal:|QRS preexcitado tipo BRI', ORANGE)
+     + intbar(395, 590, [('lenta', ORANGE, 60, 0)], True, '')
+     + box('Preexcitación', 'S-delta largo', False),
+     'Estimulando la AD lateral (cerca de la vía) el impulso|baja por la vía atriofascicular: QRS tipo BRI.'),
+    ('A2. Mahaim: misma AD lateral, LC más rápida', MAHAIM + note(150, 330, 'vía atriofascicular', PURPLE) + spark(ADLAT, 'EA (AD lateral)', -60, -22)
+     + f'<path d="{wavy((100, 285), (118, 360), (140, 440), (168, 495), 3, 6)}" stroke="{ORANGE}" stroke-width="3.6" fill="none"/>'
+     + front((82, 215), (96, 270)) + faint((95, 210), (200, 240), (262, 258), (288, 300))
+     + note(40, 560, 'la vía decrementa (como el nodo): el S-delta|se alarga y la preexcitación se hace máxima', ORANGE)
+     + intbar(395, 590, [('lenta', ORANGE, 60, 0), ('rápida', '#ad1457', 115, 0)], True, 'decremental', 'S-delta se alarga')
+     + box('S-delta se alarga', 'vía decremental (Mahaim)'),
+     'Al acelerar, el S-delta se alarga: la vía atriofascicular|conduce en forma decremental.')],
+    [('B1. Vía rápida: EA desde la AD lateral, LC lenta', via(KENT_D, 'vía lateral derecha', 14, -24) + spark(ADLAT, 'EA (AD lateral)', -60, -22)
+     + front((82, 215), (88, 286)) + front((90, 316), (104, 380), (130, 440)) + faint((95, 210), (200, 240), (262, 258), (288, 300))
+     + note(40, 560, 'el EA cruza la vía y activa enseguida|la pared libre del VD', ORANGE)
+     + intbar(395, 590, [('lenta', ORANGE, 30, 0)], True, '')
+     + box('Preexcitación', 'S-delta corto', False),
+     'Mismo sitio: el impulso cruza la vía (tipo Kent)|y preexcita el VD.'),
+    ('B2. Vía rápida: misma AD lateral, LC más rápida', via(KENT_D, 'vía lateral derecha', 14, -24) + spark(ADLAT, 'EA (AD lateral)', -60, -22)
+     + front((82, 215), (88, 286)) + front((90, 316), (104, 380), (130, 440)) + faint((95, 210), (200, 240), (262, 258), (288, 300))
+     + note(40, 560, 'la vía no decrementa: el S-delta no cambia', ORANGE)
+     + intbar(395, 590, [('lenta', ORANGE, 30, 0), ('rápida', '#ad1457', 31, 0)], False, 'no decremental')
+     + box('S-delta fijo', 'vía rápida (no Mahaim)', False),
+     'Al acelerar, el S-delta queda igual: la vía conduce|en forma no decremental.')]], [L_EST, L_PAS, L_CS])}
 
 F['eha'] = (
     ('A. TRNAV: modifica el His', TRNAV + spark(CSOS, 'EA (ostium del SC)', -110, 40) + front((236, 272), (246, 280), (262, 272))
