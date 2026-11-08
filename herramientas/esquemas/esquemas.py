@@ -262,19 +262,35 @@ F['vop'] = {'grid': ([[
      + box('A-A-V', 'taquicardia auricular', 'warn'),
      'Después de la última A arrastrada el foco dispara|otra A antes del V: respuesta A-A-V.')]], LEG)}
 
-def ppibar(x, y, extra, ok, tag):
-    """Barras LC vs PPI: el PPI es una vuelta al circuito más el trayecto de ida y vuelta."""
+def intbar(x, y, rows, ok, tag, extra_label=''):
+    """Barras de intervalos, cada una de un solo color con su largo total.
+    rows = [(rótulo, color, base, extra)]: largo = base + extra.
+    Con dos filas marca la diferencia entre las dos con líneas punteadas y un corchete."""
     c = GREEN if ok else '#e65100'
-    s = (f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
-         f'<text x="-28" y="4" font-size="11" font-weight="700" fill="{BLUE}">LC</text>'
-         f'<rect x="0" y="-6" width="100" height="12" rx="3" fill="{BLUE}" opacity=".8"/>'
-         f'<text x="-28" y="38" font-size="11" font-weight="700" fill="{ORANGE}">PPI</text>'
-         f'<rect x="0" y="28" width="100" height="12" rx="3" fill="{BLUE}" opacity=".8"/>')
-    if extra:
-        s += (f'<rect x="100" y="28" width="{extra}" height="12" rx="3" fill="{ORANGE}"/>'
-              f'<text x="{100 + extra / 2}" y="58" font-size="10" text-anchor="middle" fill="{ORANGE}">ida + vuelta</text>')
-    s += f'<text x="94" y="-14" font-size="12.5" font-weight="700" text-anchor="middle" fill="{c}">{E(tag)}</text></g>'
-    return s
+    s = f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
+    ends = []
+    for i, (lab, col, base, extra) in enumerate(rows):
+        yy = -6 + 34 * i
+        L = base + extra
+        ends.append(22 + L)
+        s += (f'<text x="-28" y="{yy + 10}" font-size="10" font-weight="700" fill="{col}">{E(lab)}</text>'
+              f'<rect x="22" y="{yy}" width="{L}" height="12" rx="3" fill="{col}" opacity=".85"/>')
+    if len(ends) == 2 and abs(ends[0] - ends[1]) > 3:
+        a, b = sorted(ends)
+        s += (f'<line x1="{ends[0]}" y1="-8" x2="{ends[0]}" y2="44" stroke="#616161" stroke-dasharray="3 3"/>'
+              f'<path d="M{a},48 v4 H{b} v-4" stroke="#616161" fill="none"/>'
+              f'<text x="{min((a + b) / 2, 105)}" y="64" font-size="10" text-anchor="middle" fill="#424242">{E(extra_label)}</text>')
+    if tag:
+        s += f'<text x="94" y="-14" font-size="12.5" font-weight="700" text-anchor="middle" fill="{c}">{E(tag)}</text>'
+    return s + '</g>'
+
+
+def solid(pts, color=BLUE, mk='ab'):
+    return f'<path d="{smooth(pts)}" stroke="{color}" stroke-width="4" fill="none" marker-end="url(#{mk})"/>'
+
+
+def ppibar(x, y, extra, ok, tag):
+    return intbar(x, y, [('LC', BLUE, 100, 0), ('PPI', ORANGE, 100, extra)], ok, tag, 'PPI − LC: ida + vuelta')
 
 
 LOOP_TRAV = (f'<path d="{smooth([(250, 348), (296, 352), (318, 318), (316, 262), (292, 236), (262, 244), (270, 300), (262, 336)])}" '
@@ -309,27 +325,6 @@ F['ppi'] = {'grid': ([[
      + box('PPI − LC > 115', 'el V está lejos del circuito', False),
      'El retorno suma la ida y la vuelta entre el VD y el nodo|a la vuelta del circuito: PPI mucho mayor que la LC.')]], LEG)}
 
-def intbar(x, y, rows, ok, tag, extra_label=''):
-    """Barras de intervalos: rows = [(rótulo, color, base, extra)]."""
-    c = GREEN if ok else '#e65100'
-    s = f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
-    for i, (lab, col, base, extra) in enumerate(rows):
-        yy = -6 + 34 * i
-        s += (f'<text x="-28" y="{yy + 10}" font-size="10" font-weight="700" fill="{col}">{E(lab)}</text>'
-              f'<rect x="22" y="{yy}" width="{base}" height="12" rx="3" fill="{BLUE}" opacity=".8"/>')
-        if extra:
-            s += f'<rect x="{22 + base}" y="{yy}" width="{extra}" height="12" rx="3" fill="{ORANGE}"/>'
-            if extra_label:
-                s += f'<text x="{22 + base + extra / 2}" y="{yy + 30}" font-size="10" text-anchor="middle" fill="{ORANGE}">{E(extra_label)}</text>'
-    if tag:
-        s += f'<text x="94" y="-14" font-size="12.5" font-weight="700" text-anchor="middle" fill="{c}">{E(tag)}</text>'
-    return s + '</g>'
-
-
-def solid(pts, color=BLUE, mk='ab'):
-    return f'<path d="{smooth(pts)}" stroke="{color}" stroke-width="4" fill="none" marker-end="url(#{mk})"/>'
-
-
 F['sava'] = {'grid': ([[
     ('A1. TRAV: en taquicardia (VA)', TRAV_S + via(SEPT, 'vía septal', 14, -22)
      + solid([(306, 352), (314, 300), (318, 240), (340, 190)])
@@ -340,7 +335,7 @@ F['sava'] = {'grid': ([[
     ('A2. TRAV: estimulando el VD (SA)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(APEX, 'estímulo en el VD', -60, 35)
      + front((180, 575), (250, 470), (296, 390), (312, 330), (316, 260), (338, 190))
      + note(40, 120, 'SA: ápex → miocardio → vía → A|es el mismo camino que en la TSV|más el trayecto ápex → base', ORANGE)
-     + intbar(395, 590, [('VA', BLUE, 70, 0), ('SA', ORANGE, 70, 25)], True, 'SA − VA < 85', 'ápex → base')
+     + intbar(395, 590, [('VA', BLUE, 70, 0), ('SA', ORANGE, 70, 25)], True, 'SA − VA < 85', 'SA − VA: ápex → base')
      + box('SA − VA < 85', 'vía en el circuito'),
      'Estimulando el V la A llega por la misma vía:|el SA es apenas mayor que el VA.')],
     [('B1. TRNAV: en taquicardia (VA)', TRNAV
@@ -352,7 +347,7 @@ F['sava'] = {'grid': ([[
     ('B2. TRNAV: estimulando el VD (SA)', TRNAV + spark(APEX, 'estímulo en el VD', -60, 35)
      + front((175, 575), (255, 430), (290, 320), (270, 270), (230, 200))
      + note(40, 120, 'SA: ápex → His → nodo → A|ahora la A se activa en serie', ORANGE)
-     + intbar(395, 590, [('VA', BLUE, 20, 0), ('SA', ORANGE, 20, 120)], False, 'SA − VA > 85', 'ápex → His → nodo')
+     + intbar(395, 590, [('VA', BLUE, 20, 0), ('SA', ORANGE, 20, 120)], False, 'SA − VA > 85', 'SA − VA: ápex → His → nodo')
      + box('SA − VA > 85', 'TRNAV', False),
      'Estimulando el V la A espera el ascenso por el His y el nodo:|el SA es mucho mayor que el VA.')]], LEG)}
 
@@ -367,7 +362,7 @@ F['dha'] = {'grid': ([[
      + front((180, 575), (250, 470), (296, 390), (312, 330), (316, 260), (338, 190))
      + front((182, 560), (240, 450), (275, 370), (288, 318))
      + note(40, 120, 'desde el V el frente llega al His|y a la vía a la vez: en paralelo', ORANGE)
-     + intbar(395, 590, [('HA TSV', BLUE, 110, 0), ('HA est.', ORANGE, 45, 0)], True, 'ΔHA < 0')
+     + intbar(395, 590, [('HA TSV', BLUE, 110, 0), ('HA est.', ORANGE, 45, 0)], True, 'ΔHA < 0', 'ΔHA: se acorta')
      + box('ΔHA < 0', 'HA estimulado más corto'),
      'Estimulando el V, His y A se activan en paralelo:|el HA se acorta (ΔHA negativo).')],
     [('B1. TRNAV: en taquicardia (HA)', TRNAV
@@ -379,7 +374,7 @@ F['dha'] = {'grid': ([[
     ('B2. TRNAV: estimulando el VD (HA)', TRNAV + spark(APEX, 'estímulo en el VD', -60, 35)
      + front((175, 575), (255, 430), (290, 320), (270, 268), (230, 200))
      + note(40, 120, 'estimulando: primero el His,|después el nodo y la A (en serie)', ORANGE)
-     + intbar(395, 590, [('HA TSV', BLUE, 30, 0), ('HA est.', ORANGE, 30, 80)], False, 'ΔHA > 0', 'His → nodo → A')
+     + intbar(395, 590, [('HA TSV', BLUE, 30, 0), ('HA est.', ORANGE, 110, 0)], False, 'ΔHA > 0', 'ΔHA: se alarga')
      + box('ΔHA > 0', 'HA estimulado más largo', False),
      'Estimulando el V, el His y la A se activan en serie:|el HA se alarga (ΔHA positivo).')]], LEG)}
 
