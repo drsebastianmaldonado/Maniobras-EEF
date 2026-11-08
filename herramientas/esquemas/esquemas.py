@@ -769,24 +769,25 @@ F['twin'] = (
      + box('Reentrada', 'baja por uno, sube por el otro'),
      'El circuito baja por un sistema de conducción y sube|por el otro (taquicardia por nodos gemelos).', ('sin_nodo',)), [L_TSV, L_CS])
 
-TVFP = circ((330, 420), (360, 470), (395, 515)) + circ((405, 530), (380, 470), (345, 430))
+TVFP = circ((330, 420), (360, 470), (395, 515)) + circ((410, 532), (442, 492), (425, 440), (365, 418))
 def p1p2(x, y):
     """Mini registro del catéter septal: P1 mesodiastólico (prox → dist) y P2 presistólico (dist → prox)."""
     s = (f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
          '<text x="-30" y="-10" font-size="9.5" font-weight="700" fill="#6d4c41">prox</text>'
          '<text x="-30" y="44" font-size="9.5" font-weight="700" fill="#6d4c41">dist</text>')
+    p1 = [(56 + 14 * i, -12 + 17 * i) for i in range(4)]
+    p2 = [(138 - 14 * i, -12 + 17 * i) for i in range(4)]
     for i in range(4):
         yy = -12 + 17 * i
-        s += f'<line x1="0" y1="{yy}" x2="182" y2="{yy}" stroke="#eeeeee"/>'
-        s += f'<rect x="{6}" y="{yy - 6}" width="10" height="12" rx="2" fill="#6d4c41"/><rect x="{160}" y="{yy - 6}" width="10" height="12" rx="2" fill="#6d4c41"/>'
-        p1x = 60 + 12 * i
-        p2x = 134 - 10 * i
-        s += (f'<line x1="{p1x}" y1="{yy - 5}" x2="{p1x}" y2="{yy + 5}" stroke="#1565c0" stroke-width="2.5"/>'
-              f'<line x1="{p2x}" y1="{yy - 5}" x2="{p2x}" y2="{yy + 5}" stroke="{ORANGE}" stroke-width="2.5"/>')
-    s += (f'<text x="78" y="56" font-size="9.5" text-anchor="middle" fill="#1565c0" font-weight="700">P1 ↓</text>'
-          f'<text x="120" y="56" font-size="9.5" text-anchor="middle" fill="{ORANGE}" font-weight="700">P2 ↑</text>'
-          '<text x="11" y="56" font-size="9" text-anchor="middle" fill="#6d4c41">QRS</text><text x="165" y="56" font-size="9" text-anchor="middle" fill="#6d4c41">QRS</text>'
-          )
+        s += (f'<line x1="0" y1="{yy}" x2="182" y2="{yy}" stroke="#eeeeee"/>'
+              f'<rect x="6" y="{yy - 6}" width="10" height="12" rx="2" fill="#6d4c41"/><rect x="164" y="{yy - 6}" width="10" height="12" rx="2" fill="#6d4c41"/>'
+              f'<line x1="{p1[i][0]}" y1="{yy - 5}" x2="{p1[i][0]}" y2="{yy + 5}" stroke="#1565c0" stroke-width="2.5"/>'
+              f'<line x1="{p2[i][0]}" y1="{yy - 5}" x2="{p2[i][0]}" y2="{yy + 5}" stroke="{ORANGE}" stroke-width="2.5"/>')
+    s += (f'<path d="M{p1[0][0] - 6},{p1[0][1] - 3} L{p1[3][0] - 6},{p1[3][1] + 3}" stroke="#1565c0" stroke-width="1.4" stroke-dasharray="3 2" marker-end="url(#ab)"/>'
+          f'<path d="M{p2[3][0] + 6},{p2[3][1] + 3} L{p2[0][0] + 6},{p2[0][1] - 3}" stroke="{ORANGE}" stroke-width="1.4" stroke-dasharray="3 2" marker-end="url(#ao)"/>'
+          f'<text x="80" y="57" font-size="9.5" text-anchor="middle" fill="#1565c0" font-weight="700">P1: prox → dist</text>'
+          f'<text x="80" y="-18" font-size="9.5" text-anchor="start" fill="{ORANGE}" font-weight="700">P2: dist → prox</text>'
+          '<text x="11" y="57" font-size="9" text-anchor="middle" fill="#6d4c41">QRS</text><text x="169" y="57" font-size="9" text-anchor="middle" fill="#6d4c41">QRS</text>')
     return s + '</g>'
 
 
@@ -794,7 +795,7 @@ CATH = ('<path d="M318,400 L418,532" stroke="#455a64" stroke-width="4" stroke-li
         + ''.join(f'<rect x="{318 + 25 * i - 4}" y="{400 + 33 * i - 4}" width="8" height="8" fill="#212121"/>' for i in range(5)))
 USC = circ((300, 315), (318, 345), (330, 330)) + circ((322, 318), (308, 300))
 F['tvf'] = {'grid': ([[
-    ('A1. TV fascicular posterior: el circuito', TVFP + note(410, 470, 'P1 baja por|tejido de Purkinje|anómalo', BLUE) + note(310, 470, 'P2: sube por el|fascículo posterior', BLUE, 'end')
+    ('A1. TV fascicular posterior: el circuito', TVFP + note(448, 470, 'P2: sube|por el|fascículo|posterior', BLUE) + note(325, 470, 'P1 baja por|tejido de Purkinje|anómalo', BLUE, 'end')
      + front((400, 530), (430, 560), (470, 540))
      + note(40, 120, 'reentrada entre el fascículo posterior y|tejido de Purkinje anómalo (P1, decremental|y sensible al verapamilo); sale por el septum|inferior: BRD + eje superior', BLUE)
      + box('BRD + eje superior', 'verapamilo la termina', False),
