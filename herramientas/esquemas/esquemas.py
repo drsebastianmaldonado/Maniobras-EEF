@@ -538,15 +538,33 @@ F['ehr'] = {'grid': ([[
      + box('A sin cambio', 'no hay vía', False),
      'Sin vía el EV no tiene por dónde llegar a la A:|la A siguiente sale a su tiempo.')]], LEG)}
 
-F['parahis'] = (
-    ('A. Respuesta nodal', spark((300, 320), 'para-Hisiana', 10, 0) + front((296, 316), (288, 290), (270, 262), (220, 200))
-     + faint((304, 330), (360, 430), (420, 470)) + note(330, 380, 'con captura del His: SA corto|sin captura: SA se alarga', ORANGE)
-     + box('SA se alarga', 'al perder el His: nodo', False),
-     'La conducción retrógrada depende del His: al perder|la captura del His, el SA se alarga (≥ el aumento del SH).'),
-    ('B. Respuesta extranodal', via(SEPT, 'vía septal', 14, -22) + spark((300, 320), 'para-Hisiana', 10, 22)
-     + front((305, 312), (313, 290), (313, 255), (330, 190)) + note(330, 150, 'SA igual con y|sin captura del His', ORANGE)
-     + box('SA no cambia', 'al perder el His: vía'),
-     'El miocardio septal llega a la vía igual con o sin el His:|el SA no cambia (vía septal).'), [L_EST, L_PAS, L_CS])
+PH = (300, 322)   # catéter para-Hisiano
+F['parahis'] = {'grid': ([[
+    ('A1. Nodal: con captura del His', spark(PH, 'alta salida: His + V', 12, 4)
+     + front((296, 314), (288, 290), (270, 262), (220, 200)) + faint((300, 335), (296, 400), (282, 460))
+     + note(40, 120, 'captura del His (QRS angosto):|el impulso sube directo por el His|al nodo y a la A', '#00897b')
+     + intbar(395, 590, [('+ His', '#00897b', 40, 0)], True, '')
+     + box('SA corto', 'QRS angosto', False),
+     'Con alta salida se capturan el His y el V:|la A se activa enseguida por el nodo.'),
+    ('A2. Nodal: sin captura del His', spark(PH, 'baja salida: solo V', 12, 4)
+     + front((298, 338), (262, 420), (210, 480), (178, 504))
+     + front((180, 514), (212, 516), (240, 500), (270, 450), (285, 380), (291, 320), (272, 268), (230, 200))
+     + note(40, 120, '1. sin el His (QRS ancho) el frente baja|por el septum hasta la RD distal|2. entra a la RD y sube por el His al nodo', ORANGE)
+     + intbar(395, 590, [('+ His', '#00897b', 40, 0), ('− His', ORANGE, 105, 0)], False, 'SA se alarga', 'ΔSA ≥ ΔSH')
+     + box('SA se alarga', 'conducción por el nodo', False),
+     'Al perder la captura del His, la A depende del sistema|de conducción: el SA se alarga (tanto como el SH).')],
+    [('B1. Vía septal: con captura del His', via(SEPT, 'vía septal', 14, -22) + spark(PH, 'alta salida: His + V', -150, 30)
+     + front((306, 312), (313, 290), (316, 255), (338, 190)) + faint((294, 312), (284, 285), (268, 262))
+     + note(40, 120, 'el miocardio septal capturado|está al lado de la vía:|la A se activa enseguida por la vía', '#00897b')
+     + intbar(395, 590, [('+ His', '#00897b', 45, 0)], True, '')
+     + box('SA corto', 'QRS angosto', False),
+     'Con alta salida la A se activa por la vía (más rápida|que el nodo).'),
+    ('B2. Vía septal: sin captura del His', via(SEPT, 'vía septal', 14, -22) + spark(PH, 'baja salida: solo V', -150, 30)
+     + front((306, 312), (313, 290), (316, 255), (338, 190))
+     + note(40, 120, 'sin el His (QRS ancho) el miocardio|septal igual llega a la vía:|la A sale al mismo tiempo', ORANGE)
+     + intbar(395, 590, [('+ His', '#00897b', 45, 0), ('− His', ORANGE, 47, 0)], True, 'SA no cambia', '')
+     + box('SA no cambia', 'conducción por la vía'),
+     'La vía no depende del His: el SA queda igual|con y sin captura del His (respuesta extranodal).')]], [L_EST, L_PAS, L_CS])}
 
 F['aop'] = (
     ('A. VA linking (TRNAV o TRAV)', TRNAV + spark(HRA, 'sobreestimulación auricular', -60, -20)
