@@ -549,6 +549,10 @@ const M = {
       ['El ΔVA se puede calcular aunque la estimulación termine la TSV', 'Siempre que haya acelerado la aurícula', 'veen11'],
       ['Ejemplo de RP largo: PPI−LC 144 ms (sugería TRNAV) con ΔcPPI −18 y ΔVA −28', 'TRAV por vía septal lenta', 'arias10']],
     trampas: ['Captura auricular o del His desde la base: invalida la medición.', 'Vía posterior izquierda: en teoría el ápex podría estar más cerca que la base.', 'No confundir con el índice VA de Martínez-Alday, que resta al revés (ápex − base).'],
+    vs: { t: 'Diferencia con el índice VA', l: [
+      'Es el mismo fenómeno (la base está cerca de una vía septal; el ápex, cerca de la RD distal), pero el encarrilamiento diferencial se hace <b>durante la TSV</b> y el índice VA <b>en ritmo sinusal</b>.',
+      'Este dice <b>qué mecanismo tiene la taquicardia</b> (si la vía forma parte del circuito); el índice VA solo demuestra retroconducción por una vía, que puede ser espectadora.',
+      '<b>Los signos van al revés</b>: acá ΔVA = base − ápex (> 20 ms = TRNAV); en el índice VA = ápex − base (> +10 ms = vía). Un valor alto indica nodo acá y vía allá.'] },
     refs: ['segal09', 'veen11', 'arias10'] },
 
   vai: { g: 'V', t: 'Índice VA (ápex vs posterobasal)', s: 'En ritmo sinusal, sin necesidad de inducir la TSV',
@@ -558,6 +562,12 @@ const M = {
       ['Índice VA positivo (> +10 ms; rango +10 a +70)', 'Vía accesoria posteroseptal', 'ma94'],
       ['Índice VA negativo (−50 a +5 ms)', 'Conducción por el sistema normal', 'ma94']],
     trampas: ['Valores entre 0 y +10 ms: zona gris (2 pacientes sin vía tuvieron 0 y +5).', 'Vías lentas o conducción fusionada por la vía y por el nodo: limitar a vías posteroseptales.', 'Demuestra la vía, no que participe en la TSV.'],
+    vs: { t: 'Diferencia con el encarrilamiento diferencial', l: [
+      'Es el mismo fenómeno, pero el índice VA se hace <b>en ritmo sinusal</b> y el encarrilamiento diferencial <b>durante la TSV</b>.',
+      'No necesita inducir la taquicardia: sirve si no se induce o se termina enseguida, y después de la ablación para confirmar que la retroconducción pasó a ser nodal.',
+      'Demuestra retroconducción por una vía, <b>no que la vía participe en la TSV</b> (puede ser espectadora); para eso hace falta el encarrilamiento diferencial u otra maniobra en taquicardia.',
+      '<b>Los signos van al revés</b>: acá índice = ápex − base (> +10 ms = vía); en el encarrilamiento diferencial ΔVA = base − ápex (> 20 ms = TRNAV).',
+      'Rinde menos en vías alejadas del septum (p. ej., laterales izquierdas): base y ápex del VD quedan los dos lejos de la vía.'] },
     refs: ['ma94', 'veen12'] },
 
   ehr: { g: 'V', t: 'Extraestímulo ventricular con His refractario', s: 'EV-HR: la mejor maniobra para demostrar una vía accesoria',
@@ -1626,6 +1636,7 @@ function fichaHTML(id) {
   if (m.medir) h += `<div class="box"><div class="bl">Qué medir con la misma tira</div><ul>${m.medir.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
   h += `<div class="tw"><table><thead><tr><th>Hallazgo</th><th>Indica</th><th>Fuente</th></tr></thead><tbody>${m.interp.map(r => `<tr><td>${r[0]}</td><td class="dx">${r[1]}</td><td>${cite(r[2].split(' '))}</td></tr>`).join('')}</tbody></table></div>`;
   h += casosHTML(id);
+  if (m.vs) h += `<div class="box"><div class="bl">${m.vs.t}</div><ul>${m.vs.l.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
   h += `<div class="box trap"><div class="bl">Trampas y limitaciones</div><ul>${m.trampas.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
   h += `<ol class="refs">${m.refs.map(k => `<li>${REFS[k][1]}</li>`).join('')}</ol></div>`;
   return h;
