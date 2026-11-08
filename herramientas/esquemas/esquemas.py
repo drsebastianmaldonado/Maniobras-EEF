@@ -378,14 +378,53 @@ F['dha'] = {'grid': ([[
      + box('ΔHA > 0', 'HA estimulado más largo', False),
      'Estimulando el V, el His y la A se activan en serie:|el HA se alarga (ΔHA positivo).')]], LEG)}
 
-F['hisorto'] = (
-    ('A. His ortodrómico (vía en el circuito)', TRAV_S + via(SEPT, 'vía', 14, -22) + spark(APEX, 'VD')
+def hisinset(x, y, down, ok, tag):
+    """Mini catéter de His: orden de activación proximal/distal."""
+    c = GREEN if ok else '#e65100' if ok is False else '#37474f'
+    col = BLUE if ok is None else ORANGE
+    s = (f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
+         '<line x1="10" y1="-4" x2="10" y2="56" stroke="#9e9e9e" stroke-width="5" stroke-linecap="round"/>'
+         '<rect x="4" y="2" width="12" height="7" fill="#424242"/><rect x="4" y="40" width="12" height="7" fill="#424242"/>'
+         '<text x="-28" y="9" font-size="10" font-weight="700" fill="#6d4c41">His p</text>'
+         '<text x="-28" y="47" font-size="10" font-weight="700" fill="#6d4c41">His d</text>')
+    if down:
+        s += (f'<path d="M30,4 V42" stroke="{col}" stroke-width="3" marker-end="url(#{"ab" if ok is None else "ao"})"/>'
+              f'<text x="44" y="20" font-size="10.5" fill="#424242">proximal → distal</text>'
+              f'<text x="44" y="34" font-size="10.5" fill="#424242">(anterógrado)</text>')
+    else:
+        s += (f'<path d="M30,44 V6" stroke="{col}" stroke-width="3" marker-end="url(#ao)"/>'
+              f'<text x="44" y="20" font-size="10.5" fill="#424242">distal → proximal</text>'
+              f'<text x="44" y="34" font-size="10.5" fill="#424242">(retrógrado)</text>')
+    if tag:
+        s += f'<text x="94" y="-14" font-size="12.5" font-weight="700" text-anchor="middle" fill="{c}">{E(tag)}</text>'
+    return s + '</g>'
+
+
+F['hisorto'] = {'grid': ([[
+    ('A1. TRAV: en taquicardia', TRAV_S + via(SEPT, 'vía septal', 14, -22)
+     + solid([(272, 266), (286, 300), (294, 340)])
+     + note(40, 120, 'el impulso baja del nodo al His:|el His se activa de arriba hacia abajo', BLUE)
+     + hisinset(395, 590, True, None, '')
+     + box('His en la TSV', 'anterógrado', False),
+     'En la TSV el His se activa desde el nodo,|en sentido anterógrado (proximal → distal).'),
+    ('A2. TRAV: estimulando el VD', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(APEX, 'estímulo en el VD', -60, 35)
      + front((180, 575), (250, 470), (296, 390), (312, 330), (313, 255)) + front((300, 236), (276, 246), (284, 280), (292, 304))
-     + note(330, 420, 'el His se activa desde arriba,|como en la TSV', ORANGE) + box('His ortodrómico', 'vía que participa'),
-     'El frente sube por la vía, pasa por la aurícula y baja|al His en sentido anterógrado: el V está en el circuito.'),
-    ('B. His antidrómico (TRNAV)', TRNAV + spark(APEX, 'VD') + front((175, 575), (255, 430), (290, 330), (286, 280))
-     + note(330, 420, 'el His se activa desde abajo|(distal → proximal)', ORANGE) + box('His antidrómico', 'el V no está en el circuito', False),
-     'El frente estimulado sube por el sistema de conducción:|el His se activa en forma retrógrada.'), LEG)
+     + note(40, 120, 'el frente sube por la vía, pasa por la A|y baja por el nodo: el His se activa|igual que en la TSV', ORANGE)
+     + hisinset(395, 590, True, True, 'His ortodrómico')
+     + box('His ortodrómico', 'la vía participa'),
+     'El V está en el circuito: el estímulo recorre el circuito|y llega al His desde arriba, como en la TSV.')],
+    [('B1. TRNAV: en taquicardia', TRNAV
+     + solid([(276, 270), (288, 300), (296, 340)])
+     + note(40, 120, 'el impulso sale del nodo hacia el His:|el His se activa de arriba hacia abajo', BLUE)
+     + hisinset(395, 590, True, None, '')
+     + box('His en la TSV', 'anterógrado', False),
+     'En la TSV el His se activa desde el circuito en el nodo,|en sentido anterógrado (proximal → distal).'),
+    ('B2. TRNAV: estimulando el VD', TRNAV + spark(APEX, 'estímulo en el VD', -60, 35)
+     + front((175, 575), (255, 430), (290, 330), (286, 280))
+     + note(40, 120, 'el frente sube por la rama y el His|hacia el nodo: el His se activa|de abajo hacia arriba', ORANGE)
+     + hisinset(395, 590, False, False, 'His antidrómico')
+     + box('His antidrómico', 'el V no está en el circuito', False),
+     'El V está fuera del circuito: el frente llega al His desde abajo,|en sentido retrógrado (al revés que en la TSV).')]], LEG)}
 
 F['diff'] = (
     ('A. ΔVA ≤ 20 ms (TRAV septal)', TRAV_S + via(SEPT, 'vía', 14, -22) + spark(BASE_VD, 'base', -40, -18) + spark(APEX, 'ápex')
