@@ -426,15 +426,31 @@ F['hisorto'] = {'grid': ([[
      + box('His antidrómico', 'el V no está en el circuito', False),
      'El V está fuera del circuito: el frente llega al His desde abajo,|en sentido retrógrado (al revés que en la TSV).')]], LEG)}
 
-F['diff'] = (
-    ('A. ΔVA ≤ 20 ms (TRAV septal)', TRAV_S + via(SEPT, 'vía', 14, -22) + spark(BASE_VD, 'base', -40, -18) + spark(APEX, 'ápex')
-     + front((242, 342), (290, 320), (310, 300)) + front((178, 575), (260, 450), (305, 340))
-     + note(330, 420, 'desde la base la vía|está más cerca', ORANGE) + box('ΔVA ≤ 20', 'base − ápex: vía'),
-     'Desde la base el frente llega antes a la vía:|el VA desde la base es igual o más corto.'),
-    ('B. ΔVA > 20 ms (TRNAV)', TRNAV + spark(BASE_VD, 'base', -40, -18) + spark(APEX, 'ápex')
-     + front((240, 345), (262, 400), (284, 430), (290, 330)) + front((178, 575), (230, 520), (280, 420))
-     + note(330, 420, 'desde la base tarda más|en llegar al His', ORANGE) + box('ΔVA > 20', 'base − ápex: nodo', False),
-     'Desde el ápex el frente entra rápido a la red de Purkinje;|desde la base tarda más en llegar al His: VA más largo.'), LEG)
+F['diff'] = {'grid': ([[
+    ('A1. TRAV: encarrilando desde la base', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, 'base del VD', -95, -18)
+     + front((242, 345), (290, 348), (312, 310), (318, 245), (340, 190))
+     + note(40, 120, 'la base está cerca de la vía:|el frente llega enseguida a la A', ORANGE)
+     + intbar(395, 590, [('VA base', ORANGE, 55, 0)], True, '')
+     + box('VA desde la base', 'corto', False),
+     'Encarrilando desde la base el frente entra a la vía|casi sin recorrer ventrículo.'),
+    ('A2. TRAV: encarrilando desde el ápex', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(APEX, 'ápex del VD', -60, 35)
+     + front((180, 575), (250, 470), (296, 390), (312, 330), (318, 255), (340, 190))
+     + note(40, 120, 'desde el ápex el frente recorre el V|hasta la vía: tarda igual o más', '#ad1457')
+     + intbar(395, 590, [('VA base', ORANGE, 55, 0), ('VA ápex', '#ad1457', 72, 0)], True, 'ΔVA ≤ 20', 'ΔVA = base − ápex')
+     + box('ΔVA ≤ 20', 'vía (TRAV)'),
+     'El VA desde la base es igual o más corto que desde el ápex:|ΔVA (base − ápex) ≤ 20 ms.')],
+    [('B1. TRNAV: encarrilando desde la base', TRNAV + spark(BASE_VD, 'base del VD', -95, -18)
+     + front((240, 348), (248, 420), (272, 452), (290, 380), (290, 320), (270, 268), (230, 200))
+     + note(40, 120, 'desde la base el frente baja hasta|la red de Purkinje y recién sube|por el His al nodo', ORANGE)
+     + intbar(395, 590, [('VA base', ORANGE, 120, 0)], True, '')
+     + box('VA desde la base', 'largo', False),
+     'La base tiene poca red de Purkinje: el frente tarda|en entrar al sistema de conducción y llegar al nodo.'),
+    ('B2. TRNAV: encarrilando desde el ápex', TRNAV + spark(APEX, 'ápex del VD', -60, 35)
+     + front((175, 575), (255, 430), (290, 320), (270, 268), (230, 200))
+     + note(40, 120, 'desde el ápex el frente entra enseguida|a la rama derecha y sube por el His', '#ad1457')
+     + intbar(395, 590, [('VA base', ORANGE, 120, 0), ('VA ápex', '#ad1457', 75, 0)], False, 'ΔVA > 20', 'ΔVA = base − ápex')
+     + box('ΔVA > 20', 'nodo (TRNAV)', False),
+     'El VA desde la base es más largo que desde el ápex:|ΔVA (base − ápex) > 20 ms.')]], LEG)}
 
 F['vai'] = (
     ('A. Índice VA > +10 (vía)', via(SEPT, 'vía septal', 14, -22) + spark(BASE_VD, 'base', -40, -18) + spark(APEX, 'ápex')
