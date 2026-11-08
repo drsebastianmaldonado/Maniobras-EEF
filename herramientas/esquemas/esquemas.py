@@ -309,14 +309,52 @@ F['ppi'] = {'grid': ([[
      + box('PPI − LC > 115', 'el V está lejos del circuito', False),
      'El retorno suma la ida y la vuelta entre el VD y el nodo|a la vuelta del circuito: PPI mucho mayor que la LC.')]], LEG)}
 
-F['sava'] = (
-    ('A. SA − VA corto (TRAV)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(APEX, 'VD')
-     + front((180, 575), (250, 470), (296, 390), (312, 330), (313, 260), (330, 190)) + note(345, 230, 'S→A por la vía:|igual que en la TSV', ORANGE)
+def intbar(x, y, rows, ok, tag, extra_label=''):
+    """Barras de intervalos: rows = [(rótulo, color, base, extra)]."""
+    c = GREEN if ok else '#e65100'
+    s = f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
+    for i, (lab, col, base, extra) in enumerate(rows):
+        yy = -6 + 34 * i
+        s += (f'<text x="-28" y="{yy + 10}" font-size="11" font-weight="700" fill="{col}">{E(lab)}</text>'
+              f'<rect x="0" y="{yy}" width="{base}" height="12" rx="3" fill="{BLUE}" opacity=".8"/>')
+        if extra:
+            s += f'<rect x="{base}" y="{yy}" width="{extra}" height="12" rx="3" fill="{ORANGE}"/>'
+            if extra_label:
+                s += f'<text x="{base + extra / 2}" y="{yy + 30}" font-size="10" text-anchor="middle" fill="{ORANGE}">{E(extra_label)}</text>'
+    if tag:
+        s += f'<text x="94" y="-14" font-size="12.5" font-weight="700" text-anchor="middle" fill="{c}">{E(tag)}</text>'
+    return s + '</g>'
+
+
+def solid(pts, color=BLUE, mk='ab'):
+    return f'<path d="{smooth(pts)}" stroke="{color}" stroke-width="4" fill="none" marker-end="url(#{mk})"/>'
+
+
+F['sava'] = {'grid': ([[
+    ('A1. TRAV: en taquicardia (VA)', TRAV_S + via(SEPT, 'vía septal', 14, -22)
+     + solid([(306, 352), (314, 300), (318, 240), (340, 190)])
+     + note(40, 120, 'VA: el V septal sube por la vía|y activa la A', BLUE)
+     + intbar(395, 590, [('VA', BLUE, 70, 0)], True, '')
+     + box('VA de la TSV', 'V → vía → A', False),
+     'En la TSV la A se activa desde el V a través de la vía.'),
+    ('A2. TRAV: estimulando el VD (SA)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(APEX, 'estímulo en el VD', -60, 35)
+     + front((180, 575), (250, 470), (296, 390), (312, 330), (316, 260), (338, 190))
+     + note(40, 120, 'SA: ápex → miocardio → vía → A|es el mismo camino que en la TSV|más el trayecto ápex → base', ORANGE)
+     + intbar(395, 590, [('VA', BLUE, 70, 0), ('SA', ORANGE, 70, 25)], True, 'SA − VA < 85', 'ápex → base')
      + box('SA − VA < 85', 'vía en el circuito'),
-     'Estimulando el V, la A llega por la misma vía que en la TSV:|el SA es apenas mayor que el VA.'),
-    ('B. SA − VA largo (TRNAV)', TRNAV + spark(APEX, 'VD') + front((175, 575), (255, 430), (290, 320), (270, 270), (230, 200))
-     + note(330, 420, 'S→A: sube por His|y nodo antes de la A', ORANGE) + box('SA − VA > 85', 'TRNAV', False),
-     'En la TSV la A sale del nodo junto con el V (VA corto);|estimulando, la A espera el ascenso por el His.'), LEG)
+     'Estimulando el V la A llega por la misma vía:|el SA es apenas mayor que el VA.')],
+    [('B1. TRNAV: en taquicardia (VA)', TRNAV
+     + solid([(262, 252), (230, 210), (190, 175)]) + solid([(290, 290), (298, 350), (310, 420)])
+     + note(40, 120, 'VA: A y V salen juntos del nodo,|en paralelo', BLUE)
+     + intbar(395, 590, [('VA', BLUE, 20, 0)], True, '')
+     + box('VA de la TSV', 'muy corto (≤ 70 ms)', False),
+     'En la TSV la A y el V se activan casi a la vez|desde el circuito en el nodo.'),
+    ('B2. TRNAV: estimulando el VD (SA)', TRNAV + spark(APEX, 'estímulo en el VD', -60, 35)
+     + front((175, 575), (255, 430), (290, 320), (270, 270), (230, 200))
+     + note(40, 120, 'SA: ápex → His → nodo → A|ahora la A se activa en serie', ORANGE)
+     + intbar(395, 590, [('VA', BLUE, 20, 0), ('SA', ORANGE, 20, 120)], False, 'SA − VA > 85', 'ápex → His → nodo')
+     + box('SA − VA > 85', 'TRNAV', False),
+     'Estimulando el V la A espera el ascenso por el His y el nodo:|el SA es mucho mayor que el VA.')]], LEG)}
 
 F['dha'] = (
     ('A. ΔHA < 0 (TRAV)', TRAV_S + via(SEPT, 'vía septal', 14, -22) + spark(APEX, 'VD')
