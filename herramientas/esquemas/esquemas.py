@@ -440,14 +440,16 @@ F['diff'] = {'grid': ([[
      + box('ΔVA ≤ 20', 'vía (TRAV)'),
      'El VA desde la base es igual o más corto que desde el ápex:|ΔVA (base − ápex) ≤ 20 ms.')],
     [('B1. TRNAV: encarrilando desde la base', TRNAV + spark(BASE_VD, 'base del VD', -95, -18)
-     + front((240, 348), (248, 420), (272, 452), (290, 380), (290, 320), (270, 268), (230, 200))
-     + note(40, 120, 'desde la base el frente baja hasta|la red de Purkinje y recién sube|por el His al nodo', ORANGE)
+     + front((236, 350), (205, 410), (185, 465), (174, 500))
+     + front((176, 512), (210, 516), (240, 500), (270, 450), (285, 380), (291, 320), (272, 268), (230, 200))
+     + note(40, 120, '1. desde la base el frente baja por el|miocardio hasta la punta del VD|2. entra a la RD por su parte distal|(banda moderadora) y sube por el His', ORANGE)
+     + note(96, 548, 'entrada distal a la RD', ORANGE)
      + intbar(395, 590, [('VA base', ORANGE, 120, 0)], True, '')
      + box('VA desde la base', 'largo', False),
-     'La base tiene poca red de Purkinje: el frente tarda|en entrar al sistema de conducción y llegar al nodo.'),
+     'El frente entra a la RD por su parte distal y la recorre|entera hasta el His y el nodo: el VA desde la base se alarga.'),
     ('B2. TRNAV: encarrilando desde el ápex', TRNAV + spark(APEX, 'ápex del VD', -60, 35)
-     + front((175, 575), (255, 430), (290, 320), (270, 268), (230, 200))
-     + note(40, 120, 'desde el ápex el frente entra enseguida|a la rama derecha y sube por el His', '#ad1457')
+     + front((168, 578), (172, 520), (210, 516), (240, 500), (270, 450), (285, 380), (291, 320), (272, 268), (230, 200))
+     + note(40, 120, 'el ápex está al lado de la RD distal:|el frente entra enseguida y sube por el His', '#ad1457')
      + intbar(395, 590, [('VA base', ORANGE, 120, 0), ('VA ápex', '#ad1457', 75, 0)], False, 'ΔVA > 20', 'ΔVA = base − ápex')
      + box('ΔVA > 20', 'nodo (TRNAV)', False),
      'El VA desde la base es más largo que desde el ápex:|ΔVA (base − ápex) > 20 ms.')]], LEG)}
