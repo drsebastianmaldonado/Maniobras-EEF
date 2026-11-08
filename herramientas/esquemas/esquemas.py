@@ -708,13 +708,51 @@ F['eha'] = {'grid': ([[
      'El foco está debajo de la unión refractaria: el EA no lo|alcanza y el His siguiente sale a su tiempo.')]], LEG)}
 
 RR = circ((291, 310), (285, 400), (250, 480), (200, 515)) + circ((230, 560), (300, 600), (340, 520), (320, 400), (298, 318))
-F['bbr'] = (
-    ('A. Reentrada rama-rama', RR + note(120, 440, 'baja por la|rama derecha', BLUE) + note(350, 560, 'sube por la|rama izquierda', BLUE)
-     + box('HV ≥ sinusal', 'el His precede a cada V'),
-     'El circuito usa las dos ramas y el septum:|el His se activa antes de cada V (HV ≥ sinusal).'),
-    ('B. TV miocárdica', focus((420, 480), 'circuito en el VI') + faint((410, 470), (340, 380), (296, 316))
-     + box('His pasivo', 'el VV cambia antes que el HH', 'warn'),
-     'El circuito está en el miocardio: el His se activa|en forma pasiva y no predice el VV.'), [L_TSV, L_PAS, L_CS])
+def hvline(x, y, mode, ok, tag):
+    """Línea de tiempo His / V durante la TV."""
+    c = GREEN if ok else '#e65100' if ok is False else '#37474f'
+    s = f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
+    for lab, yy in [('His', 6), ('V', 36)]:
+        s += (f'<text x="-30" y="{yy + 4}" font-size="10" font-weight="700" fill="#6d4c41">{lab}</text>'
+              f'<line x1="0" y1="{yy}" x2="182" y2="{yy}" stroke="#e0e0e0"/>')
+    for i in range(3):
+        v = 40 + 60 * i
+        h = v - 28 if mode == 'bbr' else v + 22
+        s += (f'<line x1="{h}" y1="-2" x2="{h}" y2="14" stroke="{BLUE}" stroke-width="3"/>'
+              f'<rect x="{v - 4}" y="28" width="8" height="16" rx="2" fill="#6d4c41"/>')
+    if mode == 'bbr':
+        s += '<path d="M12,50 v4 H40 v-4" stroke="#424242" fill="none"/><text x="26" y="64" font-size="9.5" text-anchor="middle" fill="#424242">HV ≥ sinusal</text>'
+    else:
+        s += '<text x="94" y="62" font-size="9.5" text-anchor="middle" fill="#424242">His después del V (o disociado)</text>'
+    if tag:
+        s += f'<text x="186" y="-14" font-size="12.5" font-weight="700" text-anchor="end" fill="{c}">{E(tag)}</text>'
+    return s + '</g>'
+
+
+LVC = circ((400, 450), (440, 430), (460, 470), (430, 505), (398, 488))
+F['bbr'] = {'grid': ([[
+    ('A1. Rama-rama: en taquicardia', RR + note(120, 440, 'baja por la|rama derecha', BLUE) + note(345, 470, 'sube por la|rama izquierda', BLUE)
+     + note(40, 120, 'el circuito usa las dos ramas y el septum:|el His se activa antes de cada V', BLUE)
+     + hvline(395, 590, 'bbr', None, '')
+     + box('His antes de cada V', 'HV ≥ sinusal', False),
+     'Macrorreentrada en el His-Purkinje: el His precede|a cada V con HV igual o mayor que en sinusal.'),
+    ('A2. Rama-rama: encarrilando desde el ápex del VD', RR + spark(APEX, 'ápex del VD', -60, 35)
+     + front((168, 578), (172, 525), (190, 515))
+     + note(40, 120, 'el ápex está al lado de la RD distal,|que es parte del circuito: el retorno|es una vuelta al circuito', ORANGE)
+     + ppibar(395, 590, 12, True, 'PPI − LC ≤ 30')
+     + box('PPI − LC ≤ 30', 'rama-rama'),
+     'La rama derecha está en el circuito: desde el ápex|el PPI casi no supera la LC.')],
+    [('B1. TV miocárdica: en taquicardia', LVC + note(400, 420, 'circuito en el VI', BLUE) + faint((404, 444), (340, 380), (296, 316))
+     + note(40, 120, 'el circuito está en el miocardio:|el His se activa en forma pasiva,|después del V o disociado', BLUE)
+     + hvline(395, 590, 'tv', None, '')
+     + box('His pasivo', 'no precede al V', False),
+     'El His no forma parte del circuito: no predice|el VV y puede disociarse.'),
+    ('B2. TV miocárdica: encarrilando desde el ápex del VD', LVC + note(400, 420, 'circuito en el VI', BLUE) + spark(APEX, 'ápex del VD', -60, 35)
+     + front((178, 580), (250, 600), (330, 560), (395, 500))
+     + note(40, 120, 'el circuito está lejos del ápex del VD:|el frente tiene que ir y volver|por el miocardio', ORANGE)
+     + ppibar(395, 590, 58, False, 'PPI − LC > 30')
+     + box('PPI − LC > 30', 'TV miocárdica', False),
+     'El circuito está lejos del sitio de estimulación:|el PPI supera claramente la LC.')]], [L_TSV, L_EST, L_PAS, L_CS])}
 
 def _nodo(x, y):
     return f'<path d="M{x-18},{y} C{x-13},{y-12} {x+7},{y-14} {x+16},{y-4} C{x+20},{y+4} {x+12},{y+12} {x},{y+11} C{x-10},{y+10} {x-20},{y+8} {x-18},{y} Z" fill="url(#gnode)" stroke="#9a7300" stroke-width="1.5"/>'
