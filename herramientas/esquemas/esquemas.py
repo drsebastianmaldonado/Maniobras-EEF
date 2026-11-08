@@ -651,14 +651,61 @@ F['preex'] = {'grid': ([[
      + box('S-delta fijo', 'vía rápida (no Mahaim)', False),
      'Al acelerar, el S-delta queda igual: la vía conduce|en forma no decremental.')]], [L_EST, L_PAS, L_CS])}
 
-F['eha'] = (
-    ('A. TRNAV: modifica el His', TRNAV + spark(CSOS, 'EA (ostium del SC)', -110, 40) + front((236, 272), (246, 280), (262, 272))
-     + xmark(HIS, 'His refractario') + note(330, 232, 'entra en la vía lenta', ORANGE) + box('His siguiente', 'se retrasa o adelanta'),
-     'El EA entra en la vía lenta, que es parte del circuito:|retrasa, adelanta o termina el His siguiente.'),
-    ('B. Taquicardia de la unión', focus((290, 296), 'foco') + spark(CSOS, 'EA (ostium del SC)', -110, 40)
-     + front((236, 272), (250, 270), (262, 264)) + xmark(NODO) + note(320, 232, 'unión refractaria', RED)
-     + box('His sin cambio', 'el foco está debajo', 'warn'),
-     'El foco está en la unión, debajo de la aurícula:|el EA no lo alcanza y el His siguiente no cambia.'), LEG)
+def tline_h(x, y, ea, shift, ok, tag):
+    """Línea de tiempo A / His / V para el EA con His refractario: mira el His siguiente."""
+    c = GREEN if ok else '#546e7a'
+    s = f'<g transform="translate({x},{y})"><rect x="-38" y="-30" width="226" height="98" rx="8" fill="#fff" stroke="#bdbdbd"/>'
+    for lab, yy in [('A', -4), ('His', 20), ('V', 44)]:
+        s += (f'<text x="-30" y="{yy + 4}" font-size="10" font-weight="700" fill="#6d4c41">{lab}</text>'
+              f'<line x1="0" y1="{yy}" x2="182" y2="{yy}" stroke="#e0e0e0"/>')
+    s += ('<rect x="14" y="13" width="62" height="14" rx="3" fill="#c62828" opacity=".15"/>'
+          '<text x="80" y="24" font-size="9" fill="#c62828">refractario</text>'
+          f'<line x1="16" y1="-12" x2="16" y2="4" stroke="{BLUE}" stroke-width="3"/>'
+          f'<line x1="14" y1="12" x2="14" y2="28" stroke="{BLUE}" stroke-width="3"/>'
+          f'<line x1="24" y1="36" x2="24" y2="52" stroke="{BLUE}" stroke-width="3"/>')
+    if ea:
+        s += (f'<g transform="translate(58,-4)"><circle r="7" fill="{ORANGE}"/><path d="M1,-4 L-2,1 L1,1 L-1,5" stroke="#fff" stroke-width="1.5" fill="none"/></g>'
+              f'<text x="58" y="-15" font-size="9" text-anchor="middle" fill="{ORANGE}" font-weight="700">EA</text>')
+    if shift:
+        s += (f'<line x1="150" y1="12" x2="150" y2="28" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="2 2"/>'
+              f'<line x1="{150 + shift}" y1="12" x2="{150 + shift}" y2="28" stroke="{ORANGE}" stroke-width="3"/>'
+              f'<text x="140" y="40" font-size="9" text-anchor="middle" fill="{ORANGE}">se adelanta o retrasa</text>')
+    else:
+        s += f'<line x1="150" y1="12" x2="150" y2="28" stroke="{BLUE}" stroke-width="3"/>'
+        if ea:
+            s += f'<text x="145" y="40" font-size="9" text-anchor="middle" fill="{BLUE}">a su tiempo</text>'
+    if tag:
+        s += f'<text x="186" y="-14" font-size="12.5" font-weight="700" text-anchor="end" fill="{c}">{E(tag)}</text>'
+    return s + '</g>'
+
+
+JFOC = (290, 296)
+F['eha'] = {'grid': ([[
+    ('A1. TRNAV: en taquicardia', TRNAV
+     + solid([(262, 252), (230, 210), (190, 175)]) + solid([(290, 290), (298, 330)])
+     + note(40, 120, 'A y His salen juntos del circuito:|el His recién activado queda refractario', BLUE)
+     + tline_h(395, 590, False, 0, None, '')
+     + box('Momento del EA', 'con el His refractario', False),
+     'TSV con VA muy corto: se busca el momento en que|el His ya se activó (refractario).'),
+    ('A2. TRNAV: EA con His refractario', TRNAV + spark(CSOS, 'EA (ostium del SC)', -110, 40)
+     + front((236, 272), (246, 282), (260, 276)) + xmark(HIS, None)
+     + note(40, 120, 'el EA entra en la vía lenta, que es parte|del circuito: adelanta, retrasa o termina|el His siguiente', ORANGE)
+     + tline_h(395, 590, True, -22, True, 'His modificado')
+     + box('His siguiente cambia', 'TRNAV'),
+     'Aunque el His esté refractario, el EA alcanza el circuito|(vía lenta) y modifica el His siguiente.')],
+    [('B1. Taquicardia de la unión: en taquicardia', focus(JFOC, 'foco')
+     + solid([(286, 286), (262, 252), (220, 205)]) + solid([(292, 306), (298, 340)])
+     + note(40, 120, 'el foco está en la unión, debajo del nodo:|activa el His y sube a la A', BLUE)
+     + tline_h(395, 590, False, 0, None, '')
+     + box('Momento del EA', 'con el His refractario', False),
+     'Mismo VA corto: A y His salen casi juntos del foco.'),
+    ('B2. Taquicardia de la unión: EA con His refractario', focus(JFOC, 'foco') + spark(CSOS, 'EA (ostium del SC)', -110, 40)
+     + front((236, 272), (248, 270), (258, 264)) + xmark(NODO, None)
+     + note(40, 120, 'el EA choca con la unión refractaria:|no alcanza el foco', ORANGE)
+     + note(300, 240, 'unión refractaria', RED)
+     + tline_h(395, 590, True, 0, False, 'His sin cambio')
+     + box('His sin cambio', 'taquicardia de la unión', 'warn'),
+     'El foco está debajo de la unión refractaria: el EA no lo|alcanza y el His siguiente sale a su tiempo.')]], LEG)}
 
 RR = circ((291, 310), (285, 400), (250, 480), (200, 515)) + circ((230, 560), (300, 600), (340, 520), (320, 400), (298, 318))
 F['bbr'] = (
