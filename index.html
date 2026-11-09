@@ -1258,7 +1258,7 @@ const PDX = [['trnav_t', 'TRNAV típica'], ['trnav_a', 'TRNAV atípica'], ['trav
   ['antid', 'TRAV antidrómica'], ['mahaim', 'Mahaim (vía atriofascicular)'], ['bys', 'TSV con conducción por una vía espectadora'],
   ['dfire', 'Taquicardia no reentrante por doble vía nodal'], ['bigat', 'Bigeminia auricular']];
 // Maniobras que se ofrecen en los casos de TSV de QRS angosto (la ablación nunca se ofrece como maniobra diagnóstica).
-const PSVT = ['pre', 'vop', 'medidas', 'vopvi', 'diff', 'ehr', 'aop', 'eha', 'parahis', 'mapa', 'ado'];
+const PSVT = ['pre', 'vop', 'medidas', 'diff', 'ehr', 'aop', 'eha', 'parahis', 'ado'];
 const pMans = c => PMAN.filter(x => x[0] !== 'abll' && (c.allm || PSVT.includes(x[0])));
 const UTAG = { clave: ['Clave', 'var(--green)'], util: ['Útil', 'var(--blue)'], trampa: ['Engañosa', 'var(--orange)'] };
 const PCASOS = [
@@ -1274,8 +1274,6 @@ const PCASOS = [
       aop: { v: 'Estimulando la AD alta a 320 ms los V se aceleran a 320 (V-V 320; en la TSV, 340), con AH 260. Al cortar, el VA del primer latido es 15 ms, igual al de la TSV.', r: 'VA linking: la A de retorno depende del V; excluye la TA, incluida la TA con PR largo.', u: 'clave', img: 'figs/sim/prac/p1_aop.png' },
       parahis: { v: 'En sinusal, con captura del His: SA 80 y QRS 95. Solo V: SA 130 y QRS 150. Misma secuencia auricular.', r: 'Respuesta nodal: el SA se alarga al perder el His; no hay una vía septal conduciendo.', u: 'util', img: 'figs/sim/prac/p1_parahis.png' },
       ado: { v: 'La taquicardia termina: el último latido es una A que no conduce al V.', r: 'Terminación con una A: excluye la TA, pero no distingue TRNAV de TRAV.', u: 'util', img: 'figs/sim/prac/p1_ado.png' },
-      vopvi: { v: 'Estimulando el VI basal (rama del SC) a 310 ms las A se aceleran a 310 con la misma secuencia. Al cortar, secuencia A-V. SA 215 (VA 15) y PPI 545 (LC 340).', r: 'Igual que desde el ápex: respuesta A-V, SA−VA 200 y PPI−LC 205; el VI basal también está lejos del circuito. No aporta más que el encarrilamiento desde el VD.', u: 'util', img: 'figs/sim/prac/p1_vopvi.png' },
-      mapa: { v: 'Activación auricular durante la taquicardia en la AD alta, el His y el SC (9-10 a 1-2).', r: 'A más precoz en el His y casi simultánea en todo el SC y la AD alta (16 ms): activación concéntrica por la vía rápida, típica de la TRNAV típica.', u: 'util', img: 'figs/sim/prac/p1_mapa.png' },
       ehr: { v: 'EV con el His refractario: la A siguiente no cambia (A-A 340) y la taquicardia sigue.', r: 'No modifica la A: no hay una vía que participe en el circuito (no descarta una vía espectadora).', u: 'util', img: 'figs/sim/prac/p1_ehr.png' } },
     dx: ['trnav_t'], ex: 'Un VA septal ≤ 70 ms excluye la TRAV, y la respuesta A-V a la sobreestimulación ventricular excluye la TA. Con esas dos observaciones se llega a la TRNAV típica (41 % de las TSV en la serie de Knight).', refs: ['knight00', 'knight99', 'veen11'] },
   { id: 'c2', t: 'TSV de RP corto con VA de 110 ms', p: 'Niña de 10 años con TSV recurrentes. ECG basal sin preexcitación.',
@@ -1289,9 +1287,7 @@ const PCASOS = [
       parahis: { v: 'En sinusal, con captura del His: SA 100 y QRS 95. Solo V: SA 100 y QRS 150. Misma secuencia auricular.', r: 'Respuesta extranodal: el SA no cambia al perder el His; hay una vía septal conduciendo.', u: 'util', img: 'figs/sim/prac/p2_parahis.png' },
       pre: { v: 'Estimulación ventricular en sinusal a 500 y 400 ms.', r: 'SA 125 a las dos frecuencias (no decremental), con la A más precoz en el ostium del SC: conducción VA por una vía septal.', u: 'util', img: 'figs/sim/prac/p2_pre.png' },
       aop: { v: 'Estimulando la AD alta a 260 ms los V se aceleran a 260 (V-V 260; en la TSV, 280). Al cortar, el VA del primer latido es 110 ms, igual al de la TSV.', r: 'VA linking: la A de retorno depende del V; excluye la TA.', u: 'util', img: 'figs/sim/prac/p2_aop.png' },
-      vopvi: { v: 'Estimulando el VI basal (rama del SC) a 250 ms las A se aceleran a 250 con la misma secuencia. Al cortar, secuencia A-V. SA 165 (VA 110) y PPI 380 (LC 280).', r: 'SA−VA 55 y PPI−LC 100: el ventrículo está en el circuito, igual que desde el VD. Con una vía septal, el VI basal no aporta más que el VD.', u: 'util', img: 'figs/sim/prac/p2_vopvi.png' },
       eha: { v: 'EA desde el ostium del SC con el His refractario: el His siguiente sale a su tiempo (H-H 280).', r: 'No modifica el His: esperable en la TRAV (el EA no puede bajar por el nodo refractario). Sirve para separar la TRNAV de la taquicardia de la unión, no para este diferencial.', u: 'util', img: 'figs/sim/prac/p2_eha.png' },
-      mapa: { v: 'Activación auricular durante la taquicardia en la AD alta, el His y el SC (9-10 a 1-2).', r: 'A más precoz en el ostium del SC (SC 9-10) y más tardía en el SC distal y la AD alta: activación concéntrica con salida posteroseptal; compatible con TRAV septal o TRNAV atípica.', u: 'util', img: 'figs/sim/prac/p2_mapa.png' },
       ado: { v: 'La taquicardia termina: el último latido es una A que no conduce al V.', r: 'Terminación con una A: excluye la TA, pero no distingue TRAV de TRNAV.', u: 'util', img: 'figs/sim/prac/p2_ado.png' } },
     dx: ['trav_s'], ex: 'Con VA > 70 ms y respuesta A-V, el diferencial es TRAV septal vs TRNAV atípica. PPI−LC < 115, SA−VA < 85 y ΔHA < 0 apuntan a TRAV, y la EV con His refractario que adelanta la A demuestra la vía.', refs: ['michaud01', 'ho08', 'veen12'] },
   { id: 'c3', t: 'Taquicardia incesante con disfunción ventricular', p: 'Niña de 2 años con taquicardia incesante y FEVI de 45 %.',
@@ -2037,7 +2033,7 @@ $('#goEnr').onclick = () => locView('enr'); $('#goObl').onclick = () => openFich
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => locView('hub'));
 try { const t = location.hash === '#localizar' ? 'loc' : localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
 checkReview();
-const APPV = 145;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 146;   // igual al número de CACHE_VERSION de sw.js
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {});
   // cuando se instala una versión nueva, recarga una vez para mostrarla
