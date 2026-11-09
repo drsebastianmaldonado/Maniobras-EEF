@@ -87,8 +87,8 @@ for f in sorted(os.listdir(os.path.join(FIGS, 'casos'))):
     n = f[:-4]
     if n == 'c16_ind':
         add('casos/' + f, [('ca_bys_a', neutro(S['bys_a'], 'Taquicardia'))])
-    elif n in S:
-        add('casos/' + f, [('ca_' + n, S[n])])
+    elif panels(n):
+        add('casos/' + f, [('ca_' + k, S[k]) for k in panels(n)])
 
 os.makedirs(TMP, exist_ok=True)
 hechos = set()

@@ -24,17 +24,26 @@ def basal(src, ah=90, hv=HV, cl=700, title='Estudio basal: ritmo sinusal', typ='
 S['c1_basal'] = basal('caso 1 (didáctico): AH 90, HV 45, ilustrativo')
 
 LC, VA = 340, 40
+# A: S1-S2 600-310 → AH 220 (vía rápida, sin eco). B: S2 10 ms más corto (300) → AH 280 (+60: salto) e inducción.
+spa = [0, 600, 910]
+hsa = [s + 28 + a for s, a in zip(spa, [90, 90, 220])]
+vsa = [h + HV for h in hsa]
+S['c1_ind_a'] = dict(win=(-80, 2100), pxms=0.30, title='A. Extraestímulo auricular S1-S2 600-310', channels=CH6,
+    src='caso 1 (didáctico): valores ilustrativos',
+    beats=[(v, 'n') for v in vsa], aspikes=spa, apace_ch='HRA',
+    atr=[(s + 5, 'sinus', 1) for s in spa], h_ante=hsa,
+    cal=[(spa[1] + 28, hsa[1], 'His d', 'AH 90'), (spa[2] + 28, hsa[2], 'His d', 'AH 220'), (spa[1], spa[2], 'HRA', 'S2 310')])
 sp = [0, 600, 900]
 hs = [s + 28 + a for s, a in zip(sp, [90, 90, 280])]
 for _ in range(5):
     hs.append(hs[-1] + LC)
 vs = [h + HV for h in hs]
 A_echo = [v + VA for v in vs[2:]]
-S['c1_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='Inducción: extraestímulo auricular (S1-S2 600-300)', channels=CH6,
+S['c1_ind_b'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='B. S2 10 ms más corto: S1-S2 600-300', channels=CH6,
     src='caso 1 (didáctico): valores ilustrativos',
     beats=[(v, 'n') for v in vs], aspikes=sp, apace_ch='HRA',
     atr=[(s + 5, 'sinus', 1) for s in sp] + [(a, 'conc_his', -1) for a in A_echo], h_ante=hs,
-    cal=[(sp[1] + 28, hs[1], 'His d', 'AH 90'), (sp[2] + 28, hs[2], 'His d', 'AH 280'),
+    cal=[(sp[1] + 28, hs[1], 'His d', 'AH 90'), (sp[2] + 28, hs[2], 'His d', 'AH 280 (+60)'),
          (sp[1], sp[2], 'HRA', 'S2 300'), (vs[4], vs[5], 'RVA', f'LC {LC}')])
 
 # Caso 1: sobreestimulación ventricular desde el ápex a 310 (6 estímulos). A-V; SA 190, PPI 510 (PPI−LC 170, SA−VA 150).
