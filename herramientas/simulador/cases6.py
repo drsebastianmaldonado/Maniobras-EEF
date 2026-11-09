@@ -232,6 +232,50 @@ S['p2_ado'] = dict(win=(-80, A[-1] + 900), pxms=0.25, title='Adenosina IV durant
     cal=[(vs[1], vs[2], 'RVA', f'LC {LC2}'), (vs[3], A[3] + 2, 'CS 9-10', f'VA {VA2}')],
     marks=[(A[3] + 60, 'aVF', 'última: A sin V')])
 
+# =====================================================================================================
+# Maniobras que faltaban en los casos 1 y 2: sobreestimulación desde el VI basal, EA con His refractario (caso 2)
+# y mapa de activación auricular durante la taquicardia.
+CHMAP = ['HRA', 'His p', 'His d', 'CS 9-10', 'CS 7-8', 'CS 5-6', 'CS 3-4', 'CS 1-2', 'RVA']
+
+
+def vopvi(LCx, VAx, seq, SCx, SAx, PPIx, src, ch=CH6):
+    svt = [0, LCx, 2 * LCx]
+    sp = [svt[-1] + 230 + SCx * k for k in range(6)]
+    A = [v + VAx for v in svt] + [s + SAx for s in sp]
+    ret = sp[-1] + PPIx
+    after = [ret, ret + LCx]
+    return dict(win=(-80, after[-1] + 220), pxms=0.26, title=f'Sobreestimulación desde el VI basal (rama del SC) a {SCx} ms', channels=ch, src=src,
+        beats=[(v, 'n') for v in svt + after] + [(s, 'lv') for s in sp], spikes=sp, pace_ch='CS 1-2',
+        atr=[(a, seq, -1) for a in A + [v + VAx for v in after]], h_ante=[v - HV for v in svt + after],
+        cal=[(svt[0], svt[1], 'RVA', f'LC {LCx}'), (svt[1], svt[1] + VAx + 2, 'CS 9-10', f'VA {VAx}'),
+             (sp[-2], sp[-1], 'RVA', f'S-S {SCx}'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {SAx}'), (sp[-1], ret + 2, 'RVA', f'PPI {PPIx}')])
+
+
+S['p1_vopvi'] = vopvi(LC, VA, 'trnav', 310, 215, 545, SRC)
+S['p2_vopvi'] = vopvi(LC2, VA2, 'conc_cs', 250, 165, 380, SRC2)
+
+
+def mapa(LCx, VAx, seq, src, lab):
+    vs = [i * LCx for i in range(4)]
+    return dict(win=(-80, vs[-1] + 260), pxms=0.42, title='Activación auricular durante la taquicardia (AD alta, His y SC 9-10 a 1-2)',
+        channels=CHMAP, src=src, beats=[(v, 'n') for v in vs], atr=[(v + VAx, seq, -1) for v in vs], h_ante=[v - HV for v in vs],
+        cal=[(vs[0], vs[1], 'RVA', f'LC {LCx}'), (vs[1], vs[1] + VAx + 2, 'His d', f'VA {VAx}')])
+
+
+S['p1_mapa'] = mapa(LC, VA, 'trnav', SRC, 'A más precoz en el His; el SC distal y la AD alta, 16 ms después')
+S['p2_mapa'] = mapa(LC2, VA2, 'conc_cs', SRC2, 'A más precoz en el SC 9-10 (ostium); el SC distal y la AD alta, 36-38 ms después')
+
+# Caso 2: EA con His refractario desde el ostium del SC: el His siguiente sale a su tiempo.
+hs = [i * LC2 - HV for i in range(7)]
+apb = hs[4] + 10
+vs = [h + HV for h in hs]
+A = [v + VA2 for k2, v in enumerate(vs) if k2 != 4]
+S['p2_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.25, title='EA con His refractario desde el ostium del SC', channels=CH6, src=SRC2,
+    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='CS 9-10',
+    atr=[(a, 'conc_cs', -1) for a in A] + [(apb + 4, 'conc_cs', 1)], h_ante=hs,
+    cal=[(hs[3], hs[4], 'His d', f'H-H {LC2}'), (hs[4], hs[5], 'His d', f'H-H {LC2}')],
+    marks=[(apb, 'V1', 'EA')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
