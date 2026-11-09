@@ -17,14 +17,15 @@ sp = [svt[-1] + 290 + SC * k for k in range(6)]
 A = [v + VA for v in svt] + [s + SA for s in sp]
 ret = sp[-1] + PPI
 after = [ret, ret + LC]
-S['p1_medidas'] = dict(win=(-80, after[-1] + 250), pxms=0.25, title='Medidas sobre la sobreestimulación ventricular (ápex del VD a 310 ms)',
+S['p1_medidas'] = dict(win=(-80, after[-1] + 250), pxms=0.25, title='Medidas sobre la sobreestimulación ventricular (ápex del VD a 310 ms): PPI, SA y HA',
     channels=CH6, src=SRC,
     beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
     atr=[(a, 'trnav', -1) for a in A + [v + VA for v in after]],
-    h_ante=[v - HV for v in svt + after], h_retro=[s + 120 for s in sp],
+    h_ante=[v - HV for v in svt + after], h_retro=[s + SA - 85 for s in sp],
     cal=[(svt[0], svt[1], 'RVA', f'LC {LC}'), (svt[1], svt[1] + VA, 'CS 9-10', f'VA {VA}'),
-         (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {SA}'), (sp[-1], ret + 2, 'RVA', f'PPI {PPI}')],
-    marks=[(sp[-1] + 260, 'I', f'SA − VA = {SA} − {VA} = {SA - VA} ms'), (sp[-1] + 260, 'aVF', f'PPI − LC = {PPI} − {LC} = {PPI - LC} ms')])
+         (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {SA}'), (sp[-1], ret + 2, 'RVA', f'PPI {PPI}'),
+         (svt[1] - HV, svt[1] + VA, 'His p', f'HA {HV + VA}'), (sp[-1] + SA - 85, A[-1], 'His p', 'HA 85')],
+    marks=[(sp[-1] + 260, 'I', f'SA − VA = {SA} − {VA} = {SA - VA} ms'), (sp[-1] + 260, 'aVF', f'PPI − LC = {PPI} − {LC} = {PPI - LC} ms'), (sp[-1] + 260, 'V1', f'ΔHA = 85 − {HV + VA} = +{85 - HV - VA} ms')])
 
 
 # --- Encarrilamiento diferencial: ápex (SA 190) y base del VD (SA 225) a 310 ms ---
