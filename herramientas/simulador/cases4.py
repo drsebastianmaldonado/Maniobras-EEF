@@ -58,7 +58,7 @@ LC = 270
 A = [i * LC for i in range(9)]
 cond = [0, 1, 2, 4, 6, 7, 8]
 hs = [A[i] + 100 for i in cond]
-S['p3_ado'] = dict(win=(-80, A[-1] + 300), pxms=0.29, channels=CH, src='caso 3 (didáctico): valores ilustrativos',
+S['p3old_ado'] = dict(win=(-80, A[-1] + 300), pxms=0.29, channels=CH, src='caso 3 (didáctico): valores ilustrativos',
     beats=[(h + HV, 'n') for h in hs], atr=[(a, 'cs_mid', 1) for a in A], h_ante=hs,
     cal=[(A[3], A[4], 'HRA', f'A-A {LC}')], marks=[(A[3] + 30, 'aVF', 'A sin V'), (A[5] + 30, 'aVF', 'A sin V')])
 
@@ -210,7 +210,7 @@ sp = [vs0[-1] + 200 + SC * k for k in range(6)]
 Aret = [s + 120 for s in sp]
 focal = Aret[-1] + 330
 v_after = focal + 100 + HV
-S['p3_vop'] = dict(win=(-80, v_after + 380), pxms=0.25, channels=CH, title='Sobreestimulación ventricular desde el ápex del VD a 240 ms',
+S['p3old_vop'] = dict(win=(-80, v_after + 380), pxms=0.25, channels=CH, title='Sobreestimulación ventricular desde el ápex del VD a 240 ms',
     src='caso 3 (didáctico): valores ilustrativos',
     beats=[(v, 'n') for v in vs0] + [(s, 'pa') for s in sp] + [(v_after, 'n'), (v_after + LC, 'n')], spikes=sp,
     atr=[(a, 'cs_mid', 1) for a in A0] + [(a, 'conc_his', -1) for a in Aret] + [(focal, 'cs_mid', 1), (focal + LC, 'cs_mid', 1)],

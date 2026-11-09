@@ -1291,14 +1291,18 @@ const PCASOS = [
       ado: { v: 'La taquicardia termina: el último latido es una A que no conduce al V.', r: 'Terminación con una A: excluye la TA, pero no distingue TRAV de TRNAV.', u: 'util', img: 'figs/sim/prac/p2_ado.png' } },
     dx: ['trav_s'], ex: 'Con VA > 70 ms y respuesta A-V, el diferencial es TRAV septal vs TRNAV atípica. PPI−LC < 115, SA−VA < 85 y ΔHA < 0 apuntan a TRAV, y la EV con His refractario que adelanta la A demuestra la vía.', refs: ['michaud01', 'ho08', 'veen12'] },
   { id: 'c3', t: 'Taquicardia incesante con disfunción ventricular', p: 'Niña de 2 años con taquicardia incesante y FEVI de 45 %.',
-    ecg: 'figs/sim/casos/c3_ecg.png', ecgReal: true, basal: 'figs/sim/casos/c3_basal.png', ind: 'figs/sim/casos/c3_ind.png',
-    h: ['TSV de QRS angosto, LC 270 ms', 'Relación AV 1:1, PR 145 ms', 'Empieza sola, con calentamiento de los primeros latidos', 'A más precoz en el His y el SC proximal'],
-    m: { vop: { r: 'Las A se aceleran a la LC de estimulación con una secuencia distinta de la TSV. Al cortar: A-A-V, verificado contando desde el último A acelerado y reproducible.', u: 'clave', img: 'figs/sim/prac/p3_vop.png' },
-      ado: { r: 'Bloqueo AV 2:1 transitorio y la taquicardia auricular sigue.', u: 'clave', img: 'figs/sim/prac/p3_ado.png' },
-      aop: { r: 'Desde la AD alta, el ostium del SC y el SC distal, el VA del primer latido de retorno varía 40 ms.', u: 'util' },
-      ehr: { r: 'No modifica la A.' }, parahis: { r: 'Respuesta nodal.' },
-      pre: { r: 'Sin doble vía. Conducción VA decremental, por el nodo. La taquicardia empieza sola, con una A de secuencia distinta de la sinusal, y se acelera en los primeros latidos.' },
-      medidas: { r: 'No corresponde: con respuesta A-A-V, el PPI−LC y el SA−VA no se interpretan.' } },
+    ecg: 'figs/sim/casos/c3_ecg.png', ecgReal: true, basal: 'figs/sim/casos/c3_basal.png', ind: 'figs/sim/casos/c3_ind.png', indt: 'Inicio espontáneo de la taquicardia',
+    h: ['TSV de QRS angosto, LC 270 ms, relación AV 1:1', 'Inicio espontáneo, sin estimulación'],
+    hk: ['La taquicardia empieza sola y se acelera en los primeros latidos (A-A 340 → 270: calentamiento), con una A de secuencia distinta de la sinusal: propio de un foco automático.', 'Cada A precede a su V con AH 100 (PR 145) y VA 125: RP largo, que no excluye ningún mecanismo por sí solo.'],
+    m: { vop: { v: 'Estimulando el ápex del VD a 240 ms las A se aceleran a 240 con una secuencia distinta de la de la taquicardia. Al cortar, después de la última A acelerada viene otra A y recién después el V (secuencia A-A-V).', r: 'Respuesta A-A-V verdadera (contada desde la última A acelerada): la A siguiente no depende del V; es una TA.', u: 'clave', img: 'figs/sim/prac/p3_vop.png' },
+      ado: { v: 'Bloqueo AV 2:1 transitorio: hay A sin V y la taquicardia auricular sigue a 270 ms.', r: 'La taquicardia sigue con bloqueo AV: el nodo y el ventrículo no forman parte del mecanismo; es una TA.', u: 'clave', img: 'figs/sim/prac/p3_ado.png' },
+      aop: { v: 'Sobreestimulación auricular a 240 ms (V-V 240) desde la AD alta y desde el ostium del SC. Al cortar, el VA del primer latido es 157 ms desde la AD alta y 117 ms desde el ostium del SC.', r: 'Sin VA linking: el VA de retorno cambia 40 ms (> 14) según el sitio; la A de retorno la dispara el foco, no el V. Excluye TRNAV y TRAV, incluida una TA con PR largo como diferencial.', u: 'clave', img: 'figs/sim/prac/p3_aop.png' },
+      medidas: { v: 'PPI 595 ms con LC 270 (PPI−LC 325). SA 120 ms con VA 125 (SA−VA −5).', r: 'Engañosa: con respuesta A-A-V el PPI−LC y el SA−VA no se interpretan (y además se contradicen: uno sugiere TRNAV y el otro TRAV).', u: 'trampa', img: 'figs/sim/prac/p3_medidas.png' },
+      diff: { v: 'Encarrilando a 240 ms: SA 120 desde el ápex y SA 105 desde la base del VD. En los dos, al cortar, A-A-V.', r: 'Engañosa: el encarrilamiento diferencial sirve para TRNAV vs TRAV; con A-A-V no corresponde.', u: 'trampa', img: 'figs/sim/prac/p3_diff.png' },
+      ehr: { v: 'EV con el His refractario: la A siguiente no cambia (A-A 270) y la taquicardia sigue.', r: 'No hay una vía que lleve el V a la A. No distingue la TA de la TRNAV.', u: 'util', img: 'figs/sim/prac/p3_ehr.png' },
+      eha: { v: 'EA desde el ostium del SC con el His refractario: la A siguiente aparece 300 ms después del EA y el His siguiente se retrasa (H-H 410).', r: 'El EA captura la aurícula y resetea el foco; el His se mueve porque depende de la A. Esperable en la TA.', u: 'util', img: 'figs/sim/prac/p3_eha.png' },
+      parahis: { v: 'En sinusal, con captura del His: SA 85 y QRS 95. Solo V: SA 135 y QRS 150. Misma secuencia auricular.', r: 'Respuesta nodal: no hay una vía septal.', u: 'util', img: 'figs/sim/prac/p3_parahis.png' },
+      pre: { v: 'Estimulación ventricular en sinusal a 500 y 400 ms.', r: 'SA 140 a 500 y 190 a 400 (decremental), concéntrica: conducción VA por el nodo, sin vía.', u: 'util', img: 'figs/sim/prac/p3_pre.png' } },
     dx: ['ta'], ex: 'La respuesta A-A-V verdadera, la secuencia auricular distinta durante la estimulación ventricular y la persistencia con bloqueo AV por adenosina indican TA. La variación del VA de retorno desde varios sitios (> 14 ms) también la apoya.', refs: ['knight99', 'knight00', 'maruyama07'] },
   { id: 'c4', t: 'TSV con activación excéntrica', p: 'Adolescente de 16 años con TSV. ECG basal sin preexcitación.',
     ecg: 'figs/sim/casos/c4_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c4_basal.png', ind: 'figs/sim/casos/c4_ind.png',
@@ -2033,7 +2037,7 @@ $('#goEnr').onclick = () => locView('enr'); $('#goObl').onclick = () => openFich
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => locView('hub'));
 try { const t = location.hash === '#localizar' ? 'loc' : localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
 checkReview();
-const APPV = 146;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 147;   // igual al número de CACHE_VERSION de sw.js
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {});
   // cuando se instala una versión nueva, recarga una vez para mostrarla

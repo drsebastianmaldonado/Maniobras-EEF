@@ -276,6 +276,103 @@ S['p2_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.25, title='EA con His refrac
     cal=[(hs[3], hs[4], 'His d', f'H-H {LC2}'), (hs[4], hs[5], 'His d', f'H-H {LC2}')],
     marks=[(apb, 'V1', 'EA')])
 
+# =====================================================================================================
+# Caso 3 (TA incesante en una niña de 2 años; LC 270 como el ECG real). A → His 100, HV 45 (PR 145), VA 125.
+SRC3 = 'caso 3 (didáctico): LC 270 como el caso; el resto, ilustrativo'
+LC3, AH3, SC3 = 270, 100, 240
+VA3 = LC3 - AH3 - HV
+
+
+def ta_vop(title, med, sa=120, typ='pa', pace='RVA'):
+    A0 = [0, LC3, 2 * LC3]
+    vs0 = [a + AH3 + HV for a in A0]
+    sp = [vs0[-1] + 200 + SC3 * k for k in range(6)]
+    Aret = [s + sa for s in sp]
+    focal = Aret[-1] + 330
+    v_after = focal + AH3 + HV
+    cal = [(A0[0], A0[1], 'HRA', f'A-A {LC3}'), (sp[-2], sp[-1], 'RVA', f'S-S {SC3}'), (Aret[-2], Aret[-1], 'HRA', f'A-A {SC3}'),
+           (Aret[-1], focal, 'CS 9-10', f'A-A {focal - Aret[-1]}')]
+    marks = [(Aret[-1], 'His p', 'A'), (focal, 'His p', 'A'), (v_after, 'aVF', 'V')]
+    if med:
+        cal = [(A0[0], A0[1], 'HRA', f'A-A {LC3}'), (vs0[0], A0[1] + 2, 'CS 9-10', f'VA {VA3}'), (sp[-1], Aret[-1] + 2, 'CS 9-10', f'SA {sa}'),
+               (sp[-1], v_after + 2, 'RVA', f'PPI {v_after - sp[-1]}')]
+        marks = [(sp[-1] + 300, 'I', f'SA − VA = {sa} − {VA3} = {sa - VA3} ms'), (sp[-1] + 300, 'aVF', f'PPI − LC = {v_after - sp[-1]} − {LC3} = {v_after - sp[-1] - LC3} ms')]
+    return dict(win=(-80, v_after + 380), pxms=0.25, channels=CH6, title=title, src=SRC3, pace_ch=pace,
+        beats=[(v, 'n') for v in vs0] + [(s, typ) for s in sp] + [(v_after, 'n'), (v_after + LC3, 'n')], spikes=sp,
+        atr=[(a, 'cs_mid', 1) for a in A0] + [(a, 'conc_his', -1) for a in Aret] + [(focal, 'cs_mid', 1), (focal + LC3, 'cs_mid', 1)],
+        h_ante=[v - HV for v in vs0] + [v_after - HV, v_after + LC3 - HV], h_retro=[s + sa - 10 for s in sp], cal=cal, marks=marks)
+
+
+S['p3_vop'] = ta_vop('Sobreestimulación ventricular desde el ápex del VD a 240 ms', False)
+S['p3_medidas'] = ta_vop('Medidas sobre la sobreestimulación ventricular (ápex del VD a 240 ms): PPI y SA', True)
+S['p3_diff_a'] = ta_vop('A. Encarrilamiento desde el ápex del VD (240 ms)', True, 120, 'pa')
+S['p3_diff_b'] = ta_vop('B. Encarrilamiento desde la base del VD (240 ms)', True, 105, 'pb')
+for k in ('p3_diff_a', 'p3_diff_b'):
+    S[k]['marks'] = []
+
+# Adenosina: bloqueo AV 2:1 transitorio y la TA sigue.
+A = [i * LC3 for i in range(9)]
+cond = [0, 1, 2, 4, 6, 7, 8]
+hs = [A[i] + AH3 for i in cond]
+S['p3_ado'] = dict(win=(-80, A[-1] + 300), pxms=0.29, channels=CH6, title='Adenosina IV durante la taquicardia', src=SRC3,
+    beats=[(h + HV, 'n') for h in hs], atr=[(a, 'cs_mid', 1) for a in A], h_ante=hs,
+    cal=[(A[3], A[4], 'HRA', f'A-A {LC3}')], marks=[(A[3] + 30, 'aVF', 'A sin V'), (A[5] + 30, 'aVF', 'A sin V')])
+
+# EV con His refractario: la A siguiente no cambia.
+A = [i * LC3 for i in range(7)]
+hs = [a + AH3 for a in A]
+vs = [h + HV for h in hs]
+ev = hs[3]
+S['p3_ehr'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='EV con His refractario durante la taquicardia', channels=CH6, src=SRC3,
+    spikes=[ev], pace_ch='RVA', beats=[(v, 'n') for k2, v in enumerate(vs) if k2 != 3] + [(ev, 'pa')],
+    atr=[(a, 'cs_mid', 1) for a in A], h_ante=hs,
+    cal=[(A[2], A[3], 'CS 9-10', f'A-A {LC3}'), (A[3], A[4], 'CS 9-10', f'A-A {LC3}')], marks=[(ev, 'V1', 'EV'), (ev, 'His p', 'H')])
+
+# EA con His refractario desde el ostium del SC: captura la aurícula y resetea el foco: la A y el His siguientes se retrasan.
+A = [i * LC3 for i in range(4)]
+ea = A[3] + AH3 + 10
+A2 = [ea + 300, ea + 300 + LC3, ea + 300 + 2 * LC3]
+hs = [a + AH3 for a in A] + [a + AH3 for a in A2]
+vs = [h + HV for h in hs]
+S['p3_eha'] = dict(win=(-80, vs[-1] + 220), pxms=0.27, title='EA con His refractario desde el ostium del SC', channels=CH6, src=SRC3,
+    beats=[(v, 'n') for v in vs], aspikes=[ea], apace_ch='CS 9-10',
+    atr=[(a, 'cs_mid', 1) for a in A + A2] + [(ea + 4, 'conc_cs', 1)], h_ante=hs,
+    cal=[(hs[2], hs[3], 'His d', f'H-H {LC3}'), (hs[3], hs[4], 'His d', f'H-H {hs[4] - hs[3]}'), (ea, A2[0], 'CS 9-10', 'A-A 300')],
+    marks=[(ea, 'V1', 'EA')])
+
+
+# Sobreestimulación auricular desde dos sitios: el VA del primer latido de retorno cambia.
+def ta_aop(site, ch, seq, ret, title):
+    A0 = [0, LC3]
+    sp = [A0[-1] + 200 + 240 * k for k in range(6)]
+    pv = [s + 28 + AH3 + HV for s in sp]
+    focal = sp[-1] + ret
+    hs = [a + AH3 for a in A0] + [s + 28 + AH3 for s in sp] + [focal + AH3, focal + LC3 + AH3]
+    vs = [h + HV for h in hs]
+    return dict(win=(-80, vs[-1] + 220), pxms=0.22, title=title, channels=CH6, src=SRC3, beats=[(v, 'n') for v in vs],
+        aspikes=sp, apace_ch=ch, atr=[(a, 'cs_mid', 1) for a in A0] + [(s + 5, seq, 1) for s in sp] + [(focal, 'cs_mid', 1), (focal + LC3, 'cs_mid', 1)],
+        h_ante=hs, cal=[(sp[-2], sp[-1], ch, 'S-S 240'), (pv[-2], pv[-1], 'RVA', 'V-V 240'), (pv[-1], focal + 2, 'CS 9-10', f'VA {focal - pv[-1]}')])
+
+
+S['p3_aop_a'] = ta_aop('AD alta', 'HRA', 'sinus', 330, 'A. Sobreestimulación auricular desde la AD alta a 240 ms')
+S['p3_aop_b'] = ta_aop('ostium del SC', 'CS 9-10', 'conc_cs', 290, 'B. Desde el ostium del SC a 240 ms')
+
+# Para-Hisiana en sinusal: respuesta nodal (el SA se alarga 50 ms).
+sp = [0, 650, 1300, 1950]
+cap = [True, False, True, False]
+S['p3_parahis'] = dict(win=(-80, 2300), pxms=0.32, title='Estimulación para-Hisiana en ritmo sinusal', channels=CH6, src=SRC3,
+    spikes=sp, pace_ch='His p', beats=[(s + HV if c else s, 'n' if c else 'pa') for s, c in zip(sp, cap)],
+    atr=[(s + (85 if c else 135), 'conc_his', -1) for s, c in zip(sp, cap)],
+    cal=[(sp[0], sp[0] + 87, 'HRA', 'SA 85'), (sp[1], sp[1] + 137, 'HRA', 'SA 135'), (sp[2] + HV, sp[2] + HV + 95, 'RVA', 'QRS 95'), (sp[3], sp[3] + 150, 'RVA', 'QRS 150')],
+    marks=[(sp[0] + 30, 'V1', 'His + V'), (sp[1] + 40, 'V1', 'solo V')])
+
+# Estudio basal: estimulación ventricular a 500 y 400: SA 140 y 190 (decremental), concéntrica por el nodo.
+sp = [0, 500, 1000, 1400, 1800]
+sas = [140, 140, 140, 190, 190]
+S['p3_pre'] = dict(win=(-80, 2150), pxms=0.30, title='Estimulación ventricular en ritmo sinusal: 500 y 400 ms', channels=CH6, src=SRC3,
+    spikes=sp, beats=[(s, 'pa') for s in sp], atr=[(s + a, 'conc_his', -1) for s, a in zip(sp, sas)], h_retro=[s + a - 60 for s, a in zip(sp, sas)],
+    cal=[(sp[0], sp[1], 'RVA', 'S-S 500'), (sp[1], sp[1] + 142, 'HRA', 'SA 140'), (sp[2], sp[3], 'RVA', 'S-S 400'), (sp[3], sp[3] + 192, 'HRA', 'SA 190')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
