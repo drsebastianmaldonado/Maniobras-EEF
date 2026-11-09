@@ -32,6 +32,7 @@ CS_NAMES = ['CS 9-10', 'CS 7-8', 'CS 5-6', 'CS 3-4', 'CS 1-2']
 SEQ = {
     'conc_cs':  {'HRA': 38, 'His': 8, 'CS': [2, 11, 20, 29, 38]},      # retrógrada, más precoz en el ostium del SC
     'conc_his': {'HRA': 30, 'His': 0, 'CS': [10, 18, 26, 34, 42]},     # retrógrada, más precoz en el His
+    'trnav':    {'HRA': 16, 'His': 0, 'CS': [4, 7, 10, 13, 16]},      # TRNAV típica: casi simultánea, más precoz en el His
     'cs_mid':   {'HRA': 45, 'His': 20, 'CS': [14, 6, 0, 6, 14]},       # más precoz en el SC medio
     'right':    {'HRA': 0, 'His': 22, 'CS': [32, 40, 48, 56, 64]},     # más precoz en la pared libre derecha (AD alta)
     'sinus':    {'HRA': 0, 'His': 28, 'CS': [38, 46, 54, 62, 70]},
