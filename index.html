@@ -1452,7 +1452,7 @@ let pCur = null, pLog = [], pDone = null;
 const pSave = () => { try { localStorage.setItem('mef_prac', JSON.stringify(pState)); } catch (e) {} };
 function renderPracList() {
   const ok = Object.values(pState).filter(x => x.ok).length;
-  $('#pracBody').innerHTML = `<div class="card" style="padding:14px 16px"><b>Cómo funciona</b><p class="small" style="margin:4px 0 0">Cada caso empieza con los hallazgos de la taquicardia. Elegí las maniobras que harías, en el orden que quieras, y cuando tengas el diagnóstico, decidilo. Al final ves qué maniobras eran clave y cuáles engañaban. Los casos 4, 5, 6, 8, 9 y 13 usan datos publicados; los demás son didácticos, con valores coherentes con los puntos de corte. Resueltos: ${ok} de ${PCASOS.length}.</p></div>` +
+  $('#pracBody').innerHTML = `<div class="card" style="padding:14px 16px"><b>Cómo funciona</b><p class="small" style="margin:4px 0 0">Cada caso empieza con los hallazgos de la taquicardia. Elegí las maniobras que harías, en el orden que quieras, y cuando tengas el diagnóstico, decidilo. Al final ves qué maniobras eran clave y cuáles engañaban. Los casos 4, 5, 6, 8, 9 y 13 usan datos publicados; los demás son didácticos, con valores coherentes con los puntos de corte. Resueltos: ${ok} de ${PCASOS.length}.</p><p class="small" style="margin:4px 0 0;opacity:.6">Versión ${APPV}</p></div>` +
     PCASOS.map((c, i) => { const st = pState[c.id]; return `<button class="card lcard" type="button" data-c="${i}"><span class="lic2" style="--c:${st ? (st.ok ? 'var(--green)' : 'var(--orange)') : 'var(--slate)'}">${st ? (st.ok ? 'Resuelto · ' + st.n + ' maniobras' : 'A revisar') : 'Caso ' + (i + 1)}</span><b>${c.t}</b><span>${c.p}</span></button>`; }).join('');
   $('#pracBody').querySelectorAll('[data-c]').forEach(b => b.onclick = () => startCase(+b.dataset.c));
 }
@@ -2030,7 +2030,13 @@ $('#goEnr').onclick = () => locView('enr'); $('#goObl').onclick = () => openFich
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => locView('hub'));
 try { const t = location.hash === '#localizar' ? 'loc' : localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
 checkReview();
-if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+const APPV = 141;   // igual al número de CACHE_VERSION de sw.js
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {});
+  // cuando se instala una versión nueva, recarga una vez para mostrarla
+  let recargada = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!recargada) { recargada = true; location.reload(); } });
+}
 </script>
 </body>
 </html>
