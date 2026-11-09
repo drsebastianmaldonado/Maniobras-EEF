@@ -1298,7 +1298,7 @@ const PCASOS = [
       ado: { v: 'Bloqueo AV 2:1 transitorio: hay A sin V y la taquicardia auricular sigue a 270 ms.', r: 'La taquicardia sigue con bloqueo AV: el nodo y el ventrículo no forman parte del mecanismo; es una TA.', u: 'clave', img: 'figs/sim/prac/p3_ado.png' },
       aop: { v: 'Sobreestimulación auricular a 240 ms (V-V 240) desde la AD alta y desde el ostium del SC. Al cortar, el VA del primer latido es 157 ms desde la AD alta y 117 ms desde el ostium del SC.', r: 'Sin VA linking: el VA de retorno cambia 40 ms (> 14) según el sitio; la A de retorno la dispara el foco, no el V. Excluye TRNAV y TRAV, incluida una TA con PR largo como diferencial.', u: 'clave', img: 'figs/sim/prac/p3_aop.png' },
       medidas: { v: 'PPI 595 ms con LC 270 (PPI−LC 325). SA 120 ms con VA 125 (SA−VA −5).', r: 'Engañosa: con respuesta A-A-V el PPI−LC y el SA−VA no se interpretan (y además se contradicen: uno sugiere TRNAV y el otro TRAV).', u: 'trampa', img: 'figs/sim/prac/p3_medidas.png' },
-      diff: { v: 'Encarrilando a 240 ms: SA 120 desde el ápex y SA 105 desde la base del VD. En los dos, al cortar, A-A-V.', r: 'Engañosa: el encarrilamiento diferencial sirve para TRNAV vs TRAV; con A-A-V no corresponde.', u: 'trampa', img: 'figs/sim/prac/p3_diff.png' },
+      diff: { v: 'Encarrilando a 240 ms: desde el ápex SA 120 y PPI 595; desde la base del VD SA 145 y PPI 620. En los dos, al cortar, A-A-V.', r: 'Engañosa: el encarrilamiento diferencial sirve para TRNAV vs TRAV; con A-A-V no corresponde. Desde la base el SA y el PPI son más largos porque la A se activa por el nodo (el frente tiene que llegar a la RD distal y subir), y el PPI de la TA depende de la A, no del V.', u: 'trampa', img: 'figs/sim/prac/p3_diff.png' },
       ehr: { v: 'EV con el His refractario: la A siguiente no cambia (A-A 270) y la taquicardia sigue.', r: 'No hay una vía que lleve el V a la A. No distingue la TA de la TRNAV.', u: 'util', img: 'figs/sim/prac/p3_ehr.png' },
       eha: { v: 'EA desde el ostium del SC con el His refractario: la A siguiente aparece 300 ms después del EA y el His siguiente se retrasa (H-H 410).', r: 'El EA captura la aurícula y resetea el foco; el His se mueve porque depende de la A. Esperable en la TA.', u: 'util', img: 'figs/sim/prac/p3_eha.png' },
       parahis: { v: 'En sinusal, con captura del His: SA 85 y QRS 95. Solo V: SA 135 y QRS 150. Misma secuencia auricular.', r: 'Respuesta nodal: no hay una vía septal.', u: 'util', img: 'figs/sim/prac/p3_parahis.png' },
@@ -2037,7 +2037,7 @@ $('#goEnr').onclick = () => locView('enr'); $('#goObl').onclick = () => openFich
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => locView('hub'));
 try { const t = location.hash === '#localizar' ? 'loc' : localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
 checkReview();
-const APPV = 147;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 148;   // igual al número de CACHE_VERSION de sw.js
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {});
   // cuando se instala una versión nueva, recarga una vez para mostrarla

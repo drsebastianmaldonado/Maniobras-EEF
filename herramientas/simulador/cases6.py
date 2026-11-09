@@ -306,7 +306,7 @@ def ta_vop(title, med, sa=120, typ='pa', pace='RVA'):
 S['p3_vop'] = ta_vop('Sobreestimulación ventricular desde el ápex del VD a 240 ms', False)
 S['p3_medidas'] = ta_vop('Medidas sobre la sobreestimulación ventricular (ápex del VD a 240 ms): PPI y SA', True)
 S['p3_diff_a'] = ta_vop('A. Encarrilamiento desde el ápex del VD (240 ms)', True, 120, 'pa')
-S['p3_diff_b'] = ta_vop('B. Encarrilamiento desde la base del VD (240 ms)', True, 105, 'pb')
+S['p3_diff_b'] = ta_vop('B. Encarrilamiento desde la base del VD (240 ms)', True, 145, 'pb')
 for k in ('p3_diff_a', 'p3_diff_b'):
     S[k]['marks'] = []
 
