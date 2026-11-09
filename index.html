@@ -1271,7 +1271,7 @@ const PCASOS = [
       diff: { v: 'Encarrilando a 310 ms: SA 190 desde el ápex y SA 225 desde la base del VD (VA 15). ΔVA (base − ápex) +35 ms.', r: 'ΔVA > 20 ms: desde la base el frente tiene que entrar a la RD por distal y subir; propio de la TRNAV.', u: 'clave', img: 'figs/sim/prac/p1_diff.png' },
       pre: { v: 'Extraestímulos auriculares desde la AD alta: S1-S2 600-310 y 600-300.', r: 'Con S2 310 el AH es 220 ms; con S2 300 salta a 280 ms (+60) y aparece un eco: salto del AH ≥ 50 ms, doble fisiología nodal, sustrato de la TRNAV.', u: 'clave', img: 'figs/sim/prac/p1_pre.png' },
       eha: { v: 'EA desde el ostium del SC con el His refractario: el His siguiente se retrasa 14 ms (H-H 354).', r: 'El EA entra en el circuito (vía lenta) aunque el His esté refractario: TRNAV y no taquicardia de la unión (JET).', u: 'clave', img: 'figs/sim/prac/p1_eha.png' },
-      aop: { v: 'Estimulando la AD alta a 320 ms: AH 260. Al cortar, el VA del primer latido es 15 ms, igual al de la TSV.', r: 'VA linking: la A de retorno depende del V; excluye la TA, incluida la TA con PR largo.', u: 'clave', img: 'figs/sim/prac/p1_aop.png' },
+      aop: { v: 'Estimulando la AD alta a 320 ms los V se aceleran a 320 (V-V 320; en la TSV, 340), con AH 260. Al cortar, el VA del primer latido es 15 ms, igual al de la TSV.', r: 'VA linking: la A de retorno depende del V; excluye la TA, incluida la TA con PR largo.', u: 'clave', img: 'figs/sim/prac/p1_aop.png' },
       parahis: { v: 'En sinusal, con captura del His: SA 80 y QRS 95. Solo V: SA 130 y QRS 150. Misma secuencia auricular.', r: 'Respuesta nodal: el SA se alarga al perder el His; no hay una vía septal conduciendo.', u: 'util', img: 'figs/sim/prac/p1_parahis.png' },
       ado: { v: 'La taquicardia termina: el último latido es una A que no conduce al V.', r: 'Terminación con una A: excluye la TA, pero no distingue TRNAV de TRAV.', u: 'util', img: 'figs/sim/prac/p1_ado.png' },
       ehr: { v: 'EV con el His refractario: la A siguiente no cambia (A-A 340) y la taquicardia sigue.', r: 'No modifica la A: no hay una vía que participe en el circuito (no descarta una vía espectadora).', u: 'util', img: 'figs/sim/prac/p1_ehr.png' } },
@@ -2030,7 +2030,7 @@ $('#goEnr').onclick = () => locView('enr'); $('#goObl').onclick = () => openFich
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => locView('hub'));
 try { const t = location.hash === '#localizar' ? 'loc' : localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
 checkReview();
-const APPV = 141;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 142;   // igual al número de CACHE_VERSION de sw.js
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {});
   // cuando se instala una versión nueva, recarga una vez para mostrarla

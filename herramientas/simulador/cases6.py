@@ -56,7 +56,7 @@ S['p1_aop'] = dict(win=(-80, vs2[-1] + 250), pxms=0.22, title='Sobreestimulació
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
     atr=[(a, 'trnav', -1) for a in A] + [(s + 5, 'sinus', 1) for s in sp] + [(v + VA, 'trnav', -1) for v in [pv[-1]] + vs2],
     h_ante=[v - HV for v in vs + pv + vs2],
-    cal=[(vs[1], vs[1] + VA + 2, 'CS 9-10', f'VA {VA}'), (sp[-2], sp[-1], 'HRA', 'S-S 320'),
+    cal=[(vs[1], vs[1] + VA + 2, 'CS 9-10', f'VA {VA}'), (sp[-2], sp[-1], 'HRA', 'S-S 320'), (vs[0], vs[1], 'RVA', f'V-V {LC}'), (pv[-3], pv[-2], 'RVA', 'V-V 320'), (pv[-2], pv[-1], 'RVA', 'V-V 320'),
          (pv[-1], pv[-1] + VA + 2, 'CS 9-10', f'VA {VA}'), (sp[-1] + 28, pv[-1] - HV, 'His d', f'AH {AHs}')])
 
 
