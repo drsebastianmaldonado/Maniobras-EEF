@@ -13,7 +13,7 @@ from simlib import render
 import ecg12
 
 S = {}
-for m in ['cases', 'cases2', 'cases3', 'cases4', 'cases5']:
+for m in ['cases', 'cases2', 'cases3', 'cases4', 'cases5', 'cases6']:
     g = {'__name__': 'x'}
     with contextlib.redirect_stdout(io.StringIO()):
         exec(open(os.path.join(D, m + '.py')).read().split("if __name__")[0], g)
