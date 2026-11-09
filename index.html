@@ -1257,6 +1257,9 @@ const PDX = [['trnav_t', 'TRNAV típica'], ['trnav_a', 'TRNAV atípica'], ['trav
   ['nvrt', 'Vía nodoventricular o nodofascicular'], ['tvf', 'TV fascicular'], ['bbr', 'TV por reentrada rama-rama'],
   ['antid', 'TRAV antidrómica'], ['mahaim', 'Mahaim (vía atriofascicular)'], ['bys', 'TSV con conducción por una vía espectadora'],
   ['dfire', 'Taquicardia no reentrante por doble vía nodal'], ['bigat', 'Bigeminia auricular']];
+// Maniobras que se ofrecen en los casos de TSV de QRS angosto (la ablación nunca se ofrece como maniobra diagnóstica).
+const PSVT = ['pre', 'vop', 'medidas', 'vopvi', 'diff', 'ehr', 'aop', 'eha', 'parahis', 'mapa', 'ado'];
+const pMans = c => PMAN.filter(x => x[0] !== 'abll' && (c.allm || PSVT.includes(x[0])));
 const UTAG = { clave: ['Clave', 'var(--green)'], util: ['Útil', 'var(--blue)'], trampa: ['Engañosa', 'var(--orange)'] };
 const PCASOS = [
   { id: 'c1', t: 'Palpitaciones de inicio y fin bruscos', p: 'Adolescente de 15 años con palpitaciones paroxísticas. ECG basal normal, sin preexcitación.',
@@ -1337,7 +1340,7 @@ const PCASOS = [
       medidas: { r: 'PPI−LC 175 ms: no distingue la TRNAV de la taquicardia de la unión.' }, ehr: { r: 'No modifica el His.' },
       ado: { r: 'Enlentece transitoriamente, con bloqueo VA, sin terminar.' }, parahis: { r: 'Respuesta nodal.' } },
     dx: ['jet'], ex: 'Un EA precoz que adelanta el His inmediato sin cortar la taquicardia no es compatible con TRNAV (dejaría la vía rápida refractaria). Sin doble vía y sin conducción por la vía lenta en la sobreestimulación auricular, el diagnóstico es taquicardia de la unión.', refs: ['padanilam08', 'fan11', 'veen12'] },
-  { id: 'c8', t: 'Taquicardia de QRS ancho que terminó con verapamilo', p: 'Varón de 17 años, corazón sano. En la guardia, una taquicardia de QRS ancho terminó con verapamilo.',
+  { id: 'c8', allm: true, t: 'Taquicardia de QRS ancho que terminó con verapamilo', p: 'Varón de 17 años, corazón sano. En la guardia, una taquicardia de QRS ancho terminó con verapamilo.',
     ecg: 'figs/sim/casos/c8_ecg.jpg', ecgReal: true, ecg2: 'figs/sim/casos/c8_ecg_sin.jpg', basal: 'figs/sim/casos/c8_basal.png', ind: 'figs/sim/casos/c8_ind.png',
     h: ['Taquicardia de QRS 140 ms, BRD con eje superior, LC 420 ms', 'Disociación AV (más V que A)', 'His retrógrado 15 ms después del inicio del QRS'],
     m: { map: { r: 'En el septum medio: P1 mesodiastólico (proximal → distal) y P2 presistólico (distal → proximal); P1-V 100 → 75 → 55 ms de proximal a distal.', u: 'clave', img: 'figs/sim/prac/tvf_post.png' },
@@ -1365,7 +1368,7 @@ const PCASOS = [
       pre: { r: 'Doble fisiología nodal.' }, eha: { r: 'Sin efecto sobre el His.' },
       medidas: { r: 'PPI−LC 105 ms; el SA−VA no se interpreta con bloqueo VA.', u: 'util' } },
     dx: ['nvrt'], ex: 'Con bloqueo VA, el diferencial es TRNAV con bloqueo superior vs vía nodoventricular o nodofascicular. Una sola TSV, Wenckebach VA y HH estable apoyan la vía; His ortodrómico, V-V-A y PPI−LC ≤ 125 la confirman, y la fusión constante indica nodoventricular.', refs: ['nagashima20', 'veen12'] },
-  { id: 'c11', t: 'Taquicardia de QRS ancho con BRI en un corazón sano', p: 'Adolescente de 14 años con palpitaciones. ECG en sinusal normal, con patrón rS en DIII.',
+  { id: 'c11', allm: true, t: 'Taquicardia de QRS ancho con BRI en un corazón sano', p: 'Adolescente de 14 años con palpitaciones. ECG en sinusal normal, con patrón rS en DIII.',
     ecg: 'figs/sim/casos/c11_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c11_basal.png', ind: 'figs/sim/casos/c11_ind.png',
     h: ['Taquicardia de QRS ancho con BRI, eje normal o superior y transición tardía (después de V4); LC 260 ms', 'Relación AV 1:1', 'His retrógrado, después del inicio del QRS (HV negativo)', 'Activación auricular retrógrada concéntrica'],
     m: { adec: { r: 'Con estimulación auricular decremental desde la AD aparece una preexcitación con BRI que aumenta: el AV se alarga y el HV se acorta hasta hacerse negativo.', u: 'clave', img: 'figs/sim/prac/p11_adec.png' },
@@ -1376,7 +1379,7 @@ const PCASOS = [
       ado: { r: 'La taquicardia termina: la vía atriofascicular es sensible a la adenosina.' },
       ehr: { r: 'No aplica: el QRS es preexcitado.' }, parahis: { r: 'No aplica.' } },
     dx: ['mahaim'], ex: 'La preexcitación con BRI que aumenta mientras el AV se alarga (conducción decremental) y el HV que se hace negativo caracterizan a la vía atriofascicular. El EA desde la pared libre del AD, con la unión AV refractaria, que adelanta el V y resetea la taquicardia demuestra que la vía es el brazo anterógrado: TRAV antidrómica por Mahaim. Se ablaciona el potencial de la vía en el anillo tricuspídeo, no la inserción ventricular. El diferencial principal es una TV con BRI: la relación 1:1 y el reset por el EA la descartan.', refs: ['klein88', 'josephson', 'sternick04'] },
-  { id: 'c12', t: 'Taquicardia de QRS ancho con preexcitación máxima', p: 'Varón de 19 años con WPW (preexcitación manifiesta) y palpitaciones.',
+  { id: 'c12', allm: true, t: 'Taquicardia de QRS ancho con preexcitación máxima', p: 'Varón de 19 años con WPW (preexcitación manifiesta) y palpitaciones.',
     ecg: 'figs/sim/casos/c12_ecg.jpg', ecgReal: true, ecg2: 'figs/sim/casos/c12_ecg_sin.jpg', ecg2t: 'ECG en ritmo sinusal', basal: 'figs/sim/casos/c12_basal.png', ind: 'figs/sim/casos/c12_ind.png',
     h: ['Taquicardia de QRS ancho igual a la preexcitación máxima; LC 245 ms', 'Relación AV 1:1', 'His retrógrado antes de la A, después del inicio del QRS', 'Activación auricular retrógrada concéntrica, más precoz en el His'],
     m: { eapre: { r: 'Un EA desde la AD posterolateral, cerca de la vía, con la unión AV refractaria, adelanta el V siguiente con la misma morfología y también la A siguiente: resetea la taquicardia.', u: 'clave', img: 'figs/sim/prac/p12_eapre.png' },
@@ -1386,7 +1389,7 @@ const PCASOS = [
       ado: { r: 'La taquicardia termina por bloqueo en el nodo.', u: 'trampa' },
       aop: { r: 'VA linking presente.' }, ehr: { r: 'No aplica: el QRS es preexcitado.' }, parahis: { r: 'No aplica.' } },
     dx: ['antid'], ex: 'Si una vía fuera espectadora, el EA adelantaría el V pero la taquicardia seguiría a su ritmo. Acá el EA con la unión AV refractaria resetea la taquicardia a través de la vía: la vía es el brazo anterógrado y la aurícula está en el circuito. El retorno es por el nodo (His retrógrado antes de la A, secuencia concéntrica): TRAV antidrómica por una vía tipo Kent posterolateral derecha. La terminación con adenosina no distingue: también terminaría una TRNAV con conducción por una vía espectadora.', refs: ['autor', 'josephson'] },
-  { id: 'c13', t: 'Una P y dos QRS', p: 'Varón de 15 años, sin cardiopatía, con palpitaciones recurrentes.',
+  { id: 'c13', allm: true, t: 'Una P y dos QRS', p: 'Varón de 15 años, sin cardiopatía, con palpitaciones recurrentes.',
     ecg: 'figs/sim/casos/c13_ecg.png', ecgt: 'ECG con las palpitaciones', ecgReal: true, ecg2: 'figs/sim/casos/c13_ecg_abl.png', ecg2t: 'ECG en ritmo sinusal (otro registro)', basal: 'figs/sim/casos/c13_basal.png', ind: 'figs/sim/casos/c13_ind.png',
     h: ['Ritmo irregular de QRS angosto a ~100 lpm, con latidos agrupados de a dos', 'Algunos latidos con QRS ancho (aberrancia)', 'Una sola P sinusal por cada par de QRS; sin P retrógradas'],
     m: { regah: { r: 'La AD registra una sola A por cada par de QRS, con secuencia alta → baja (sinusal). En el His, cada A conduce por la vía rápida y después por una vía muy lenta: A-H1-V1-H2-V2.', u: 'clave', img: 'figs/sim/prac/burri12.png' },
@@ -1466,7 +1469,7 @@ function renderCase() {
     <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div>${presFigs(c)}</div>`;
   if (pLog.length) h += `<h2 class="sec">Estudio</h2><div class="panel">${pLog.map((k, n) => { const r = res(k), tag = pDone && r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><span class="n">${n + 1}</span><b>${PMAN.find(x => x[0] === k)[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div>${pDone && r.v ? `<p><b>${r.v}</b></p><p class="small" style="margin:0">${r.r}</p>` : `<p>${r.v || r.r}</p>`}${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro" loading="lazy"></a><figcaption>${r.real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('')}</div>`;
   if (!pDone) {
-    const left = PMAN.filter(x => !pLog.includes(x[0]));
+    const left = pMans(c).filter(x => !pLog.includes(x[0]));
     h += `<h2 class="sec">¿Qué hacés?</h2><div class="pgrid">${left.map(x => `<button class="opt pm" data-k="${x[0]}">${x[1]}</button>`).join('')}</div>
       <button class="btn" id="pDx" style="align-self:flex-start;background:var(--violet);color:#fff">Responder el caso</button><div id="pDxBox"></div>`;
   } else {
