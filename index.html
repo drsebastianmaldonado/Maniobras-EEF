@@ -1277,15 +1277,17 @@ const PCASOS = [
       ehr: { v: 'EV con el His refractario: la A siguiente no cambia (A-A 340) y la taquicardia sigue.', r: 'No modifica la A: no hay una vía que participe en el circuito (no descarta una vía espectadora).', u: 'util', img: 'figs/sim/prac/p1_ehr.png' } },
     dx: ['trnav_t'], ex: 'Un VA septal ≤ 70 ms excluye la TRAV, y la respuesta A-V a la sobreestimulación ventricular excluye la TA. Con esas dos observaciones se llega a la TRNAV típica (41 % de las TSV en la serie de Knight).', refs: ['knight00', 'knight99', 'veen11'] },
   { id: 'c2', t: 'TSV de RP corto con VA de 110 ms', p: 'Niña de 10 años con TSV recurrentes. ECG basal sin preexcitación.',
-    ecg: 'figs/sim/casos/c2_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c2_basal.png', ind: 'figs/sim/casos/c2_ind.png',
-    h: ['TSV de QRS angosto, LC 280 ms', 'Relación AV 1:1', 'VA septal 110 ms, RP corto', 'Activación concéntrica, más precoz en el ostium del SC'],
-    m: { vop: { r: 'Respuesta A-V. Desde el ápex el QRS estimulado no muestra fusión evidente.', u: 'util' },
-      medidas: { r: 'PPI−LC 80 ms; SA−VA 40 ms; ΔHA −45 ms.', u: 'clave', img: 'figs/sim/prac/p2_vop.png' },
-      ehr: { r: 'Una EV con His refractario adelanta la A 25 ms sin cambiar la secuencia.', u: 'clave', img: 'figs/sim/prac/p2_ehr.png' },
-      diff: { r: 'ΔVA (base − ápex) −10 ms; ΔcPPI−LC +2 ms.', u: 'util' },
-      parahis: { r: 'Al perder la captura del His el SA no cambia: respuesta extranodal.', u: 'util' },
-      pre: { r: 'Sin doble vía. Conducción VA no decremental, concéntrica, más precoz en el ostium del SC.', u: 'util' },
-      aop: { r: 'VA linking presente.' }, ado: { r: 'La TSV termina con una A.' } },
+    ecg: 'figs/sim/casos/c2_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c2_basal.png', ind: 'figs/sim/casos/c2_ind.png', indt: 'Extraestímulo auricular S1-S2 600-300',
+    h: ['TSV de QRS angosto, LC 280 ms, relación AV 1:1', 'Protocolo: extraestímulo auricular desde la AD alta, S1-S2 600-300'],
+    hk: ['VA septal 110 ms (> 70 ms): excluye la TRNAV típica. Con la A más precoz en el ostium del SC quedan la TRAV por vía septal y la TRNAV atípica.'],
+    m: { vop: { v: 'Estimulando el ápex del VD a 250 ms las A se aceleran a 250 con la misma secuencia. Al cortar, el primer electrograma que sigue a la última A es un V (secuencia A-V).', r: 'Respuesta A-V: excluye la TA.', u: 'clave', img: 'figs/sim/prac/p2_vop.png' },
+      medidas: { v: 'PPI 360 ms con LC 280 (PPI−LC 80). SA 150 ms con VA 110 (SA−VA 40). HA 155 en la TSV y 110 estimulando (ΔHA −45).', r: 'PPI−LC < 115 y SA−VA < 85: el ventrículo está en el circuito. ΔHA < −10: estimulando, His y A se activan en paralelo (en la TSV, en serie). Las tres apuntan a TRAV.', u: 'clave', img: 'figs/sim/prac/p2_medidas.png' },
+      diff: { v: 'Encarrilando a 250 ms: SA 150 desde el ápex y SA 140 desde la base del VD (VA 110). ΔVA (base − ápex) −10 ms.', r: 'ΔVA ≤ 20 ms: desde la base el frente llega antes a la vía septal; TRAV.', u: 'clave', img: 'figs/sim/prac/p2_diff.png' },
+      ehr: { v: 'EV desde el ápex con el His refractario: la A siguiente se adelanta 25 ms (A-A 255) con la misma secuencia y la taquicardia sigue.', r: 'Con el His refractario la EV solo pudo llegar a la A por una vía: demuestra la vía y que participa en el circuito (resetea la taquicardia).', u: 'clave', img: 'figs/sim/prac/p2_ehr.png' },
+      parahis: { v: 'En sinusal, con captura del His: SA 100 y QRS 95. Solo V: SA 100 y QRS 150. Misma secuencia auricular.', r: 'Respuesta extranodal: el SA no cambia al perder el His; hay una vía septal conduciendo.', u: 'util', img: 'figs/sim/prac/p2_parahis.png' },
+      pre: { v: 'Estimulación ventricular en sinusal a 500 y 400 ms.', r: 'SA 125 a las dos frecuencias (no decremental), con la A más precoz en el ostium del SC: conducción VA por una vía septal.', u: 'util', img: 'figs/sim/prac/p2_pre.png' },
+      aop: { v: 'Estimulando la AD alta a 260 ms los V se aceleran a 260 (V-V 260; en la TSV, 280). Al cortar, el VA del primer latido es 110 ms, igual al de la TSV.', r: 'VA linking: la A de retorno depende del V; excluye la TA.', u: 'util', img: 'figs/sim/prac/p2_aop.png' },
+      ado: { v: 'La taquicardia termina: el último latido es una A que no conduce al V.', r: 'Terminación con una A: excluye la TA, pero no distingue TRAV de TRNAV.', u: 'util', img: 'figs/sim/prac/p2_ado.png' } },
     dx: ['trav_s'], ex: 'Con VA > 70 ms y respuesta A-V, el diferencial es TRAV septal vs TRNAV atípica. PPI−LC < 115, SA−VA < 85 y ΔHA < 0 apuntan a TRAV, y la EV con His refractario que adelanta la A demuestra la vía.', refs: ['michaud01', 'ho08', 'veen12'] },
   { id: 'c3', t: 'Taquicardia incesante con disfunción ventricular', p: 'Niña de 2 años con taquicardia incesante y FEVI de 45 %.',
     ecg: 'figs/sim/casos/c3_ecg.png', ecgReal: true, basal: 'figs/sim/casos/c3_basal.png', ind: 'figs/sim/casos/c3_ind.png',
@@ -2030,7 +2032,7 @@ $('#goEnr').onclick = () => locView('enr'); $('#goObl').onclick = () => openFich
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => locView('hub'));
 try { const t = location.hash === '#localizar' ? 'loc' : localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
 checkReview();
-const APPV = 143;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 144;   // igual al número de CACHE_VERSION de sw.js
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {});
   // cuando se instala una versión nueva, recarga una vez para mostrarla

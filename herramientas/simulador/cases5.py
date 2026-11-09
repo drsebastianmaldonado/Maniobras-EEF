@@ -198,7 +198,7 @@ sp = [svt[-1] + 230 + SC2 * k for k in range(6)]
 A = [v + VA2 for v in svt] + [s + SA2 for s in sp]
 ret = sp[-1] + PPI2
 after = [ret, ret + LC2]
-S['p2_vop'] = dict(win=(-80, after[-1] + 220), pxms=0.28, title='Encarrilamiento desde el ápex del VD a 250 ms', channels=CH6,
+S['p2old_vop'] = dict(win=(-80, after[-1] + 220), pxms=0.28, title='Encarrilamiento desde el ápex del VD a 250 ms', channels=CH6,
     src='caso 2 (didáctico): valores ilustrativos',
     beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
     atr=[(a, 'conc_cs', -1) for a in A + [v + VA2 for v in after]],
