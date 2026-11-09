@@ -2037,12 +2037,9 @@ $('#goEnr').onclick = () => locView('enr'); $('#goObl').onclick = () => openFich
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => locView('hub'));
 try { const t = location.hash === '#localizar' ? 'loc' : localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
 checkReview();
-const APPV = 148;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 149;   // igual al número de CACHE_VERSION de sw.js
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
-  navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {});
-  // cuando se instala una versión nueva, recarga una vez para mostrarla
-  let recargada = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!recargada) { recargada = true; location.reload(); } });
+  navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 </script>
 </body>
