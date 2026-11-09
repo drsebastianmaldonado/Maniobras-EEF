@@ -1257,8 +1257,8 @@ const PDX = [['trnav_t', 'TRNAV típica'], ['trnav_a', 'TRNAV atípica'], ['trav
 const UTAG = { clave: ['Clave', 'var(--green)'], util: ['Útil', 'var(--blue)'], trampa: ['Engañosa', 'var(--orange)'] };
 const PCASOS = [
   { id: 'c1', t: 'Palpitaciones de inicio y fin bruscos', p: 'Adolescente de 15 años con palpitaciones paroxísticas. ECG basal normal, sin preexcitación.',
-    ecg: 'figs/sim/casos/c1_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c1_basal.png', ind: 'figs/sim/casos/c1_ind.png',
-    h: ['TSV de QRS angosto inducida con extraestímulos auriculares, LC 340 ms', 'Relación AV 1:1', 'VA septal 40 ms: la A cae casi junto con el V', 'Activación auricular concéntrica (más precoz en el His y el SC proximal)'],
+    ecg: 'figs/sim/casos/c1_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c1_basal.png', ind: 'figs/sim/casos/c1_ind.png', indt: 'Inducción con salto del AH (S1-S2 600-300)',
+    h: ['TSV de QRS angosto inducida con un extraestímulo auricular (S1-S2 600-300) después de un salto del AH (AH 90 → 280 ms): la TSV arranca al bajar por la vía lenta; LC 340 ms', 'Relación AV 1:1', 'VA septal 40 ms: la A cae casi junto con el V', 'Activación auricular concéntrica (más precoz en el His y el SC proximal)'],
     m: { vop: { r: 'Estimulando a 310 ms las A se aceleran con la misma secuencia; al cortar, respuesta A-V (A-H).', u: 'clave', img: 'figs/sim/prac/p1_vop.png' },
       medidas: { r: 'PPI−LC 170 ms; SA−VA 150 ms.', u: 'util' }, diff: { r: 'ΔVA (base − ápex) +35 ms.', u: 'util' },
       aop: { r: 'VA linking: el VA del primer latido de retorno es igual al de la TSV.', u: 'util' },
