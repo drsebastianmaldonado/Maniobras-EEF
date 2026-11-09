@@ -170,6 +170,11 @@ def render(sc, path):
     for t1, t2, ch, label in sc.get('cal', []):
         y = TOP + ROWH * rows[ch] + 6
         out.append(f'<line x1="{X(t1):.1f}" x2="{X(t2):.1f}" y1="{y}" y2="{y}" stroke="#0a58ca" stroke-width="0.9"/>')
+        if X(t2) - X(t1) < 14:   # intervalo corto: corchete abierto hacia abajo y rótulo al costado (no forma una "H")
+            for tt in (t1, t2):
+                out.append(f'<line x1="{X(tt):.1f}" x2="{X(tt):.1f}" y1="{y}" y2="{y+5}" stroke="#0a58ca" stroke-width="0.9"/>')
+            out.append(f'<text x="{X(t2)+3:.1f}" y="{y-2}" font-size="9.5" text-anchor="start" fill="#0a58ca">{label}</text>')
+            continue
         for tt in (t1, t2):
             out.append(f'<line x1="{X(tt):.1f}" x2="{X(tt):.1f}" y1="{y-4}" y2="{y+4}" stroke="#0a58ca" stroke-width="0.9"/>')
         out.append(f'<text x="{(X(t1)+X(t2))/2:.1f}" y="{y-3}" font-size="9.5" text-anchor="middle" fill="#0a58ca">{label}</text>')
