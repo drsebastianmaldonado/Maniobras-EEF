@@ -71,6 +71,9 @@ h2.sec{margin:8px 4px -6px;font-size:13px;font-weight:700;letter-spacing:.07em;t
 .box .bl{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px}
 .box ul,.box ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px;font-size:15px}
 .box p{margin:0;font-size:15px}
+.opt.pd.on{outline:3px solid var(--violet);background:color-mix(in srgb,var(--violet) 12%,var(--card))}
+.paso{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.paso i{color:var(--ink2)}
 .esqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:4px}
 .esqs a{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:var(--ink2);font-size:12.5px;line-height:1.25}
 .esqs img{width:100%;aspect-ratio:3/2;object-fit:cover;object-position:top;border-radius:8px;border:1px solid var(--line,#ddd);background:#fff}
@@ -1258,15 +1261,17 @@ const UTAG = { clave: ['Clave', 'var(--green)'], util: ['Útil', 'var(--blue)'],
 const PCASOS = [
   { id: 'c1', t: 'Palpitaciones de inicio y fin bruscos', p: 'Adolescente de 15 años con palpitaciones paroxísticas. ECG basal normal, sin preexcitación.',
     ecg: 'figs/sim/casos/c1_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c1_basal.png', ind: 'figs/sim/casos/c1_ind.png', indt: 'Salto del AH: A, S1-S2 600-310 (AH 220); B, S2 10 ms más corto, 600-300 (AH 280, +60) e inducción',
-    h: ['TSV de QRS angosto inducida con un extraestímulo auricular (S1-S2 600-300) después de un salto del AH: con S2 310 el AH es 220 ms y con S2 300 salta a 280 ms (+60); la TSV arranca al bajar por la vía lenta; LC 340 ms', 'Relación AV 1:1', 'VA septal 40 ms: la A cae casi junto con el V', 'Activación auricular concéntrica (más precoz en el His y el SC proximal)'],
-    m: { vop: { r: 'Estimulando a 310 ms las A se aceleran con la misma secuencia; al cortar, respuesta A-V (A-H).', u: 'clave', img: 'figs/sim/prac/p1_vop.png' },
-      medidas: { r: 'PPI−LC 170 ms; SA−VA 150 ms.', u: 'util', img: 'figs/sim/prac/p1_medidas.png' }, diff: { r: 'ΔVA (base − ápex) +35 ms: desde la base el SA es 225 y desde el ápex 190.', u: 'util', img: 'figs/sim/prac/p1_diff.png' },
-      aop: { r: 'VA linking: el VA del primer latido de retorno es igual al de la TSV.', u: 'util', img: 'figs/sim/prac/p1_aop.png' },
-      pre: { r: 'Salto AH de 60 ms con extraestímulos auriculares y eco nodal.', u: 'util', img: 'figs/sim/prac/p1_pre.png' },
-      parahis: { r: 'Respuesta nodal: al perder la captura del His el SA se alarga 50 ms, sin cambiar la secuencia.', u: 'util', img: 'figs/sim/prac/p1_parahis.png' },
-      ado: { r: 'La TSV termina con una A (bloqueo AV).', u: 'util', img: 'figs/sim/prac/p1_ado.png' },
-      ehr: { r: 'No modifica la A ni termina la TSV.', img: 'figs/sim/prac/p1_ehr.png' },
-      eha: { r: 'Un EA con His refractario desde el ostium del SC retrasa el His siguiente 14 ms.', u: 'util', img: 'figs/sim/prac/p1_eha.png' } },
+    h: ['TSV de QRS angosto, LC 340 ms, relación AV 1:1', 'Inducción con extraestímulo auricular: con S1-S2 600-310 el AH es 220 ms; con 600-300 el AH es 280 ms y se inicia la taquicardia', 'VA septal 40 ms', 'Activación auricular retrógrada más precoz en el His y en el SC proximal'],
+    hk: ['VA septal 40 ms (≤ 70 ms): excluye la TRAV, porque el impulso no alcanza a recorrer el ventrículo y subir por una vía.', 'Inducción con salto del AH (+60 ms con 10 ms menos de S2): doble fisiología nodal; la taquicardia arranca al bajar por la vía lenta.'],
+    m: { vop: { v: 'Estimulando el ápex del VD a 310 ms las A se aceleran a 310 con la misma secuencia. Al cortar, el primer electrograma que sigue a la última A es un V (secuencia A-V).', r: 'Respuesta A-V: el último A arrastrado vuelve al circuito y sale un V; excluye la TA.', u: 'clave', img: 'figs/sim/prac/p1_vop.png' },
+      medidas: { v: 'PPI 510 ms con LC 340 (PPI−LC 170). SA 190 ms con VA 40 (SA−VA 150).', r: 'PPI−LC > 115 y SA−VA > 85: el ventrículo está lejos del circuito; excluye la TRAV.', u: 'clave', img: 'figs/sim/prac/p1_medidas.png' },
+      diff: { v: 'Encarrilando a 310 ms: SA 190 desde el ápex y SA 225 desde la base del VD (VA 40). ΔVA (base − ápex) +35 ms.', r: 'ΔVA > 20 ms: desde la base el frente tiene que entrar a la RD por distal y subir; propio de la TRNAV.', u: 'clave', img: 'figs/sim/prac/p1_diff.png' },
+      pre: { v: 'S1-S2 600-310: AH 220. S1-S2 600-300: AH 280 (+60), con un eco.', r: 'Salto del AH ≥ 50 ms con eco: doble fisiología nodal, sustrato de la TRNAV.', u: 'clave', img: 'figs/sim/prac/p1_pre.png' },
+      eha: { v: 'EA desde el ostium del SC con el His refractario: el His siguiente se retrasa 14 ms (H-H 354).', r: 'El EA entra en el circuito (vía lenta) aunque el His esté refractario: TRNAV y no taquicardia de la unión (JET).', u: 'clave', img: 'figs/sim/prac/p1_eha.png' },
+      aop: { v: 'Estimulando la AD alta a 320 ms: AH 260. Al cortar, el VA del primer latido es 40 ms, igual al de la TSV.', r: 'VA linking: la A de retorno depende del V; excluye la TA, incluida la TA con PR largo.', u: 'clave', img: 'figs/sim/prac/p1_aop.png' },
+      parahis: { v: 'En sinusal, con captura del His: SA 80 y QRS 95. Solo V: SA 130 y QRS 150. Misma secuencia auricular.', r: 'Respuesta nodal: el SA se alarga al perder el His; no hay una vía septal conduciendo.', u: 'util', img: 'figs/sim/prac/p1_parahis.png' },
+      ado: { v: 'La taquicardia termina: el último latido es una A que no conduce al V.', r: 'Terminación con una A: excluye la TA, pero no distingue TRNAV de TRAV.', u: 'util', img: 'figs/sim/prac/p1_ado.png' },
+      ehr: { v: 'EV con el His refractario: la A siguiente no cambia (A-A 340) y la taquicardia sigue.', r: 'No modifica la A: no hay una vía que participe en el circuito (no descarta una vía espectadora).', u: 'util', img: 'figs/sim/prac/p1_ehr.png' } },
     dx: ['trnav_t'], ex: 'Un VA septal ≤ 70 ms excluye la TRAV, y la respuesta A-V a la sobreestimulación ventricular excluye la TA. Con esas dos observaciones se llega a la TRNAV típica (41 % de las TSV en la serie de Knight).', refs: ['knight00', 'knight99', 'veen11'] },
   { id: 'c2', t: 'TSV de RP corto con VA de 110 ms', p: 'Niña de 10 años con TSV recurrentes. ECG basal sin preexcitación.',
     ecg: 'figs/sim/casos/c2_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c2_basal.png', ind: 'figs/sim/casos/c2_ind.png',
@@ -1459,16 +1464,17 @@ function renderCase() {
   let h = `<div class="ctrl"><button class="btn" id="pBack">← Casos</button></div>
     <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${pCur + 1}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
     <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div>${presFigs(c)}</div>`;
-  if (pLog.length) h += `<h2 class="sec">Estudio</h2><div class="panel">${pLog.map((k, n) => { const r = res(k), tag = pDone && r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><span class="n">${n + 1}</span><b>${PMAN.find(x => x[0] === k)[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div><p>${r.r}</p>${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro" loading="lazy"></a><figcaption>${r.real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('')}</div>`;
+  if (pLog.length) h += `<h2 class="sec">Estudio</h2><div class="panel">${pLog.map((k, n) => { const r = res(k), tag = pDone && r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><span class="n">${n + 1}</span><b>${PMAN.find(x => x[0] === k)[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div>${pDone && r.v ? `<p><b>${r.v}</b></p><p class="small" style="margin:0">${r.r}</p>` : `<p>${r.v || r.r}</p>`}${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro" loading="lazy"></a><figcaption>${r.real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('')}</div>`;
   if (!pDone) {
     const left = PMAN.filter(x => !pLog.includes(x[0]));
     h += `<h2 class="sec">¿Qué hacés?</h2><div class="pgrid">${left.map(x => `<button class="opt pm" data-k="${x[0]}">${x[1]}</button>`).join('')}</div>
-      <button class="btn" id="pDx" style="align-self:flex-start;background:var(--violet);color:#fff">Elegir el diagnóstico</button><div id="pDxBox"></div>`;
+      <button class="btn" id="pDx" style="align-self:flex-start;background:var(--violet);color:#fff">Responder el caso</button><div id="pDxBox"></div>`;
   } else {
     const ok = c.dx.includes(pDone), claves = Object.entries(c.m).filter(([, v]) => v.u === 'clave').map(([k]) => k);
     const usadas = claves.filter(k => pLog.includes(k)), trampas = pLog.filter(k => (c.m[k] || {}).u === 'trampa');
     h += `<div class="card leaf ${ok ? '' : 'warn'}"><div class="lt">${ok ? 'Correcto' : 'No es el diagnóstico'}</div><h3>${PDX.find(x => x[0] === c.dx[0])[1]}${c.dx.length > 1 ? ' (también vale: ' + c.dx.slice(1).map(d => PDX.find(x => x[0] === d)[1]).join(', ') + ')' : ''}</h3>
       ${ok ? '' : `<p style="margin:-4px 0 0">Elegiste: ${PDX.find(x => x[0] === pDone)[1]}.</p>`}
+      <div class="box"><div class="bl">Paso a paso</div><ol class="paso">${(c.hk || []).map(x => `<li><span class="lic2" style="--c:var(--green)">Clave</span> <b>Hallazgo:</b> ${x}</li>`).join('')}${['clave', 'util', 'trampa', undefined].flatMap(u => Object.entries(c.m).filter(([, v]) => v.u === u)).map(([k, v]) => { const pm = PMAN.find(x => x[0] === k), tg = v.u ? UTAG[v.u] : null; return pm ? `<li>${tg ? `<span class="lic2" style="--c:${tg[1]}">${tg[0]}</span> ` : ''}<b>${pm[1]}</b>${pLog.includes(k) ? ' <span class="small">(la hiciste)</span>' : ''}${v.v ? `<br>${v.v}` : ''}<br><i>${v.r}</i></li>` : ''; }).join('')}</ol></div>
       <div class="box"><div class="bl">Por qué</div><p>${c.ex}</p></div>
       <div class="box"><div class="bl">Tu estudio</div><ul><li>Hiciste ${pLog.length} maniobra${pLog.length === 1 ? '' : 's'}.</li><li>Maniobras clave: ${claves.map(k => `${pLog.includes(k) ? '✓' : '○'} ${PMAN.find(x => x[0] === k)[1]}`).join(' · ')}</li>${trampas.length ? `<li>Resultados engañosos que viste: ${trampas.map(k => PMAN.find(x => x[0] === k)[1]).join(', ')}.</li>` : ''}</ul></div>
       <div class="mlinks">${[...new Set(claves.map(k => PMAN.find(x => x[0] === k)[2]))].map(m => `<button class="ml" data-m="${m}">${M[m].t}</button>`).join('')}</div>
@@ -1484,11 +1490,20 @@ function renderCase() {
     pLog.push(k); renderCase();
   });
   const dx = $('#pDx'); if (dx) dx.onclick = () => {
-    $('#pDxBox').innerHTML = `<div class="card step" style="--t:var(--violet)"><div class="q">¿Cuál es el diagnóstico?</div><div class="opts">${PDX.map(x => `<button class="opt pd" data-d="${x[0]}">${x[1]}</button>`).join('')}</div></div>`;
+    let sel = null;
+    $('#pDxBox').innerHTML = `<div class="card step" style="--t:var(--violet)"><div class="q">¿Cuál es la taquicardia?</div><div class="help">Elegí una opción y tocá «Responder».</div><div class="opts">${PDX.map(x => `<button class="opt pd" data-d="${x[0]}">${x[1]}</button>`).join('')}</div>
+      <button class="btn" id="pSend" disabled style="align-self:flex-start;background:var(--violet);color:#fff;opacity:.5">Responder</button></div>`;
+    const send = $('#pSend');
     $('#pDxBox').querySelectorAll('.pd').forEach(b => b.onclick = () => {
-      pDone = b.dataset.d; pState[PCASOS[pCur].id] = { ok: PCASOS[pCur].dx.includes(pDone), n: pLog.length }; pSave(); renderCase();
-      scrollTo({ top: $('#pracBody .leaf').offsetTop - 70, behavior: 'smooth' });
+      sel = b.dataset.d;
+      $('#pDxBox').querySelectorAll('.pd').forEach(x => x.classList.toggle('on', x === b));
+      send.disabled = false; send.style.opacity = 1;
     });
+    send.onclick = () => {
+      if (!sel) return;
+      pDone = sel; pState[PCASOS[pCur].id] = { ok: PCASOS[pCur].dx.includes(pDone), n: pLog.length }; pSave(); renderCase();
+      scrollTo({ top: $('#pracBody .leaf').offsetTop - 70, behavior: 'smooth' });
+    };
     $('#pDxBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
   const rt = $('#pRetry'); if (rt) rt.onclick = () => startCase(pCur);
@@ -1977,14 +1992,14 @@ try { const s = JSON.parse(localStorage.getItem('mef_calc') || 'null'); if (s) {
 function renderReview(n) {
   const c = PCASOS[n - 1];
   if (!c) return false;
-  const rows = PMAN.filter(x => c.m[x[0]]).map(x => { const r = c.m[x[0]], tag = r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><b>${x[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div><p>${r.r}</p>${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro simulado" loading="lazy"></a><figcaption>${r.real ? "Registro real, anonimizado" : "Versión del modo práctica (sin diagnóstico ni cuentas)"}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('');
+  const rows = PMAN.filter(x => c.m[x[0]]).map(x => { const r = c.m[x[0]], tag = r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><b>${x[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div>${r.v ? `<p><b>Lo que ve el alumno:</b> ${r.v}</p><p class="small" style="margin:0"><b>Devolución:</b> ${r.r}</p>` : `<p>${r.r}</p>`}${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro simulado" loading="lazy"></a><figcaption>${r.real ? "Registro real, anonimizado" : "Versión del modo práctica (sin diagnóstico ni cuentas)"}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('');
   const sin = PMAN.filter(x => !c.m[x[0]]).map(x => x[1]);
   const nav = `<div class="ctrl">${n > 1 ? `<a class="btn" style="text-decoration:none" href="#revision-${n - 1}">← Caso ${n - 1}</a>` : ''}${n < PCASOS.length ? `<a class="btn" style="text-decoration:none" href="#revision-${n + 1}">Caso ${n + 1} →</a>` : ''}</div>`;
   $('#pracBody').innerHTML = `<div class="card" style="padding:10px 14px"><b>Revisión del caso ${n} de ${PCASOS.length}</b><p class="small" style="margin:2px 0 0">Vista para revisar: muestra todas las maniobras con su clasificación, el diagnóstico y la explicación. El alumno no la ve así.</p></div>${nav}
     <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${n}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
     <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div>${presFigs(c)}</div>
     <div class="card leaf"><div class="lt">Diagnóstico</div><h3>${PDX.find(x => x[0] === c.dx[0])[1]}${c.dx.length > 1 ? ' (también vale: ' + c.dx.slice(1).map(d => PDX.find(x => x[0] === d)[1]).join(', ') + ')' : ''}</h3>
-    <div class="box"><div class="bl">Por qué</div><p>${c.ex}</p></div><p class="small" style="margin:0">${cite(c.refs)}</p></div>
+    ${c.hk ? `<div class="box"><div class="bl">Hallazgos clave</div><ul>${c.hk.map(x => `<li>${x}</li>`).join('')}</ul></div>` : ''}<div class="box"><div class="bl">Por qué</div><p>${c.ex}</p></div><p class="small" style="margin:0">${cite(c.refs)}</p></div>
     <h2 class="sec">Maniobras con resultado</h2><div class="panel">${rows}</div>
     ${sin.length ? `<p class="small">Responden "No aporta información en este caso": ${sin.join(', ')}.</p>` : ''}${nav}`;
   return true;
