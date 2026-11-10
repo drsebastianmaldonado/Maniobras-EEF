@@ -245,7 +245,7 @@ sp = [svt[-1] + 380 + SC5 * k for k in range(6)]
 A = [v + VA5 for v in svt] + [s + SA5 for s in sp]
 ret = sp[-1] + PPI5
 after = [ret, ret + LC5]
-S['p5_vop'] = dict(win=(-100, after[-1] + 340), pxms=0.22, title='Encarrilamiento desde el ápex del VD a 430 ms', channels=CH6,
+S['p5old_vop'] = dict(win=(-100, after[-1] + 340), pxms=0.22, title='Encarrilamiento desde el ápex del VD a 430 ms', channels=CH6,
     src='caso 5: valores ilustrativos según las relaciones de Veenhuyzen 2011, fig. 3',
     beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
     atr=[(a, 'conc_cs', -1) for a in A + [v + VA5 for v in after]],

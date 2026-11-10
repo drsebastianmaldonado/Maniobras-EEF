@@ -313,7 +313,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script>
-const APPV = 152;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 153;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -1328,16 +1328,19 @@ const PCASOS = [
       eha: { v: 'EA desde el ostium del SC con el His refractario: el His siguiente sale a su tiempo (H-H 340).', r: 'No modifica el His: esperable en la TRAV.', u: 'util', img: 'figs/sim/prac/p4_eha.png' } },
     dx: ['trav_l'], ex: 'La activación excéntrica (SC 1-2) y el efecto Coumel (el VA se alarga 35 ms con BRI funcional) apuntan a una vía libre izquierda; la respuesta A-V, el VA linking y la terminación con una A excluyen la TA. Desde el ápex del VD el PPI−LC, el cPPI−LC y el SA−VA caen en rango de TRNAV por la distancia a la vía, y la para-Hisiana da nodal: son engañosas. El encarrilamiento diferencial (ΔVA −10) y la EV con His refractario desde el VI basal, que adelanta la A 20 ms, confirman la TRAV.', refs: ['veen11', 'knight00', 'veen12'] },
   { id: 'c5', t: 'TSV de RP largo con "A-A-V"', p: 'Mujer de 22 años con TSV de RP largo.',
-    ecg: 'figs/sim/casos/c5_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c5_basal.png', ind: 'figs/sim/casos/c5_ind.png',
-    h: ['TSV de QRS angosto, LC 460 ms, relación 1:1', 'VA 300 ms (RP largo)', 'Activación concéntrica, más precoz en el ostium del SC'],
-    m: { vop: { r: 'Estimulando a 430 ms, después de la última espiga hay dos A antes del V. Entre ellas hay 430 ms y la secuencia es idéntica a la de la TSV.', u: 'clave', img: 'figs/sim/prac/p5_vop.png' },
-      medidas: { r: 'PPI 645 (PPI−LC 185), cPPI−LC 185, SA 450 (SA−VA 150).', u: 'clave', img: 'figs/sim/prac/p5_vop.png' },
-      ehr: { r: 'No modifica la A, aun adelantando el V local más de 60 ms cerca del ostium del SC.', u: 'clave', img: 'figs/sim/prac/p5_ehr.png' },
-      diff: { r: 'ΔVA (base − ápex) +30 ms.', u: 'util' },
-      aop: { r: 'ΔAH 55 ms; el AH de la TSV es más corto que en sinusal.', u: 'util' },
-      pre: { r: 'Doble fisiología nodal con salto AH de 65 ms.', u: 'util' },
-      ado: { r: 'La TSV termina con un V (bloqueo en el brazo retrógrado).' }, parahis: { r: 'Respuesta nodal.' } },
-    dx: ['trnav_a'], ex: 'Es un seudo A-A-V: el SA (450) supera la LC de estimulación (430), así que A₂ es el último A acelerado y la respuesta es A-V. PPI−LC > 125 y SA−VA > 85 con EV-HR negativa y ΔAH > 40 indican TRNAV atípica rápida-lenta.', refs: ['veen11', 'ho15', 'man95'] },
+    ecg: 'figs/sim/casos/c5_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c5_basal.png', ind: 'figs/sim/casos/c5_ind.png', indt: 'Extraestímulo ventricular S1-S2 600-320',
+    h: ['TSV de QRS angosto, LC 460 ms, relación AV 1:1', 'Protocolo: extraestímulo ventricular desde el ápex del VD, S1-S2 600-320'],
+    hk: ['RP largo: VA 300 ms con la A más precoz en el ostium del SC. El diferencial es TRNAV atípica, TRAV por una vía septal decremental (PJRT) y TA septal baja.', 'Inducción con salto de la conducción retrógrada: con S2 320 el SA pasa de 120 a 300 ms y empieza la taquicardia con ese mismo VA (la retrógrada pasa a la vía lenta).'],
+    m: { vop: { v: 'Estimulando el ápex del VD a 430 ms las A se aceleran a 430 con la misma secuencia. SA 450 ms. Al cortar, después de la última espiga hay dos A (separadas por 430 ms) antes del V.', r: 'Seudo A-A-V: el SA (450) es mayor que la LC de estimulación (430), así que la primera de esas dos A es de la espiga anterior y la segunda es la última A acelerada. Contada desde la última A acelerada, la respuesta es A-V: excluye la TA.', u: 'clave', img: 'figs/sim/prac/p5_vop.png' },
+      medidas: { v: 'PPI 645 ms con LC 460 (PPI−LC 185). AH 115 en la TSV y 150 en el primer latido de retorno (cPPI−LC 150). SA 450 ms con VA 300 (SA−VA 150). HA 345 en la TSV y 370 estimulando (ΔHA +25).', r: 'PPI−LC > 115, cPPI−LC > 110, SA−VA > 85 y ΔHA > −10: el ventrículo no está en el circuito y His y A se activan en serie. TRNAV atípica, no PJRT.', u: 'clave', img: 'figs/sim/prac/p5_medidas.png' },
+      diff: { v: 'Encarrilando a 430 ms: SA 450 desde el ápex y SA 480 desde la base del VD (VA 300). ΔVA (base − ápex) +30 ms.', r: 'ΔVA > 20 ms: desde la base el frente tarda más en llegar a la A porque tiene que bajar a la red de Purkinje y subir por el His y el nodo. TRNAV atípica, no una vía septal.', u: 'clave', img: 'figs/sim/prac/p5_diff.png' },
+      ehr: { v: 'EV con el His refractario, 70 ms antes del V esperado: la A siguiente no cambia (A-A 460) y la taquicardia sigue.', r: 'Con el His refractario, la EV no mueve la A: no hay una vía septal en el circuito (en la PJRT la habría adelantado o retrasado, o habría terminado la taquicardia).', u: 'clave', img: 'figs/sim/prac/p5_ehr.png' },
+      aop: { v: 'Estimulando la AD alta a 420 ms los V se aceleran a 420 (V-V 420) con AH 170 (en la TSV, 115). Al cortar, el VA del primer latido es 300 ms, igual al de la TSV.', r: 'VA linking: la A de retorno depende del V; excluye la TA septal baja. ΔAH (estimulando − TSV) 55 ms > 40: TRNAV.', u: 'clave', img: 'figs/sim/prac/p5_aop.png' },
+      pre: { v: 'Extraestímulo auricular desde la AD alta: S1-S2 600-340 y 600-330.', r: 'AH 160 → 225 al acortar el S2 10 ms: salto de 65 ms, doble fisiología nodal.', u: 'util', img: 'figs/sim/prac/p5_pre.png' },
+      ado: { v: 'La taquicardia termina: el último latido es un V que no conduce a la A.', r: 'Termina con bloqueo en la vía lenta retrógrada: excluye la TA.', u: 'util', img: 'figs/sim/prac/p5_ado.png' },
+      parahis: { v: 'En sinusal, con captura del His: SA 90 y QRS 95. Solo V: SA 140 y QRS 150. Misma secuencia auricular.', r: 'Respuesta nodal: no hay una vía septal conduciendo en sinusal.', u: 'util', img: 'figs/sim/prac/p5_parahis.png' },
+      eha: { v: 'EA desde el ostium del SC con el His refractario: el His siguiente sale a su tiempo (H-H 460).', r: 'No modifica el His.', u: 'util', img: 'figs/sim/prac/p5_eha.png' } },
+    dx: ['trnav_a'], ex: 'La inducción con salto de la conducción retrógrada y el RP largo con la A precoz en el ostium del SC plantean TRNAV atípica, PJRT o TA. La respuesta es un seudo A-A-V (SA 450 > LC de estimulación 430): contada desde la última A acelerada es A-V, y el VA linking también excluye la TA. PPI−LC 185, SA−VA 150, ΔHA +25 y ΔVA +30 indican que el ventrículo no está en el circuito, y la EV con His refractario no mueve la A: TRNAV atípica.', refs: ['veen11', 'ho15', 'man95'] },
   { id: 'c6', t: 'Taquicardia incesante y miocardiopatía', p: 'Niño de 6 años con taquicardia incesante y FEVI de 35 %. ECG: P negativa en las inferiores, RP largo.',
     ecg: 'figs/sim/casos/c6_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c6_basal.png', ind: 'figs/sim/casos/c6_ind.png',
     h: ['TSV de QRS angosto, LC 300 ms, relación 1:1', 'VA 190 ms, HA 235 ms', 'A más precoz en el ostium del SC'],

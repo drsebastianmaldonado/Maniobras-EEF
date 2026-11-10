@@ -489,6 +489,126 @@ S['p4_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.25, title='EA con His refrac
     cal=[(hs[2], hs[3], 'His d', f'H-H {LC4}'), (hs[3], hs[4], 'His d', f'H-H {LC4}')],
     marks=[(apb, 'V1', 'EA')])
 
+# =====================================================================================================
+# Caso 5 (TRNAV atípica rápida-lenta; LC 460 como el ECG real, VA 300, AH 115, A más precoz en el ostium del SC).
+# Relaciones de Veenhuyzen 2011, fig. 3: SA > LC de estimulación (seudo A-A-V), SA−VA 150, PPI−LC 185.
+SRC5 = 'caso 5: LC 460 como el caso; relaciones de Veenhuyzen 2011 (fig. 3); el resto, ilustrativo'
+LC5, VA5, AH5, SC5, SA5, PPI5 = 460, 300, 115, 430, 450, 645
+HAp5 = 370                              # HA estimulando (His retrógrado 80 ms después de la espiga)
+AHr5 = PPI5 - SA5 - HV                  # 150: AH del primer latido de retorno
+
+
+def vop5(title, med):
+    svt = [0, LC5]
+    sp = [svt[-1] + 380 + SC5 * k for k in range(6)]
+    A = [v + VA5 for v in svt] + [s + SA5 for s in sp]
+    ret = sp[-1] + PPI5
+    after = [ret, ret + LC5]
+    cal = [(svt[0], svt[1], 'RVA', f'LC {LC5}'), (svt[1], svt[1] + VA5 + 2, 'CS 9-10', f'VA {VA5}'), (sp[-2], sp[-1], 'RVA', f'S-S {SC5}'),
+           (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {SA5}'), (sp[-1], ret + 2, 'RVA', f'PPI {PPI5}'),
+           (A[-3] + 2, A[-2] + 2, 'HRA', f'A-A {SC5}'), (A[-2] + 2, A[-1] + 2, 'HRA', f'A-A {SC5}')]
+    marks = []
+    if med:
+        cal = [c for c in cal if not c[3].startswith(('S-S', 'A-A'))]
+        cal += [(svt[1] - HV, svt[1] + VA5, 'His p', f'HA {HV + VA5}'), (sp[-1] + SA5 - HAp5, A[-1], 'His p', f'HA {HAp5}'),
+                (A[-1] + 2, ret - HV, 'His d', f'AH {AHr5}'), (A[0] + 2, svt[1] - HV, 'His d', f'AH {AH5}')]
+        marks = [(sp[-1] + 200, 'I', f'SA − VA = {SA5} − {VA5} = {SA5 - VA5} ms'), (sp[-1] + 200, 'aVF', f'PPI − LC = {PPI5} − {LC5} = {PPI5 - LC5} ms'),
+                 (sp[-1] + 200, 'V1', f'cPPI − LC = {PPI5 - LC5} − ({AHr5} − {AH5}) = {PPI5 - LC5 - AHr5 + AH5} ms · ΔHA = {HAp5} − {HV + VA5} = +{HAp5 - HV - VA5} ms')]
+    return dict(win=(-100, after[-1] + 340), pxms=0.21, title=title, channels=CH6, src=SRC5,
+        beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
+        atr=[(a, 'conc_cs', -1) for a in A + [v + VA5 for v in after]],
+        h_ante=[v - HV for v in svt + after], h_retro=[s + SA5 - HAp5 for s in sp], cal=cal, marks=marks)
+
+
+S['p5_vop'] = vop5('Sobreestimulación ventricular desde el ápex del VD a 430 ms', False)
+S['p5_medidas'] = vop5('Medidas sobre la sobreestimulación ventricular (ápex del VD a 430 ms): PPI, SA, AH y HA', True)
+
+
+def diff5(sa, typ, title):
+    svt = [0, LC5]
+    sp = [svt[-1] + 380 + SC5 * k for k in range(6)]
+    A = [v + VA5 for v in svt] + [s + sa for s in sp]
+    ret = sp[-1] + PPI5 + (sa - SA5)
+    return dict(win=(-100, ret + LC5 + 200), pxms=0.21, channels=CH6, title=title, spikes=sp, pace_ch='RVA', src=SRC5,
+        beats=[(v, 'n') for v in svt] + [(s, typ) for s in sp] + [(ret, 'n'), (ret + LC5, 'n')],
+        atr=[(a, 'conc_cs', -1) for a in A] + [(ret + VA5, 'conc_cs', -1), (ret + LC5 + VA5, 'conc_cs', -1)],
+        h_ante=[v - HV for v in svt] + [ret - HV, ret + LC5 - HV], h_retro=[s + sa - HAp5 for s in sp],
+        cal=[(svt[1], svt[1] + VA5 + 2, 'CS 9-10', f'VA {VA5}'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {sa}'), (svt[0], svt[1], 'RVA', f'LC {LC5}')])
+
+
+S['p5_diff_a'] = diff5(450, 'pa', 'A. Encarrilamiento desde el ápex del VD (430 ms)')
+S['p5_diff_b'] = diff5(480, 'pb', 'B. Encarrilamiento desde la base del VD (430 ms)')
+
+# EV con His refractario (V local del ostium del SC adelantado > 60 ms): la A no cambia.
+k = 3
+vs = [i * LC5 for i in range(k)]
+h_exp = k * LC5 - HV
+spk = h_exp - 25
+A = [v + VA5 for v in vs] + [k * LC5 + VA5]
+after = [k * LC5 + LC5, k * LC5 + 2 * LC5]
+A += [v + VA5 for v in after]
+S['p5_ehr'] = dict(win=(-80, after[-1] + 200), pxms=0.25, title='EV con His refractario durante la taquicardia', channels=CH6, src=SRC5,
+    spikes=[spk], pace_ch='RVA', beats=[(v, 'n') for v in vs] + [(spk, 'pa')] + [(v, 'n') for v in after],
+    atr=[(a, 'conc_cs', -1) for a in A], h_ante=[v - HV for v in vs] + [h_exp] + [v - HV for v in after],
+    cal=[(A[k - 2] + 2, A[k - 1] + 2, 'CS 9-10', f'A-A {LC5}'), (A[k - 1] + 2, A[k] + 2, 'CS 9-10', f'A-A {LC5}'),
+         (spk, k * LC5, 'RVA', f'EV {LC5 * k - spk} ms antes del V')],
+    marks=[(spk, 'V1', 'EV'), (h_exp, 'His p', 'H')])
+
+# Estudio basal: extraestímulo auricular; S2 10 ms más corto → el AH salta 65 ms (sin eco).
+def salto5(s2, ah2, title, lab):
+    sp = [0, 600, 600 + s2]
+    hs = [s + 28 + a for s, a in zip(sp, [90, 90, ah2])]
+    vs = [h + HV for h in hs]
+    return dict(win=(-80, 1650), pxms=0.40, title=title, channels=CH6, src=SRC5,
+        beats=[(v, 'n') for v in vs], aspikes=sp, apace_ch='HRA', atr=[(s + 5, 'sinus', 1) for s in sp], h_ante=hs,
+        cal=[(sp[1], sp[2], 'HRA', f'S2 {s2}'), (sp[1] + 28, hs[1], 'His d', 'AH 90'), (sp[2] + 28, hs[2], 'His d', lab)])
+
+
+S['p5_pre_a'] = salto5(340, 160, 'A. Extraestímulo auricular S1-S2 600-340', 'AH 160')
+S['p5_pre_b'] = salto5(330, 225, 'B. S2 10 ms más corto: S1-S2 600-330', 'AH 225')
+
+# Sobreestimulación auricular desde la AD alta a 420: AH 170 (TSV 115, ΔAH 55); al cortar, VA 300 como en la TSV.
+AHs5 = 170
+vs = [0, LC5]
+A = [v + VA5 for v in vs]
+sp = [A[-1] + 300 + 420 * k for k in range(5)]
+pv = [s + 28 + AHs5 + HV for s in sp]
+vs2 = [pv[-1] + LC5]
+S['p5_aop'] = dict(win=(-80, vs2[-1] + 380), pxms=0.21, title='Sobreestimulación auricular desde la AD alta a 420 ms', channels=CH6, src=SRC5,
+    beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
+    atr=[(a, 'conc_cs', -1) for a in A] + [(s + 5, 'sinus', 1) for s in sp] + [(v + VA5, 'conc_cs', -1) for v in [pv[-1]] + vs2],
+    h_ante=[v - HV for v in vs + pv + vs2],
+    cal=[(vs[0], vs[1], 'RVA', f'V-V {LC5}'), (A[0] + 2, vs[1] - HV, 'His d', f'AH {AH5}'), (sp[-2], sp[-1], 'HRA', 'S-S 420'),
+         (pv[-2], pv[-1], 'RVA', 'V-V 420'), (sp[-1] + 28, pv[-1] - HV, 'His d', f'AH {AHs5}'), (pv[-1], pv[-1] + VA5 + 2, 'CS 9-10', f'VA {VA5}')])
+
+# Adenosina: termina con un V (bloqueo en la vía lenta retrógrada).
+vs = [0, LC5, 2 * LC5, 3 * LC5]
+A = [v + VA5 for v in vs[:3]]
+S['p5_ado'] = dict(win=(-80, vs[-1] + 700), pxms=0.22, title='Adenosina IV durante la taquicardia', channels=CH6, src=SRC5,
+    beats=[(v, 'n') for v in vs], atr=[(a, 'conc_cs', -1) for a in A], h_ante=[v - HV for v in vs],
+    cal=[(vs[0], vs[1], 'RVA', f'LC {LC5}'), (vs[1], A[1] + 2, 'CS 9-10', f'VA {VA5}')],
+    marks=[(vs[3] + 120, 'aVF', 'último: V sin A')])
+
+# Para-Hisiana en sinusal: SA 90 → 140 en el His, misma secuencia (nodal).
+sp = [0, 650, 1300, 1950]
+cap = [True, False, True, False]
+S['p5_parahis'] = dict(win=(-80, 2300), pxms=0.32, title='Estimulación para-Hisiana en ritmo sinusal', channels=CH6, src=SRC5,
+    spikes=sp, pace_ch='His p', beats=[(s + HV if c else s, 'n' if c else 'pa') for s, c in zip(sp, cap)],
+    atr=[(s + (90 if c else 140), 'conc_his', -1) for s, c in zip(sp, cap)],
+    cal=[(sp[0], sp[0] + 92, 'His d', 'SA 90'), (sp[1], sp[1] + 142, 'His d', 'SA 140'), (sp[2] + HV, sp[2] + HV + 95, 'RVA', 'QRS 95'), (sp[3], sp[3] + 150, 'RVA', 'QRS 150')],
+    marks=[(sp[0] + 30, 'V1', 'His + V'), (sp[1] + 40, 'V1', 'solo V')])
+
+# EA con His refractario desde el ostium del SC: el His siguiente sale a su tiempo.
+hs = [i * LC5 - HV for i in range(5)]
+apb = hs[2] + 10
+vs = [h + HV for h in hs]
+A = [v + VA5 for k2, v in enumerate(vs) if k2 != 2]
+S['p5_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.25, title='EA con His refractario desde el ostium del SC', channels=CH6, src=SRC5,
+    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='CS 9-10',
+    atr=[(a, 'conc_cs', -1) for a in A] + [(apb + 4, 'conc_cs', 1)], h_ante=hs,
+    cal=[(hs[1], hs[2], 'His d', f'H-H {LC5}'), (hs[2], hs[3], 'His d', f'H-H {LC5}')],
+    marks=[(apb, 'V1', 'EA')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
