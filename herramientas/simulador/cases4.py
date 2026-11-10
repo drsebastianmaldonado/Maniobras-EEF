@@ -41,14 +41,14 @@ S['p6_ehr'] = ehr(300, 190, 'conc_cs', -20, src='caso 6 (LC 300 como el ECG real
 S['p9_ehr'] = ehr(310, 180, 'conc_cs', 20, src='caso 9 (LC 310 como el ECG real, VA 180); EV-HR que adelanta la A 20 ms', lab='A-A 290 (−20)')
 S['p9_ehr']['pxms'] = 0.25
 # Caso 4: TRAV lateral izquierda, LC 340, VA 115; desde el ápex no cambia la A, desde el VI basal la adelanta 20 ms.
-S['p4_ehr_a'] = ehr(340, 115, 'left', 0, title='A. EV-HR desde el ápex del VD: la A no cambia', src='caso 4 (Veenhuyzen 2011: LC 340, VA 115); adelanto de 20 ms del caso',
+S['p4old_ehr_a'] = ehr(340, 115, 'left', 0, title='A. EV-HR desde el ápex del VD: la A no cambia', src='caso 4 (Veenhuyzen 2011: LC 340, VA 115); adelanto de 20 ms del caso',
                     lab='A-A 340')
-S['p4_ehr_b'] = ehr(340, 115, 'left', 20, typ='lv', pace='CS 1-2', title='B. EV-HR desde el VI basal (rama del SC): adelanta la A 20 ms',
+S['p4old_ehr_b'] = ehr(340, 115, 'left', 20, typ='lv', pace='CS 1-2', title='B. EV-HR desde el VI basal (rama del SC): adelanta la A 20 ms',
                     src='caso 4 (Veenhuyzen 2011: LC 340, VA 115); adelanto de 20 ms del caso', lab='A-A 320 (−20)', mark='EV-HR (VI)')
 
 # Caso 4: estudio basal: estimulación ventricular con conducción VA excéntrica y no decremental (SA igual a 500 y 400).
 sp = [0, 500, 1000, 1400, 1800]
-S['p4_pre'] = dict(win=(-80, 2150), pxms=0.30, channels=CH, src='caso 4: conducción VA excéntrica, no decremental (SA 120 a 500 y a 400 ms, ilustrativo)',
+S['p4old_pre'] = dict(win=(-80, 2150), pxms=0.30, channels=CH, src='caso 4: conducción VA excéntrica, no decremental (SA 120 a 500 y a 400 ms, ilustrativo)',
     spikes=sp, beats=[(s, 'pa') for s in sp], atr=[(s + 120, 'left', -1) for s in sp],
     cal=[(sp[1], sp[1] + 122, 'CS 1-2', 'SA 120'), (sp[3], sp[3] + 122, 'CS 1-2', 'SA 120'), (sp[0], sp[1], 'RVA', '500'), (sp[2], sp[3], 'RVA', '400')],
     marks=[(sp[1] + 120, 'CS 9-10', 'A más precoz en el SC distal')])

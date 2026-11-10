@@ -305,6 +305,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <dialog id="dlg"><div class="dlg"><div class="dlgh"><h3 id="dlgT"></h3><button class="btn" id="dlgX">Cerrar</button></div><div id="dlgB"></div></div></dialog>
 
 <script>
+const APPV = 150;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -1305,16 +1306,19 @@ const PCASOS = [
       pre: { v: 'Estimulación ventricular en sinusal a 500 y 400 ms.', r: 'SA 140 a 500 y 190 a 400 (decremental), concéntrica: conducción VA por el nodo, sin vía.', u: 'util', img: 'figs/sim/prac/p3_pre.png' } },
     dx: ['ta'], ex: 'La respuesta A-A-V verdadera, la secuencia auricular distinta durante la estimulación ventricular y la persistencia con bloqueo AV por adenosina indican TA. La variación del VA de retorno desde varios sitios (> 14 ms) también la apoya.', refs: ['knight99', 'knight00', 'maruyama07'] },
   { id: 'c4', t: 'TSV con activación excéntrica', p: 'Adolescente de 16 años con TSV. ECG basal sin preexcitación.',
-    ecg: 'figs/sim/casos/c4_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c4_basal.png', ind: 'figs/sim/casos/c4_ind.png',
-    h: ['TSV de QRS angosto, LC 340 ms, relación 1:1', 'VA 115 ms; A más precoz en el SC distal (excéntrica)', 'Con bloqueo de rama izquierda funcional, el VA se alarga 35 ms y la LC 30 ms'],
-    m: { vop: { r: 'Respuesta A-V. Desde el ápex no hay fusión.', u: 'util' },
-      medidas: { r: 'Desde el ápex: PPI−LC 140 ms, cPPI−LC 120 ms, SA−VA 75 ms. Valores "límite" por la distancia a la vía.', u: 'trampa' },
-      vopvi: { r: 'Desde el VI basal (rama del SC): QRS de fusión e His ortodrómico; PPI−LC 90, cPPI−LC 30, SA−VA −20 ms.', u: 'clave', img: 'figs/sim/prac/veen11_fusion.png' },
-      ehr: { r: 'Desde el ápex del VD no modifica la A; desde el VI basal la adelanta 20 ms.', u: 'clave', img: 'figs/sim/prac/p4_ehr.png' },
-      parahis: { r: 'Respuesta nodal: la vía está lejos del sitio de estimulación.', u: 'trampa' },
-      pre: { r: 'Conducción VA excéntrica, no decremental, más precoz en el SC distal.', u: 'clave', img: 'figs/sim/prac/p4_pre.png' },
-      ado: { r: 'La TSV termina con una A.' }, aop: { r: 'VA linking presente.' } },
-    dx: ['trav_l'], ex: 'La activación excéntrica y el efecto Coumel (VA que aumenta > 20–30 ms con bloqueo de rama homolateral) ya apuntan a una vía libre izquierda. Desde el ápex del VD los valores salen "límite"; desde el VI basal aparecen la fusión y el His ortodrómico.', refs: ['veen11', 'knight00', 'veen12'] },
+    ecg: 'figs/sim/casos/c4_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c4_basal.png', ind: 'figs/sim/casos/c4_ind.png', indt: 'Extraestímulo auricular S1-S2 600-280',
+    h: ['TSV de QRS angosto, LC 340 ms, relación AV 1:1', 'Protocolo: extraestímulo auricular desde la AD alta, S1-S2 600-280'],
+    hk: ['Activación auricular excéntrica, con la A más precoz en el SC 1-2 y VA 115 ms (> 70): excluye la TRNAV típica y apunta a una vía lateral izquierda (o a una TA izquierda).', 'Al inicio, con BRI funcional, el VA se alarga 35 ms (150 vs 115) y la LC 30 ms (370 vs 340): efecto Coumel. La rama bloqueada forma parte del circuito: TRAV por vía libre izquierda.'],
+    m: { vop: { v: 'Estimulando el ápex del VD a 310 ms las A se aceleran a 310 con la misma secuencia excéntrica. Al cortar, el primer electrograma que sigue a la última A es un V (secuencia A-V).', r: 'Respuesta A-V: excluye la TA izquierda que plantea la secuencia excéntrica.', u: 'clave', img: 'figs/sim/prac/p4_vop.png' },
+      pre: { v: 'Estimulación ventricular en sinusal a 500 y 400 ms.', r: 'SA 120 a las dos frecuencias (no decremental), con la A más precoz en el SC 1-2: conducción VA por una vía lateral izquierda.', u: 'clave', img: 'figs/sim/prac/p4_pre.png' },
+      diff: { v: 'Encarrilando a 310 ms: SA 235 desde el ápex y SA 225 desde la base del VD (VA 115). ΔVA (base − ápex) −10 ms.', r: 'ΔVA ≤ 20 ms: TRAV. Aunque los dos sitios están lejos de la vía, la diferencia entre ellos no depende de esa distancia.', u: 'clave', img: 'figs/sim/prac/p4_diff.png' },
+      ehr: { v: 'EV con el His refractario desde el ápex del VD: la A siguiente no cambia (A-A 340). Desde el VI basal (rama del SC): la A siguiente se adelanta 20 ms (A-A 320) con la misma secuencia y la taquicardia sigue.', r: 'Desde el ápex la EV no llega a tiempo a una vía alejada; desde el VI basal, cerca de la vía, adelanta la A con el His refractario: demuestra la vía y que participa en el circuito.', u: 'clave', img: 'figs/sim/prac/p4_ehr.png' },
+      medidas: { v: 'PPI 480 ms con LC 340 (PPI−LC 140). AH 180 en la TSV y 200 en el primer latido de retorno (cPPI−LC 120). SA 235 ms con VA 115 (SA−VA 120).', r: 'Engañosa: desde el ápex del VD los tres valores caen en rango de TRNAV porque la vía lateral izquierda está lejos del sitio de estimulación (el frente tarda en llegar al circuito). Estos cortes se validaron sobre todo con vías septales.', u: 'trampa', img: 'figs/sim/prac/p4_medidas.png' },
+      parahis: { v: 'En sinusal, con captura del His: SA 85 y QRS 95. Solo V: SA 135 y QRS 150. Misma secuencia auricular, concéntrica.', r: 'Engañosa: respuesta nodal porque la vía está lejos del sitio de estimulación; la para-Hisiana solo descarta vías septales.', u: 'trampa', img: 'figs/sim/prac/p4_parahis.png' },
+      aop: { v: 'Estimulando la AD alta a 310 ms los V se aceleran a 310 (V-V 310; en la TSV, 340). Al cortar, el VA del primer latido es 115 ms, igual al de la TSV.', r: 'VA linking: la A de retorno depende del V; excluye la TA.', u: 'util', img: 'figs/sim/prac/p4_aop.png' },
+      ado: { v: 'La taquicardia termina: el último latido es una A que no conduce al V.', r: 'Terminación con una A: excluye la TA, pero no localiza la vía.', u: 'util', img: 'figs/sim/prac/p4_ado.png' },
+      eha: { v: 'EA desde el ostium del SC con el His refractario: el His siguiente sale a su tiempo (H-H 340).', r: 'No modifica el His: esperable en la TRAV. Sirve para separar la TRNAV de la taquicardia de la unión, no para este diferencial.', u: 'util', img: 'figs/sim/prac/p4_eha.png' } },
+    dx: ['trav_l'], ex: 'La activación excéntrica (SC 1-2) y el efecto Coumel (el VA se alarga 35 ms con BRI funcional) apuntan a una vía libre izquierda; la respuesta A-V, el VA linking y la terminación con una A excluyen la TA. Desde el ápex del VD el PPI−LC, el cPPI−LC y el SA−VA caen en rango de TRNAV por la distancia a la vía, y la para-Hisiana da nodal: son engañosas. El encarrilamiento diferencial (ΔVA −10) y la EV con His refractario desde el VI basal, que adelanta la A 20 ms, confirman la TRAV.', refs: ['veen11', 'knight00', 'veen12'] },
   { id: 'c5', t: 'TSV de RP largo con "A-A-V"', p: 'Mujer de 22 años con TSV de RP largo.',
     ecg: 'figs/sim/casos/c5_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c5_basal.png', ind: 'figs/sim/casos/c5_ind.png',
     h: ['TSV de QRS angosto, LC 460 ms, relación 1:1', 'VA 300 ms (RP largo)', 'Activación concéntrica, más precoz en el ostium del SC'],
@@ -2037,7 +2041,7 @@ $('#goEnr').onclick = () => locView('enr'); $('#goObl').onclick = () => openFich
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => locView('hub'));
 try { const t = location.hash === '#localizar' ? 'loc' : localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
 checkReview();
-const APPV = 149;   // igual al número de CACHE_VERSION de sw.js
+
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
