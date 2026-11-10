@@ -178,6 +178,13 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px}
 @media (max-width:420px){.seg button{font-size:12.5px;padding:10px 2px}.step .q{font-size:18px}}
 .mec{display:grid;gap:10px}.mec p,.mec ul{margin:0}.mec ul{padding-left:18px;display:grid;gap:6px}
+#visor{position:fixed;inset:0;z-index:1000;background:#000;display:flex;flex-direction:column}
+#visor[hidden]{display:none}
+#visor .vbar{display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:calc(env(safe-area-inset-top) + 8px) 12px 8px;background:#111}
+#visor .vbar button{background:#2c2c2e;color:#fff;border:0;border-radius:12px;font:600 17px var(--font);min-width:48px;height:44px;padding:0 14px}
+#visor .vbar .vx{background:#fff;color:#000;margin-left:auto}
+#visor .vbox{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;display:flex;align-items:flex-start;justify-content:flex-start;touch-action:pan-x pan-y}
+#visor .vbox img{display:block;margin:auto;max-width:none;background:#fff}
 </style>
 </head>
 <body>
@@ -304,8 +311,9 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <dialog id="dlg"><div class="dlg"><div class="dlgh"><h3 id="dlgT"></h3><button class="btn" id="dlgX">Cerrar</button></div><div id="dlgB"></div></div></dialog>
 
+<div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script>
-const APPV = 150;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 151;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -2045,6 +2053,57 @@ checkReview();
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
+
+// Visor de imágenes dentro de la app: se cierra con ✕ o con el botón Atrás del celular (sin salir de la app).
+(() => {
+  const V = $('#visor'), box = V.querySelector('.vbox'), im = V.querySelector('img');
+  let z = 1, enHist = false;
+  const ajustar = () => { im.style.width = (box.clientWidth * z) + 'px'; };
+  const zoom = (nz, cx, cy) => {
+    nz = Math.min(6, Math.max(1, nz));
+    const r = box.getBoundingClientRect(), px = (cx ?? r.width / 2), py = (cy ?? r.height / 2);
+    const fx = (box.scrollLeft + px) / box.scrollWidth, fy = (box.scrollTop + py) / box.scrollHeight;
+    z = nz; ajustar();
+    box.scrollLeft = fx * box.scrollWidth - px; box.scrollTop = fy * box.scrollHeight - py;
+  };
+  const cerrar = () => { V.hidden = true; im.removeAttribute('src'); document.body.style.overflow = ''; };
+  const abrir = src => {
+    z = 1; im.src = src; V.hidden = false; document.body.style.overflow = 'hidden';
+    if (im.complete) ajustar(); else im.onload = ajustar;
+    box.scrollTop = box.scrollLeft = 0;
+    history.pushState({ visor: 1 }, ''); enHist = true;
+  };
+  V.querySelector('.vp').onclick = () => zoom(z * 1.6);
+  V.querySelector('.vm').onclick = () => zoom(z / 1.6);
+  V.querySelector('.vf').onclick = () => zoom(1);
+  V.querySelector('.vx').onclick = () => { if (enHist) history.back(); else cerrar(); };
+  addEventListener('popstate', () => { if (!V.hidden) { enHist = false; cerrar(); } });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !V.hidden) V.querySelector('.vx').click(); });
+  addEventListener('resize', () => { if (!V.hidden) ajustar(); });
+  // Doble toque: agranda o vuelve a ajustar
+  let ult = 0;
+  im.addEventListener('click', e => { const t = Date.now(); if (t - ult < 350) { const r = box.getBoundingClientRect(); zoom(z > 1 ? 1 : 2.5, e.clientX - r.left, e.clientY - r.top); ult = 0; } else ult = t; });
+  // Pellizcar con dos dedos
+  let d0 = 0, z0 = 1;
+  const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  box.addEventListener('touchstart', e => { if (e.touches.length === 2) { d0 = dist(e.touches); z0 = z; } }, { passive: true });
+  box.addEventListener('touchmove', e => {
+    if (e.touches.length === 2 && d0) {
+      e.preventDefault();
+      const r = box.getBoundingClientRect();
+      zoom(z0 * dist(e.touches) / d0, (e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left, (e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top);
+    }
+  }, { passive: false });
+  box.addEventListener('touchend', e => { if (e.touches.length < 2) d0 = 0; });
+  // Toda imagen local enlazada se abre en el visor en vez de en otra pestaña
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const h = a.getAttribute('href');
+    if (/^https?:/i.test(h) || !/\.(png|jpe?g|webp|gif|svg)$/i.test(h)) return;
+    e.preventDefault(); abrir(h);
+  });
+})();
 </script>
 </body>
 </html>
