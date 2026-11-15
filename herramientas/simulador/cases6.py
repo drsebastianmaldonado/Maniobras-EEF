@@ -578,7 +578,7 @@ S['p5_aop'] = dict(win=(-80, vs2[-1] + 380), pxms=0.21, title='Sobreestimulació
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
     atr=[(a, 'conc_cs', -1) for a in A] + [(s + 5, 'sinus', 1) for s in sp] + [(v + VA5, 'conc_cs', -1) for v in [pv[-1]] + vs2],
     h_ante=[v - HV for v in vs + pv + vs2],
-    cal=[(vs[0], vs[1], 'RVA', f'V-V {LC5}'), (A[0] + 2, vs[1] - HV, 'His d', f'AH {AH5}'), (sp[-2], sp[-1], 'HRA', 'S-S 340'),
+    cal=[(vs[0], vs[1], 'RVA', f'V-V {LC5}'), (vs[0], A[0] + 2, 'CS 9-10', f'VA {VA5}'), (A[0] + 2, vs[1] - HV, 'His d', f'AH {AH5}'), (sp[-2], sp[-1], 'HRA', 'S-S 340'),
          (pv[-2], pv[-1], 'RVA', 'V-V 340'), (sp[-1] + 28, pv[-1] - HV, 'His d', f'AH {AHs5}'), (pv[-1], pv[-1] + VA5 + 2, 'CS 9-10', f'VA {VA5}')])
 
 # Adenosina: termina con un V (bloqueo en la vía lenta retrógrada).
