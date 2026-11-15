@@ -223,21 +223,21 @@ S['c3_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='Inicio de la taqui
 
 # Caso 5 (TRNAV atípica rápida-lenta, LC 460 como el ECG real). Relaciones de Veenhuyzen 2011, fig. 3:
 # SA > LC de estimulación (seudo A-A-V), SA−VA 150, PPI−LC 185. VA 300, AH en la TSV 115.
-LC5, VA5, SC5, SA5, PPI5 = 460, 300, 430, 450, 645
+LC5, VA5, SC5, SA5, PPI5 = 380, 230, 360, 380, 565
 S['c5_basal'] = basal('caso 5: AH 90, HV 45, ilustrativos', ah=90, cl=750)
 S['c5_basal']['win'] = (-80, 2 * 750 + 330)
 # Inducción con extraestímulo ventricular S1-S2 600-320: la conducción VA salta a la vía lenta (VA 300) y empieza la TSV.
 sp = [0, 600, 920]
-A = [sp[0] + 120, sp[1] + 120, sp[2] + 300]
+A = [sp[0] + 120, sp[1] + 120, sp[2] + VA5]
 hs = []
 for _ in range(4):
-    hs.append(A[-1] + 115)
+    hs.append(A[-1] + 105)
     A.append(hs[-1] + HV + VA5)
 vs = [h + HV for h in hs]
 S['c5_ind'] = dict(win=(-80, vs[-1] + 330), pxms=0.27, title='Inducción: extraestímulo ventricular (S1-S2 600-320)', channels=CH6,
     src='caso 5: valores ilustrativos', beats=[(s, 'pa') for s in sp] + [(v, 'n') for v in vs], spikes=sp,
     atr=[(a, 'conc_cs', -1) for a in A], h_ante=hs, h_retro=[s + 110 for s in sp],
-    cal=[(sp[1], sp[2], 'RVA', 'S2 320'), (sp[1], A[1] + 2, 'CS 9-10', 'SA 120'), (sp[2], A[2] + 2, 'CS 9-10', 'SA 300'),
+    cal=[(sp[1], sp[2], 'RVA', 'S2 320'), (sp[1], A[1] + 2, 'CS 9-10', 'SA 120'), (sp[2], A[2] + 2, 'CS 9-10', f'SA {VA5}'),
          (vs[1], vs[2], 'RVA', f'LC {LC5}'), (vs[1], A[4] + 2, 'HRA', f'VA {VA5}')])
 # Encarrilamiento desde el ápex a 430 (6 estímulos): después de la última espiga hay dos A antes del V.
 svt = [0, LC5]

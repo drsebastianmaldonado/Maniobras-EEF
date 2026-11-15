@@ -490,11 +490,11 @@ S['p4_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.25, title='EA con His refrac
     marks=[(apb, 'V1', 'EA')])
 
 # =====================================================================================================
-# Caso 5 (TRNAV atípica rápida-lenta; LC 460 como el ECG real, VA 300, AH 115, A más precoz en el ostium del SC).
+# Caso 5 (TRNAV atípica rápida-lenta; LC 380 como el ECG real y Veenhuyzen 2011, VA 230, AH 105, A más precoz en el ostium del SC).
 # Relaciones de Veenhuyzen 2011, fig. 3: SA > LC de estimulación (seudo A-A-V), SA−VA 150, PPI−LC 185.
-SRC5 = 'caso 5: LC 460 como el caso; relaciones de Veenhuyzen 2011 (fig. 3); el resto, ilustrativo'
-LC5, VA5, AH5, SC5, SA5, PPI5 = 460, 300, 115, 430, 450, 645
-HAp5 = 370                              # HA estimulando (His retrógrado 80 ms después de la espiga)
+SRC5 = 'caso 5: LC 380, estimulación 360 y PPI 565 de Veenhuyzen 2011 (fig. 3); el resto, ilustrativo'
+LC5, VA5, AH5, SC5, SA5, PPI5 = 380, 230, 105, 360, 380, 565
+HAp5 = 300                              # HA estimulando (His retrógrado 80 ms después de la espiga)
 AHr5 = PPI5 - SA5 - HV                  # 150: AH del primer latido de retorno
 
 
@@ -520,8 +520,8 @@ def vop5(title, med):
         h_ante=[v - HV for v in svt + after], h_retro=[s + SA5 - HAp5 for s in sp], cal=cal, marks=marks)
 
 
-S['p5_vop'] = vop5('Sobreestimulación ventricular desde el ápex del VD a 430 ms', False)
-S['p5_medidas'] = vop5('Medidas sobre la sobreestimulación ventricular (ápex del VD a 430 ms): PPI, SA, AH y HA', True)
+S['p5_vop'] = vop5('Sobreestimulación ventricular desde el ápex del VD a 360 ms', False)
+S['p5_medidas'] = vop5('Medidas sobre la sobreestimulación ventricular (ápex del VD a 360 ms): PPI, SA, AH y HA', True)
 
 
 def diff5(sa, typ, title):
@@ -536,8 +536,8 @@ def diff5(sa, typ, title):
         cal=[(svt[1], svt[1] + VA5 + 2, 'CS 9-10', f'VA {VA5}'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {sa}'), (svt[0], svt[1], 'RVA', f'LC {LC5}')])
 
 
-S['p5_diff_a'] = diff5(450, 'pa', 'A. Encarrilamiento desde el ápex del VD (430 ms)')
-S['p5_diff_b'] = diff5(480, 'pb', 'B. Encarrilamiento desde la base del VD (430 ms)')
+S['p5_diff_a'] = diff5(380, 'pa', 'A. Encarrilamiento desde el ápex del VD (360 ms)')
+S['p5_diff_b'] = diff5(410, 'pb', 'B. Encarrilamiento desde la base del VD (360 ms)')
 
 # EV con His refractario (V local del ostium del SC adelantado > 60 ms): la A no cambia.
 k = 3
@@ -567,19 +567,19 @@ def salto5(s2, ah2, title, lab):
 S['p5_pre_a'] = salto5(340, 160, 'A. Extraestímulo auricular S1-S2 600-340', 'AH 160')
 S['p5_pre_b'] = salto5(330, 225, 'B. S2 10 ms más corto: S1-S2 600-330', 'AH 225')
 
-# Sobreestimulación auricular desde la AD alta a 420: AH 170 (TSV 115, ΔAH 55); al cortar, VA 300 como en la TSV.
-AHs5 = 170
+# Sobreestimulación auricular desde la AD alta a 340: AH 160 (TSV 105, ΔAH 55); al cortar, VA 230 como en la TSV.
+AHs5 = 160
 vs = [0, LC5]
 A = [v + VA5 for v in vs]
-sp = [A[-1] + 300 + 420 * k for k in range(5)]
+sp = [A[-1] + 250 + 340 * k for k in range(5)]
 pv = [s + 28 + AHs5 + HV for s in sp]
 vs2 = [pv[-1] + LC5]
-S['p5_aop'] = dict(win=(-80, vs2[-1] + 380), pxms=0.21, title='Sobreestimulación auricular desde la AD alta a 420 ms', channels=CH6, src=SRC5,
+S['p5_aop'] = dict(win=(-80, vs2[-1] + 380), pxms=0.21, title='Sobreestimulación auricular desde la AD alta a 340 ms', channels=CH6, src=SRC5,
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
     atr=[(a, 'conc_cs', -1) for a in A] + [(s + 5, 'sinus', 1) for s in sp] + [(v + VA5, 'conc_cs', -1) for v in [pv[-1]] + vs2],
     h_ante=[v - HV for v in vs + pv + vs2],
-    cal=[(vs[0], vs[1], 'RVA', f'V-V {LC5}'), (A[0] + 2, vs[1] - HV, 'His d', f'AH {AH5}'), (sp[-2], sp[-1], 'HRA', 'S-S 420'),
-         (pv[-2], pv[-1], 'RVA', 'V-V 420'), (sp[-1] + 28, pv[-1] - HV, 'His d', f'AH {AHs5}'), (pv[-1], pv[-1] + VA5 + 2, 'CS 9-10', f'VA {VA5}')])
+    cal=[(vs[0], vs[1], 'RVA', f'V-V {LC5}'), (A[0] + 2, vs[1] - HV, 'His d', f'AH {AH5}'), (sp[-2], sp[-1], 'HRA', 'S-S 340'),
+         (pv[-2], pv[-1], 'RVA', 'V-V 340'), (sp[-1] + 28, pv[-1] - HV, 'His d', f'AH {AHs5}'), (pv[-1], pv[-1] + VA5 + 2, 'CS 9-10', f'VA {VA5}')])
 
 # Adenosina: termina con un V (bloqueo en la vía lenta retrógrada).
 vs = [0, LC5, 2 * LC5, 3 * LC5]
