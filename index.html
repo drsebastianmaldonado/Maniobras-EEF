@@ -313,7 +313,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script>
-const APPV = 155;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 156;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -1341,17 +1341,20 @@ const PCASOS = [
       parahis: { v: 'En sinusal, con captura del His: SA 90 y QRS 95. Solo V: SA 140 y QRS 150. Misma secuencia auricular.', r: 'Respuesta nodal: no hay una vía septal conduciendo en sinusal.', u: 'util', img: 'figs/sim/prac/p5_parahis.png' },
       eha: { v: 'EA desde el ostium del SC con el His refractario: el His siguiente sale a su tiempo (H-H 380).', r: 'No modifica el His.', u: 'util', img: 'figs/sim/prac/p5_eha.png' } },
     dx: ['trnav_a'], ex: 'La inducción con salto de la conducción retrógrada y el RP largo con la A precoz en el ostium del SC plantean TRNAV atípica, PJRT o TA. La respuesta es un seudo A-A-V (SA 380 > LC de estimulación 360): contada desde la última A acelerada es A-V, y el VA linking también excluye la TA. PPI−LC 185, SA−VA 150, ΔHA +25 y ΔVA +30 indican que el ventrículo no está en el circuito, y la EV con His refractario no mueve la A: TRNAV atípica.', refs: ['veen11', 'ho15', 'man95'] },
-  { id: 'c6', t: 'Taquicardia incesante y miocardiopatía', p: 'Niño de 6 años con taquicardia incesante y FEVI de 35 %. ECG: P negativa en las inferiores, RP largo.',
-    ecg: 'figs/sim/casos/c6_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c6_basal.png', ind: 'figs/sim/casos/c6_ind.png',
-    h: ['TSV de QRS angosto, LC 300 ms, relación 1:1', 'VA 190 ms, HA 235 ms', 'A más precoz en el ostium del SC'],
-    m: { vop: { r: 'Estimulando a 280 ms el His se captura en forma ortodrómica (misma morfología que en la TSV). Respuesta A-V.', u: 'clave', img: 'figs/sim/prac/p6_vop.png' },
-      medidas: { r: 'PPI−LC 71 ms; ΔVA 19 ms; ΔHA −76 ms.', u: 'clave', img: 'figs/sim/prac/p6_vop.png' },
-      ehr: { r: 'Una EV con His refractario retrasa la A 20 ms sin cambiar la secuencia.', u: 'clave', img: 'figs/sim/prac/p6_ehr.png' },
-      aop: { r: 'ΔAH 10 ms.', u: 'clave', img: 'figs/sim/prac/p6_aop.png' }, diff: { r: 'ΔVA (base − ápex) −15 ms.', u: 'util' },
-      ado: { r: 'La TSV termina con un V: bloqueo en la vía.', u: 'trampa' },
-      parahis: { r: 'Respuesta nodal: la vía conduce más lento que el nodo.', u: 'trampa' },
-      pre: { r: 'Sin doble vía. Conducción VA decremental, concéntrica, más precoz en el ostium del SC.' } },
-    dx: ['pjrt'], ex: 'El His ortodrómico y la EV-HR que retrasa la A demuestran una vía decremental que participa; el ΔAH < 20 ms ubica la aurícula en el circuito. Es una PJRT. La adenosina y la para-Hisiana engañan con las vías decrementales.', refs: ['ho15', 'veen12', 'man95'] },
+  { id: 'c6', t: 'Taquicardia incesante y miocardiopatía', p: 'Niño de 6 años con taquicardia incesante y FEVI de 35 %.',
+    ecg: 'figs/sim/casos/c6_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c6_basal.png', ind: 'figs/sim/casos/c6_ind.png', indt: 'Extraestímulo ventricular S1-S2 600-300',
+    h: ['TSV de QRS angosto, LC 300 ms, relación AV 1:1', 'Protocolo: extraestímulo ventricular desde el ápex del VD, S1-S2 600-300'],
+    hk: ['RP largo: VA 190 ms (HA 235) con la A más precoz en el ostium del SC y P negativa en las inferiores. En una taquicardia incesante con miocardiopatía el diferencial es PJRT, TA septal baja y TRNAV atípica.', 'Inducción: con S2 300 el SA se alarga de 150 a 215 ms (conducción retrógrada decremental) y empieza la taquicardia con la misma secuencia auricular.'],
+    m: { vop: { v: 'Estimulando el ápex del VD a 280 ms las A se aceleran a 280 con la misma secuencia; durante la estimulación el His se activa antes que la A, con la misma morfología que en la TSV. Al cortar, el primer electrograma que sigue a la última A es un V (secuencia A-V).', r: 'Respuesta A-V: excluye la TA. El His capturado en forma ortodrómica (fusión intracardíaca) indica que la estimulación entra al circuito por la vía antes que por el His: TRAV.', u: 'clave', img: 'figs/sim/prac/p6_vop.png' },
+      medidas: { v: 'PPI 371 ms con LC 300 (PPI−LC 71). SA 209 ms con VA 190 (SA−VA 19). HA 235 en la TSV y 159 estimulando (ΔHA −76).', r: 'PPI−LC < 115 y SA−VA < 85: el ventrículo está en el circuito. ΔHA < −10: estimulando, His y A se activan en paralelo. Las tres apuntan a TRAV.', u: 'clave', img: 'figs/sim/prac/p6_medidas.png' },
+      diff: { v: 'Encarrilando a 280 ms: SA 209 desde el ápex y SA 194 desde la base del VD (VA 190). ΔVA (base − ápex) −15 ms.', r: 'ΔVA ≤ 20 ms: desde la base el frente llega antes a la vía septal; TRAV.', u: 'clave', img: 'figs/sim/prac/p6_diff.png' },
+      ehr: { v: 'EV desde el ápex con el His refractario: la A siguiente se retrasa 20 ms (A-A 320) con la misma secuencia y la taquicardia sigue.', r: 'Con el His refractario la EV solo pudo llegar a la A por una vía, y retrasarla indica que la vía es decremental. Demuestra la vía y que participa en el circuito: PJRT.', u: 'clave', img: 'figs/sim/prac/p6_ehr.png' },
+      aop: { v: 'Estimulando la AD alta a 280 ms los V se aceleran a 280 (V-V 280; en la TSV, 300) con AH 75 (en la TSV, 65). Al cortar, el VA del primer latido es 190 ms, igual al de la TSV.', r: 'VA linking: excluye la TA. ΔAH (estimulando − TSV) 10 ms < 20: la aurícula forma parte del circuito; excluye la TRNAV atípica.', u: 'clave', img: 'figs/sim/prac/p6_aop.png' },
+      ado: { v: 'La taquicardia termina: el último latido es un V que no conduce a la A.', r: 'Engañosa: la terminación con un V sugiere bloqueo en la vía lenta retrógrada (TRNAV atípica), pero las vías decrementales de la PJRT también son sensibles a la adenosina y bloquean igual.', u: 'trampa', img: 'figs/sim/prac/p6_ado.png' },
+      parahis: { v: 'En sinusal, con captura del His: SA 120 y QRS 95. Solo V: SA 170 y QRS 150. Misma secuencia auricular.', r: 'Engañosa: respuesta nodal porque la vía decremental conduce más lento que el nodo; no excluye la PJRT.', u: 'trampa', img: 'figs/sim/prac/p6_parahis.png' },
+      pre: { v: 'Estimulación ventricular en sinusal a 500 y 400 ms.', r: 'Engañosa: SA 150 a 500 y 200 a 400 (decremental), concéntrica con la A más precoz en el ostium del SC. Parece conducción por el nodo, pero la vía de la PJRT también es decremental.', u: 'trampa', img: 'figs/sim/prac/p6_pre.png' },
+      eha: { v: 'EA desde el ostium del SC con el His refractario: el His siguiente sale a su tiempo (H-H 300).', r: 'No modifica el His: esperable en la TRAV (el EA no puede bajar por el nodo refractario).', u: 'util', img: 'figs/sim/prac/p6_eha.png' } },
+    dx: ['pjrt'], ex: 'Taquicardia incesante de RP largo con la A más precoz en el ostium del SC. La respuesta A-V y el VA linking excluyen la TA; el ΔAH de 10 ms ubica la aurícula en el circuito y excluye la TRNAV atípica. PPI−LC 71, SA−VA 19, ΔHA −76, ΔVA −15 y el His ortodrómico ponen al ventrículo en el circuito, y la EV con His refractario que retrasa la A demuestra una vía decremental que participa: PJRT. La adenosina, la para-Hisiana y la conducción VA decremental engañan porque la vía es decremental.', refs: ['ho15', 'veen12', 'man95'] },
   { id: 'c7', t: 'Taquicardia con A y V simultáneos', p: 'Niña de 13 meses con taquicardia de QRS angosto casi permanente.',
     ecg: 'figs/sim/casos/c7_ecg.png', ecgReal: true, basal: 'figs/sim/casos/c7_basal.png', ind: 'figs/sim/casos/c7_ind.png',
     h: ['TSV de QRS angosto, LC 425 ms', 'Relación 1:1 con A y V simultáneos (VA septal ~0)', 'Activación concéntrica'],

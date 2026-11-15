@@ -277,7 +277,7 @@ sp = [svt[-1] + 280 * (k + 1) for k in range(6)]
 A = [v + VA6 for v in svt] + [s + 209 for s in sp]
 ret = sp[-1] + 371
 after = [ret, ret + LC6]
-S['p6_vop'] = dict(win=(-100, after[-1] + 300), pxms=0.25, title='Encarrilamiento desde el ápex del VD a 280 ms', channels=CH6,
+S['p6old_vop'] = dict(win=(-100, after[-1] + 300), pxms=0.25, title='Encarrilamiento desde el ápex del VD a 280 ms', channels=CH6,
     src='caso 6: valores ilustrativos según las relaciones de Ho 2015',
     beats=[(v, 'n') for v in svt + after] + [(x, 'pa') for x in sp], spikes=sp,
     atr=[(a, 'conc_cs', -1) for a in A + [v + VA6 for v in after]],

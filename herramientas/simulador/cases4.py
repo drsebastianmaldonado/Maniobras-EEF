@@ -36,7 +36,7 @@ S['p2old_ehr'] = ehr(280, 110, 'conc_cs', 25, src='caso 2 (didáctico): LC 280, 
 S['p5old_ehr'] = ehr(460, 300, 'conc_cs', 0, early=25, src='caso 5 (LC 460 como el ECG real, VA 300); EV-HR con el V local adelantado > 60 ms, sin cambio de la A',
                   lab='A-A 460 (sin cambio)')
 # Caso 6: PJRT, LC 521, VA 290; EV-HR retrasa la A 20 ms.
-S['p6_ehr'] = ehr(300, 190, 'conc_cs', -20, src='caso 6 (LC 300 como el ECG real, VA 190); EV-HR que retrasa la A 20 ms', lab='A-A 320 (+20)')
+S['p6old_ehr'] = ehr(300, 190, 'conc_cs', -20, src='caso 6 (LC 300 como el ECG real, VA 190); EV-HR que retrasa la A 20 ms', lab='A-A 320 (+20)')
 # Caso 9: PJRT (Arias 2010), LC 480, VA 296; EV-HR adelanta la A (magnitud ilustrativa).
 S['p9_ehr'] = ehr(310, 180, 'conc_cs', 20, src='caso 9 (LC 310 como el ECG real, VA 180); EV-HR que adelanta la A 20 ms', lab='A-A 290 (−20)')
 S['p9_ehr']['pxms'] = 0.25
@@ -70,7 +70,7 @@ sp = [A[-1] + 230 + 280 * k for k in range(6)]
 pv = [s + 28 + AH + 10 + HV for s in sp]
 last = pv[-1]
 vs2 = [last + LC, last + 2 * LC]
-S['p6_aop'] = dict(win=(-80, vs2[-1] + 300), pxms=0.25, channels=CH, title='Sobreestimulación auricular desde la AD alta a 280 ms',
+S['p6old_aop'] = dict(win=(-80, vs2[-1] + 300), pxms=0.25, channels=CH, title='Sobreestimulación auricular desde la AD alta a 280 ms',
     src='caso 6: valores ilustrativos (ΔAH 10 ms de Ho 2015)',
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
     atr=[(a, 'conc_cs', -1) for a in A] + [(s + 5, 'sinus', 1) for s in sp] + [(v + VA, 'conc_cs', -1) for v in [last] + vs2],
