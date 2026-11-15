@@ -719,6 +719,130 @@ S['p6_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.27, title='EA con His refrac
     cal=[(hs[2], hs[3], 'His d', f'H-H {LC6}'), (hs[3], hs[4], 'His d', f'H-H {LC6}')],
     marks=[(apb, 'V1', 'EA')])
 
+# =====================================================================================================
+# Caso 7 (taquicardia de la unión; LC 340 como el ECG real). El foco está en el His: H → V 45 y H → A 45 (A y V simultáneos).
+SRC7 = 'caso 7 (didáctico): LC 340 como el caso; el resto, ilustrativo'
+LC7, SC7, SA7, PPI7, HAp7 = 340, 300, 220, 515, 100
+
+
+def vop7(title, med):
+    svt = [i * LC7 for i in range(3)]
+    sp = [svt[-1] + 260 + SC7 * k for k in range(6)]
+    A = [v for v in svt] + [s + SA7 for s in sp]
+    ret = sp[-1] + PPI7
+    after = [ret, ret + LC7]
+    cal = [(svt[0], svt[1], 'RVA', f'LC {LC7}'), (sp[-2], sp[-1], 'RVA', f'S-S {SC7}'), (A[-3] + 2, A[-2] + 2, 'HRA', f'A-A {SC7}'),
+           (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {SA7}'), (sp[-1], ret + 2, 'RVA', f'PPI {PPI7}')]
+    marks = [(A[-1], 'His p', 'A'), (ret - HV, 'His p', 'H')]
+    if med:
+        cal = [c for c in cal if not c[3].startswith(('S-S', 'A-A'))]
+        cal += [(svt[1] - HV, svt[1], 'His d', f'HA {HV}'), (A[-1] - HAp7, A[-1], 'His d', f'HA {HAp7}')]
+        marks = [(sp[-1] + 260, 'I', f'SA − VA = {SA7} − 0 = {SA7} ms'), (sp[-1] + 260, 'aVF', f'PPI − LC = {PPI7} − {LC7} = {PPI7 - LC7} ms'),
+                 (sp[-1] + 260, 'V1', f'ΔHA = {HAp7} − {HV} = +{HAp7 - HV} ms')]
+    return dict(win=(-80, after[-1] + 220), pxms=0.25, title=title, channels=CH6, src=SRC7,
+        beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
+        atr=[(a, 'conc_his', -1) for a in A + after], h_ante=[v - HV for v in svt + after], h_retro=[s + SA7 - HAp7 for s in sp],
+        cal=cal, marks=marks)
+
+
+S['p7_vop'] = vop7('Sobreestimulación ventricular desde el ápex del VD a 300 ms', False)
+S['p7_medidas'] = vop7('Medidas sobre la sobreestimulación ventricular (ápex del VD a 300 ms): PPI, SA y HA', True)
+
+
+def diff7(sa, typ, title):
+    svt = [0, LC7]
+    sp = [600 + SC7 * k for k in range(6)]
+    A = svt + [s + sa for s in sp]
+    ret = sp[-1] + PPI7 + (sa - SA7)
+    return dict(win=(-80, ret + LC7 + 220), pxms=0.24, channels=CH6, title=title, spikes=sp, pace_ch='RVA', src=SRC7,
+        beats=[(v, 'n') for v in svt] + [(s, typ) for s in sp] + [(ret, 'n'), (ret + LC7, 'n')],
+        atr=[(a, 'conc_his', -1) for a in A] + [(ret, 'conc_his', -1), (ret + LC7, 'conc_his', -1)],
+        h_ante=[v - HV for v in svt] + [ret - HV, ret + LC7 - HV], h_retro=[s + sa - HAp7 for s in sp],
+        cal=[(sp[-1], A[-1] + 2, 'CS 9-10', f'SA {sa}'), (svt[0], svt[1], 'RVA', f'LC {LC7}')])
+
+
+S['p7_diff_a'] = diff7(220, 'pa', 'A. Encarrilamiento desde el ápex del VD (300 ms)')
+S['p7_diff_b'] = diff7(250, 'pb', 'B. Encarrilamiento desde la base del VD (300 ms)')
+
+# EV con His refractario: el His y la A siguientes no cambian.
+k = 3
+vs = [i * LC7 for i in range(k)]
+h_exp = k * LC7 - HV
+after = [k * LC7 + LC7, k * LC7 + 2 * LC7]
+A = vs + [k * LC7] + after
+S['p7_ehr'] = dict(win=(-80, after[-1] + 200), pxms=0.30, title='EV con His refractario durante la taquicardia', channels=CH6, src=SRC7,
+    spikes=[h_exp], pace_ch='RVA', beats=[(v, 'n') for v in vs] + [(h_exp, 'pa')] + [(v, 'n') for v in after],
+    atr=[(a, 'conc_his', -1) for a in A], h_ante=[v - HV for v in vs] + [h_exp] + [v - HV for v in after],
+    cal=[(vs[1] - HV, vs[2] - HV, 'His d', f'H-H {LC7}'), (vs[2] - HV, h_exp, 'His d', f'H-H {LC7}'), (h_exp, after[0] - HV, 'His d', f'H-H {LC7}')],
+    marks=[(h_exp, 'V1', 'EV'), (h_exp, 'His p', 'H')])
+
+# EA con His refractario (ostium del SC): el His siguiente no cambia.  EA precoz (AD alta): adelanta el His inmediato 38 ms y la taquicardia sigue.
+hs = [i * LC7 - HV for i in range(7)]
+vs = [h + HV for h in hs]
+apb = hs[4]
+S['p7_eha_a'] = dict(win=(-100, vs[-1] + 250), pxms=0.25, title='A. EA con His refractario desde el ostium del SC', channels=CH6, src=SRC7,
+    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='CS 9-10',
+    atr=[(v, 'conc_his', -1) for k2, v in enumerate(vs) if k2 != 4] + [(apb + 4, 'conc_cs', 1)], h_ante=hs,
+    cal=[(hs[3], hs[4], 'His d', f'H-H {LC7}'), (hs[4], hs[5], 'His d', f'H-H {LC7}')],
+    marks=[(apb, 'V1', 'EA')])
+hs = [i * LC7 - HV for i in range(4)]
+h_adv = 4 * LC7 - HV - 38
+apb = h_adv - 125
+hs += [h_adv, h_adv + LC7, h_adv + 2 * LC7]
+vs = [h + HV for h in hs]
+S['p7_eha_b'] = dict(win=(-100, vs[-1] + 250), pxms=0.25, title='B. EA precoz desde la AD alta', channels=CH6, src=SRC7,
+    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='HRA',
+    atr=[(v, 'conc_his', -1) for k2, v in enumerate(vs) if k2 != 4] + [(apb + 4, 'sinus', 1)], h_ante=hs,
+    cal=[(hs[2], hs[3], 'His d', f'H-H {LC7}'), (hs[3], hs[4], 'His d', f'H-H {hs[4] - hs[3]}'), (hs[4], hs[5], 'His d', f'H-H {LC7}'),
+         (apb, hs[4], 'His p', f'AH {hs[4] - apb - 28}')],
+    marks=[(apb, 'V1', 'EA')])
+
+# Sobreestimulación auricular desde la AD alta a 300: cada A conduce con AH 90; al cortar, el último A conduce con AH 90 (PR < RR)
+# y la taquicardia retoma con H-H 340.
+vs = [0, LC7]
+sp = [vs[-1] + 200 + 300 * k for k in range(6)]
+pv = [s + 28 + 90 + HV for s in sp]
+vs2 = [pv[-1] + LC7, pv[-1] + 2 * LC7]
+S['p7_aop'] = dict(win=(-80, vs2[-1] + 220), pxms=0.24, title='Sobreestimulación auricular desde la AD alta a 300 ms', channels=CH6, src=SRC7,
+    beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
+    atr=[(a, 'conc_his', -1) for a in vs] + [(s + 5, 'sinus', 1) for s in sp] + [(v, 'conc_his', -1) for v in vs2],
+    h_ante=[v - HV for v in vs + pv + vs2],
+    cal=[(vs[0], vs[1], 'RVA', f'V-V {LC7}'), (sp[-2], sp[-1], 'HRA', 'S-S 300'), (pv[-2], pv[-1], 'RVA', 'V-V 300'),
+         (sp[-1] + 28, pv[-1] - HV, 'His d', 'AH 90'), (pv[-1], vs2[0], 'RVA', f'V-V {LC7}')])
+
+# Estudio basal: extraestímulo auricular sin salto del AH (S2 300 → AH 140; S2 290 → AH 150), sin eco.
+def ea7(s2, ah2, title):
+    sp = [0, 600, 600 + s2]
+    hs = [s + 28 + a for s, a in zip(sp, [80, 80, ah2])]
+    return dict(win=(-80, 1650), pxms=0.40, title=title, channels=CH6, src=SRC7,
+        beats=[(h + HV, 'n') for h in hs], aspikes=sp, apace_ch='HRA', atr=[(s + 5, 'sinus', 1) for s in sp], h_ante=hs,
+        cal=[(sp[1], sp[2], 'HRA', f'S2 {s2}'), (sp[1] + 28, hs[1], 'His d', 'AH 80'), (sp[2] + 28, hs[2], 'His d', f'AH {ah2}')])
+
+
+S['p7_pre_a'] = ea7(300, 140, 'A. Extraestímulo auricular S1-S2 600-300')
+S['p7_pre_b'] = ea7(290, 150, 'B. S2 10 ms más corto: S1-S2 600-290')
+
+# Para-Hisiana en sinusal: SA 85 → 135, misma secuencia.
+sp = [0, 650, 1300, 1950]
+cap = [True, False, True, False]
+S['p7_parahis'] = dict(win=(-80, 2300), pxms=0.32, title='Estimulación para-Hisiana en ritmo sinusal', channels=CH6, src=SRC7,
+    spikes=sp, pace_ch='His p', beats=[(s + HV if c else s, 'n' if c else 'pa') for s, c in zip(sp, cap)],
+    atr=[(s + (85 if c else 135), 'conc_his', -1) for s, c in zip(sp, cap)],
+    cal=[(sp[0], sp[0] + 87, 'His d', 'SA 85'), (sp[1], sp[1] + 137, 'His d', 'SA 135'), (sp[2] + HV, sp[2] + HV + 95, 'RVA', 'QRS 95'), (sp[3], sp[3] + 150, 'RVA', 'QRS 150')],
+    marks=[(sp[0] + 30, 'V1', 'His + V'), (sp[1] + 40, 'V1', 'solo V')])
+
+# Adenosina: se enlentece (H-H 420, 470) con bloqueo VA (A sinusales disociadas) y vuelve a 340 con A y V simultáneos.
+vs = [0, LC7, 2 * LC7]
+for d in (420, 470, 420, 340, 340):
+    vs.append(vs[-1] + d)
+asin = [vs[2] + 250, vs[2] + 250 + 600]
+A = vs[:3] + vs[6:]
+S['p7_ado'] = dict(win=(-80, vs[-1] + 220), pxms=0.22, title='Adenosina IV durante la taquicardia', channels=CH6, src=SRC7,
+    beats=[(v, 'n') for v in vs], atr=[(a, 'conc_his', -1) for a in A] + [(a, 'sinus', 1) for a in asin], h_ante=[v - HV for v in vs],
+    cal=[(vs[0] - HV, vs[1] - HV, 'His d', f'H-H {LC7}'), (vs[2] - HV, vs[3] - HV, 'His d', 'H-H 420'), (vs[3] - HV, vs[4] - HV, 'His d', 'H-H 470'),
+         (vs[6] - HV, vs[7] - HV, 'His d', f'H-H {LC7}')],
+    marks=[(vs[3] + 60, 'aVF', 'V sin A'), (vs[4] + 60, 'aVF', 'V sin A')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
