@@ -1057,6 +1057,104 @@ S['p9_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.27, title='EA con His refrac
     cal=[(hs[2], hs[3], 'His d', f'H-H {LC9}'), (hs[3], hs[4], 'His d', f'H-H {LC9}')],
     marks=[(apb, 'V1', 'EA')])
 
+# =====================================================================================================
+# Caso 10 (reentrada por una vía nodoventricular; LC 390, HV 45). Conducción VA tipo Wenckebach (110 → 150 → 175 → bloqueo)
+# con H-H estable. Nagashima 2020: PPI−LC 105, His ortodrómico y fusión constante. El resto, ilustrativo.
+SRC10 = 'caso 10 (didáctico): LC 390 y PPI−LC 105 de Nagashima 2020; el resto, ilustrativo'
+LC10 = 390
+WK = [110, 150, 175, None]
+
+
+def wk(vs, k0=0):
+    return [v + WK[(i + k0) % 4] for i, v in enumerate(vs) if WK[(i + k0) % 4] is not None]
+
+
+def vop10(title, med, ppi=495, typ='f', pace='RVA'):
+    svt = [i * LC10 for i in range(3)]
+    sp = [svt[-1] + 330 + 360 * k for k in range(6)]
+    ret = sp[-1] + ppi
+    after = [ret, ret + LC10, ret + 2 * LC10]
+    A = wk(svt) + [s + 120 for s in sp[::2]] + wk(after)
+    cal = [(svt[0], svt[1], 'RVA', f'LC {LC10}'), (sp[-2], sp[-1], 'RVA', 'S-S 360'), (sp[-1], ret + 2, 'RVA', f'PPI {ppi}')]
+    marks = [] if med else [(sp[2] - 10, 'His p', 'H')]
+    if med:
+        marks = [(sp[-1] + 200, 'I', f'PPI − LC = {ppi} − {LC10} = {ppi - LC10} ms')]
+    return dict(win=(-80, after[-1] + 220), pxms=0.22, title=title, channels=CH6, src=SRC10, spikes=sp, pace_ch=pace,
+        beats=[(v, 'n') for v in svt + after] + [(s, typ) for s in sp], atr=[(a, 'conc_his', -1) for a in A],
+        h_ante=[v - HV for v in svt + after] + [s - 10 for s in sp], cal=cal, marks=marks)
+
+
+S['p10_vop'] = vop10('Sobreestimulación ventricular desde el ápex del VD a 360 ms', False)
+S['p10_medidas'] = vop10('PPI después de la sobreestimulación ventricular (ápex del VD a 360 ms)', True)
+S['p10_diff_a'] = vop10('A. Encarrilamiento desde el ápex del VD (360 ms)', False)
+S['p10_diff_b'] = vop10('B. Encarrilamiento desde la base del VD (360 ms)', False, ppi=505, typ='pb')
+for k in ('p10_diff_a', 'p10_diff_b'):
+    S[k]['marks'] = []
+
+# EV con His refractario: adelanta el His siguiente 25 ms (H-H 365) y la taquicardia sigue.
+vs = [i * LC10 for i in range(4)]
+h_exp = 4 * LC10 - HV
+hn = h_exp + LC10 - 25
+after = [hn + HV, hn + HV + LC10, hn + HV + 2 * LC10]
+S['p10_ehr'] = dict(win=(-80, after[-1] + 200), pxms=0.25, title='EV con His refractario durante la taquicardia', channels=CH6, src=SRC10,
+    spikes=[h_exp], pace_ch='RVA', beats=[(v, 'n') for v in vs] + [(h_exp, 'pa')] + [(v, 'n') for v in after],
+    atr=[(a, 'conc_his', -1) for a in wk(vs) + wk(after, 1)], h_ante=[v - HV for v in vs] + [h_exp, hn] + [v - HV for v in after[1:]],
+    cal=[(vs[2] - HV, vs[3] - HV, 'His d', f'H-H {LC10}'), (h_exp, hn, 'His d', f'H-H {LC10 - 25}'), (hn, after[1] - HV, 'His d', f'H-H {LC10}')],
+    marks=[(h_exp, 'V1', 'EV'), (h_exp, 'His p', 'H')])
+
+# Sobreestimulación auricular a 340: conduce con AH 150; al cortar la taquicardia sigue (H-H 390) con el mismo Wenckebach VA.
+vs = [0, LC10, 2 * LC10]
+sp = [vs[-1] + 200 + 340 * k for k in range(6)]
+pv = [s + 28 + 150 + HV for s in sp]
+vs2 = [pv[-1] + LC10, pv[-1] + 2 * LC10, pv[-1] + 3 * LC10]
+S['p10_aop'] = dict(win=(-80, vs2[-1] + 220), pxms=0.22, title='Sobreestimulación auricular desde la AD alta a 340 ms', channels=CH6, src=SRC10,
+    beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
+    atr=[(a, 'conc_his', -1) for a in wk(vs)] + [(s + 5, 'sinus', 1) for s in sp] + [(a, 'conc_his', -1) for a in wk(vs2)],
+    h_ante=[v - HV for v in vs + pv + vs2],
+    cal=[(vs[0] - HV, vs[1] - HV, 'His d', f'H-H {LC10}'), (sp[-2], sp[-1], 'HRA', 'S-S 340'), (sp[-1] + 28, pv[-1] - HV, 'His d', 'AH 150'),
+         (pv[-1] - HV, vs2[0] - HV, 'His d', f'H-H {LC10}')])
+
+# Estudio basal: extraestímulo auricular: S2 310 → AH 150; S2 300 → AH 245 (salto de 95).
+def ea10(s2, ah2, title):
+    sp = [0, 600, 600 + s2]
+    hs = [s + 28 + a for s, a in zip(sp, [85, 85, ah2])]
+    return dict(win=(-80, 1650), pxms=0.40, title=title, channels=CH6, src=SRC10,
+        beats=[(h + HV, 'n') for h in hs], aspikes=sp, apace_ch='HRA', atr=[(s + 5, 'sinus', 1) for s in sp], h_ante=hs,
+        cal=[(sp[1], sp[2], 'HRA', f'S2 {s2}'), (sp[1] + 28, hs[1], 'His d', 'AH 85'), (sp[2] + 28, hs[2], 'His d', f'AH {ah2}')])
+
+
+S['p10_pre_a'] = ea10(310, 150, 'A. Extraestímulo auricular S1-S2 600-310')
+S['p10_pre_b'] = ea10(300, 245, 'B. S2 10 ms más corto: S1-S2 600-300')
+
+# Para-Hisiana en sinusal: SA 85 → 135, misma secuencia.
+sp = [0, 650, 1300, 1950]
+cap = [True, False, True, False]
+S['p10_parahis'] = dict(win=(-80, 2300), pxms=0.32, title='Estimulación para-Hisiana en ritmo sinusal', channels=CH6, src=SRC10,
+    spikes=sp, pace_ch='His p', beats=[(s + HV if c else s, 'n' if c else 'pa') for s, c in zip(sp, cap)],
+    atr=[(s + (85 if c else 135), 'conc_his', -1) for s, c in zip(sp, cap)],
+    cal=[(sp[0], sp[0] + 87, 'His d', 'SA 85'), (sp[1], sp[1] + 137, 'His d', 'SA 135'), (sp[2] + HV, sp[2] + HV + 95, 'RVA', 'QRS 95'), (sp[3], sp[3] + 150, 'RVA', 'QRS 150')],
+    marks=[(sp[0] + 30, 'V1', 'His + V'), (sp[1] + 40, 'V1', 'solo V')])
+
+# Adenosina: la taquicardia termina sin un His después del último V; vuelve el sinusal.
+vs = [i * LC10 for i in range(5)]
+sa = [vs[-1] + 900, vs[-1] + 1650]
+hsin = [a + 28 + 85 for a in sa]
+S['p10_ado'] = dict(win=(-80, hsin[-1] + 300), pxms=0.22, title='Adenosina IV durante la taquicardia', channels=CH6, src=SRC10,
+    beats=[(v, 'n') for v in vs] + [(h + HV, 'n') for h in hsin], atr=[(a, 'conc_his', -1) for a in wk(vs)] + [(a, 'sinus', 1) for a in sa],
+    h_ante=[v - HV for v in vs] + hsin,
+    cal=[(vs[0] - HV, vs[1] - HV, 'His d', f'H-H {LC10}'), (sa[0], sa[1], 'HRA', 'A-A 750')],
+    marks=[(vs[-1] + 150, 'aVF', 'termina'), (hsin[0] + HV + 40, 'aVF', 'sinusal')])
+
+# EA con His refractario desde el ostium del SC: el His siguiente sale a su tiempo.
+hs = [i * LC10 - HV for i in range(6)]
+vs = [h + HV for h in hs]
+apb = hs[3] + 10
+S['p10_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.25, title='EA con His refractario desde el ostium del SC', channels=CH6, src=SRC10,
+    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='CS 9-10',
+    atr=[(a, 'conc_his', -1) for a in wk(vs[:3])] + [(apb + 4, 'conc_cs', 1)] + [(a, 'conc_his', -1) for a in wk(vs[4:], 1)], h_ante=hs,
+    cal=[(hs[2], hs[3], 'His d', f'H-H {LC10}'), (hs[3], hs[4], 'His d', f'H-H {LC10}')],
+    marks=[(apb, 'V1', 'EA')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')

@@ -102,7 +102,7 @@ sp = h_exp - 10
 hn = h_exp + LC - 25
 after = [hn + HV, hn + HV + LC]
 A = [vs[0] + 100, vs[1] + 130, after[0] + 100, after[1] + 130]
-S['p10_ehr'] = dict(win=(-80, after[-1] + 250), pxms=0.28, channels=CH,
+S['p10old_ehr'] = dict(win=(-80, after[-1] + 250), pxms=0.28, channels=CH,
     src='Nagashima 2020 (vía nodoventricular, LC 390); EV-HR que adelanta el His siguiente 25 ms (ilustrativo); bloqueo VA tipo Wenckebach',
     beats=[(v, 'n') for v in vs] + [(sp, 'pa')] + [(v, 'n') for v in after], spikes=[sp],
     atr=[(a, 'conc_his', -1) for a in A], h_ante=[v - HV for v in vs] + [h_exp, hn, after[1] - HV],
@@ -116,7 +116,7 @@ sp = [700, 1060, 1420, 1780]
 ret = sp[-1] + LC + 105
 after = [ret, ret + LC]
 A = [vs[0] + 100, 1060 + 110, 1780 + 400, after[1] + 100]
-S['p10_vop'] = dict(win=(-80, after[-1] + 250), pxms=0.25, channels=CH,
+S['p10old_vop'] = dict(win=(-80, after[-1] + 250), pxms=0.25, channels=CH,
     src='Nagashima 2020: PPI−LC 105, His ortodrómico, fusión constante y respuesta V-V-A; LC de estimulación 360 y VA ilustrativos',
     beats=[(v, 'n') for v in vs] + [(s, 'f') for s in sp] + [(v, 'n') for v in after], spikes=sp,
     atr=[(a, 'conc_his', -1) for a in A], h_ante=[v - HV for v in vs] + [s - 10 for s in sp] + [v - HV for v in after],
