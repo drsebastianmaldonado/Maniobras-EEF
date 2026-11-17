@@ -948,9 +948,9 @@ S['p8_verapamilo_b'] = verap8('B. Verapamilo IV', [0, 440, 460, 480, 500], [120,
 
 # =====================================================================================================
 # Caso 9 (TRAV por vía septal lenta y decremental que imita una TRNAV atípica; LC 310 como el ECG real, VA 180, HV 42, AH 88).
-# Arias 2010: desde el ápex PPI−LC 144; base − ápex: ΔVA −28 y ΔcPPI−LC −18. SA−VA 100 y ΔHA +40, ilustrativos.
-SRC9 = 'caso 9: LC 310 como el caso; PPI−LC 144, ΔVA −28 y ΔPPI −18 de Arias 2010; el resto, ilustrativo'
-LC9, VA9, HV9, AH9, SC9, SA9, PPI9, HAp9 = 310, 180, 42, 88, 295, 280, 454, 262
+# Base − ápex ΔVA −28 y ΔPPI −18 de Arias 2010. Desde el ápex PPI−LC 110 (< 125, corte del RP largo), SA−VA 70 y ΔHA −22, ilustrativos.
+SRC9 = 'caso 9: LC 310 como el caso; ΔVA −28 y ΔPPI −18 de Arias 2010; el resto, ilustrativo'
+LC9, VA9, HV9, AH9, SC9, SA9, PPI9, HAp9 = 310, 180, 42, 88, 295, 250, 420, 200
 
 
 def vop9(title, med):
@@ -966,7 +966,7 @@ def vop9(title, med):
         cal = [c for c in cal if not c[3].startswith(('S-S', 'A-A'))]
         cal += [(svt[1] - HV9, svt[1] + VA9, 'His p', f'HA {HV9 + VA9}'), (A[-1] - HAp9, A[-1], 'His p', f'HA {HAp9}')]
         marks = [(sp[-1] + 160, 'I', f'SA − VA = {SA9} − {VA9} = {SA9 - VA9} ms'), (sp[-1] + 160, 'aVF', f'PPI − LC = {PPI9} − {LC9} = {PPI9 - LC9} ms'),
-                 (sp[-1] + 160, 'V1', f'ΔHA = {HAp9} − {HV9 + VA9} = +{HAp9 - HV9 - VA9} ms')]
+                 (sp[-1] + 160, 'V1', f'ΔHA = {HAp9} − {HV9 + VA9} = −{HV9 + VA9 - HAp9} ms')]
     return dict(win=(-80, after[-1] + 220), pxms=0.24, title=title, channels=CH6, src=SRC9,
         beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
         atr=[(a, 'conc_cs', -1) for a in A + [v + VA9 for v in after]],
@@ -990,8 +990,8 @@ def diff9(sa, ppi, typ, title):
              (sp[-1], ret + 2, 'RVA', f'PPI {ppi}')])
 
 
-S['p9_diff_a'] = diff9(280, 454, 'pa', 'A. Encarrilamiento desde el ápex del VD (295 ms)')
-S['p9_diff_b'] = diff9(252, 436, 'pb', 'B. Encarrilamiento desde la base del VD (295 ms)')
+S['p9_diff_a'] = diff9(250, 420, 'pa', 'A. Encarrilamiento desde el ápex del VD (295 ms)')
+S['p9_diff_b'] = diff9(222, 402, 'pb', 'B. Encarrilamiento desde la base del VD (295 ms)')
 
 # EV con His refractario: por el decremento de la vía, retrasa la A siguiente 20 ms, misma secuencia, la taquicardia sigue.
 k = 3
