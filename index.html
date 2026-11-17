@@ -313,7 +313,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script>
-const APPV = 169;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 170;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -1258,7 +1258,7 @@ const PMAN = [
   ['aop', 'Sobreestimulación auricular (VA linking, ΔAH)', 'aop'], ['eha', 'EA con His refractario', 'eha'],
   ['parahis', 'Estimulación para-Hisiana en sinusal', 'parahis'], ['ado', 'Adenosina', 'ado'],
   ['verap', 'Verapamilo IV', 'tvf'], ['map', 'Mapeo del septum del VI', 'tvf'],
-  ['adec', 'Estimulación auricular decremental en sinusal', 'preex'], ['eapre', 'EA durante la taquicardia con la unión AV refractaria', 'preex'],
+  ['adec', 'Estimulación auricular decremental en sinusal', 'preex'], ['sitio', 'Estimulación auricular en sinusal desde dos sitios (ostium del SC y AD lateral)', 'preex'], ['eapre', 'EA durante la taquicardia con la unión AV refractaria', 'preex'],
   ['anillo', 'Mapeo del anillo tricuspídeo', 'preex'],
   ['mapa', 'Mapa de activación auricular durante la taquicardia', 'pre'], ['regah', 'Registrar la A y el His (AD alta y His)', 'dfire'], ['atrop', 'Atropina', 'dfire'], ['abll', 'Ablación de la vía lenta', 'dfire']];
 const PDX = [['trnav_t', 'TRNAV típica'], ['trnav_a', 'TRNAV atípica'], ['trav_s', 'TRAV por vía septal'], ['trav_l', 'TRAV por vía libre'],
@@ -1416,12 +1416,13 @@ const PCASOS = [
       eha: { v: 'EA desde el ostium del SC con el His refractario: el His siguiente sale a su tiempo (H-H 390).', r: 'No modifica el His.', u: 'util', img: 'figs/sim/prac/p10_eha.png' } },
     dx: ['nvrt'], ex: 'Con bloqueo VA tipo Wenckebach y H-H estable, la aurícula no forma parte del circuito: el diferencial es TRNAV con bloqueo superior, taquicardia de la unión o reentrada por una vía nodoventricular o nodofascicular. El ΔAH de 55 ms con la sobreestimulación auricular confirma que la aurícula no está en el circuito. La EV con His refractario que adelanta el His siguiente demuestra una vía que lleva el ventrículo al nodo y participa; el His ortodrómico, la fusión y el PPI−LC de 105 (≤ 125) ponen al ventrículo en el circuito, y la fusión constante indica una vía nodoventricular.', refs: ['nagashima20', 'veen12'] },
   { id: 'c11', t: 'Taquicardia de QRS ancho con BRI en un corazón sano', p: 'Adolescente de 14 años con palpitaciones. ECG en sinusal normal, con patrón rS en DIII.',
-    mans: ['pre', 'adec', 'eapre', 'vop', 'regah', 'ado', 'anillo'],
+    mans: ['pre', 'adec', 'sitio', 'eapre', 'vop', 'regah', 'ado', 'anillo'],
     lab: { vop: 'Sobreestimulación ventricular desde el ápex (encarrilamiento)', regah: 'Registrar la A y el His durante la taquicardia' }, mk: { regah: 'preex' },
     ecg: 'figs/sim/casos/c11_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c11_basal.png', ind: 'figs/sim/casos/c11_ind.png', indt: 'Extraestímulo auricular S1-S2 600-260',
     h: ['Taquicardia de QRS ancho, LC 260 ms', 'Protocolo: extraestímulo auricular desde la AD alta, S1-S2 600-260'],
     hk: ['QRS ancho con BRI, eje normal o superior y transición tardía (después de V4) en un corazón sano: el patrón de la preexcitación por una vía atriofascicular (Mahaim). El diferencial es TV del VD, TSV con BRI funcional y TRAV antidrómica por una vía AV derecha.', 'Inducción con extraestímulo auricular: el S2 conduce con AV 170 y QRS con BRI, y la taquicardia empieza con relación 1:1 y VA 110.'],
     m: { adec: { v: 'Estimulación de la AD alta en sinusal a 500, 400 y 350 ms: el QRS pasa de angosto a BRI que aumenta (incipiente → completo), el AV se alarga hasta 180 ms y el HV se acorta de 45 a −18 ms (el His queda después del QRS).', r: 'Preexcitación con BRI que aumenta mientras el AV se alarga: la vía conduce en forma decremental, como el nodo, y se inserta en la rama derecha distal. El HV negativo muestra que el ventrículo se activa por la vía antes que por el His. Característico de la vía atriofascicular (Mahaim).', u: 'clave', img: 'figs/sim/prac/p11_adec.png' },
+      sitio: { v: 'Estimulación auricular en sinusal a 600 ms. Desde el ostium del SC: QRS angosto, AH 80 y HV 45. Desde la AD lateral, al mismo ciclo: BRI máximo, S-V 150 y HV 10.', r: 'La preexcitación depende del sitio de estimulación: aparece al estimular cerca del origen de la vía (pared lateral de la AD) y no desde el ostium del SC, que está cerca del nodo. El HV se acorta porque el ventrículo se activa por la vía antes de que llegue el frente por el His. Ubica la vía en la pared libre del AD: vía atriofascicular derecha.', u: 'clave', img: 'figs/sim/prac/p11_sitio.png' },
       eapre: { v: 'EA desde la AD lateral, con la unión AV refractaria: el V siguiente se adelanta 25 ms (V-V 260 → 235) con el mismo QRS, y la taquicardia sigue reseteada. Desde el septum, el mismo EA no la modifica.', r: 'Con la unión AV refractaria, el EA solo pudo llegar al ventrículo por una vía de la pared libre del AD, y como resetea la taquicardia, esa vía es el brazo anterógrado: TRAV antidrómica por una vía atriofascicular. Excluye la TV y la TSV con aberrancia.', u: 'clave', img: 'figs/sim/prac/p11_eapre.png' },
       anillo: { v: 'Mapeo del anillo tricuspídeo lateral durante la estimulación auricular: un potencial agudo entre la A y el V.', r: 'Potencial de la vía atriofascicular (equivalente al His de la vía): es el blanco de la ablación, en el anillo, no la inserción ventricular.', u: 'clave', img: 'figs/sim/prac/p11_anillo.png' },
       regah: { v: 'Relación AV 1:1 (V-V y A-A 260) con VA 110 y la A más precoz en el His. El His aparece 25 ms después del inicio del QRS.', r: 'His después del inicio del QRS: el ventrículo no se activa por el His (preexcitación o TV). La relación 1:1 no excluye la TV, pero sí una TV con disociación.', u: 'util', img: 'figs/sim/prac/p11_regah.png' },

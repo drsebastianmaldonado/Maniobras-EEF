@@ -1198,6 +1198,29 @@ S['p11_ado'] = dict(win=(-80, A[-1] + 800), pxms=0.27, title='Adenosina IV duran
     cal=[(vs[0], vs[1], 'RVA', f'LC {LC11}'), (vs[3], A[3] + 2, 'CS 9-10', f'VA {VA11}')],
     marks=[(A[3] + 60, 'aVF', 'última: A sin V')])
 
+# Caso 11: estimulación auricular en sinusal a 600 desde dos sitios. A, ostium del SC (cerca del nodo, lejos de la vía): QRS angosto,
+# AH 80, HV 45. B, AD lateral (cerca de la vía): BRI máximo; el V llega por la vía (S-V 150) y el His por el nodo (AH 112): HV 10.
+def sitio11(cs, title):
+    sp = [0, 600, 1200]
+    if cs:
+        hs = [s + 28 + 80 for s in sp]
+        beats = [(h + HV, 'n') for h in hs]
+        atr = [(s + 4, 'conc_cs', 1) for s in sp]
+        cal = [(sp[0], sp[1], 'CS 9-10', 'S-S 600'), (sp[1] + 28, hs[1], 'His d', 'AH 80'), (hs[1], hs[1] + HV, 'His p', f'HV {HV}')]
+        pace, ext = 'CS 9-10', {'AD lat': [(s + 70, 0.8, 1.0) for s in sp]}
+    else:
+        hs = [s + 28 + 112 for s in sp]
+        beats = [(s + 150, 'lb') for s in sp]
+        atr = [(s + 5, 'right', 1) for s in sp]
+        cal = [(sp[0], sp[1], 'AD lat', 'S-S 600'), (sp[1], sp[1] + 150, 'RVA', 'S-V 150'), (hs[1], sp[1] + 150, 'His p', 'HV 10')]
+        pace, ext = 'AD lat', {}
+    return dict(win=(-80, 1650), pxms=0.40, title=title, channels=CH11, src=SRC11, aspikes=sp, apace_ch=pace,
+        beats=beats, atr=atr, h_ante=hs, extra=ext, cal=cal)
+
+
+S['p11_sitio_a'] = sitio11(True, 'A. Estimulación auricular a 600 ms desde el ostium del SC')
+S['p11_sitio_b'] = sitio11(False, 'B. Estimulación auricular a 600 ms desde la AD lateral')
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
