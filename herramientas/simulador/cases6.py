@@ -914,6 +914,38 @@ S['p8_map'] = dict(win=(-60, vt[-1] + 200), pxms=0.30, title='Mapeo del septum m
     cal=[(vt[0], vt[1], 'RVA', f'LC {LC8}'), (vt[1] - 120, vt[1], 'LV 9-10', 'P1-V 120'), (vt[2] - 100, vt[2], 'LV 7-8', 'P1-V 100'),
          (vt[3] - 75, vt[3], 'LV 5-6', 'P1-V 75'), (vt[4] - 55, vt[4], 'LV 3-4', 'P1-V 55'), (vt[5] - 30, vt[5], 'LV 1-2', 'P2-V 30')])
 
+# Caso 8: verapamilo. A, antes (LC 420, P1-P2 110, P2-V 30). B, con verapamilo: la LC y el P1-P2 se alargan (P2-V sigue en 30),
+# el último P1 se bloquea antes de P2 y la TV termina; sigue el ritmo sinusal con QRS angosto.
+def verap8(title, lcs, p1p2s, end):
+    vt = [0]
+    for lc in lcs[1:]:
+        vt.append(vt[-1] + lc)
+    p2 = [v - 30 for v in vt]
+    p1 = [x - d for x, d in zip(p2, p1p2s)]
+    ext = {'LV 1-2': [(t, 0.32, 0.8) for t in p1] + [(t, 0.55, 0.7) for t in p2]}
+    beats = [(v, 'rbs') for v in vt]
+    atr = [(a, 'sinus', 1) for a in (130, 930, 1730) if a < vt[-1]]
+    h_ante, marks = [], []
+    cal = [(vt[1], vt[2], 'RVA', f'LC {vt[2] - vt[1]}'), (p1[2], p2[2], 'LV 1-2', f'P1-P2 {p1p2s[2]}'), (p2[3], vt[3], 'LV 1-2', 'P2-V 30')]
+    win = vt[-1] + 200
+    if end:
+        pb = vt[-1] + 330                                   # P1 bloqueado: no le sigue P2 ni QRS
+        ext['LV 1-2'].append((pb, 0.32, 0.8))
+        sa = [vt[-1] + 650, vt[-1] + 1450]                  # ritmo sinusal después de la terminación
+        h_ante = [a + 28 + 90 for a in sa]
+        beats += [(h + HV, 'n') for h in h_ante]
+        atr = [(a, 'sinus', 1) for a in (130, 930, 1730, 2530) if a < vt[-1]] + [(a, 'sinus', 1) for a in sa]
+        cal = [(vt[0], vt[1], 'RVA', f'LC {vt[1]}'), (vt[-2], vt[-1], 'RVA', f'LC {vt[-1] - vt[-2]}'),
+               (p1[-1], p2[-1], 'LV 1-2', f'P1-P2 {p1p2s[-1]}'), (p2[-1], vt[-1], 'LV 1-2', 'P2-V 30'), (sa[0], sa[1], 'HRA', 'A-A 800')]
+        marks = [(pb, 'LV 1-2', 'P1 sin P2'), (h_ante[0] + HV + 40, 'aVF', 'sinusal')]
+        win = sa[1] + 400
+    return dict(win=(-60, win), pxms=0.25, title=title, channels=['HRA', 'His d', 'LV 1-2', 'RVA'], src=SRC8,
+        beats=beats, atr=atr, h_retro=[v + 15 for v in vt], h_ante=h_ante, extra=ext, cal=cal, marks=marks)
+
+
+S['p8_verapamilo_a'] = verap8('A. Antes del verapamilo', [0, 420, 420, 420, 420, 420], [110] * 6, False)
+S['p8_verapamilo_b'] = verap8('B. Verapamilo IV', [0, 440, 460, 480, 500], [120, 130, 145, 160, 175], True)
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
