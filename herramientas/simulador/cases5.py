@@ -361,7 +361,7 @@ sp = [svt[-1] + 295 * (k + 1) for k in range(6)]
 A = [v + VA9 for v in svt] + [s + 280 for s in sp]
 ret = sp[-1] + 454
 after = [ret, ret + LC9]
-S['p9_vop'] = dict(win=(-100, after[-1] + 300), pxms=0.24, title='Encarrilamiento desde el ápex del VD a 295 ms', channels=CH6,
+S['p9old_vop'] = dict(win=(-100, after[-1] + 300), pxms=0.24, title='Encarrilamiento desde el ápex del VD a 295 ms', channels=CH6,
     src='caso 9: valores ilustrativos (PPI−LC de Arias 2010)',
     beats=[(v, 'n') for v in svt + after] + [(x, 'pa') for x in sp], spikes=sp,
     atr=[(a, 'conc_cs', -1) for a in A + [v + VA9 for v in after]],
