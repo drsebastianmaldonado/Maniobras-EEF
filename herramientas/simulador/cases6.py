@@ -993,18 +993,18 @@ def diff9(sa, ppi, typ, title):
 S['p9_diff_a'] = diff9(280, 454, 'pa', 'A. Encarrilamiento desde el ápex del VD (295 ms)')
 S['p9_diff_b'] = diff9(252, 436, 'pb', 'B. Encarrilamiento desde la base del VD (295 ms)')
 
-# EV con His refractario: adelanta la A siguiente 20 ms, misma secuencia, la taquicardia sigue.
+# EV con His refractario: por el decremento de la vía, retrasa la A siguiente 20 ms, misma secuencia, la taquicardia sigue.
 k = 3
 vs = [i * LC9 for i in range(k)]
 h_exp = k * LC9 - HV9
-A = [v + VA9 for v in vs] + [k * LC9 + VA9 - 20]
+A = [v + VA9 for v in vs] + [k * LC9 + VA9 + 20]
 nxt = A[-1] + (LC9 - VA9)
 after = [nxt, nxt + LC9]
 A += [v + VA9 for v in after]
 S['p9_ehr'] = dict(win=(-80, after[-1] + 200), pxms=0.30, title='EV con His refractario durante la taquicardia', channels=CH6, src=SRC9,
     spikes=[h_exp], pace_ch='RVA', beats=[(v, 'n') for v in vs] + [(h_exp, 'pa')] + [(v, 'n') for v in after],
     atr=[(a, 'conc_cs', -1) for a in A], h_ante=[v - HV9 for v in vs] + [h_exp] + [v - HV9 for v in after],
-    cal=[(A[k - 2] + 2, A[k - 1] + 2, 'CS 9-10', f'A-A {LC9}'), (A[k - 1] + 2, A[k] + 2, 'CS 9-10', f'A-A {LC9 - 20}')],
+    cal=[(A[k - 2] + 2, A[k - 1] + 2, 'CS 9-10', f'A-A {LC9}'), (A[k - 1] + 2, A[k] + 2, 'CS 9-10', f'A-A {LC9 + 20}')],
     marks=[(h_exp, 'V1', 'EV'), (h_exp, 'His p', 'H')])
 
 # Estudio basal: estimulación del VD a 500 y 400: SA 150 y 190 (decremental), A más precoz en el SC proximal.
