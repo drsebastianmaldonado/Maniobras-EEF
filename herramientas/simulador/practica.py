@@ -12,7 +12,7 @@ from simlib import render
 S = {**cases.S, **cases2.S, **cases3.S, **cases4.S}
 
 USADAS = ['arias10', 'burri12', 'ho15', 'knight99', 'michaud01', 'p10old_ehr', 'p10old_vop', 'p11_adec', 'p11_anillo', 'p11_eapre',
-          'p12_eapre', 'p12_pre', 'p13_abll', 'p2_ehr', 'p3_ado', 'p3_vop', 'p4old_ehr_a', 'p4old_ehr_b', 'p4old_pre', 'p5old_ehr', 'p6old_aop',
+          'p12_eapre', 'p12old_pre', 'p13_abll', 'p2_ehr', 'p3_ado', 'p3_vop', 'p4old_ehr_a', 'p4old_ehr_b', 'p4old_pre', 'p5old_ehr', 'p6old_aop',
           'p6old_ehr', 'p8_verap_a', 'p8_verap_b', 'p9old_diff_a', 'p9old_diff_b', 'p9old_ehr', 'tvf_post', 'veen11_fusion', 'veen11_pseudo', 'veen12_jt_a', 'veen12_jt_b']
 
 TITULOS = {'veen12_jt_a': 'A. EA con His refractario (ostium del SC)', 'veen12_jt_b': 'B. EA precoz (AD alta)','veen11_pseudo': 'Encarrilamiento desde el ápex del VD','p4old_ehr_a': 'A. EV-HR desde el ápex del VD', 'p4old_ehr_b': 'B. EV-HR desde el VI basal (rama del SC)',

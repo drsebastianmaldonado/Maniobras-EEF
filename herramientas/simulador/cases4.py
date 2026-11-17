@@ -180,7 +180,7 @@ S['p12_eapre'] = dict(win=(-80, after[-1] + 220), pxms=0.32, channels=['HRA', 'A
 # Caso 12: estimulación auricular en ritmo sinusal: preexcitación con AV corto que no se alarga (vía tipo Kent).
 sp = [0, 500, 900, 1250]
 hs = [s + 28 + a for s, a in zip(sp, [90, 120, 160, 210])]
-S['p12_pre'] = dict(win=(-80, 1600), pxms=0.40, channels=['HRA', 'AD lat', 'His d', 'CS 9-10', 'RVA'],
+S['p12old_pre'] = dict(win=(-80, 1600), pxms=0.40, channels=['HRA', 'AD lat', 'His d', 'CS 9-10', 'RVA'],
     src='caso 12 (didáctico): estimulación de la AD a 500, 400 y 350 ms; el AV por la vía se mantiene en 95 ms mientras el AH se alarga',
     beats=[(s + 95, 'lb') for s in sp], aspikes=sp, apace_ch='HRA', atr=[(s + 5, 'sinus', 1) for s in sp], h_ante=hs,
     extra={'AD lat': [(s + 30, 0.8, 1.0) for s in sp] + [(s + 95 + 20, 0.9, 1.6) for s in sp]},
