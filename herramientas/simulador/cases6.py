@@ -1329,6 +1329,112 @@ S['p13_ado'] = dict(win=(-80, As[-1] + 650), pxms=0.18, title='Adenosina IV', ch
     cal=[(As[0], As[1], 'HRA', 'A-A 896'), (h1[1], h1[1] + 430, 'His p', 'H1-H2 430')],
     marks=[(As[1] + 40, 'aVF', 'A sin V'), (As[2] + 40, 'aVF', 'A sin V')])
 
+# =====================================================================================================
+# Caso 14 (PJRT en un paciente de 6 años; LC 400 como el ECG real, VA 260, AH 100, HV 40, A más precoz en el ostium del SC).
+SRC14 = 'caso 14: LC 400 como el caso; el resto, ilustrativo'
+H14, LC14b, VA14b, AH14b, SC14, SA14, PPI14, HAp14 = 40, 400, 260, 100, 370, 335, 515, 280
+
+
+def vop14(title, med):
+    svt = [i * LC14b for i in range(3)]
+    sp = [svt[-1] + 300 + SC14 * k for k in range(6)]
+    A = [v + VA14b for v in svt] + [s + SA14 for s in sp]
+    ret = sp[-1] + PPI14
+    after = [ret, ret + LC14b]
+    cal = [(svt[0], svt[1], 'RVA', f'LC {LC14b}'), (svt[1], svt[1] + VA14b + 2, 'CS 9-10', f'VA {VA14b}'), (sp[-2], sp[-1], 'RVA', f'S-S {SC14}'),
+           (A[-3] + 2, A[-2] + 2, 'HRA', f'A-A {SC14}'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {SA14}'), (sp[-1], ret + 2, 'RVA', f'PPI {PPI14}')]
+    marks = []
+    if med:
+        cal = [c for c in cal if not c[3].startswith(('S-S', 'A-A'))]
+        cal += [(svt[1] - H14, svt[1] + VA14b, 'His p', f'HA {H14 + VA14b}'), (A[-1] - HAp14, A[-1], 'His p', f'HA {HAp14}')]
+        marks = [(sp[-1] + 200, 'I', f'SA − VA = {SA14} − {VA14b} = {SA14 - VA14b} ms'), (sp[-1] + 200, 'aVF', f'PPI − LC = {PPI14} − {LC14b} = {PPI14 - LC14b} ms'),
+                 (sp[-1] + 200, 'V1', f'ΔHA = {HAp14} − {H14 + VA14b} = −{H14 + VA14b - HAp14} ms')]
+    return dict(win=(-80, after[-1] + 220), pxms=0.22, title=title, channels=CH6, src=SRC14,
+        beats=[(v, 'n') for v in svt + after] + [(s, 'pa') for s in sp], spikes=sp,
+        atr=[(a, 'conc_cs', -1) for a in A + [v + VA14b for v in after]],
+        h_ante=[v - H14 for v in svt + after], h_retro=[s + SA14 - HAp14 for s in sp], cal=cal, marks=marks)
+
+
+S['p14_vop'] = vop14('Sobreestimulación ventricular desde el ápex del VD a 370 ms', False)
+S['p14_medidas'] = vop14('Medidas sobre la sobreestimulación ventricular (ápex del VD a 370 ms): PPI, SA y HA', True)
+
+
+def diff14(sa, typ, title):
+    svt = [0, LC14b]
+    sp = [700 + SC14 * k for k in range(6)]
+    A = [v + VA14b for v in svt] + [s + sa for s in sp]
+    ret = sp[-1] + PPI14 + (sa - SA14)
+    return dict(win=(-80, ret + LC14b + 220), pxms=0.22, channels=CH6, title=title, spikes=sp, pace_ch='RVA', src=SRC14,
+        beats=[(v, 'n') for v in svt] + [(s, typ) for s in sp] + [(ret, 'n'), (ret + LC14b, 'n')],
+        atr=[(a, 'conc_cs', -1) for a in A] + [(ret + VA14b, 'conc_cs', -1), (ret + LC14b + VA14b, 'conc_cs', -1)],
+        h_ante=[v - H14 for v in svt] + [ret - H14, ret + LC14b - H14], h_retro=[s + sa - HAp14 for s in sp],
+        cal=[(svt[1], svt[1] + VA14b + 2, 'CS 9-10', f'VA {VA14b}'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {sa}'), (svt[0], svt[1], 'RVA', f'LC {LC14b}')])
+
+
+S['p14_diff_a'] = diff14(335, 'pa', 'A. Encarrilamiento desde el ápex del VD (370 ms)')
+S['p14_diff_b'] = diff14(315, 'pb', 'B. Encarrilamiento desde la base del VD (370 ms)')
+
+# EV con His refractario: no llega a la A y la taquicardia termina; vuelve el sinusal.
+vs = [i * LC14b for i in range(4)]
+A = [v + VA14b for v in vs]
+h_exp = vs[-1] + LC14b - H14
+sp = h_exp + 10
+sa = sp + 700
+S['p14_ehr'] = dict(win=(-80, sa + 28 + AH14b + H14 + 250), pxms=0.25, title='EV con His refractario durante la taquicardia', channels=CH6, src=SRC14,
+    beats=[(v, 'n') for v in vs] + [(sp, 'pa'), (sa + 28 + AH14b + H14, 'n')], spikes=[sp], pace_ch='RVA',
+    atr=[(a, 'conc_cs', -1) for a in A] + [(sa, 'sinus', 1)], h_ante=[v - H14 for v in vs] + [h_exp, sa + 28 + AH14b],
+    cal=[(vs[1], vs[2], 'RVA', f'LC {LC14b}'), (vs[2], A[2] + 2, 'CS 9-10', f'VA {VA14b}'), (A[-1], sa, 'HRA', f'A-A {sa - A[-1]}')],
+    marks=[(sp, 'V1', 'EV'), (h_exp, 'His p', 'H'), (sp + 180, 'aVF', 'sin A')])
+
+# Estudio basal: estimulación del VD a 600 y 500: SA 180 y 230 (decremental), concéntrica con la A precoz en el ostium del SC.
+sp = [0, 600, 1200, 1700, 2200]
+sas = [180, 180, 180, 230, 230]
+S['p14_pre'] = dict(win=(-80, 2600), pxms=0.27, title='Estimulación ventricular en ritmo sinusal: 600 y 500 ms', channels=CH6, src=SRC14,
+    spikes=sp, beats=[(s, 'pa') for s in sp], atr=[(s + a, 'conc_cs', -1) for s, a in zip(sp, sas)],
+    cal=[(sp[0], sp[1], 'RVA', 'S-S 600'), (sp[1], sp[1] + 182, 'CS 9-10', 'SA 180'), (sp[2], sp[3], 'RVA', 'S-S 500'), (sp[3], sp[3] + 232, 'CS 9-10', 'SA 230')])
+
+# Para-Hisiana en sinusal: SA 130 → 180, misma secuencia.
+sp = [0, 700, 1400, 2100]
+cap = [True, False, True, False]
+S['p14_parahis'] = dict(win=(-80, 2450), pxms=0.30, title='Estimulación para-Hisiana en ritmo sinusal', channels=CH6, src=SRC14,
+    spikes=sp, pace_ch='His p', beats=[(s + H14 if c else s, 'n' if c else 'pa') for s, c in zip(sp, cap)],
+    atr=[(s + (130 if c else 180), 'conc_cs', -1) for s, c in zip(sp, cap)],
+    cal=[(sp[0], sp[0] + 132, 'CS 9-10', 'SA 130'), (sp[1], sp[1] + 182, 'CS 9-10', 'SA 180'), (sp[2] + H14, sp[2] + H14 + 90, 'RVA', 'QRS 90'), (sp[3], sp[3] + 150, 'RVA', 'QRS 150')],
+    marks=[(sp[0] + 30, 'V1', 'His + V'), (sp[1] + 40, 'V1', 'solo V')])
+
+# Sobreestimulación auricular desde la AD alta a 370: AH 110 (TSV 100, ΔAH 10); al cortar, VA 260 como en la TSV.
+vs = [0, LC14b]
+A = [v + VA14b for v in vs]
+sp = [A[-1] + 250 + 370 * k for k in range(6)]
+pv = [s + 28 + 110 + H14 for s in sp]
+vs2 = [pv[-1] + LC14b, pv[-1] + 2 * LC14b]
+S['p14_aop'] = dict(win=(-80, vs2[-1] + 300), pxms=0.21, title='Sobreestimulación auricular desde la AD alta a 370 ms', channels=CH6, src=SRC14,
+    beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
+    atr=[(a, 'conc_cs', -1) for a in A] + [(s + 5, 'sinus', 1) for s in sp] + [(v + VA14b, 'conc_cs', -1) for v in [pv[-1]] + vs2],
+    h_ante=[v - H14 for v in vs + pv + vs2],
+    cal=[(vs[0], vs[1], 'RVA', f'V-V {LC14b}'), (vs[0], A[0] + 2, 'CS 9-10', f'VA {VA14b}'), (A[0] + 2, vs[1] - H14, 'His d', f'AH {AH14b}'),
+         (sp[-2], sp[-1], 'HRA', 'S-S 370'), (pv[-2], pv[-1], 'RVA', 'V-V 370'), (sp[-1] + 28, pv[-1] - H14, 'His d', 'AH 110'),
+         (pv[-1], pv[-1] + VA14b + 2, 'CS 9-10', f'VA {VA14b}')])
+
+# Adenosina: termina con un V.
+vs = [i * LC14b for i in range(4)]
+A = [v + VA14b for v in vs[:3]]
+S['p14_ado'] = dict(win=(-80, vs[-1] + 700), pxms=0.22, title='Adenosina IV durante la taquicardia', channels=CH6, src=SRC14,
+    beats=[(v, 'n') for v in vs], atr=[(a, 'conc_cs', -1) for a in A], h_ante=[v - H14 for v in vs],
+    cal=[(vs[0], vs[1], 'RVA', f'LC {LC14b}'), (vs[1], A[1] + 2, 'CS 9-10', f'VA {VA14b}')],
+    marks=[(vs[3] + 120, 'aVF', 'último: V sin A')])
+
+# EA con His refractario desde el ostium del SC: el His siguiente sale a su tiempo.
+hs = [i * LC14b - H14 for i in range(6)]
+apb = hs[3] + 10
+vs = [h + H14 for h in hs]
+A = [v + VA14b for k2, v in enumerate(vs) if k2 != 3]
+S['p14_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.22, title='EA con His refractario desde el ostium del SC', channels=CH6, src=SRC14,
+    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='CS 9-10',
+    atr=[(a, 'conc_cs', -1) for a in A] + [(apb + 4, 'conc_cs', 1)], h_ante=hs,
+    cal=[(hs[2], hs[3], 'His d', f'H-H {LC14b}'), (hs[3], hs[4], 'His d', f'H-H {LC14b}')],
+    marks=[(apb, 'V1', 'EA')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
