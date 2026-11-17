@@ -167,11 +167,25 @@ sp = [0, 600, 880]                                    # S1 600 x2, S2 280 desde 
 vt = [sp[-1] + 360 + LC8 * k for k in range(6)]
 p2 = [v - 30 for v in vt]; p1 = [x - 110 for x in p2]
 a_sin = [250, 1050, 1850, 2650]
-S['c8_ind'] = dict(win=(-80, vt[-1] + 200), pxms=0.27, title='Inducción: extraestímulo ventricular (S1-S2 600-280)',
+S['c8_ind_a'] = dict(win=(-80, vt[-1] + 200), pxms=0.27, title='A. Inducción con extraestímulo ventricular (S1-S2 600-280)',
     channels=['HRA', 'His d', 'RVA'], src='caso 8: valores ilustrativos',
     beats=[(s, 'pa') for s in sp] + [(v, 'rbs') for v in vt], spikes=sp,
     atr=[(a, 'sinus', 1) for a in a_sin], h_retro=[s + 120 for s in sp] + [v + 15 for v in vt],
     cal=[(sp[1], sp[2], 'RVA', 'S2 280'), (vt[2], vt[3], 'RVA', f'LC {LC8}'), (a_sin[1], a_sin[2], 'HRA', 'A-A 800')])
+# B. Inducción con estimulación auricular asincrónica (ráfaga desde la AD alta a 300 ms): conducción 1:1 con AH que se alarga
+#    (90 → 160) y, al cortar, empieza la TV con QRS ancho y disociación AV.
+a0 = [0, 800]
+spb = [1300 + 300 * k for k in range(8)]
+ahs = [90, 115, 130, 140, 150, 155, 160, 160]
+hb = [a + 28 + 90 for a in a0] + [s + 28 + ah for s, ah in zip(spb, ahs)]
+vb = [h + HV for h in hb]
+vtb = [vb[-1] + 360 + LC8 * k for k in range(5)]
+S['c8_ind_b'] = dict(win=(-80, vtb[-1] + 200), pxms=0.22, title='B. Inducción con estimulación auricular asincrónica (ráfaga desde la AD alta a 300 ms)',
+    channels=['HRA', 'His d', 'RVA'], src='caso 8: valores ilustrativos',
+    beats=[(v, 'n') for v in vb] + [(v, 'rbs') for v in vtb], aspikes=spb, apace_ch='HRA',
+    atr=[(a, 'sinus', 1) for a in a0] + [(s + 5, 'sinus', 1) for s in spb] + [(a, 'sinus', 1) for a in (spb[-1] + 900, spb[-1] + 1700)],
+    h_ante=hb, h_retro=[v + 15 for v in vtb],
+    cal=[(spb[1], spb[2], 'HRA', 'S-S 300'), (spb[-1] + 28, hb[-1], 'His d', 'AH 160'), (vtb[1], vtb[2], 'RVA', f'LC {LC8}')])
 
 # Caso 2 (didáctico, TRAV septal en una niña de 10 años): LC 280 como el ECG real, VA 110, AH en la TSV 125.
 S['c2_basal'] = basal('caso 2 (didáctico): AH 80, HV 45, ilustrativos', ah=80, cl=650)

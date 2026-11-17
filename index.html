@@ -313,7 +313,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script>
-const APPV = 158;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 159;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -1375,9 +1375,9 @@ const PCASOS = [
   { id: 'c8', t: 'Taquicardia de QRS ancho que terminó con verapamilo', p: 'Varón de 17 años, corazón sano. En la guardia, una taquicardia de QRS ancho terminó con verapamilo.',
     mans: ['pre', 'vop', 'medidas', 'aop', 'ado', 'verap', 'map', 'regah'],
     lab: { medidas: 'Medir el PPI−LC', aop: 'Sobreestimulación auricular durante la taquicardia', regah: 'Registrar la A y el His durante la taquicardia' }, mk: { regah: 'tvf' },
-    ecg: 'figs/sim/casos/c8_ecg.jpg', ecgReal: true, ecg2: 'figs/sim/casos/c8_ecg_sin.jpg', basal: 'figs/sim/casos/c8_basal.png', ind: 'figs/sim/casos/c8_ind.png', indt: 'Extraestímulo ventricular S1-S2 600-280',
-    h: ['Taquicardia de QRS ancho (140 ms), LC 420 ms', 'Protocolo: extraestímulo ventricular desde el ápex del VD, S1-S2 600-280'],
-    hk: ['QRS de 140 ms con BRD y eje superior en un adolescente con corazón sano: patrón de TV fascicular posterior, que se confunde con una TSV con aberrancia (BRD con hemibloqueo anterior).', 'Se induce con un extraestímulo ventricular (S2 280): la TV fascicular reentrante es inducible con estimulación programada.'],
+    ecg: 'figs/sim/casos/c8_ecg.jpg', ecgReal: true, ecg2: 'figs/sim/casos/c8_ecg_sin.jpg', basal: 'figs/sim/casos/c8_basal.png', ind: 'figs/sim/casos/c8_ind.png', indt: 'A, extraestímulo ventricular S1-S2 600-280; B, estimulación auricular asincrónica (ráfaga desde la AD alta a 300 ms)',
+    h: ['Taquicardia de QRS ancho (140 ms), LC 420 ms', 'Protocolo: extraestímulo ventricular desde el ápex del VD (S1-S2 600-280) y estimulación auricular asincrónica desde la AD alta (ráfaga a 300 ms)'],
+    hk: ['QRS de 140 ms con BRD y eje superior en un adolescente con corazón sano: patrón de TV fascicular posterior, que se confunde con una TSV con aberrancia (BRD con hemibloqueo anterior).', 'Se induce con un extraestímulo ventricular (S2 280) y con una ráfaga auricular a 300 ms (al cortar, después de latidos angostos con AH 160, empieza la TV): la TV fascicular reentrante es inducible con estimulación auricular y ventricular.'],
     m: { regah: { v: 'A-A 800 y V-V 420: más V que A, sin relación fija entre ellos. El His aparece 15 ms después del inicio del QRS.', r: 'Disociación AV y His después del inicio del QRS (HV negativo): el origen es ventricular. Excluye la TSV con aberrancia.', u: 'clave', img: 'figs/sim/prac/p8_regah.png' },
       map: { v: 'En el septum medio-inferior del VI (LV 9-10 proximal a LV 1-2 distal): un potencial mesodiastólico (P1) que avanza de proximal a distal (P1-V 120 → 100 → 75 → 55) y un potencial presistólico (P2) que va de distal a proximal, 30 ms antes del QRS en el distal.', r: 'P1 es el tejido de conducción lenta (brazo anterógrado) y P2, el fascículo posterior (brazo retrógrado): TV fascicular posterior. Se ablaciona donde el P1 es más tardío o con una línea perpendicular al fascículo.', u: 'clave', img: 'figs/sim/prac/p8_map.png' },
       verap: { v: 'Verapamilo IV: la LC se alarga de 420 a 480 ms y el P1-P2 de 110 a 160 ms; el P2-V sigue en 30 ms.', r: 'Sensible al verapamilo, que actúa sobre el tejido de conducción lenta entre P1 y P2: TV fascicular reentrante.', u: 'clave', img: 'figs/sim/prac/p8_verap.png' },
