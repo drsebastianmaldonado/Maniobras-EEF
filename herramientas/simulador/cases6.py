@@ -1157,6 +1157,47 @@ S['p10_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.25, title='EA con His refra
     cal=[(hs[2], hs[3], 'His d', f'H-H {LC10}'), (hs[3], hs[4], 'His d', f'H-H {LC10}')],
     marks=[(apb, 'V1', 'EA')])
 
+# =====================================================================================================
+# Caso 11 (TRAV antidrómica por una vía atriofascicular, Mahaim; LC 260 como el ECG real). AV por la vía 150, VA por el His y el nodo 110,
+# His retrógrado 25 ms después del inicio del QRS. Valores ilustrativos.
+SRC11 = 'caso 11 (didáctico): LC 260 como el caso; el resto, ilustrativo'
+LC11, VA11 = 260, 110
+CH11 = ['HRA', 'AD lat', 'His p', 'His d', 'CS 9-10', 'RVA']
+
+# Estudio basal: estimulación ventricular en sinusal a 500 y 400: SA 140 y 190 (decremental), concéntrica: sin conducción retrógrada por la vía.
+sp = [0, 500, 1000, 1400, 1800]
+sas = [140, 140, 140, 190, 190]
+S['p11_pre'] = dict(win=(-80, 2150), pxms=0.30, title='Estimulación ventricular en ritmo sinusal: 500 y 400 ms', channels=CH6, src=SRC11,
+    spikes=sp, beats=[(s, 'pa') for s in sp], atr=[(s + a, 'conc_his', -1) for s, a in zip(sp, sas)], h_retro=[s + a - 60 for s, a in zip(sp, sas)],
+    cal=[(sp[0], sp[1], 'RVA', 'S-S 500'), (sp[1], sp[1] + 142, 'HRA', 'SA 140'), (sp[2], sp[3], 'RVA', 'S-S 400'), (sp[3], sp[3] + 192, 'HRA', 'SA 190')])
+
+# Registro de la A y el His durante la taquicardia: relación 1:1, VA 110, His 25 ms después del inicio del QRS.
+vs = [i * LC11 for i in range(7)]
+A = [v + VA11 for v in vs]
+S['p11_regah'] = dict(win=(-80, vs[-1] + 200), pxms=0.30, title='Registro de la AD alta y el His durante la taquicardia', channels=CH11, src=SRC11,
+    beats=[(v, 'lb') for v in vs], atr=[(a, 'conc_his', -1) for a in A], h_retro=[v + 25 for v in vs], extra={'AD lat': [(a + 30, 0.9, 1.0) for a in A]},
+    cal=[(vs[1], vs[2], 'RVA', f'V-V {LC11}'), (A[1], A[2], 'HRA', f'A-A {LC11}'), (vs[3], A[3] + 2, 'CS 9-10', f'VA {VA11}'), (vs[4], vs[4] + 25, 'His d', 'V-H 25')],
+    marks=[(vs[4] + 25, 'aVF', 'H después del inicio del QRS')])
+
+# Sobreestimulación ventricular desde el ápex del VD a 240: la A sigue a 240; al cortar, V-A-V con la misma morfología; PPI 290.
+vt = [0, LC11, 2 * LC11]
+sp = [vt[-1] + 200 + 240 * k for k in range(6)]
+ret = sp[-1] + 290
+after = [ret, ret + LC11, ret + 2 * LC11]
+A = [v + VA11 for v in vt] + [s + VA11 for s in sp] + [v + VA11 for v in after]
+S['p11_vop'] = dict(win=(-80, after[-1] + 200), pxms=0.27, title='Sobreestimulación ventricular desde el ápex del VD a 240 ms', channels=CH11, src=SRC11,
+    beats=[(v, 'lb') for v in vt + after] + [(s, 'pa') for s in sp], spikes=sp, atr=[(a, 'conc_his', -1) for a in A],
+    h_retro=[v + 25 for v in vt + after] + [s + 30 for s in sp], extra={'AD lat': [(a + 30, 0.9, 1.0) for a in A]},
+    cal=[(vt[0], vt[1], 'RVA', f'LC {LC11}'), (sp[-2], sp[-1], 'RVA', 'S-S 240'), (A[-5] + 2, A[-4] + 2, 'HRA', 'A-A 240'), (sp[-1], ret + 2, 'RVA', 'PPI 290')])
+
+# Adenosina: termina con una A que no conduce al V (bloqueo en la vía atriofascicular).
+vs = [i * LC11 for i in range(4)]
+A = [v + VA11 for v in vs]
+S['p11_ado'] = dict(win=(-80, A[-1] + 800), pxms=0.27, title='Adenosina IV durante la taquicardia', channels=CH11, src=SRC11,
+    beats=[(v, 'lb') for v in vs], atr=[(a, 'conc_his', -1) for a in A], h_retro=[v + 25 for v in vs], extra={'AD lat': [(a + 30, 0.9, 1.0) for a in A]},
+    cal=[(vs[0], vs[1], 'RVA', f'LC {LC11}'), (vs[3], A[3] + 2, 'CS 9-10', f'VA {VA11}')],
+    marks=[(A[3] + 60, 'aVF', 'última: A sin V')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
