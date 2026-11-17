@@ -1292,6 +1292,43 @@ S['p12_ado'] = dict(win=(-80, vs[-1] + 700), pxms=0.27, title='Adenosina IV dura
     cal=[(vs[0], vs[1], 'RVA', f'LC {LC12}'), (vs[1], A[1] + 2, 'CS 9-10', f'VA {VA12}')],
     marks=[(vs[3] + 120, 'aVF', 'último: V sin A')])
 
+# =====================================================================================================
+# Caso 13 (doble disparo nodal; Burri 2012: A-A 896, relación P:QRS 1:2; AH1 90 y H1-H2 430 ilustrativos).
+SRC13 = 'caso 13: A-A 896 y relación 1:2 de Burri 2012; el resto, ilustrativo'
+CH13 = ['HRA', 'His p', 'His d', 'RVA']
+
+
+def ea13(cl, doble, title):
+    sp = [cl * k for k in range(4)]
+    h1 = [s + 28 + 90 for s in sp]
+    hs = h1 + ([h + 430 for h in h1] if doble else [])
+    cal = [(sp[0], sp[1], 'HRA', f'S-S {cl}'), (sp[1] + 28, h1[1], 'His d', 'AH 90')]
+    if doble:
+        cal += [(h1[1], h1[1] + 430, 'His p', 'H1-H2 430')]
+    return dict(win=(-80, sp[-1] + 700), pxms=0.25, title=title, channels=CH13, src=SRC13,
+        beats=[(h + HV, 'n') for h in sorted(hs)], aspikes=sp, apace_ch='HRA', atr=[(s + 5, 'sinus', 1) for s in sp], h_ante=sorted(hs), cal=cal)
+
+
+S['p13_pre_a'] = ea13(800, True, 'A. Estimulación de la AD alta a 800 ms')
+S['p13_pre_b'] = ea13(600, False, 'B. Estimulación de la AD alta a 600 ms')
+
+# Atropina: el sinusal se acelera (A-A 650) y cada A conduce una sola vez (AH 80): desaparece el segundo QRS.
+As = [650 * k for k in range(5)]
+hs = [a + 80 for a in As]
+S['p13_atrop'] = dict(win=(-80, As[-1] + 500), pxms=0.22, title='Después de atropina IV', channels=CH13, src=SRC13,
+    beats=[(h + HV, 'n') for h in hs], atr=[(a, 'sinus', 1) for a in As], h_ante=hs,
+    cal=[(As[1], As[2], 'HRA', 'A-A 650'), (As[2], hs[2], 'His d', 'AH 80')])
+
+# Adenosina: dos A sinusales sin His ni V (bloqueo en el nodo); después vuelve la respuesta 1:2.
+As = [896 * k for k in range(5)]
+cond = [0, 3, 4]
+h1 = [As[i] + 90 for i in cond]
+hs = sorted(h1 + [h + 430 for h in h1])
+S['p13_ado'] = dict(win=(-80, As[-1] + 650), pxms=0.18, title='Adenosina IV', channels=CH13, src=SRC13,
+    beats=[(h + HV, 'n') for h in hs], atr=[(a, 'sinus', 1) for a in As], h_ante=hs,
+    cal=[(As[0], As[1], 'HRA', 'A-A 896'), (h1[1], h1[1] + 430, 'His p', 'H1-H2 430')],
+    marks=[(As[1] + 40, 'aVF', 'A sin V'), (As[2] + 40, 'aVF', 'A sin V')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
