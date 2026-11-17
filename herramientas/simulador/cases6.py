@@ -843,6 +843,77 @@ S['p7_ado'] = dict(win=(-80, vs[-1] + 220), pxms=0.22, title='Adenosina IV duran
          (vs[6] - HV, vs[7] - HV, 'His d', f'H-H {LC7}')],
     marks=[(vs[3] + 60, 'aVF', 'V sin A'), (vs[4] + 60, 'aVF', 'V sin A')])
 
+# =====================================================================================================
+# Caso 8 (TV fascicular posterior; LC 420 y QRS 140 como el ECG real; ritmo sinusal disociado a 800; His 15 ms después del inicio del QRS).
+SRC8 = 'caso 8: LC 420 como el caso; P1 y P2 según Liu Q 2023, Liu 2015 y Nogami 2010; el resto, ilustrativo'
+LC8, CH8 = 420, ['HRA', 'His d', 'RVA']
+
+
+def vop8(title, med):
+    vt = [i * LC8 for i in range(3)]
+    sp = [vt[-1] + 340 + 380 * k for k in range(6)]
+    ret = sp[-1] + 500
+    after = [ret, ret + LC8, ret + 2 * LC8]
+    asin = [150, 950, 1750, 2550, 3350]
+    cal = [(vt[0], vt[1], 'RVA', f'LC {LC8}'), (sp[-2], sp[-1], 'RVA', 'S-S 380'), (sp[-1], ret + 2, 'RVA', 'PPI 500')]
+    marks = [(sp[-1] + 250, 'I', 'PPI − LC = 500 − 420 = 80 ms')] if med else []
+    return dict(win=(-80, after[-1] + 200), pxms=0.25, title=title, channels=CH8, src=SRC8, spikes=sp,
+        beats=[(v, 'rbs') for v in vt + after] + [(s, 'pa') for s in sp], atr=[(a, 'sinus', 1) for a in asin if a < after[-1]],
+        h_retro=[v + 15 for v in vt + after] + [s + 120 for s in sp], cal=cal, marks=marks)
+
+
+S['p8_vop'] = vop8('Sobreestimulación ventricular desde el ápex del VD a 380 ms', False)
+S['p8_medidas'] = vop8('PPI después de la sobreestimulación ventricular (ápex del VD a 380 ms)', True)
+
+# Estudio basal: estimulación ventricular en sinusal a 500 y 400: SA 140 y 190 (decremental), concéntrica.
+sp = [0, 500, 1000, 1400, 1800]
+sas = [140, 140, 140, 190, 190]
+S['p8_pre'] = dict(win=(-80, 2150), pxms=0.30, title='Estimulación ventricular en ritmo sinusal: 500 y 400 ms', channels=CH6, src=SRC8,
+    spikes=sp, beats=[(s, 'pa') for s in sp], atr=[(s + a, 'conc_his', -1) for s, a in zip(sp, sas)], h_retro=[s + a - 60 for s, a in zip(sp, sas)],
+    cal=[(sp[0], sp[1], 'RVA', 'S-S 500'), (sp[1], sp[1] + 142, 'HRA', 'SA 140'), (sp[2], sp[3], 'RVA', 'S-S 400'), (sp[3], sp[3] + 192, 'HRA', 'SA 190')])
+
+# Registro de la A y el His durante la TV: A-A 800 (sinusal), V-V 420, His 15 ms después del inicio del QRS.
+vt = [i * LC8 for i in range(7)]
+asin = [150, 950, 1750, 2550]
+S['p8_regah'] = dict(win=(-80, vt[-1] + 200), pxms=0.30, title='Registro de la AD alta y el His durante la taquicardia', channels=CH8, src=SRC8,
+    beats=[(v, 'rbs') for v in vt], atr=[(a, 'sinus', 1) for a in asin], h_retro=[v + 15 for v in vt],
+    cal=[(asin[1], asin[2], 'HRA', 'A-A 800'), (vt[1], vt[2], 'RVA', f'V-V {LC8}'), (vt[4], vt[4] + 15, 'His d', 'V-H 15')],
+    marks=[(vt[4] + 15, 'aVF', 'H después del inicio del QRS')])
+
+# Sobreestimulación auricular a 380 durante la TV: el primer latido conducido es de fusión y los siguientes, angostos (AH 90, HV 45).
+# Al cortar vuelve la TV.
+vt = [0, LC8, 2 * LC8]
+sp = [vt[-1] + 120 + 380 * k for k in range(6)]
+cv = [s + 28 + 90 + HV for s in sp]
+after = [cv[-1] + LC8, cv[-1] + 2 * LC8]
+S['p8_aop'] = dict(win=(-80, after[-1] + 200), pxms=0.24, title='Sobreestimulación auricular desde la AD alta a 380 ms durante la taquicardia', channels=CH8, src=SRC8,
+    beats=[(v, 'rbs') for v in vt + after] + [(cv[0], 'f')] + [(v, 'n') for v in cv[1:]], aspikes=sp, apace_ch='HRA',
+    atr=[(150, 'sinus', 1)] + [(s + 5, 'sinus', 1) for s in sp], h_ante=[v - HV for v in cv[1:]], h_retro=[v + 15 for v in vt + after],
+    cal=[(vt[0], vt[1], 'RVA', f'LC {LC8}'), (sp[-2], sp[-1], 'HRA', 'S-S 380'), (sp[-1] + 28, cv[-1] - HV, 'His d', 'AH 90'), (cv[-1] - HV, cv[-1], 'His d', 'HV 45'),
+         (cv[-1], after[0], 'RVA', f'V-V {LC8}')])
+
+# Adenosina: la TV sigue igual (LC 420).
+vt = [i * LC8 for i in range(7)]
+S['p8_ado'] = dict(win=(-80, vt[-1] + 200), pxms=0.27, title='Adenosina IV durante la taquicardia', channels=CH8, src=SRC8,
+    beats=[(v, 'rbs') for v in vt], atr=[(a, 'sinus', 1) for a in (150, 1150, 2250)], h_retro=[v + 15 for v in vt],
+    cal=[(vt[0], vt[1], 'RVA', f'LC {LC8}'), (vt[5], vt[6], 'RVA', f'LC {LC8}')])
+
+# Mapeo del septum del VI (LV 9-10 proximal → LV 1-2 distal): P1 mesodiastólico de proximal a distal, P2 presistólico de distal a proximal.
+vt = [i * LC8 for i in range(6)]
+lv = ['LV 9-10', 'LV 7-8', 'LV 5-6', 'LV 3-4', 'LV 1-2']
+P1V = [120, 100, 75, 55, None]
+A1 = [0.42, 0.38, 0.25, 0.12, 0]
+A2 = [0, 0, 0.12, 0.35, 0.62]
+ext = {}
+for i, n in enumerate(lv):
+    ext[n] = [(v - 14 - 4 * i, A2[i], 0.7) for v in vt] if A2[i] else []
+    if P1V[i]:
+        ext[n] += [(v - P1V[i], A1[i], 3.2) for v in vt]
+S['p8_map'] = dict(win=(-60, vt[-1] + 200), pxms=0.30, title='Mapeo del septum medio-inferior del VI durante la taquicardia', channels=['HRA', 'His d'] + lv + ['RVA'], src=SRC8,
+    beats=[(v, 'rbs') for v in vt], atr=[(a, 'sinus', 1) for a in (150, 950, 1750)], h_retro=[v + 15 for v in vt], extra=ext,
+    cal=[(vt[0], vt[1], 'RVA', f'LC {LC8}'), (vt[1] - 120, vt[1], 'LV 9-10', 'P1-V 120'), (vt[2] - 100, vt[2], 'LV 7-8', 'P1-V 100'),
+         (vt[3] - 75, vt[3], 'LV 5-6', 'P1-V 75'), (vt[4] - 55, vt[4], 'LV 3-4', 'P1-V 55'), (vt[5] - 30, vt[5], 'LV 1-2', 'P2-V 30')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')

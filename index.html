@@ -313,7 +313,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script>
-const APPV = 157;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 158;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -1268,7 +1268,10 @@ const PDX = [['trnav_t', 'TRNAV típica'], ['trnav_a', 'TRNAV atípica'], ['trav
   ['dfire', 'Taquicardia no reentrante por doble vía nodal'], ['bigat', 'Bigeminia auricular']];
 // Maniobras que se ofrecen en los casos de TSV de QRS angosto (la ablación nunca se ofrece como maniobra diagnóstica).
 const PSVT = ['pre', 'vop', 'medidas', 'diff', 'ehr', 'aop', 'eha', 'parahis', 'ado'];
-const pMans = c => PMAN.filter(x => x[0] !== 'abll' && (c.allm || PSVT.includes(x[0])));
+// Un caso puede traer su propio listado (mans), nombres (lab) y fichas (mk) para algunas maniobras.
+const mLab = (c, k) => (c.lab && c.lab[k]) || PMAN.find(x => x[0] === k)[1];
+const mKey = (c, k) => (c.mk && c.mk[k]) || PMAN.find(x => x[0] === k)[2];
+const pMans = c => PMAN.filter(x => x[0] !== 'abll' && (c.mans ? c.mans.includes(x[0]) : (c.allm || PSVT.includes(x[0])))).map(x => [x[0], mLab(c, x[0]), mKey(c, x[0])]);
 const UTAG = { clave: ['Clave', 'var(--green)'], util: ['Útil', 'var(--blue)'], trampa: ['Engañosa', 'var(--orange)'] };
 const PCASOS = [
   { id: 'c1', t: 'Palpitaciones de inicio y fin bruscos', p: 'Adolescente de 15 años con palpitaciones paroxísticas. ECG basal normal, sin preexcitación.',
@@ -1369,15 +1372,21 @@ const PCASOS = [
       ado: { v: 'La taquicardia se enlentece (H-H 420 y 470) con V sin A (las A sinusales van disociadas) y vuelve a 340 con A y V simultáneos, sin terminar.', r: 'Sigue con bloqueo VA y no termina: el mecanismo no necesita la aurícula; a favor de taquicardia de la unión.', u: 'util', img: 'figs/sim/prac/p7_ado.png' },
       parahis: { v: 'En sinusal, con captura del His: SA 85 y QRS 95. Solo V: SA 135 y QRS 150. Misma secuencia auricular.', r: 'Respuesta nodal: no hay una vía septal.', u: 'util', img: 'figs/sim/prac/p7_parahis.png' } },
     dx: ['jet'], ex: 'Con A y V simultáneos el diferencial es TRNAV típica vs taquicardia de la unión. El inicio espontáneo con calentamiento, sin salto del AH ni doble fisiología nodal, orienta a un foco. El EA precoz que adelanta el His inmediato sin cortar la taquicardia no es compatible con TRNAV, y en la sobreestimulación auricular el último A conduce sin pasar por la vía lenta: taquicardia de la unión. Las medidas del encarrilamiento ventricular solo excluyen la TRAV.', refs: ['padanilam08', 'fan11', 'veen12'] },
-  { id: 'c8', allm: true, t: 'Taquicardia de QRS ancho que terminó con verapamilo', p: 'Varón de 17 años, corazón sano. En la guardia, una taquicardia de QRS ancho terminó con verapamilo.',
-    ecg: 'figs/sim/casos/c8_ecg.jpg', ecgReal: true, ecg2: 'figs/sim/casos/c8_ecg_sin.jpg', basal: 'figs/sim/casos/c8_basal.png', ind: 'figs/sim/casos/c8_ind.png',
-    h: ['Taquicardia de QRS 140 ms, BRD con eje superior, LC 420 ms', 'Disociación AV (más V que A)', 'His retrógrado 15 ms después del inicio del QRS'],
-    m: { map: { r: 'En el septum medio: P1 mesodiastólico (proximal → distal) y P2 presistólico (distal → proximal); P1-V 100 → 75 → 55 ms de proximal a distal.', u: 'clave', img: 'figs/sim/prac/tvf_post.png' },
-      verap: { r: 'Verapamilo 0,03 mg/kg alarga la LC; P1-P2 y P2-P1 se alargan y P2-QRS no cambia.', u: 'clave', img: 'figs/sim/prac/p8_verap.png' },
-      vop: { r: 'Encarrilable desde el VD; el encarrilamiento captura P1 en forma ortodrómica.', u: 'util' },
-      pre: { r: 'Se induce con estimulación auricular y ventricular programada.', u: 'util' },
-      ado: { r: 'Sin efecto sobre la taquicardia.', u: 'util' }, ehr: { r: 'No aplica: no es una TSV.' } },
-    dx: ['tvf'], ex: 'BRD con eje superior, His retrógrado, P1 y P2 en el septum y respuesta al verapamilo: TV fascicular posterior. Es reentrante (inducible y encarrilable); la TV focal de Purkinje no se induce con estimulación programada y responde a la adenosina.', refs: ['nogami10', 'liuq23', 'liu15'] },
+  { id: 'c8', t: 'Taquicardia de QRS ancho que terminó con verapamilo', p: 'Varón de 17 años, corazón sano. En la guardia, una taquicardia de QRS ancho terminó con verapamilo.',
+    mans: ['pre', 'vop', 'medidas', 'aop', 'ado', 'verap', 'map', 'regah'],
+    lab: { medidas: 'Medir el PPI−LC', aop: 'Sobreestimulación auricular durante la taquicardia', regah: 'Registrar la A y el His durante la taquicardia' }, mk: { regah: 'tvf' },
+    ecg: 'figs/sim/casos/c8_ecg.jpg', ecgReal: true, ecg2: 'figs/sim/casos/c8_ecg_sin.jpg', basal: 'figs/sim/casos/c8_basal.png', ind: 'figs/sim/casos/c8_ind.png', indt: 'Extraestímulo ventricular S1-S2 600-280',
+    h: ['Taquicardia de QRS ancho (140 ms), LC 420 ms', 'Protocolo: extraestímulo ventricular desde el ápex del VD, S1-S2 600-280'],
+    hk: ['QRS de 140 ms con BRD y eje superior en un adolescente con corazón sano: patrón de TV fascicular posterior, que se confunde con una TSV con aberrancia (BRD con hemibloqueo anterior).', 'Se induce con un extraestímulo ventricular (S2 280): la TV fascicular reentrante es inducible con estimulación programada.'],
+    m: { regah: { v: 'A-A 800 y V-V 420: más V que A, sin relación fija entre ellos. El His aparece 15 ms después del inicio del QRS.', r: 'Disociación AV y His después del inicio del QRS (HV negativo): el origen es ventricular. Excluye la TSV con aberrancia.', u: 'clave', img: 'figs/sim/prac/p8_regah.png' },
+      map: { v: 'En el septum medio-inferior del VI (LV 9-10 proximal a LV 1-2 distal): un potencial mesodiastólico (P1) que avanza de proximal a distal (P1-V 120 → 100 → 75 → 55) y un potencial presistólico (P2) que va de distal a proximal, 30 ms antes del QRS en el distal.', r: 'P1 es el tejido de conducción lenta (brazo anterógrado) y P2, el fascículo posterior (brazo retrógrado): TV fascicular posterior. Se ablaciona donde el P1 es más tardío o con una línea perpendicular al fascículo.', u: 'clave', img: 'figs/sim/prac/p8_map.png' },
+      verap: { v: 'Verapamilo IV: la LC se alarga de 420 a 480 ms y el P1-P2 de 110 a 160 ms; el P2-V sigue en 30 ms.', r: 'Sensible al verapamilo, que actúa sobre el tejido de conducción lenta entre P1 y P2: TV fascicular reentrante.', u: 'clave', img: 'figs/sim/prac/p8_verap.png' },
+      aop: { v: 'Estimulando la AD alta a 380 ms el primer QRS es de fusión y los siguientes son angostos, con AH 90 y HV 45. Al cortar vuelve la taquicardia de QRS ancho (V-V 420).', r: 'Cuando el ventrículo se activa por el nodo y el His, el QRS es normal: la taquicardia de QRS ancho no es una TSV con aberrancia.', u: 'util', img: 'figs/sim/prac/p8_aop.png' },
+      vop: { v: 'Estimulando el ápex del VD a 380 ms los QRS se aceleran a 380. Al cortar vuelve la misma taquicardia (QRS 140, LC 420).', r: 'Se encarrila y retoma igual: mecanismo de reentrada, a diferencia de la TV focal de Purkinje.', u: 'util', img: 'figs/sim/prac/p8_vop.png' },
+      medidas: { v: 'PPI 500 ms con LC 420 (PPI−LC 80).', r: 'El ápex del VD está cerca de la salida del circuito, en el septum inferior del VI.', u: 'util', img: 'figs/sim/prac/p8_medidas.png' },
+      ado: { v: 'La taquicardia sigue igual (LC 420).', r: 'No depende del nodo AV y no es sensible a la adenosina, a diferencia de la TV focal de Purkinje y la del tracto de salida.', u: 'util', img: 'figs/sim/prac/p8_ado.png' },
+      pre: { v: 'Estimulación ventricular en sinusal a 500 y 400 ms.', r: 'SA 140 → 190 (decremental), concéntrica: conducción VA por el nodo, sin vía accesoria.', u: 'util', img: 'figs/sim/prac/p8_pre.png' } },
+    dx: ['tvf'], ex: 'Taquicardia de QRS ancho con BRD y eje superior en un corazón sano. La disociación AV y el His después del inicio del QRS indican un origen ventricular, y los QRS angostos al estimular la aurícula excluyen la aberrancia. Es inducible y encarrilable (reentrada); el mapeo muestra P1 y P2 en el septum medio-inferior del VI y el verapamilo alarga la LC y el P1-P2: TV fascicular posterior.', refs: ['nogami10', 'liuq23', 'liu15'] },
   { id: 'c9', t: 'TRAV septal que imita una TRNAV atípica', p: 'Varón de 13 años con TSV de RP largo.',
     ecg: 'figs/sim/casos/c9_ecg.jpg', ecgReal: true, basal: 'figs/sim/casos/c9_basal.png', ind: 'figs/sim/casos/c9_ind.png',
     h: ['TSV de QRS angosto, LC 310 ms, relación 1:1', 'VA 180 ms, HA 222 ms', 'A más precoz en el SC proximal'],
@@ -1496,7 +1505,7 @@ function renderCase() {
   let h = `<div class="ctrl"><button class="btn" id="pBack">← Casos</button></div>
     <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${pCur + 1}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
     <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div>${presFigs(c)}</div>`;
-  if (pLog.length) h += `<h2 class="sec">Estudio</h2><div class="panel">${pLog.map((k, n) => { const r = res(k), tag = pDone && r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><span class="n">${n + 1}</span><b>${PMAN.find(x => x[0] === k)[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div>${pDone && r.v ? `<p><b>${r.v}</b></p><p class="small" style="margin:0">${r.r}</p>` : `<p>${r.v || r.r}</p>`}${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro" loading="lazy"></a><figcaption>${r.real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('')}</div>`;
+  if (pLog.length) h += `<h2 class="sec">Estudio</h2><div class="panel">${pLog.map((k, n) => { const r = res(k), tag = pDone && r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><span class="n">${n + 1}</span><b>${mLab(c, k)}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div>${pDone && r.v ? `<p><b>${r.v}</b></p><p class="small" style="margin:0">${r.r}</p>` : `<p>${r.v || r.r}</p>`}${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro" loading="lazy"></a><figcaption>${r.real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('')}</div>`;
   if (!pDone) {
     const left = pMans(c).filter(x => !pLog.includes(x[0]));
     h += `<h2 class="sec">¿Qué hacés?</h2><div class="pgrid">${left.map(x => `<button class="opt pm" data-k="${x[0]}">${x[1]}</button>`).join('')}</div>
@@ -1506,11 +1515,11 @@ function renderCase() {
     const usadas = claves.filter(k => pLog.includes(k)), trampas = pLog.filter(k => (c.m[k] || {}).u === 'trampa');
     h += `<div class="card leaf ${ok ? '' : 'warn'}"><div class="lt">${ok ? 'Correcto' : 'No es el diagnóstico'}</div><h3>${PDX.find(x => x[0] === c.dx[0])[1]}${c.dx.length > 1 ? ' (también vale: ' + c.dx.slice(1).map(d => PDX.find(x => x[0] === d)[1]).join(', ') + ')' : ''}</h3>
       ${ok ? '' : `<p style="margin:-4px 0 0">Elegiste: ${PDX.find(x => x[0] === pDone)[1]}.</p>`}
-      <div class="box"><div class="bl">Paso a paso</div><ol class="paso">${(c.hk || []).map(x => `<li><span class="lic2" style="--c:var(--green)">Clave</span> <b>Hallazgo:</b> ${x}</li>`).join('')}${['clave', 'util', 'trampa', undefined].flatMap(u => Object.entries(c.m).filter(([, v]) => v.u === u)).map(([k, v]) => { const pm = PMAN.find(x => x[0] === k), tg = v.u ? UTAG[v.u] : null; return pm ? `<li>${tg ? `<span class="lic2" style="--c:${tg[1]}">${tg[0]}</span> ` : ''}<b>${pm[1]}</b>${pLog.includes(k) ? ' <span class="small">(la hiciste)</span>' : ''}${v.v ? `<br>${v.v}` : ''}<br><i>${v.r}</i></li>` : ''; }).join('')}</ol></div>
+      <div class="box"><div class="bl">Paso a paso</div><ol class="paso">${(c.hk || []).map(x => `<li><span class="lic2" style="--c:var(--green)">Clave</span> <b>Hallazgo:</b> ${x}</li>`).join('')}${['clave', 'util', 'trampa', undefined].flatMap(u => Object.entries(c.m).filter(([, v]) => v.u === u)).map(([k, v]) => { const pm = PMAN.find(x => x[0] === k) && mLab(c, k), tg = v.u ? UTAG[v.u] : null; return pm ? `<li>${tg ? `<span class="lic2" style="--c:${tg[1]}">${tg[0]}</span> ` : ''}<b>${pm}</b>${pLog.includes(k) ? ' <span class="small">(la hiciste)</span>' : ''}${v.v ? `<br>${v.v}` : ''}<br><i>${v.r}</i></li>` : ''; }).join('')}</ol></div>
       <div class="box"><div class="bl">Por qué</div><p>${c.ex}</p></div>
-      <div class="box"><div class="bl">Tu estudio</div><ul><li>Hiciste ${pLog.length} maniobra${pLog.length === 1 ? '' : 's'}.</li><li>Maniobras clave: ${claves.map(k => `${pLog.includes(k) ? '✓' : '○'} ${PMAN.find(x => x[0] === k)[1]}`).join(' · ')}</li>${trampas.length ? `<li>Resultados engañosos que viste: ${trampas.map(k => PMAN.find(x => x[0] === k)[1]).join(', ')}.</li>` : ''}</ul></div>
-      <div class="mlinks">${[...new Set(claves.map(k => PMAN.find(x => x[0] === k)[2]))].map(m => `<button class="ml" data-m="${m}">${M[m].t}</button>`).join('')}</div>
-      <div class="box"><div class="bl">Esquemas de las maniobras clave</div>${esqStrip(claves.flatMap(k => k === 'medidas' ? ['ppi', 'sava', 'dha'] : [PMAN.find(x => x[0] === k)[2]]))}</div>
+      <div class="box"><div class="bl">Tu estudio</div><ul><li>Hiciste ${pLog.length} maniobra${pLog.length === 1 ? '' : 's'}.</li><li>Maniobras clave: ${claves.map(k => `${pLog.includes(k) ? '✓' : '○'} ${mLab(c, k)}`).join(' · ')}</li>${trampas.length ? `<li>Resultados engañosos que viste: ${trampas.map(k => mLab(c, k)).join(', ')}.</li>` : ''}</ul></div>
+      <div class="mlinks">${[...new Set(claves.map(k => mKey(c, k)))].map(m => `<button class="ml" data-m="${m}">${M[m].t}</button>`).join('')}</div>
+      <div class="box"><div class="bl">Esquemas de las maniobras clave</div>${esqStrip(claves.flatMap(k => k === 'medidas' ? ['ppi', 'sava', 'dha'] : [mKey(c, k)]))}</div>
       <p class="small" style="margin:0">${cite(c.refs)}</p>
       <div class="ctrl"><button class="btn" id="pRetry">Reintentar</button>${pCur < PCASOS.length - 1 ? '<button class="btn" id="pNext">Siguiente caso →</button>' : ''}</div></div>`;
   }
@@ -2024,8 +2033,8 @@ try { const s = JSON.parse(localStorage.getItem('mef_calc') || 'null'); if (s) {
 function renderReview(n) {
   const c = PCASOS[n - 1];
   if (!c) return false;
-  const rows = PMAN.filter(x => c.m[x[0]]).map(x => { const r = c.m[x[0]], tag = r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><b>${x[1]}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div>${r.v ? `<p><b>Lo que ve el alumno:</b> ${r.v}</p><p class="small" style="margin:0"><b>Devolución:</b> ${r.r}</p>` : `<p>${r.r}</p>`}${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro simulado" loading="lazy"></a><figcaption>${r.real ? "Registro real, anonimizado" : "Versión del modo práctica (sin diagnóstico ni cuentas)"}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('');
-  const sin = PMAN.filter(x => !c.m[x[0]]).map(x => x[1]);
+  const rows = PMAN.filter(x => c.m[x[0]]).map(x => { const r = c.m[x[0]], tag = r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><b>${mLab(c, x[0])}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div>${r.v ? `<p><b>Lo que ve el alumno:</b> ${r.v}</p><p class="small" style="margin:0"><b>Devolución:</b> ${r.r}</p>` : `<p>${r.r}</p>`}${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro simulado" loading="lazy"></a><figcaption>${r.real ? "Registro real, anonimizado" : "Versión del modo práctica (sin diagnóstico ni cuentas)"}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('');
+  const sin = pMans(c).filter(x => !c.m[x[0]]).map(x => x[1]);
   const nav = `<div class="ctrl">${n > 1 ? `<a class="btn" style="text-decoration:none" href="#revision-${n - 1}">← Caso ${n - 1}</a>` : ''}${n < PCASOS.length ? `<a class="btn" style="text-decoration:none" href="#revision-${n + 1}">Caso ${n + 1} →</a>` : ''}</div>`;
   $('#pracBody').innerHTML = `<div class="card" style="padding:10px 14px"><b>Revisión del caso ${n} de ${PCASOS.length}</b><p class="small" style="margin:2px 0 0">Vista para revisar: muestra todas las maniobras con su clasificación, el diagnóstico y la explicación. El alumno no la ve así.</p></div>${nav}
     <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${n}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>

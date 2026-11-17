@@ -168,10 +168,9 @@ vt = [sp[-1] + 360 + LC8 * k for k in range(6)]
 p2 = [v - 30 for v in vt]; p1 = [x - 110 for x in p2]
 a_sin = [250, 1050, 1850, 2650]
 S['c8_ind'] = dict(win=(-80, vt[-1] + 200), pxms=0.27, title='Inducción: extraestímulo ventricular (S1-S2 600-280)',
-    channels=['HRA', 'His d', 'LV 1-2', 'RVA'], src='caso 8: valores ilustrativos',
+    channels=['HRA', 'His d', 'RVA'], src='caso 8: valores ilustrativos',
     beats=[(s, 'pa') for s in sp] + [(v, 'rbs') for v in vt], spikes=sp,
     atr=[(a, 'sinus', 1) for a in a_sin], h_retro=[s + 120 for s in sp] + [v + 15 for v in vt],
-    extra={'LV 1-2': [(t, 0.32, 0.8) for t in p1] + [(t, 0.55, 0.7) for t in p2]},
     cal=[(sp[1], sp[2], 'RVA', 'S2 280'), (vt[2], vt[3], 'RVA', f'LC {LC8}'), (a_sin[1], a_sin[2], 'HRA', 'A-A 800')])
 
 # Caso 2 (didáctico, TRAV septal en una niña de 10 años): LC 280 como el ECG real, VA 110, AH en la TSV 125.
