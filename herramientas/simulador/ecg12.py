@@ -94,7 +94,7 @@ P_NV = {'II': (0, 12, -0.42), 'III': (0, 12, -0.45), 'aVF': (0, 12, -0.45), 'aVR
 TAQ = {
     'c16_ecg': dict(lc=350, qrs=SIN, t=SIN_T, p=P_TRNAV, title='ECG de 12 derivaciones durante la taquicardia',
                     src='caso 16 (didáctico): LC 350 ms, ilustrativo'),
-    'c10_ecg': dict(lc=390, qrs=SIN, t=SIN_T, p=P_NV, rp=[110, 150, 175, None], title='ECG de 12 derivaciones durante la taquicardia',
+    'c10_ecg': dict(lc=390, qrs=SIN, t=SIN_T, p=P_NV, rp=[220, 250, 270, None], title='ECG de 12 derivaciones durante la taquicardia',
                     src='caso 10 (didáctico): LC 390 ms; P retrógrada con RP que se alarga hasta que falta una P (ilustrativo)'),
     'c14_ecg': dict(lc=300, qrs=SIN, t=SIN_T, p=P_PJRT, title='ECG de 12 derivaciones durante la taquicardia',
                     src='caso 14 (didáctico): LC 300 ms, ilustrativo'),

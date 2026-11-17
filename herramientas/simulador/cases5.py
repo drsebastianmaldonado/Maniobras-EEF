@@ -392,14 +392,14 @@ hs = [s + 28 + a for s, a in zip(sp, [85, 85, 245])]
 for _ in range(6):
     hs.append(hs[-1] + LC10)
 vs = [h + HV for h in hs]
-va = [110, 150, 175, None, 110, 150, 175]          # VA que se alarga hasta que una V no conduce a la A
+va = [220, 250, 270, None, 220, 250, 270]          # VA que se alarga hasta que una V no conduce a la A
 A = [v + d for v, d in zip(vs[2:], va) if d is not None]
 S['c10_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.25, title='Inducción: extraestímulo auricular (S1-S2 600-300)', channels=CH6,
     src='caso 10 (didáctico): valores ilustrativos', beats=[(v, 'n') for v in vs], aspikes=sp, apace_ch='HRA',
     atr=[(s + 5, 'sinus', 1) for s in sp] + [(a, 'conc_his', -1) for a in A], h_ante=hs,
     cal=[(sp[1] + 28, hs[1], 'His d', 'AH 85'), (sp[2] + 28, hs[2], 'His d', 'AH 245'), (sp[1], sp[2], 'HRA', 'S2 300'),
          (hs[4], hs[5], 'His d', f'H-H {LC10}'), (hs[5], hs[6], 'His d', f'H-H {LC10}'),
-         (vs[2], A[0] + 2, 'CS 9-10', 'VA 110'), (vs[3], A[1] + 2, 'CS 9-10', 'VA 150'), (vs[4], A[2] + 2, 'CS 9-10', 'VA 175')])
+         (vs[2], A[0] + 2, 'CS 9-10', 'VA 220'), (vs[3], A[1] + 2, 'CS 9-10', 'VA 250'), (vs[4], A[2] + 2, 'CS 9-10', 'VA 270')])
 
 # Caso 15 (TRAV por vía lateral izquierda decremental, registros reales): sobreestimulación auricular SIMULADA.
 # LC 311 (real); VA 140 ilustrativo, A más precoz en el SC distal. Estimulación desde la AD alta a 280 (6 estímulos):

@@ -1058,11 +1058,11 @@ S['p9_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.27, title='EA con His refrac
     marks=[(apb, 'V1', 'EA')])
 
 # =====================================================================================================
-# Caso 10 (reentrada por una vía nodoventricular; LC 390, HV 45). Conducción VA tipo Wenckebach (110 → 150 → 175 → bloqueo)
+# Caso 10 (reentrada por una vía nodoventricular; LC 390, HV 45). Conducción VA tipo Wenckebach (220 → 250 → 270 → bloqueo)
 # con H-H estable. Nagashima 2020: PPI−LC 105, His ortodrómico y fusión constante. El resto, ilustrativo.
 SRC10 = 'caso 10 (didáctico): LC 390 y PPI−LC 105 de Nagashima 2020; el resto, ilustrativo'
 LC10 = 390
-WK = [110, 150, 175, None]
+WK = [220, 250, 270, None]
 
 
 def wk(vs, k0=0):
@@ -1102,16 +1102,17 @@ S['p10_ehr'] = dict(win=(-80, after[-1] + 200), pxms=0.25, title='EV con His ref
     cal=[(vs[2] - HV, vs[3] - HV, 'His d', f'H-H {LC10}'), (h_exp, hn, 'His d', f'H-H {LC10 - 25}'), (hn, after[1] - HV, 'His d', f'H-H {LC10}')],
     marks=[(h_exp, 'V1', 'EV'), (h_exp, 'His p', 'H')])
 
-# Sobreestimulación auricular a 340: conduce con AH 150; al cortar la taquicardia sigue (H-H 390) con el mismo Wenckebach VA.
+# Sobreestimulación auricular a 340: conduce con AH 180. En la TSV, el AH (de la A que sigue al bloqueo, VA 220, al His) es 125: ΔAH +55.
+# Al cortar la taquicardia sigue (H-H 390) con el mismo Wenckebach VA.
 vs = [0, LC10, 2 * LC10]
 sp = [vs[-1] + 200 + 340 * k for k in range(6)]
-pv = [s + 28 + 150 + HV for s in sp]
+pv = [s + 28 + 180 + HV for s in sp]
 vs2 = [pv[-1] + LC10, pv[-1] + 2 * LC10, pv[-1] + 3 * LC10]
 S['p10_aop'] = dict(win=(-80, vs2[-1] + 220), pxms=0.22, title='Sobreestimulación auricular desde la AD alta a 340 ms', channels=CH6, src=SRC10,
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
     atr=[(a, 'conc_his', -1) for a in wk(vs)] + [(s + 5, 'sinus', 1) for s in sp] + [(a, 'conc_his', -1) for a in wk(vs2)],
     h_ante=[v - HV for v in vs + pv + vs2],
-    cal=[(vs[0] - HV, vs[1] - HV, 'His d', f'H-H {LC10}'), (sp[-2], sp[-1], 'HRA', 'S-S 340'), (sp[-1] + 28, pv[-1] - HV, 'His d', 'AH 150'),
+    cal=[(vs[0] + 220, vs[1] - HV, 'His d', 'AH 125'), (sp[-2], sp[-1], 'HRA', 'S-S 340'), (sp[-1] + 28, pv[-1] - HV, 'His d', 'AH 180'),
          (pv[-1] - HV, vs2[0] - HV, 'His d', f'H-H {LC10}')])
 
 # Estudio basal: extraestímulo auricular: S2 310 → AH 150; S2 300 → AH 245 (salto de 95).
