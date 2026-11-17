@@ -1075,7 +1075,8 @@ def vop10(title, med, ppi=495, typ='f', pace='RVA'):
     ret = sp[-1] + ppi
     after = [ret, ret + LC10, ret + 2 * LC10]
     A = wk(svt) + [s + 120 for s in sp[::2]] + wk(after)
-    cal = [(svt[0], svt[1], 'RVA', f'LC {LC10}'), (sp[-2], sp[-1], 'RVA', 'S-S 360'), (sp[-1], ret + 2, 'RVA', f'PPI {ppi}')]
+    cal = [(svt[0], svt[1], 'RVA', f'LC {LC10}'), (sp[-2], sp[-1], 'RVA', 'S-S 360'), (sp[-1], ret + 2, 'RVA', f'PPI {ppi}'),
+           (svt[0] - HV, svt[1] - HV, 'His d', f'H-H {LC10}'), (sp[1] - 10, sp[2] - 10, 'His d', 'H-H 360'), (sp[2] - 10, sp[3] - 10, 'His d', 'H-H 360')]
     marks = [] if med else [(sp[2] - 10, 'His p', 'H')]
     if med:
         marks = [(sp[-1] + 200, 'I', f'PPI − LC = {ppi} − {LC10} = {ppi - LC10} ms')]
