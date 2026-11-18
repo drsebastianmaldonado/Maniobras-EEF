@@ -407,7 +407,7 @@ S['c10_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.25, title='Inducción: extra
 LC15, VA15 = 311, 140
 vs = [0, LC15, 2 * LC15]
 A = [v + VA15 for v in vs]
-sp = [A[-1] + 280 + 280 * k for k in range(6)]
+sp = [vs[-1] + LC15 + 70 + 280 * k for k in range(6)]          # el primer estímulo sale después del último QRS de la TSV
 hs_p = [s + 28 + 150 for s in sp]
 vs = vs + [vs[-1] + LC15]          # la última A de la TSV conduce al V antes del primer estímulo
 vp = [h + HV for h in hs_p]
