@@ -63,8 +63,7 @@ for f in sorted(os.listdir(FIGS)):
     else:
         print('sin escenario:', f)
 
-NEUTRO = {'p16_vop': [('bys_b', 'Sobreestimulación del VD a 320 ms')], 'p16_ehr': [('bys_c', 'EV con His refractario')],
-          'p17_vop': [('c17s_vop_a', 'A. TSV 1: sobreestimulación del VD a 360 ms'), ('c17s_vop_b', 'B. TSV 2: sobreestimulación del VD a 210 ms')],
+NEUTRO = {'p17_vop': [('c17s_vop_a', 'A. TSV 1: sobreestimulación del VD a 360 ms'), ('c17s_vop_b', 'B. TSV 2: sobreestimulación del VD a 210 ms')],
           'p17_ehr': [('c17s_ehr', 'TSV 1: EV con His refractario')]}
 for f in sorted(os.listdir(os.path.join(FIGS, 'prac'))):
     if not f.endswith('.png'):

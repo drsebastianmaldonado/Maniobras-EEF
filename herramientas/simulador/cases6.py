@@ -1505,6 +1505,102 @@ S['p15_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.27, title='EA con His refra
     cal=[(hs[2], hs[3], 'His d', f'H-H {LC15b}'), (hs[3], hs[4], 'His d', f'H-H {LC15b}')],
     marks=[(apb, 'V1', 'EA')])
 
+# =====================================================================================================
+# Caso 16 (TRNAV típica con una vía lateral izquierda espectadora; LC 350, VA 20 concéntrico, HV 45). Valores ilustrativos.
+SRC16 = 'caso 16 (didáctico): valores ilustrativos'
+LC16, VA16 = 350, 20
+CH16 = ['HRA', 'His p', 'His d', 'CS 9-10', 'CS 7-8', 'CS 5-6', 'CS 3-4', 'CS 1-2', 'RVA']
+
+
+def vop16(title, med, sa=150, typ='pa'):
+    svt = [0, LC16, 2 * LC16]
+    sp = [svt[-1] + 280 + 320 * k for k in range(6)]
+    ret = sp[-1] + 500 + (sa - 150)
+    after = [ret, ret + LC16]
+    cal = [(svt[0], svt[1], 'RVA', f'LC {LC16}'), (svt[1], svt[1] + VA16 + 2, 'His d', f'VA {VA16}'), (sp[-2], sp[-1], 'RVA', 'S-S 320'),
+           (sp[-1], sp[-1] + sa + 2, 'CS 1-2', f'SA {sa}'), (sp[-1], ret + 2, 'RVA', f'PPI {ret - sp[-1]}')]
+    marks = []
+    if med:
+        marks = [(sp[-1] + 230, 'I', f'SA − VA = {sa} − {VA16} = {sa - VA16} ms'), (sp[-1] + 230, 'aVF', f'PPI − LC = {ret - sp[-1]} − {LC16} = {ret - sp[-1] - LC16} ms')]
+    return dict(win=(-80, after[-1] + 250), pxms=0.22, title=title, channels=CH16, src=SRC16, spikes=sp, pace_ch='RVA',
+        beats=[(v, 'n') for v in svt + after] + [(s, typ) for s in sp],
+        atr=[(v + VA16, 'conc_his', -1) for v in svt + after] + [(s + sa, 'left', -1) for s in sp],
+        h_ante=[v - HV for v in svt + after], h_retro=[s + 90 for s in sp], cal=cal, marks=marks)
+
+
+S['p16_vop'] = vop16('Sobreestimulación ventricular desde el ápex del VD a 320 ms', False)
+S['p16_medidas'] = vop16('Medidas sobre la sobreestimulación ventricular (ápex del VD a 320 ms): PPI y SA', True)
+S['p16_diff_a'] = vop16('A. Encarrilamiento desde el ápex del VD (320 ms)', False)
+S['p16_diff_b'] = vop16('B. Encarrilamiento desde la base del VD (320 ms)', False, sa=140, typ='pb')
+
+# EV con His refractario: adelanta la A del SC distal 57 ms (secuencia excéntrica/fusión); el His siguiente y la LC no cambian.
+vs = [i * LC16 for i in range(6)]
+T = vs[3]
+pvc = T - 95
+S['p16_ehr'] = dict(win=(-80, vs[-1] + 250), pxms=0.30, title='EV con His refractario durante la taquicardia', channels=CH16, src=SRC16,
+    beats=[(v, 'n') for k, v in enumerate(vs) if k != 3] + [(pvc, 'lv')], spikes=[pvc], pace_ch='RVA',
+    atr=[(v + VA16, 'conc_his', -1) for k, v in enumerate(vs) if k != 3] + [(T + 5, 'fus_l', -1)], h_ante=[v - HV for v in vs],
+    cal=[(vs[2] - HV, vs[3] - HV, 'His d', f'H-H {LC16}'), (vs[3] - HV, vs[4] - HV, 'His d', f'H-H {LC16}'),
+         (vs[2] + VA16 + 42, T + 5, 'CS 1-2', f'A-A {T + 5 - vs[2] - VA16 - 42}')],
+    marks=[(pvc, 'V1', 'EV'), (vs[3] - HV, 'His p', 'H')])
+
+# Estudio basal. A: extraestímulo auricular con salto del AH (S2 300 → AH 280) y eco concéntrico.
+# B: estimulación del VD a 500 y 400: SA 150 en los dos (no decremental), excéntrica (SC 1-2 primero).
+sp = [0, 600, 900]
+hs = [s + 28 + a for s, a in zip(sp, [90, 90, 280])]
+vs = [h + HV for h in hs]
+S['p16_pre_a'] = dict(win=(-80, 1500), pxms=0.40, title='A. Extraestímulo auricular S1-S2 600-300', channels=CH16, src=SRC16,
+    beats=[(v, 'n') for v in vs], aspikes=sp, apace_ch='HRA', atr=[(s + 5, 'sinus', 1) for s in sp] + [(vs[2] + VA16, 'conc_his', -1)], h_ante=hs,
+    cal=[(sp[1], sp[2], 'HRA', 'S2 300'), (sp[1] + 28, hs[1], 'His d', 'AH 90'), (sp[2] + 28, hs[2], 'His d', 'AH 280')],
+    marks=[(vs[2] + VA16, 'CS 5-6', 'eco')])
+sp = [0, 500, 1000, 1400, 1800]
+S['p16_pre_b'] = dict(win=(-80, 2150), pxms=0.30, title='B. Estimulación del VD en sinusal: 500 y 400 ms', channels=CH16, src=SRC16,
+    spikes=sp, beats=[(s, 'pa') for s in sp], atr=[(s + 150, 'left', -1) for s in sp], h_retro=[s + 90 for s in sp],
+    cal=[(sp[0], sp[1], 'RVA', 'S-S 500'), (sp[1], sp[1] + 152, 'CS 1-2', 'SA 150'), (sp[2], sp[3], 'RVA', 'S-S 400'), (sp[3], sp[3] + 152, 'CS 1-2', 'SA 150')])
+
+# Para-Hisiana en sinusal: con His, SA 85 concéntrica; sin His, la A llega primero por la vía (SC 1-2, SA 150): cambia la secuencia.
+sp = [0, 650, 1300, 1950]
+cap = [True, False, True, False]
+S['p16_parahis'] = dict(win=(-80, 2300), pxms=0.32, title='Estimulación para-Hisiana en ritmo sinusal', channels=CH16, src=SRC16,
+    spikes=sp, pace_ch='His p', beats=[(s + HV if c else s, 'n' if c else 'pa') for s, c in zip(sp, cap)],
+    atr=[(s + 85, 'conc_his', -1) if c else (s + 150, 'left', -1) for s, c in zip(sp, cap)],
+    cal=[(sp[0], sp[0] + 87, 'His d', 'SA 85'), (sp[1], sp[1] + 152, 'CS 1-2', 'SA 150'), (sp[2] + HV, sp[2] + HV + 95, 'RVA', 'QRS 95'), (sp[3], sp[3] + 150, 'RVA', 'QRS 150')],
+    marks=[(sp[0] + 30, 'V1', 'His + V'), (sp[1] + 40, 'V1', 'solo V')])
+
+# Sobreestimulación auricular desde la AD alta a 320: el tren arranca después del último QRS; al cortar, VA 20 como en la TSV.
+AHs16 = LC16 - HV - VA16 + 10
+vs = [0, LC16, 2 * LC16]
+A = [v + VA16 for v in vs]
+sp = [vs[-1] + 10 + 320 * k for k in range(6)]
+pv = [s + 28 + AHs16 + HV for s in sp]
+vs2 = [pv[-1] + LC16, pv[-1] + 2 * LC16]
+S['p16_aop'] = dict(win=(-80, vs2[-1] + 220), pxms=0.21, title='Sobreestimulación auricular desde la AD alta a 320 ms', channels=CH16, src=SRC16,
+    beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
+    atr=[(a, 'conc_his', -1) for a in A[:-1]] + [(s + 5, 'sinus', 1) for s in sp] + [(v + VA16, 'conc_his', -1) for v in [pv[-1]] + vs2],
+    h_ante=[v - HV for v in vs + pv + vs2],
+    cal=[(vs[0], vs[1], 'RVA', f'V-V {LC16}'), (vs[1], vs[1] + VA16 + 2, 'His d', f'VA {VA16}'), (sp[-2], sp[-1], 'HRA', 'S-S 320'),
+         (pv[-2], pv[-1], 'RVA', 'V-V 320'), (pv[-1], pv[-1] + VA16 + 2, 'His d', f'VA {VA16}')])
+
+# Adenosina: termina con una A (bloqueo anterógrado en la vía lenta).
+vs = [i * LC16 for i in range(4)]
+A = [v + VA16 for v in vs]
+S['p16_ado'] = dict(win=(-80, A[-1] + 800), pxms=0.25, title='Adenosina IV durante la taquicardia', channels=CH16, src=SRC16,
+    beats=[(v, 'n') for v in vs], atr=[(a, 'conc_his', -1) for a in A], h_ante=[v - HV for v in vs],
+    cal=[(vs[0], vs[1], 'RVA', f'LC {LC16}'), (vs[3], A[3] + 2, 'His d', f'VA {VA16}')],
+    marks=[(A[3] + 60, 'aVF', 'última: A sin V')])
+
+# EA con His refractario desde el ostium del SC: retrasa el His siguiente 15 ms.
+hs = [i * LC16 - HV for i in range(7)]
+apb = hs[4] + 10
+hs = hs[:5] + [h + 15 for h in hs[5:]]
+vs = [h + HV for h in hs]
+A = [v + VA16 for k2, v in enumerate(vs) if k2 != 4]
+S['p16_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.22, title='EA con His refractario desde el ostium del SC', channels=CH16, src=SRC16,
+    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='CS 9-10',
+    atr=[(a, 'conc_his', -1) for a in A] + [(apb + 4, 'conc_cs', 1)], h_ante=hs,
+    cal=[(hs[3], hs[4], 'His d', f'H-H {LC16}'), (hs[4], hs[5], 'His d', f'H-H {LC16 + 15}')],
+    marks=[(apb, 'V1', 'EA')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
