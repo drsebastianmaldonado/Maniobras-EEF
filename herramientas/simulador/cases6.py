@@ -49,8 +49,9 @@ S['p1_diff_b'] = diff(225, 'pb', 'B. Encarrilamiento desde la base del VD (310 m
 AHs = 260
 vs = [0, LC, 2 * LC]
 A = [v + VA for v in vs]
-sp = [A[-1] + 250 + 320 * k for k in range(6)]
+sp = [A[-1] + 320 + 320 * k for k in range(6)]
 pv = [s + 28 + AHs + HV for s in sp]
+vs = vs + [vs[-1] + LC]          # la última A de la TSV conduce al V antes del primer estímulo
 vs2 = [pv[-1] + LC, pv[-1] + 2 * LC]
 S['p1_aop'] = dict(win=(-80, vs2[-1] + 250), pxms=0.22, title='Sobreestimulación auricular desde la AD alta a 320 ms', channels=CH6, src=SRC,
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
@@ -214,8 +215,9 @@ S['p2_pre'] = dict(win=(-80, 2150), pxms=0.30, title='Estimulación ventricular 
 AHs2 = 150
 vs = [0, LC2, 2 * LC2]
 A = [v + VA2 for v in vs]
-sp = [A[-1] + 200 + 260 * k for k in range(6)]
+sp = [A[-1] + 260 + 260 * k for k in range(6)]
 pv = [s + 28 + AHs2 + HV for s in sp]
+vs = vs + [vs[-1] + LC2]
 vs2 = [pv[-1] + LC2, pv[-1] + 2 * LC2]
 S['p2_aop'] = dict(win=(-80, vs2[-1] + 220), pxms=0.22, title='Sobreestimulación auricular desde la AD alta a 260 ms', channels=CH6, src=SRC2,
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
@@ -460,8 +462,9 @@ S['p4_parahis'] = dict(win=(-80, 2300), pxms=0.32, title='Estimulación para-His
 AHs4 = 200
 vs = [0, LC4, 2 * LC4]
 A = [v + VA4 for v in vs]
-sp = [A[-1] + 220 + 310 * k for k in range(6)]
+sp = [A[-1] + 310 + 310 * k for k in range(6)]
 pv = [s + 28 + AHs4 + HV4 for s in sp]
+vs = vs + [vs[-1] + LC4]
 vs2 = [pv[-1] + LC4, pv[-1] + 2 * LC4]
 S['p4_aop'] = dict(win=(-80, vs2[-1] + 220), pxms=0.22, title='Sobreestimulación auricular desde la AD alta a 310 ms', channels=CH6, src=SRC4,
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
@@ -571,8 +574,9 @@ S['p5_pre_b'] = salto5(330, 225, 'B. S2 10 ms más corto: S1-S2 600-330', 'AH 22
 AHs5 = 160
 vs = [0, LC5]
 A = [v + VA5 for v in vs]
-sp = [A[-1] + 250 + 340 * k for k in range(5)]
+sp = [A[-1] + 340 + 340 * k for k in range(5)]
 pv = [s + 28 + AHs5 + HV for s in sp]
+vs = vs + [vs[-1] + LC5]
 vs2 = [pv[-1] + LC5]
 S['p5_aop'] = dict(win=(-80, vs2[-1] + 380), pxms=0.21, title='Sobreestimulación auricular desde la AD alta a 340 ms', channels=CH6, src=SRC5,
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
@@ -689,8 +693,9 @@ S['p6_parahis'] = dict(win=(-80, 2300), pxms=0.32, title='Estimulación para-His
 AHs6 = AH6 + 10
 vs = [0, LC6, 2 * LC6]
 A = [v + VA6 for v in vs]
-sp = [A[-1] + 200 + 280 * k for k in range(6)]
+sp = [A[-1] + 280 + 280 * k for k in range(6)]
 pv = [s + 28 + AHs6 + HV for s in sp]
+vs = vs + [vs[-1] + LC6]
 vs2 = [pv[-1] + LC6, pv[-1] + 2 * LC6]
 S['p6_aop'] = dict(win=(-80, vs2[-1] + 220), pxms=0.24, title='Sobreestimulación auricular desde la AD alta a 280 ms', channels=CH6, src=SRC6,
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
@@ -800,12 +805,13 @@ S['p7_eha_b'] = dict(win=(-100, vs[-1] + 250), pxms=0.25, title='B. EA precoz de
 # Sobreestimulación auricular desde la AD alta a 300: cada A conduce con AH 90; al cortar, el último A conduce con AH 90 (PR < RR)
 # y la taquicardia retoma con H-H 340.
 vs = [0, LC7]
-sp = [vs[-1] + 200 + 300 * k for k in range(6)]
+sp = [vs[-1] + 300 + 300 * k for k in range(6)]
 pv = [s + 28 + 90 + HV for s in sp]
+vs = vs + [vs[-1] + LC7]          # el latido de la unión siguiente sale antes de que conduzca el primer estímulo
 vs2 = [pv[-1] + LC7, pv[-1] + 2 * LC7]
 S['p7_aop'] = dict(win=(-80, vs2[-1] + 220), pxms=0.24, title='Sobreestimulación auricular desde la AD alta a 300 ms', channels=CH6, src=SRC7,
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
-    atr=[(a, 'conc_his', -1) for a in vs] + [(s + 5, 'sinus', 1) for s in sp] + [(v, 'conc_his', -1) for v in vs2],
+    atr=[(a, 'conc_his', -1) for a in vs[:-1]] + [(s + 5, 'sinus', 1) for s in sp] + [(v, 'conc_his', -1) for v in vs2],
     h_ante=[v - HV for v in vs + pv + vs2],
     cal=[(vs[0], vs[1], 'RVA', f'V-V {LC7}'), (sp[-2], sp[-1], 'HRA', 'S-S 300'), (pv[-2], pv[-1], 'RVA', 'V-V 300'),
          (sp[-1] + 28, pv[-1] - HV, 'His d', 'AH 90'), (pv[-1], vs2[0], 'RVA', f'V-V {LC7}')])
@@ -1027,8 +1033,9 @@ S['p9_parahis'] = dict(win=(-80, 2300), pxms=0.32, title='Estimulación para-His
 AHs9 = AH9 + 12
 vs = [0, LC9, 2 * LC9]
 A = [v + VA9 for v in vs]
-sp = [A[-1] + 200 + 290 * k for k in range(6)]
+sp = [A[-1] + 290 + 290 * k for k in range(6)]
 pv = [s + 28 + AHs9 + HV9 for s in sp]
+vs = vs + [vs[-1] + LC9]
 vs2 = [pv[-1] + LC9, pv[-1] + 2 * LC9]
 S['p9_aop'] = dict(win=(-80, vs2[-1] + 220), pxms=0.24, title='Sobreestimulación auricular desde la AD alta a 290 ms', channels=CH6, src=SRC9,
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
@@ -1106,8 +1113,9 @@ S['p10_ehr'] = dict(win=(-80, after[-1] + 200), pxms=0.25, title='EV con His ref
 # Sobreestimulación auricular a 340: conduce con AH 180. En la TSV, el AH (de la A que sigue al bloqueo, VA 220, al His) es 125: ΔAH +55.
 # Al cortar la taquicardia sigue (H-H 390) con el mismo Wenckebach VA.
 vs = [0, LC10, 2 * LC10]
-sp = [vs[-1] + 200 + 340 * k for k in range(6)]
+sp = [wk(vs)[-1] + 220 + 340 * k for k in range(6)]
 pv = [s + 28 + 180 + HV for s in sp]
+vs = vs + [vs[-1] + LC10]          # V sin A (bloqueo VA del Wenckebach) antes de que conduzca el primer estímulo
 vs2 = [pv[-1] + LC10, pv[-1] + 2 * LC10, pv[-1] + 3 * LC10]
 S['p10_aop'] = dict(win=(-80, vs2[-1] + 220), pxms=0.22, title='Sobreestimulación auricular desde la AD alta a 340 ms', channels=CH6, src=SRC10,
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
@@ -1405,8 +1413,9 @@ S['p14_parahis'] = dict(win=(-80, 2450), pxms=0.30, title='Estimulación para-Hi
 # Sobreestimulación auricular desde la AD alta a 370: AH 110 (TSV 100, ΔAH 10); al cortar, VA 260 como en la TSV.
 vs = [0, LC14b]
 A = [v + VA14b for v in vs]
-sp = [A[-1] + 250 + 370 * k for k in range(6)]
+sp = [A[-1] + 370 + 370 * k for k in range(6)]
 pv = [s + 28 + 110 + H14 for s in sp]
+vs = vs + [vs[-1] + LC14b]
 vs2 = [pv[-1] + LC14b, pv[-1] + 2 * LC14b]
 S['p14_aop'] = dict(win=(-80, vs2[-1] + 300), pxms=0.21, title='Sobreestimulación auricular desde la AD alta a 370 ms', channels=CH6, src=SRC14,
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',

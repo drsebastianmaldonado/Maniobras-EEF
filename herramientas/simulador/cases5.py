@@ -407,8 +407,9 @@ S['c10_ind'] = dict(win=(-80, vs[-1] + 200), pxms=0.25, title='Inducción: extra
 LC15, VA15 = 311, 140
 vs = [0, LC15, 2 * LC15]
 A = [v + VA15 for v in vs]
-sp = [A[-1] + 230 + 280 * k for k in range(6)]
+sp = [A[-1] + 280 + 280 * k for k in range(6)]
 hs_p = [s + 28 + 150 for s in sp]
+vs = vs + [vs[-1] + LC15]          # la última A de la TSV conduce al V antes del primer estímulo
 vp = [h + HV for h in hs_p]
 after = [vp[-1] + LC15 * k for k in range(1, 3)]
 S['p15_aop'] = dict(win=(-80, after[-1] + 260), pxms=0.25, title='Sobreestimulación auricular desde la AD alta a 280 ms', channels=CH6,
