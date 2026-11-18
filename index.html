@@ -313,7 +313,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script>
-const APPV = 181;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 182;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -322,15 +322,15 @@ const REFS = {
   burri12: ['Burri 2012', 'Burri H, Hoffmann J, Zimmermann M. Double fire tachycardia. <i>Heart</i> 2012;98:958 (doi:10.1136/heartjnl-2012-301800).'],
   jastrz09: ['Jastrzebski 2009', 'Jastrzebski M. Double fire or junctional ectopy? (carta, con la respuesta de Roten y Tanner). <i>Europace</i> 2009;11:1127–8 (doi:10.1093/europace/eup137).'],
   kaczmarek14: ['Kaczmarek 2014', 'Kaczmarek K, Ruta J, Wranicz J, Ptaszynski P. A new type of dual atrioventricular nodal nonreentrant tachycardia. <i>Ann Noninvasive Electrocardiol</i> 2014;19:501–3 (doi:10.1111/anec.12129).'],
-  singh16: ['Singh 2016', 'Singh DK, Badhwar N. Implantable cardioverter-defibrillator shock caused by uncommon variety of nonreentrant atrioventricular nodal tachycardia. <i>Card Electrophysiol Clin</i> 2016 (doi:10.1016/j.ccep.2015.10.004).'],
+  singh16: ['Singh 2016', 'Singh DK, Badhwar N. Implantable cardioverter-defibrillator shock caused by uncommon variety of nonreentrant atrioventricular nodal tachycardia. <i>Card Electrophysiol Clin</i> 2016;8:57–60 (doi:10.1016/j.ccep.2015.10.004).'],
   adusumalli17: ['Adusumalli 2017', 'Adusumalli S, Gluer R, Lee A, Denman R. Double fire tachycardia induced cardiomyopathy: first ever reported case in Australia. <i>Intern Med J</i> 2017;47:468–9 (doi:10.1111/imj.13385).'],
-  wang11: ['Wang 2011', 'Wang NC. Dual atrioventricular nodal nonreentrant tachycardia: a systematic review. <i>Pacing Clin Electrophysiol</i> 2011;34:1671–81. (Citado en las revisiones.)'],
+  wang11: ['Wang 2011', 'Wang NC. Dual atrioventricular nodal nonreentrant tachycardia: a systematic review. <i>Pacing Clin Electrophysiol</i> 2011;34:1671–81 (doi:10.1111/j.1540-8159.2011.03218.x). (Citado en las revisiones.)'],
   knight99: ['Knight 1999', 'Knight BP, Zivin A, Souza J, et al. A technique for the rapid diagnosis of atrial tachycardia in the electrophysiology laboratory. <i>J Am Coll Cardiol</i> 1999;33:775–81.'],
   knight00: ['Knight 2000', 'Knight BP, Ebinger M, Oral H, et al. Diagnostic value of tachycardia features and pacing maneuvers during paroxysmal supraventricular tachycardia. <i>J Am Coll Cardiol</i> 2000;36:574–82.'],
   michaud01: ['Michaud 2001', 'Michaud GF, Tada H, Chough S, et al. Differentiation of atypical AVNRT from orthodromic reciprocating tachycardia using a septal accessory pathway by the response to ventricular pacing. <i>J Am Coll Cardiol</i> 2001;38:1163–7.'],
   gt06: ['González-Torrecilla 2006', 'González-Torrecilla E, Arenal A, Atienza F, et al. First postpacing interval after tachycardia entrainment with correction for atrioventricular node delay. <i>Heart Rhythm</i> 2006;3:674–9.'],
   gt11: ['González-Torrecilla 2011', 'González-Torrecilla E, Almendral J, García-Fernández FJ, et al. Differences in ventriculoatrial intervals during entrainment and tachycardia: a simpler method for distinguishing PSVT with long VA intervals. <i>J Cardiovasc Electrophysiol</i> 2011;22:915–21.'],
-  miller91: ['Miller 1991', 'Miller JM, Rosenthal ME, Gottlieb CD, Vassallo JA, Josephson ME. Usefulness of the ΔHA interval to accurately distinguish atrioventricular nodal reentry from orthodromic septal bypass tract tachycardias. <i>Am J Cardiol</i> 1991;68:1037–44.'],
+  miller91: ['Miller 1991', 'Miller JM, Rosenthal ME, Gottlieb CD, Vassallo JA, Josephson ME. Usefulness of the ΔHA interval to accurately distinguish atrioventricular nodal reentry from orthodromic septal bypass tract tachycardias. <i>Am J Cardiol</i> 1991;68:1037–44 (doi:10.1016/0002-9149(91)90492-4).'],
   miller87: ['Miller 1987', 'Miller JM, Rosenthal ME, Vassallo JA, Josephson ME. Atrioventricular nodal reentrant tachycardia: studies on upper and lower "common pathways". <i>Circulation</i> 1987;75:930–40.'],
   segal09: ['Segal 2009', 'Segal OR, Gula LJ, Skanes AC, et al. Differential ventricular entrainment: a maneuver to differentiate AV node reentrant tachycardia from orthodromic reciprocating tachycardia. <i>Heart Rhythm</i> 2009;6:493–500.'],
   ma94: ['Martínez-Alday 1994', 'Martínez-Alday JD, Almendral J, Arenal A, et al. Identification of concealed posteroseptal Kent pathways by comparison of ventriculoatrial intervals from apical and posterobasal right ventricular sites. <i>Circulation</i> 1994;89:1060–7.'],
@@ -366,7 +366,7 @@ const REFS = {
   gardey21: ['Gardey 2021', 'Gardey K, Thevenard R, Joly H, Bessière F. Atypical twin atrioventricular nodal re-entrant tachycardia in a congenitally corrected transposition of the great arteries patient with a surgical repair of a ventricular septal defect: a case report. <i>Eur Heart J Case Rep</i> 2021;5:ytab303.'],
   enriquez19: ['Enriquez 2019', 'Enriquez A, Baranchuk A, Briceno D, Saenz L, Garcia F. How to use the 12-lead ECG to predict the site of origin of idiopathic ventricular arrhythmias. <i>Heart Rhythm</i> 2019;16:1538–44.'],
   nogami10: ['Nogami 2010', 'Nogami A. Diagnosis and ablation of fascicular tachycardia. <i>Eur Cardiol</i> 2010;6(4):79–85.'],
-  nogami02: ['Nogami 2002', 'Nogami A. Idiopathic left ventricular tachycardia: assessment and treatment. <i>Card Electrophysiol Rev</i> 2002;6:448–57.'],
+  nogami02: ['Nogami 2002', 'Nogami A. Idiopathic left ventricular tachycardia: assessment and treatment. <i>Card Electrophysiol Rev</i> 2002;6:448–57 (doi:10.1023/a:1021100828459).'],
   belhassen81: ['Belhassen 1981', 'Belhassen B, Rotmensch HH, Laniado S. Response of recurrent sustained ventricular tachycardia to verapamil. <i>Br Heart J</i> 1981;46:679–82.'],
   wellens93: ['Wellens 1993', 'Wellens HJ, Smeets JL. Idiopathic left ventricular tachycardia: cure by radiofrequency ablation. <i>Circulation</i> 1993;88:2978–9.'],
   katritsis96: ['Katritsis 1996', 'Katritsis D, Heald S, Ahsan A, et al. Catheter ablation for successful management of left posterior fascicular tachycardia: an approach guided by recording of fascicular potentials. <i>Heart</i> 1996;75:384–8.'],
@@ -376,7 +376,7 @@ const REFS = {
   lin05: ['Lin 2005', 'Lin D, Hsia HH, Gerstenfeld EP, et al. Idiopathic fascicular left ventricular tachycardia: linear ablation lesion strategy for noninducible or nonsustained tachycardia. <i>Heart Rhythm</i> 2005;2:934–9.'],
   ma06: ['Ma 2006', 'Ma FS, Ma J, Tang K, et al. Left posterior fascicular block: a new endpoint of ablation for verapamil-sensitive idiopathic ventricular tachycardia. <i>Chin Med J</i> 2006;119:367–72.'],
   magalhaes06: ['Magalhães 2006', 'Magalhães S, Gonçalves H, Primo J, et al. Taquicardia ventricular fascicular: experiência com ablação por radiofrequência. <i>Rev Port Cardiol</i> 2006;25:485–97.'],
-  ramprakash08: ['Ramprakash 2008', 'Ramprakash B, Jaishankar S, Rao HB, Narasimhan C. Catheter ablation of fascicular ventricular tachycardia. <i>Indian Pacing Electrophysiol J</i> 2008;8:193.'],
+  ramprakash08: ['Ramprakash 2008', 'Ramprakash B, Jaishankar S, Rao HB, Narasimhan C. Catheter ablation of fascicular ventricular tachycardia. <i>Indian Pacing Electrophysiol J</i> 2008;8:193–202 (PMID 18679520).'],
   wissner12: ['Wissner 2012', 'Wissner E, Menon SD, Metzner A, et al. Long-term outcome after catheter ablation for left posterior fascicular ventricular tachycardia without development of left posterior fascicular block. <i>J Cardiovasc Electrophysiol</i> 2012;23:1179–84.'],
   sung13: ['Sung 2013', 'Sung RK, Kim AM, Tseng ZH, et al. Diagnosis and ablation of multiform fascicular tachycardia. <i>J Cardiovasc Electrophysiol</i> 2013;24:297–304.'],
   kataria13: ['Kataria 2013', 'Kataria V, Yaduvanshi A, Kumar M, Nair M. Demonstration of posterior fascicle to myocardial conduction block during ablation of idiopathic left ventricular tachycardia: an electrophysiological predictor of long-term success. <i>Heart Rhythm</i> 2013;10:638–45.'],
@@ -388,7 +388,7 @@ const REFS = {
   chen16: ['Chen 2016', 'Chen H, Zhang F, Yang B, et al. A novel method to identify the origin of ventricular tachycardia from the left fascicular system. <i>Heart Rhythm</i> 2016;13:686–94.'],
   talib16: ['Talib 2016', 'Talib AK, Nogami A. Anatomical ablation strategy for noninducible fascicular tachycardia. <i>Card Electrophysiol Clin</i> 2016;8:115–20.'],
   kapa17: ['Kapa 2017', 'Kapa S, Gaba P, DeSimone CV, Asirvatham SJ. Fascicular ventricular arrhythmias: pathophysiologic mechanisms, anatomical constructs, and advances in approaches to management. <i>Circ Arrhythm Electrophysiol</i> 2017;10:e002476.'],
-  takase19: ['Takase 2019', 'Takase S, Mukai Y, Honda N, et al. Catheter ablation for verapamil-sensitive fascicular ventricular tachycardia guided by precise mapping using a multi-spline duodecapolar catheter. <i>HeartRhythm Case Rep</i> 2019;5:48–52.'],
+  takase19: ['Takase 2019', 'Takase S, Mukai Y, Honda N, et al. Catheter ablation for verapamil-sensitive fascicular ventricular tachycardia guided by precise mapping using a multi-spline duodecapolar catheter. <i>HeartRhythm Case Rep</i> 2019;5:48–52 (doi:10.1016/j.hrcr.2018.10.009).'],
   morishima20: ['Morishima 2020', 'Morishima I, Nogami A, Kanzaki Y. High-resolution mapping to unmask presystolic Purkinje potentials during idiopathic verapamil-sensitive left anterior papillary muscle fascicular-Purkinje VT. <i>Circ J</i> 2020;84:2035.'],
   sanchez21: ['Sanchez 2021', 'Sanchez JM, Higuchi S, Walters TE, et al. The role of the left septal fascicle in fascicular arrhythmias: clinical presentation and laboratory evaluation. <i>JACC Clin Electrophysiol</i> 2021;7:858–70.'],
   li23: ['Li 2023', 'Li MM, Wu XY, Jiang CX, et al. Fascicular ventricular tachycardia arising from the left side His and its adjacent region: a subset of upper septal idiopathic left ventricular tachycardia. <i>Europace</i> 2023;25:1000–7.'],
@@ -1631,7 +1631,7 @@ const CASOS = [
   { m: 'vop', ref: 'veen08', fig: 'fig. 1 y 2', doi: '10.1016/j.hrthm.2008.04.010', t: 'Fusión manifiesta y fusión oculta desde el VI basal',
     vals: [['Fusión manifiesta', 'estim. 450 ms en TSV de 470 ms'], ['Fusión oculta', 'estim. 330 ms en TSV de 340 ms']],
     nota: 'En la fusión oculta el QRS estimulado es igual al de la TSV: hay que descartar la disociación isorrítmica.' },
-  { m: 'dha', ref: 'miller91', fig: 'fig. 2 y 3', url: 'https://pubmed.ncbi.nlm.nih.gov/?term=Miller+JM+Josephson+%22delta+HA%22+1991', t: 'ΔHA estimulando a la LC de la TSV', sim: 'figs/sim/miller91.png',
+  { m: 'dha', ref: 'miller91', fig: 'fig. 2 y 3', url: 'https://pubmed.ncbi.nlm.nih.gov/1927917/', t: 'ΔHA estimulando a la LC de la TSV', sim: 'figs/sim/miller91.png',
     vals: [['TRNAV (LC 280)', 'HA TSV 75 → HA estimulado 86: ΔHA +11'], ['TRAV posteroseptal (LC 340)', 'HA TSV 199 → HA estimulado 103: ΔHA −96']],
     nota: 'En la TRAV, durante la TSV His → V → vía → A en serie; estimulando, His y vía se activan en paralelo y el HA se acorta.' },
   { m: 'hisorto', ref: 'ho15', fig: 'fig. 3', doi: '10.1007/s11936-015-0370-5', t: 'PJRT: captura ortodrómica vs antidrómica del His', sim: 'figs/sim/ho15.png',
