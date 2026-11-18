@@ -1799,6 +1799,27 @@ S['p17b_pre_b'] = dict(win=(-80, tv[-1] + 200), pxms=0.36, title='B. Extraestím
     cal=[(sp[1], sp[2], 'CS 9-10', 'S2 280'), (sp[1] + 28, hs[1], 'His p', 'AH 100'), (sp[2] + 28, hs[2], 'His p', 'AH 250'), (tv[0], tv[1], 'RVA', 'LC 230')],
     marks=[(vs[2] + 20, 'CS 5-6', 'eco')])
 
+
+# Ficha "Observaciones en la taquicardia": A, VA septal corto y concéntrico (TRNAV típica); B, VA largo y excéntrico (TRAV por vía izquierda).
+CHOBS = ['HRA', 'His d', 'His p', 'CS 1-2', 'CS 3-4', 'CS 5-6', 'CS 7-8', 'CS 9-10', 'RVA']
+SRCOBS = 'ficha de observaciones (didáctico): valores ilustrativos'
+
+
+def obs(va, seq, his_off, title, marks):
+    LCo = 340
+    vs = [i * LCo for i in range(4)]
+    cal = [(vs[1], vs[2], 'RVA', f'LC {LCo}'), (vs[2], vs[2] + va + his_off + 2, 'His d', f'VA septal {va + his_off}')]
+    if his_off:
+        cal.append((vs[2], vs[2] + va + 2, 'CS 1-2', f'VA {va} (A más precoz)'))
+    return dict(win=(-80, vs[-1] + 260), pxms=0.32, title=title, channels=CHOBS, src=SRCOBS,
+        beats=[(v, 'n') for v in vs], atr=[(v + va, seq, -1) for v in vs], h_ante=[v - HV for v in vs], cal=cal, marks=marks)
+
+
+S['basal_obs_a'] = obs(15, 'trnav', 0, 'A. VA septal 15 ms (≤ 70), activación concéntrica: la A más precoz está en el His',
+                       [(3 * 340 + 15, 'V1', 'A dentro del QRS')])
+S['basal_obs_b'] = obs(110, 'left', 40, 'B. VA 110 ms (septal 150), activación excéntrica: la A más precoz está en el SC 1-2',
+                       [(3 * 340 + 110, 'V1', 'A después del QRS')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
