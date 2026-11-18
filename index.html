@@ -315,7 +315,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script src="anim.js"></script>
 <script>
-const APPV = 193;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 194;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -2121,6 +2121,8 @@ function renderReview(n) {
   return true;
 }
 function checkReview() {
+  const fm = location.hash.match(/^#ficha-(\w+)$/);
+  if (fm && M[fm[1]]) { tab('man'); openFicha(fm[1]); return true; }
   const m = location.hash.match(/^#revision-(\d+)$/);
   if (!m) return false;
   tab('prac'); pCur = null;

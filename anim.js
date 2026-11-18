@@ -2,7 +2,9 @@
 // Cada animación tiene dos paneles (una alternativa contra la otra). Los tiempos son ilustrativos.
 (function () {
   const NS = 'http://www.w3.org/2000/svg';
-  const mk = (t, a, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+  const CSSA = ['fill', 'stroke', 'fill-opacity'];
+  const mk = (t, a, p) => { const e = document.createElementNS(NS, t); for (const k in a) { if (CSSA.includes(k) && String(a[k]).includes('var(')) e.style.setProperty(k, a[k]); else e.setAttribute(k, a[k]); } if (p) p.appendChild(e); return e; };
+  const setc = (e, k, v) => e.style.setProperty(k, v);
 
   // Puntos del esquema (viewBox 0 0 310 400; el esquema ocupa y 0–255 y el trazado y 265–395)
   const G = { hra: [70, 44], aSep: [150, 80], apA: [264, 80], node: [150, 102], his: [150, 128], apex: [124, 222], base: [264, 152], rva: [118, 228], focus: [74, 44] };
@@ -133,10 +135,10 @@
         const { sc } = p;
         // cámaras que se activan
         const lit = (arr, d) => arr.some(x => T >= x && T < x + d);
-        p.h.atr.setAttribute('fill', lit(sc.flA, 70) ? 'var(--violet)' : 'var(--blue-soft)');
-        p.h.atr.setAttribute('fill-opacity', lit(sc.flA, 70) ? 0.35 : 1);
-        p.h.ven.setAttribute('fill', lit(sc.flV, 90) ? 'var(--orange)' : 'var(--blue-soft)');
-        p.h.ven.setAttribute('fill-opacity', lit(sc.flV, 90) ? 0.3 : 1);
+        setc(p.h.atr, 'fill', lit(sc.flA, 70) ? 'var(--violet)' : 'var(--blue-soft)');
+        setc(p.h.atr, 'fill-opacity', lit(sc.flA, 70) ? 0.35 : 1);
+        setc(p.h.ven, 'fill', lit(sc.flV, 90) ? 'var(--orange)' : 'var(--blue-soft)');
+        setc(p.h.ven, 'fill-opacity', lit(sc.flV, 90) ? 0.3 : 1);
         // frentes que viajan
         let dh = '';
         for (const w of sc.wv) {
@@ -147,7 +149,7 @@
           const f = Math.max(0, Math.min(1, (T - a0) / Math.max(1, a1 - a0)));
           const x = p0[0] + (p1[0] - p0[0]) * f, y = p0[1] + (p1[1] - p0[1]) * f;
           const trail = w.pts.slice(0, k + 1).map(q => q[0].join(' ')).join(' L') + ` L${x} ${y}`;
-          dh += `<path d="M${trail}" stroke="${COL[w.c]}" stroke-width="3" fill="none" opacity=".45"/><circle cx="${x}" cy="${y}" r="6" fill="${COL[w.c]}"/>`;
+          dh += `<path d="M${trail}" style="stroke:${COL[w.c]};fill:none" stroke-width="3" opacity=".45"/><circle cx="${x}" cy="${y}" r="6" style="fill:${COL[w.c]}"/>`;
         }
         p.dots.innerHTML = dh;
         // trazado con ventana móvil
@@ -157,11 +159,11 @@
         for (const e of sc.ev) {
           if (e.t > T || e.t < tStart) continue;
           const y = LANES.find(l => l[0] === e.ch)[2], x = xOf(e.t);
-          if (e.stim) { ds += `M${x} ${y - 16} L${x} ${y + 12} `; lh += `<text x="${x}" y="${y - 18}" fill="var(--red)">E</text>`; continue; }
+          if (e.stim) { ds += `M${x} ${y - 16} L${x} ${y + 12} `; lh += `<text x="${x}" y="${y - 18}" style="fill:var(--red)">E</text>`; continue; }
           const hot = e.tag && T > sc.stimEnd;
           if (hot) dt += spike(x, y, false); else d += spike(x, y, e.l === 'V');
           lh += `<text x="${x}" y="${y - 14}">${e.l}</text>`;
-          if (hot) { const yy = y - (e.tagUp ? 36 : 24); lh += `<text x="${x}" y="${yy}" fill="var(--blue)" font-weight="700">${e.tag}</text><line x1="${x}" y1="${yy + 2}" x2="${x}" y2="${y - 22}" stroke="var(--blue)"/>`; }
+          if (hot) { const yy = y - (e.tagUp ? 36 : 24); lh += `<text x="${x}" y="${yy}" style="fill:var(--blue)" font-weight="700">${e.tag}</text><line x1="${x}" y1="${yy + 2}" x2="${x}" y2="${y - 22}" style="stroke:var(--blue)"/>`; }
         }
         p.tr.setAttribute('d', d); p.st.setAttribute('d', ds); p.tg.setAttribute('d', dt); p.lab.innerHTML = lh;
         const xc = xOf(T); p.cur.setAttribute('x1', xc); p.cur.setAttribute('x2', xc);
