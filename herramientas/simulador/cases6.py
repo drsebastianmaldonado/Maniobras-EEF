@@ -1760,6 +1760,45 @@ S['p17_parahis'] = dict(win=(-80, 2300), pxms=0.32, title='Estimulación para-Hi
     cal=[(sp[0], sp[0] + 87, 'His d', 'SA 85'), (sp[1], sp[1] + 137, 'His d', 'SA 135'), (sp[2] + HV, sp[2] + HV + 95, 'RVA', 'QRS 95'), (sp[3], sp[3] + 150, 'RVA', 'QRS 150')],
     marks=[(sp[0] + 30, 'V1', 'His + V'), (sp[1] + 40, 'V1', 'solo V')])
 
+
+# Caso 17 en dos fases: fase 1 = TSV 1 (TRAV), fase 2 = después de ablacionar la vía, TRNAV. Un panel por maniobra.
+def _t17(sc, title):
+    sc = dict(sc); sc['title'] = title; return sc
+
+
+_old = {k: S.pop(k) for k in [k for k in S if k.startswith('p17_')]}
+for m, t1, t2 in [('vop', 'Sobreestimulación desde el ápex del VD a 360 ms', 'Sobreestimulación desde el ápex del VD a 210 ms'),
+                  ('medidas', 'Medidas desde el ápex del VD a 360 ms: PPI, SA y HA', 'Medidas desde el ápex del VD a 210 ms: PPI, SA y HA'),
+                  ('ehr', 'EV con His refractario desde el ápex del VD', 'EV con His refractario desde el ápex del VD'),
+                  ('aop', 'Sobreestimulación auricular desde la AD alta a 360 ms', 'Sobreestimulación auricular desde la AD alta a 210 ms'),
+                  ('eha', 'EA con His refractario desde el ostium del SC', 'EA con His refractario desde el ostium del SC'),
+                  ('ado', 'Adenosina IV durante la taquicardia', 'Adenosina IV durante la taquicardia')]:
+    S['p17_' + m] = _t17(_old[f'p17_{m}_a'], t1)
+    S['p17b_' + m] = _t17(_old[f'p17_{m}_b'], t2)
+S['p17_diff_a'] = _t17(_old['p17_diff_a'], 'A. Encarrilamiento desde el ápex del VD (360 ms)')
+S['p17_diff_b'] = _t17(_old['p17_diff_b'], 'B. Desde la base del VD (360 ms)')
+S['p17b_diff_a'] = _t17(_old['p17_diff_c'], 'A. Encarrilamiento desde el ápex del VD (210 ms)')
+S['p17b_diff_b'] = _t17(_old['p17_diff_d'], 'B. Desde la base del VD (210 ms)')
+S['p17_parahis'] = _old['p17_parahis']
+S['p17b_parahis'] = dict(_old['p17_parahis'], title='Estimulación para-Hisiana en ritmo sinusal, después de la ablación de la vía')
+
+# Fase 2, estudio basal después de la ablación. A: VD en sinusal 500 y 400: conducción VA concéntrica y decremental (nodal).
+sp = [0, 500, 1000, 1400, 1800]
+sa = [140, 140, 140, 175, 175]
+S['p17b_pre_a'] = dict(win=(-80, 2150), pxms=0.30, title='A. Estimulación del VD en sinusal después de la ablación: 500 y 400 ms', channels=CH17, src=SRC17,
+    spikes=sp, beats=[(x, 'pa') for x in sp], atr=[(x + a, 'conc_his', -1) for x, a in zip(sp, sa)], h_retro=[x + a - 60 for x, a in zip(sp, sa)],
+    cal=[(sp[0], sp[1], 'RVA', 'S-S 500'), (sp[1], sp[1] + 142, 'His d', 'SA 140'), (sp[2], sp[3], 'RVA', 'S-S 400'), (sp[3], sp[3] + 177, 'His d', 'SA 175')])
+# B: extraestímulo desde el SC S1-S2 600-280: AH 100 → 250 con eco e inducción de la TRNAV.
+sp = [0, 600, 880]
+hs = [x + 28 + a for x, a in zip(sp, [100, 100, 250])]
+vs = [h + HV for h in hs]
+tv = [vs[2] + 230 * k for k in range(1, 4)]
+S['p17b_pre_b'] = dict(win=(-80, tv[-1] + 200), pxms=0.36, title='B. Extraestímulo desde el SC S1-S2 600-280: salto del AH e inducción', channels=CH17, src=SRC17,
+    beats=[(v, 'n') for v in vs + tv], aspikes=sp, apace_ch='CS 9-10',
+    atr=[(x + 4, 'conc_cs', 1) for x in sp] + [(v + 20, 'conc_his', -1) for v in [vs[2]] + tv], h_ante=hs + [v - HV for v in tv],
+    cal=[(sp[1], sp[2], 'CS 9-10', 'S2 280'), (sp[1] + 28, hs[1], 'His p', 'AH 100'), (sp[2] + 28, hs[2], 'His p', 'AH 250'), (tv[0], tv[1], 'RVA', 'LC 230')],
+    marks=[(vs[2] + 20, 'CS 5-6', 'eco')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')

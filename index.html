@@ -313,7 +313,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script>
-const APPV = 180;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 181;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -1499,24 +1499,40 @@ const PCASOS = [
       eha: { v: 'EA desde el ostium del SC con el His refractario: el His siguiente se retrasa 15 ms (H-H 365).', r: 'El EA entra en el circuito por la vía lenta aunque el His esté refractario: TRNAV.', u: 'util', img: 'figs/sim/prac/p16_eha.png' },
       ado: { v: 'La taquicardia termina: el último latido es una A que no conduce al V.', r: 'Termina con bloqueo anterógrado en el nodo (vía lenta): excluye la TA.', u: 'util', img: 'figs/sim/prac/p16_ado.png' } },
     dx: ['trnav_t', 'bys'], ex: 'Durante la TSV el VA septal es de 20 ms y la activación es concéntrica: una TSV así no puede usar una vía lateral izquierda, y el VA ≤ 70 ms excluye la TRAV. La vía existe (conducción VA excéntrica al estimular el ventrículo y en la para-Hisiana sin His), pero no participa: la EV con His refractario adelanta una A con otra secuencia sin resetear la taquicardia, y al cortar la sobreestimulación la respuesta es A-V con vuelta a la secuencia concéntrica. El encarrilamiento diferencial engaña porque la A sube por la vía durante la estimulación. TRNAV típica con una vía izquierda espectadora: se ablaciona la vía lenta y también la vía.', refs: ['knight00', 'veen12'] },
-  { id: 'c17', t: 'Dos taquicardias en una niña de 9 años', p: 'Niña de 9 años con TSV recurrentes. Registros reales del polígrafo.',
-    basal: 'figs/sim/casos/c17_vbasal.jpg', basalReal: true, ind: 'figs/sim/casos/c17_ind.jpg', indReal: true, indt: 'Inducción de la TSV 2 con estimulación desde el SC', extra: [['figs/sim/casos/c17_trav.jpg', 'TSV 1 (LC 390)', true]],
-    h: ['Se inducen dos TSV de QRS angosto, con relación AV 1:1', 'TSV 1: LC 390 ms, VA 130 ms, A más precoz en el SC 3-4', 'TSV 2: LC ~230 ms, VA 20 ms, A más precoz en el His; inducida con estimulación desde el SC; conduce con aberrancia en algunos tramos', 'VA 130 y 20: valores ilustrativos (las LC son las del estudio real)'],
-    hk: ['TSV 1: activación excéntrica con la A más precoz en el SC 3-4 (pared posterolateral izquierda): vía izquierda o TA izquierda.', 'TSV 2: VA 20 concéntrico; VA ≤ 70 excluye la TRAV: TRNAV típica o TA (o taquicardia de la unión).', 'Dos taquicardias distintas en el mismo paciente: hay que estudiar cada una con sus propias maniobras.'],
-    m: { pre: { v: 'Estimulación del VD en ritmo sinusal (tren y extraestímulo S1 600 / S2 300): la A más precoz es la del SC lateral. Extraestímulos desde el SC con S1 600: salto del AH.', r: 'Conducción retrógrada excéntrica: hay una vía izquierda. Salto del AH: doble fisiología nodal. Hay sustrato para las dos taquicardias.', u: 'clave', img: 'figs/sim/casos/c17_salto.jpg', real: true },
-      vop: { v: 'A. TSV 1: estimulando el ápex del VD a 360 ms las A se aceleran a 360 con la misma secuencia excéntrica; al cortar, el primer electrograma después de la última A es un V. B. TSV 2: a 210 ms las A se aceleran a 210, concéntricas; al cortar, también sigue un V.', r: 'Respuesta A-V en las dos: excluye la TA en ambas.', u: 'clave', img: 'figs/sim/prac/p17_vop.png' },
-      medidas: { v: 'A. TSV 1: PPI 490 (PPI−LC 100), SA 210 (SA−VA 80), HA 175 → 100 (ΔHA −75). B. TSV 2: PPI 400 (PPI−LC 170), SA 170 (SA−VA 150), HA 65 → 85 (ΔHA +20).', r: 'TSV 1: PPI−LC < 115, SA−VA < 85 y ΔHA < −10: el ventrículo está en el circuito (TRAV). TSV 2: PPI−LC > 115, SA−VA > 85 y ΔHA > −10: el ventrículo no está en el circuito (TRNAV).', u: 'clave', img: 'figs/sim/prac/p17_medidas.png' },
-      ehr: { v: 'A. TSV 1: la EV con el His refractario adelanta la A 20 ms (A-A 370) con la misma secuencia excéntrica y resetea la taquicardia. B. TSV 2: la A siguiente no cambia (A-A 230).', r: 'TSV 1: la vía participa en la taquicardia (TRAV). TSV 2: sin cambio, esperable en la TRNAV.', u: 'clave', img: 'figs/sim/prac/p17_ehr.png' },
-      diff: { v: 'TSV 1: SA 210 desde el ápex y 195 desde la base (ΔVA −15). TSV 2: SA 170 desde el ápex y 205 desde la base (ΔVA +35).', r: 'TSV 1: ΔVA ≤ 20: TRAV. TSV 2: ΔVA > 20: TRNAV.', u: 'util', img: 'figs/sim/prac/p17_diff.png' },
-      aop: { v: 'A. TSV 1: desde la AD alta a 360 ms, V-V 360 con AH 230 (en la TSV, 215); al cortar, VA 130, igual al de la TSV. B. TSV 2: a 210 ms, V-V 210 con AH 210 (en la TSV, 165); al cortar, VA 20, igual al de la TSV.', r: 'VA linking en las dos: excluye la TA. ΔAH: TSV 1, +15 (< 20); TSV 2, +45 (> 40, apoya la TRNAV).', u: 'util', img: 'figs/sim/prac/p17_aop.png' },
-      eha: { v: 'A. TSV 1: EA desde el ostium del SC con el His refractario: el His siguiente sale a su tiempo (H-H 390). B. TSV 2: el His siguiente se retrasa 15 ms (H-H 245).', r: 'TSV 2: el EA entra en el circuito por la vía lenta aunque el His esté refractario: TRNAV. TSV 1: sin cambio, esperable en la TRAV.', u: 'util', img: 'figs/sim/prac/p17_eha.png' },
+  { id: 'c17', t: 'TSV recurrentes en una niña de 9 años', p: 'Niña de 9 años con TSV recurrentes. Registros reales del polígrafo.',
+    basal: 'figs/sim/casos/c17_vbasal.jpg', basalReal: true, extra: [['figs/sim/casos/c17_trav.jpg', 'Taquicardia inducida (LC 390)', true]],
+    h: ['TSV de QRS angosto, LC 390 ms, relación AV 1:1', 'VA 130 ms, A más precoz en el SC 3-4', 'VA 130: valor ilustrativo (la LC es la del estudio real)'],
+    hk: ['Activación auricular excéntrica con la A más precoz en el SC 3-4 (pared posterolateral izquierda): vía izquierda o TA izquierda.'],
+    m: { pre: { v: 'Estimulación del VD en ritmo sinusal (tren y extraestímulo S1 600 / S2 300): la A más precoz es la del SC lateral. Extraestímulos desde el SC con S1 600: salto del AH.', r: 'Conducción retrógrada excéntrica: hay una vía izquierda. El salto del AH muestra además doble fisiología nodal: un segundo sustrato para tener en cuenta.', u: 'clave', img: 'figs/sim/casos/c17_salto.jpg', real: true },
+      vop: { v: 'Estimulando el ápex del VD a 360 ms las A se aceleran a 360 con la misma secuencia excéntrica; al cortar, el primer electrograma después de la última A es un V.', r: 'Respuesta A-V: excluye la TA.', u: 'clave', img: 'figs/sim/prac/p17_vop.png' },
+      medidas: { v: 'PPI 490 (PPI−LC 100), SA 210 (SA−VA 80), HA 175 → 100 (ΔHA −75).', r: 'PPI−LC < 115, SA−VA < 85 y ΔHA < −10: el ventrículo está en el circuito (TRAV).', u: 'clave', img: 'figs/sim/prac/p17_medidas.png' },
+      ehr: { v: 'La EV con el His refractario adelanta la A 20 ms (A-A 370) con la misma secuencia excéntrica y resetea la taquicardia.', r: 'La vía participa en la taquicardia: TRAV.', u: 'clave', img: 'figs/sim/prac/p17_ehr.png' },
+      diff: { v: 'SA 210 desde el ápex y 195 desde la base del VD (ΔVA −15).', r: 'ΔVA ≤ 20: TRAV.', u: 'util', img: 'figs/sim/prac/p17_diff.png' },
+      aop: { v: 'Desde la AD alta a 360 ms, V-V 360 con AH 230 (en la TSV, 215). Al cortar, VA 130, igual al de la TSV.', r: 'VA linking: excluye la TA. ΔAH +15 (< 20).', u: 'util', img: 'figs/sim/prac/p17_aop.png' },
+      eha: { v: 'EA desde el ostium del SC con el His refractario: el His siguiente sale a su tiempo (H-H 390).', r: 'Sin cambio: esperable en la TRAV.', u: 'util', img: 'figs/sim/prac/p17_eha.png' },
       parahis: { v: 'En ritmo sinusal, con captura del His: SA 85 y QRS 95. Solo V: SA 135 y QRS 150. Misma secuencia auricular, concéntrica.', r: 'Engañosa: respuesta nodal porque la vía posterolateral izquierda está lejos del sitio de estimulación; la para-Hisiana solo descarta vías septales.', u: 'trampa', img: 'figs/sim/prac/p17_parahis.png' },
-      ado: { v: 'A. TSV 1: termina; el último latido es una A que no conduce al V. B. TSV 2: también termina con una A.', r: 'Las dos terminan con bloqueo anterógrado en el nodo AV: excluye la TA en ambas.', u: 'util', img: 'figs/sim/prac/p17_ado.png' } },
-    dx: ['trav_l', 'trnav_t'], ex: 'Hay dos sustratos en el mismo paciente. La conducción retrógrada excéntrica al estimular el ventrículo demuestra una vía izquierda (posterolateral), y la TSV de LC 390 con la A más precoz en el SC 3-4 es una TRAV ortodrómica por esa vía. El salto del AH con extraestímulos desde el SC demuestra doble fisiología nodal, y la segunda TSV (LC ~230), inducida con estimulación desde el SC, es una TRNAV típica. Cada taquicardia tiene su propio sustrato, y se ablacionaron los dos: la vía posterolateral izquierda y la vía lenta.', refs: ['knight00', 'veen11'] }
+      ado: { v: 'La taquicardia termina: el último latido es una A que no conduce al V.', r: 'Termina con bloqueo anterógrado en el nodo AV: excluye la TA.', u: 'util', img: 'figs/sim/prac/p17_ado.png' } },
+    dx: ['trav_l'], ex: 'La activación excéntrica (SC 3-4) plantea una vía izquierda o una TA izquierda. La respuesta A-V y el VA linking excluyen la TA; el PPI−LC de 100, el SA−VA de 80 y la EV con His refractario que adelanta la A y resetea ponen a la vía en el circuito: TRAV ortodrómica por una vía posterolateral izquierda, donde se ablacionó. El salto del AH del estudio basal quedó pendiente.', refs: ['veen11'],
+    fase2: { p: 'Después de ablacionar la vía posterolateral izquierda se repite el protocolo de estimulación: con extraestímulos desde el SC se induce otra TSV.',
+      ind: 'figs/sim/casos/c17_ind.jpg', indReal: true, indt: 'Inducción de la nueva TSV con estimulación desde el SC',
+      h: ['TSV de QRS angosto, LC ~230 ms, relación AV 1:1; conduce con aberrancia en algunos tramos', 'VA 20 ms, A más precoz en el His', 'VA 20: valor ilustrativo (la LC es la del estudio real)'],
+      hk: ['VA 20 concéntrico: VA ≤ 70 excluye la TRAV; queda TRNAV típica, TA o taquicardia de la unión.', 'Ya no hay conducción por la vía ablacionada: la nueva TSV usa otro sustrato.'],
+      m: { pre: { v: 'A. Estimulación del VD en sinusal: SA 140 a 500 ms y 175 a 400 ms, concéntrica (A más precoz en el His). B. Extraestímulo desde el SC S1-S2 600-280: AH 100 → 250 con eco e inducción de la TSV.', r: 'Conducción VA concéntrica y decremental: nodal, sin conducción por la vía. Salto del AH con eco: doble fisiología nodal.', u: 'clave', img: 'figs/sim/prac/p17b_pre.png' },
+        vop: { v: 'Estimulando el ápex del VD a 210 ms las A se aceleran a 210, concéntricas; al cortar, el primer electrograma después de la última A es un V.', r: 'Respuesta A-V: excluye la TA.', u: 'clave', img: 'figs/sim/prac/p17b_vop.png' },
+        medidas: { v: 'PPI 400 (PPI−LC 170), SA 170 (SA−VA 150), HA 65 → 85 (ΔHA +20).', r: 'PPI−LC > 115, SA−VA > 85 y ΔHA > −10: el ventrículo no está en el circuito (TRNAV).', u: 'clave', img: 'figs/sim/prac/p17b_medidas.png' },
+        ehr: { v: 'La EV con el His refractario no modifica la A siguiente (A-A 230).', r: 'Sin cambio: esperable en la TRNAV (y ya no hay vía).', u: 'util', img: 'figs/sim/prac/p17b_ehr.png' },
+        diff: { v: 'SA 170 desde el ápex y 205 desde la base del VD (ΔVA +35).', r: 'ΔVA > 20: TRNAV.', u: 'util', img: 'figs/sim/prac/p17b_diff.png' },
+        aop: { v: 'Desde la AD alta a 210 ms, V-V 210 con AH 210 (en la TSV, 165). Al cortar, VA 20, igual al de la TSV.', r: 'VA linking: excluye la TA. ΔAH +45 (> 40): la aurícula no forma parte del circuito; apoya la TRNAV.', u: 'util', img: 'figs/sim/prac/p17b_aop.png' },
+        eha: { v: 'EA desde el ostium del SC con el His refractario: el His siguiente se retrasa 15 ms (H-H 245).', r: 'El EA entra en el circuito por la vía lenta aunque el His esté refractario: TRNAV.', u: 'clave', img: 'figs/sim/prac/p17b_eha.png' },
+        parahis: { v: 'En ritmo sinusal, con captura del His: SA 85 y QRS 95. Solo V: SA 135 y QRS 150. Misma secuencia auricular, concéntrica.', r: 'Respuesta nodal: sin vía septal.', u: 'util', img: 'figs/sim/prac/p17b_parahis.png' },
+        ado: { v: 'La taquicardia termina: el último latido es una A que no conduce al V.', r: 'Termina con bloqueo anterógrado en la vía lenta: excluye la TA.', u: 'util', img: 'figs/sim/prac/p17b_ado.png' } },
+      dx: ['trnav_t'], ex: 'Con la vía ablacionada, la conducción VA pasa a ser concéntrica y decremental, y el salto del AH con eco que ya se había visto antes de la ablación induce una TSV de LC ~230 con VA 20: TRNAV típica. La respuesta A-V y el VA linking excluyen la TA; el PPI−LC de 170, el SA−VA de 150, el ΔVA de +35 y el ΔAH de +45 dejan al ventrículo y a la aurícula fuera del circuito, y el EA con His refractario que retrasa el His confirma la vía lenta en el circuito. Se ablacionó la vía lenta y después no se indujeron taquicardias. Había dos sustratos en el mismo paciente.', refs: ['knight00', 'veen11'] } }
 ];
 let pState = {};
 try { pState = JSON.parse(localStorage.getItem('mef_prac') || '{}'); } catch (e) {}
-let pCur = null, pLog = [], pDone = null;
+let pCur = null, pLog = [], pDone = null, pFase = 0, pPrev = null;
+const FIGK = { ecg: null, ecgReal: null, ecg2: null, ecg2t: null, basal: null, basalReal: null, ind: null, indReal: null, indt: null, extra: null, hk: null, refs: [] };
+const pCase = (c, f) => f ? Object.assign({}, c, FIGK, c.fase2) : c;
 const pSave = () => { try { localStorage.setItem('mef_prac', JSON.stringify(pState)); } catch (e) {} };
 function renderPracList() {
   const ok = Object.values(pState).filter(x => x.ok).length;
@@ -1528,13 +1544,13 @@ function presFigs(c) {
   const f = (src, lab, real) => src ? `<figure class="real${real ? '' : ' sim'}"><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${lab}" loading="lazy"></a><figcaption>${lab}. ${real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : '';
   return f(c.ecg, c.ecgt || 'ECG de la taquicardia', c.ecgReal) + f(c.ecg2, c.ecg2t || 'ECG en ritmo sinusal, después de la conversión', c.ecgReal) + f(c.basal, 'Estudio basal', c.basalReal) + f(c.ind, c.indt || 'Inducción', c.indReal) + (c.extra || []).map(x => f(x[0], x[1], x[2])).join('');
 }
-function startCase(i) { pCur = i; pLog = []; pDone = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
+function startCase(i) { pCur = i; pLog = []; pDone = null; pFase = 0; pPrev = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
 function renderCase() {
-  const c = PCASOS[pCur];
+  const c = pCase(PCASOS[pCur], pFase);
   const res = k => c.m[k] || { r: 'No aporta información en este caso.' };
   let h = `<div class="ctrl"><button class="btn" id="pBack">← Casos</button></div>
-    <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${pCur + 1}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
-    <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div>${presFigs(c)}</div>`;
+    <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${pCur + 1}${pFase ? ' · Segunda parte' : ''}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
+    <div class="box"><div class="bl">${pFase ? 'Hallazgos de la nueva taquicardia' : 'Hallazgos iniciales'}</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div>${presFigs(c)}</div>`;
   if (pLog.length) h += `<h2 class="sec">Estudio</h2><div class="panel">${pLog.map((k, n) => { const r = res(k), tag = pDone && r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><span class="n">${n + 1}</span><b>${mLab(c, k)}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div>${pDone && r.v ? `<p><b>${r.v}</b></p><p class="small" style="margin:0">${r.r}</p>` : `<p>${r.v || r.r}</p>`}${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro" loading="lazy"></a><figcaption>${r.real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('')}</div>`;
   if (!pDone) {
     const left = pMans(c).filter(x => !pLog.includes(x[0]));
@@ -1551,7 +1567,7 @@ function renderCase() {
       <div class="mlinks">${[...new Set(claves.map(k => mKey(c, k)))].map(m => `<button class="ml" data-m="${m}">${M[m].t}</button>`).join('')}</div>
       <div class="box"><div class="bl">Esquemas de las maniobras clave</div>${esqStrip(claves.flatMap(k => k === 'medidas' ? ['ppi', 'sava', 'dha'] : [mKey(c, k)]))}</div>
       <p class="small" style="margin:0">${cite(c.refs)}</p>
-      <div class="ctrl"><button class="btn" id="pRetry">Reintentar</button>${pCur < PCASOS.length - 1 ? '<button class="btn" id="pNext">Siguiente caso →</button>' : ''}</div></div>`;
+      <div class="ctrl">${c.fase2 && !pFase ? '<button class="btn" id="pFase2" style="background:var(--violet);color:#fff">Continuar: después de la ablación →</button>' : ''}<button class="btn" id="pRetry">Reintentar</button>${pCur < PCASOS.length - 1 ? '<button class="btn" id="pNext">Siguiente caso →</button>' : ''}</div></div>`;
   }
   $('#pracBody').innerHTML = h;
   $('#pBack').onclick = () => { pCur = null; renderPracList(); };
@@ -1572,12 +1588,14 @@ function renderCase() {
     });
     send.onclick = () => {
       if (!sel) return;
-      pDone = sel; pState[PCASOS[pCur].id] = { ok: PCASOS[pCur].dx.includes(pDone), n: pLog.length }; pSave(); renderCase();
+      pDone = sel; const okc = c.dx.includes(pDone);
+      pState[PCASOS[pCur].id] = pFase ? { ok: pPrev.ok && okc, n: pPrev.n + pLog.length } : { ok: okc, n: pLog.length }; pSave(); renderCase();
       scrollTo({ top: $('#pracBody .leaf').offsetTop - 70, behavior: 'smooth' });
     };
     $('#pDxBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
   const rt = $('#pRetry'); if (rt) rt.onclick = () => startCase(pCur);
+  const f2 = $('#pFase2'); if (f2) f2.onclick = () => { pPrev = { ok: c.dx.includes(pDone), n: pLog.length }; pFase = 1; pLog = []; pDone = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); };
   const nx = $('#pNext'); if (nx) nx.onclick = () => startCase(pCur + 1);
   bindMl($('#pracBody'));
 }
@@ -2060,19 +2078,21 @@ try { const s = JSON.parse(localStorage.getItem('mef_calc') || 'null'); if (s) {
 
 // ---------- pestañas
 // Vista de revisión (#revision-N): el caso completo, con todas las respuestas, para revisar el contenido docente
-function renderReview(n) {
-  const c = PCASOS[n - 1];
-  if (!c) return false;
+function reviewBody(c, n, f) {
   const rows = PMAN.filter(x => c.m[x[0]]).map(x => { const r = c.m[x[0]], tag = r.u ? UTAG[r.u] : null; return `<div class="card plog"><div class="ph"><b>${mLab(c, x[0])}</b>${tag ? `<span class="lic2" style="--c:${tag[1]}">${tag[0]}</span>` : ''}</div>${r.v ? `<p><b>Lo que ve el alumno:</b> ${r.v}</p><p class="small" style="margin:0"><b>Devolución:</b> ${r.r}</p>` : `<p>${r.r}</p>`}${r.img ? `<figure class="real sim"><a href="${r.img}" target="_blank" rel="noopener"><img src="${r.img}" alt="Registro simulado" loading="lazy"></a><figcaption>${r.real ? "Registro real, anonimizado" : "Versión del modo práctica (sin diagnóstico ni cuentas)"}. Tocá para ampliar.</figcaption></figure>` : ''}</div>`; }).join('');
   const sin = pMans(c).filter(x => !c.m[x[0]]).map(x => x[1]);
-  const nav = `<div class="ctrl">${n > 1 ? `<a class="btn" style="text-decoration:none" href="#revision-${n - 1}">← Caso ${n - 1}</a>` : ''}${n < PCASOS.length ? `<a class="btn" style="text-decoration:none" href="#revision-${n + 1}">Caso ${n + 1} →</a>` : ''}</div>`;
-  $('#pracBody').innerHTML = `<div class="card" style="padding:10px 14px"><b>Revisión del caso ${n} de ${PCASOS.length}</b><p class="small" style="margin:2px 0 0">Vista para revisar: muestra todas las maniobras con su clasificación, el diagnóstico y la explicación. El alumno no la ve así.</p></div>${nav}
-    <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${n}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
+  return `<div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${n}${f ? ' · Segunda parte (después de la ablación)' : ''}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
     <div class="box"><div class="bl">Hallazgos iniciales</div><ul>${c.h.map(x => `<li>${x}</li>`).join('')}</ul></div>${presFigs(c)}</div>
     <div class="card leaf"><div class="lt">Diagnóstico</div><h3>${PDX.find(x => x[0] === c.dx[0])[1]}${c.dx.length > 1 ? ' (también vale: ' + c.dx.slice(1).map(d => PDX.find(x => x[0] === d)[1]).join(', ') + ')' : ''}</h3>
     ${c.hk ? `<div class="box"><div class="bl">Hallazgos clave</div><ul>${c.hk.map(x => `<li>${x}</li>`).join('')}</ul></div>` : ''}<div class="box"><div class="bl">Por qué</div><p>${c.ex}</p></div><p class="small" style="margin:0">${cite(c.refs)}</p></div>
     <h2 class="sec">Maniobras con resultado</h2><div class="panel">${rows}</div>
-    ${sin.length ? `<p class="small">Responden "No aporta información en este caso": ${sin.join(', ')}.</p>` : ''}${nav}`;
+    ${sin.length ? `<p class="small">Responden "No aporta información en este caso": ${sin.join(', ')}.</p>` : ''}`;
+}
+function renderReview(n) {
+  const c = PCASOS[n - 1];
+  if (!c) return false;
+  const nav = `<div class="ctrl">${n > 1 ? `<a class="btn" style="text-decoration:none" href="#revision-${n - 1}">← Caso ${n - 1}</a>` : ''}${n < PCASOS.length ? `<a class="btn" style="text-decoration:none" href="#revision-${n + 1}">Caso ${n + 1} →</a>` : ''}</div>`;
+  $('#pracBody').innerHTML = `<div class="card" style="padding:10px 14px"><b>Revisión del caso ${n} de ${PCASOS.length}</b><p class="small" style="margin:2px 0 0">Vista para revisar: muestra todas las maniobras con su clasificación, el diagnóstico y la explicación. El alumno no la ve así.</p></div>${nav}${reviewBody(c, n, 0)}${c.fase2 ? reviewBody(pCase(c, 1), n, 1) : ''}${nav}`;
   return true;
 }
 function checkReview() {
