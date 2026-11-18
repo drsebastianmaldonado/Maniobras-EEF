@@ -313,7 +313,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script>
-const APPV = 185;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 186;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -1093,8 +1093,8 @@ const EN = {
   e0: { q: '¿Cómo es el QRS en DII y DIII?', help: 'Corazón estructuralmente normal (EV o TV idiopática). Paso 1: eje vertical.', opts: [
     { t: 'Positivo en las dos', s: 'Eje inferior: tractos de salida y parte alta de los anillos AV', go: 'eInf' },
     { t: 'Negativo en las dos', s: 'Eje superior: cara inferior de los ventrículos', go: 'eSup' },
-    { t: 'DII positiva y DIII negativa', s: 'Discordancia: estructuras medioventriculares o anillos laterales', go: 'L_eDp' },
-    { t: 'DII negativa y DIII positiva', s: 'Discordancia: estructuras medioventriculares o anillos laterales', go: 'L_eDn' }] },
+    { t: 'DII positiva y DIII negativa', s: 'Discordancia: estructuras medioventriculares o anillos laterales', go: 'eDp' },
+    { t: 'DII negativa y DIII positiva', s: 'Discordancia: estructuras medioventriculares o anillos laterales', go: 'eDn' }] },
   eInf: { q: 'Eje inferior: ¿cómo es el QRS en DI?', help: 'Paso 2: DI separa lo que está a la derecha de la línea media (DI positivo) de lo que está a la izquierda (DI negativo). Ojo: la cara anterior del TSVD es izquierda y la cúspide coronaria derecha es derecha.', opts: [
     { t: 'Positivo', s: 'Cuadrante superior derecho: TSVD posterior, CCD, para-Hisiano, tricúspide superior', go: 'eRU' },
     { t: 'Negativo', s: 'Cuadrante superior izquierdo: TSVD anterior, CCI, continuidad mitroaórtica, mitral anterolateral, summit', go: 'eLU' },
@@ -1110,9 +1110,19 @@ const EN = {
     { t: 'La transición de la EV es más tardía que la del sinusal', s: 'TSVD (especificidad 100 %)', go: 'L_eRvotP' },
     { t: 'Índice de transición en V2 ≥ 0,6, o V2S/V3R ≤ 1,5', s: 'Tracto de salida izquierdo (S 95 % y E 100 %; S 89 % y E 94 %)', go: 'L_eRcc' },
     { t: 'Índice de transición en V2 < 0,6, o V2S/V3R > 1,5', go: 'L_eRvotP' }] },
-  eRUtv: { q: '¿Cuánto dura el QRS?', opts: [
+  eRUtv: { q: 'aVL positiva: ¿dónde está la transición precordial?', help: 'La transición separa la pared libre de la tricúspide (tardía) de la región septal y para-Hisiana (más temprana).', opts: [
+    { t: 'En V4 o después', go: 'L_eTVfw' },
+    { t: 'En V3 o antes', go: 'eRUsep' }] },
+  eRUsep: { q: 'Transición en V3 o antes: ¿cuánto dura el QRS?', opts: [
     { t: '< 130 ms', s: 'Activación temprana del His-Purkinje', go: 'L_ePH' },
     { t: '≥ 130 ms', go: 'L_eTVs' }] },
+  eDp: { q: 'DII positiva y DIII negativa: ¿cómo son V1 y la transición?', help: 'Discordancia positiva/negativa (eje −30° a +30°): estructuras del VD, todas con BRI.', opts: [
+    { t: 'rS en V1, transición en V4–V5', go: 'L_eTVlat' },
+    { t: 'QS o rS en V1, transición en V5–V6', go: 'L_eMb' },
+    { t: 'QS en V1, transición en V2–V3, QRS angosto', go: 'L_ePH' }] },
+  eDn: { q: 'DII negativa y DIII positiva: ¿cómo es la relación R/S en V6?', help: 'Discordancia negativa/positiva (eje +150° a +210°): estructuras del VI, todas con BRD.', opts: [
+    { t: 'R/S en V6 > 1', go: 'L_eMvl' },
+    { t: 'R/S en V6 < 1', go: 'L_eApm' }] },
   eLU: { q: 'Cuadrante superior izquierdo: ¿qué patrón de bloqueo de rama tiene?', help: 'Cuanto más posterior el origen (de la pared libre del TSVD hacia el anillo mitral), más temprana la transición, hasta pasar de BRI a BRD en la continuidad mitroaórtica.', opts: [
     { t: 'BRI (V1 negativo)', go: 'eLUl' },
     { t: 'BRD (V1 positivo)', go: 'eLUr' }] },
@@ -1123,6 +1133,7 @@ const EN = {
     { t: 'Transición en V2–V3 con ' + EPI + ', o quiebre del patrón en V2', go: 'L_eSummit' }] },
   eLUr: { q: 'BRD con eje inferior: ¿qué ves en V1 y las precordiales?', opts: [
     { t: 'qR en V1 con concordancia positiva', go: 'L_eAmc' },
+    { t: 'Transición en V1 con V1 multifásico (M o W), rS o R', go: 'L_eLcc' },
     { t: 'R o Rsr′ en V1 con concordancia positiva', go: 'L_eAlmv' },
     { t: 'rsR′ en V1, QRS < 130 ms y eje derecho', go: 'L_eLaf' },
     { t: 'R, Rsr′ o qR en V1, QRS ancho y transición tardía (V3–V5); DII puede ser negativa', go: 'L_eApm' },
@@ -1142,8 +1153,11 @@ const EN = {
   // ---------------- resultados
   L_eRvotP: { leaf: true, dx: 'TSVD posterior (septal)', f: ['BRI, eje inferior, DI positiva', 'QS en V1 y en aVL', 'Transición en V3 o después'], dif: 'Cúspide coronaria derecha (transición en V2 o antes).' },
   L_eRcc: { leaf: true, dx: 'Cúspide coronaria derecha', f: ['BRI, eje inferior, DI positiva', 'QS en V1 y en aVL', 'Transición en V2–V3 (índice de transición en V2 ≥ 0,6)'], dif: 'TSVD posterior, comisura CCD-CCI.' },
-  L_ePH: { leaf: true, dx: 'Región para-Hisiana', f: ['BRI con transición en V2–V3 y QS en V1', 'R en aVL (negativa en el TSVD); DIII puede ser negativa', 'QRS angosto (< 130 ms)'], dif: 'Tricúspide superior (QRS más ancho).' },
-  L_eTVs: { leaf: true, dx: 'Anillo tricuspídeo superior', f: ['BRI con transición variable; QS o rS en V1', 'aVL positiva (negativa en el TSVD); DIII puede ser negativa'], dif: 'Para-Hisiano (QRS < 130 ms).' },
+  L_ePH: { leaf: true, dx: 'Región para-Hisiana', f: ['BRI con transición en V2–V3 y QS en V1', 'R en aVL (negativa en el TSVD); DIII puede ser negativa', 'QRS angosto (< 130 ms)'], dif: 'Tricúspide superior septal (QRS más ancho).' },
+  L_eTVs: { leaf: true, dx: 'Anillo tricuspídeo superior (septal)', f: ['BRI con transición en V3 o antes; QS o rS en V1', 'aVL positiva (negativa en el TSVD); DIII puede ser negativa', 'QRS ≥ 130 ms'], dif: 'Para-Hisiano (QRS < 130 ms), tricúspide de pared libre (transición en V4 o después).' },
+  L_eTVfw: { leaf: true, dx: 'Anillo tricuspídeo superior (pared libre)', f: ['BRI, eje inferior, DI positiva', 'R o r en aVL (negativa en el TSVD)', 'Transición en V4 o después'], dif: 'Tricúspide septal y para-Hisiano (transición en V3 o antes).' },
+  L_eTVlat: { leaf: true, dx: 'Anillo tricuspídeo lateral', f: ['DII positiva y DIII negativa (eje −30° a +30°)', 'BRI con rS en V1', 'Transición en V4–V5'], dif: 'Banda moderadora (transición en V5–V6), para-Hisiano (transición en V2–V3, QRS angosto).' },
+  L_eMvl: { leaf: true, dx: 'Anillo mitral lateral', f: ['DII negativa y DIII positiva (eje +150° a +210°)', 'BRD', 'R/S en V6 > 1'], dif: 'Músculo papilar anterolateral (R/S en V6 < 1).' },
   L_eComm: { leaf: true, dx: 'Comisura entre las cúspides coronarias derecha e izquierda', f: ['Cerca de la línea media: DI positiva, negativa o isodifásica', 'QS en V1 con muesca en la rama descendente'], dif: 'Cúspide coronaria derecha o izquierda, TSVD.' },
   L_eRvotA: { leaf: true, dx: 'TSVD anterior (pared libre o septal)', f: ['BRI, eje inferior, DI negativa (la cara anterior del TSVD es izquierda)', 'QS en V1', 'Transición en V3 o después: V4–V5 en la pared libre, V3–V4 en el septum'], dif: 'Cúspide coronaria izquierda (transición más temprana).' },
   L_eLcc: { leaf: true, dx: 'Cúspide coronaria izquierda', f: ['BRI o BRD, transición en V1–V2', 'V1 rS, R o multifásico (M o W)'], dif: 'Continuidad mitroaórtica, summit del VI.' },
@@ -1159,8 +1173,6 @@ const EN = {
   L_eMvi: { leaf: true, dx: 'Anillo mitral inferior', f: ['BRD con eje superior', 'Concordancia positiva (R > S en V6): origen basal', 'R o Rsr′ en V1', 'Posterior: Rs en DI y R en V1; posteroseptal: R monofásica en DI y componente negativo en V1, QRS más angosto (Tada 2005)'], dif: 'Músculo papilar posteromedial, fascículo posterior.', nota: 'Ver la ficha "Arritmias del anillo mitral".' },
   L_eLpf: { leaf: true, dx: 'Fascículo posterior izquierdo', f: ['BRD con eje superior', 'R < S en V5', 'rsR′ en V1 (r < R′), QRS < 130 ms'], dif: 'Músculo papilar posteromedial (QRS más ancho, Rsr′ o qR en V1).' },
   L_ePpm: { leaf: true, dx: 'Músculo papilar posteromedial', f: ['BRD con eje superior', 'R < S en V5', 'R, Rsr′ o qR en V1; QRS más ancho que el fascicular'], dif: 'Fascículo posterior izquierdo, mitral inferior.', nota: 'QRS > 160 ms separa el papilar posteromedial del fascículo posterior (Yamada 2010). Es focal: ablación con crioenergía o radiofrecuencia irrigada.' },
-  L_eDp: { leaf: true, dx: 'Estructuras del VD: tricúspide lateral, banda moderadora o septum (para-Hisiano)', f: ['DII positiva y DIII negativa (eje −30° a +30°)', 'Todas con BRI'], dif: 'Diferenciá por la transición: la banda moderadora es tardía (después de V4).' },
-  L_eDn: { leaf: true, dx: 'Estructuras del VI: mitral lateral o músculo papilar anterolateral', f: ['DII negativa y DIII positiva (eje +150° a +210°)', 'Todas con BRD'], dif: 'El papilar anterolateral tiene QRS ancho y transición tardía.' }
 };
 let ePath = [];
 function eCur() { let id = 'e0'; for (const p of ePath) id = EN[p.id].opts[p.i].go; return id; }
