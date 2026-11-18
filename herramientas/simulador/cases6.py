@@ -1435,6 +1435,67 @@ S['p14_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.22, title='EA con His refra
     cal=[(hs[2], hs[3], 'His d', f'H-H {LC14b}'), (hs[3], hs[4], 'His d', f'H-H {LC14b}')],
     marks=[(apb, 'V1', 'EA')])
 
+# =====================================================================================================
+# Caso 15 (TRAV por vía lateral izquierda decremental; LC 311 del estudio real; VA 140, HV 45 ilustrativos; A más precoz en el SC 1-2).
+SRC15 = 'caso 15: LC 311 del estudio real; el resto, ilustrativo'
+LC15b, VA15b = 311, 140
+
+
+def diff15(sa, typ, title):
+    svt = [0, LC15b]
+    sp = [560 + 280 * k for k in range(6)]
+    A = [v + VA15b for v in svt] + [s + sa for s in sp]
+    ret = sp[-1] + 371 + (sa - 200)
+    return dict(win=(-80, ret + LC15b + 220), pxms=0.25, channels=CH6, title=title, spikes=sp, pace_ch='RVA', src=SRC15,
+        beats=[(v, 'n') for v in svt] + [(s, typ) for s in sp] + [(ret, 'n'), (ret + LC15b, 'n')],
+        atr=[(a, 'left', -1) for a in A] + [(ret + VA15b, 'left', -1), (ret + LC15b + VA15b, 'left', -1)],
+        h_ante=[v - HV for v in svt] + [ret - HV, ret + LC15b - HV], h_retro=[s + 70 for s in sp],
+        cal=[(svt[1], svt[1] + VA15b + 2, 'CS 1-2', f'VA {VA15b}'), (sp[-1], A[-1] + 2, 'CS 1-2', f'SA {sa}'), (svt[0], svt[1], 'RVA', f'LC {LC15b}')])
+
+
+S['p15_diff_a'] = diff15(200, 'pa', 'A. Encarrilamiento desde el ápex del VD (280 ms)')
+S['p15_diff_b'] = diff15(190, 'pb', 'B. Encarrilamiento desde la base del VD (280 ms)')
+
+# EV con His refractario desde el ápex: la A siguiente no cambia (la vía está lejos del sitio de estimulación).
+k = 3
+vs = [i * LC15b for i in range(k)]
+h_exp = k * LC15b - HV
+after = [k * LC15b + LC15b, k * LC15b + 2 * LC15b]
+A = [v + VA15b for v in vs] + [k * LC15b + VA15b] + [v + VA15b for v in after]
+S['p15_ehr'] = dict(win=(-80, after[-1] + 200), pxms=0.30, title='EV con His refractario desde el ápex del VD', channels=CH6, src=SRC15,
+    spikes=[h_exp], pace_ch='RVA', beats=[(v, 'n') for v in vs] + [(h_exp, 'pa')] + [(v, 'n') for v in after],
+    atr=[(a, 'left', -1) for a in A], h_ante=[v - HV for v in vs] + [h_exp] + [v - HV for v in after],
+    cal=[(A[k - 2] + 2, A[k - 1] + 2, 'CS 1-2', f'A-A {LC15b}'), (A[k - 1] + 2, A[k] + 2, 'CS 1-2', f'A-A {LC15b}')],
+    marks=[(h_exp, 'V1', 'EV'), (h_exp, 'His p', 'H')])
+
+# Para-Hisiana en sinusal: SA 85 → 135, secuencia concéntrica (nodal).
+sp = [0, 650, 1300, 1950]
+cap = [True, False, True, False]
+S['p15_parahis'] = dict(win=(-80, 2300), pxms=0.32, title='Estimulación para-Hisiana en ritmo sinusal', channels=CH6, src=SRC15,
+    spikes=sp, pace_ch='His p', beats=[(s + HV if c else s, 'n' if c else 'pa') for s, c in zip(sp, cap)],
+    atr=[(s + (85 if c else 135), 'conc_his', -1) for s, c in zip(sp, cap)],
+    cal=[(sp[0], sp[0] + 87, 'His d', 'SA 85'), (sp[1], sp[1] + 137, 'His d', 'SA 135'), (sp[2] + HV, sp[2] + HV + 95, 'RVA', 'QRS 95'), (sp[3], sp[3] + 150, 'RVA', 'QRS 150')],
+    marks=[(sp[0] + 30, 'V1', 'His + V'), (sp[1] + 40, 'V1', 'solo V')])
+
+# Adenosina: termina con un V (bloqueo en la vía decremental, brazo retrógrado).
+vs = [i * LC15b for i in range(4)]
+A = [v + VA15b for v in vs[:3]]
+S['p15_ado'] = dict(win=(-80, vs[-1] + 700), pxms=0.27, title='Adenosina IV durante la taquicardia', channels=CH6, src=SRC15,
+    beats=[(v, 'n') for v in vs], atr=[(a, 'left', -1) for a in A], h_ante=[v - HV for v in vs],
+    cal=[(vs[0], vs[1], 'RVA', f'LC {LC15b}'), (vs[1], A[1] + 2, 'CS 1-2', f'VA {VA15b}')],
+    marks=[(vs[3] + 120, 'aVF', 'último: V sin A')])
+
+# EA con His refractario desde el ostium del SC: el His siguiente sale a su tiempo.
+hs = [i * LC15b - HV for i in range(6)]
+apb = hs[3] + 10
+vs = [h + HV for h in hs]
+A = [v + VA15b for k2, v in enumerate(vs) if k2 != 3]
+S['p15_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.27, title='EA con His refractario desde el ostium del SC', channels=CH6, src=SRC15,
+    beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='CS 9-10',
+    atr=[(a, 'left', -1) for a in A] + [(apb + 4, 'conc_cs', 1)], h_ante=hs,
+    cal=[(hs[2], hs[3], 'His d', f'H-H {LC15b}'), (hs[3], hs[4], 'His d', f'H-H {LC15b}')],
+    marks=[(apb, 'V1', 'EA')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
