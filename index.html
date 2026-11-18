@@ -313,7 +313,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script>
-const APPV = 191;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 192;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -1659,7 +1659,7 @@ const CASOS = [
   { m: 'hisorto', ref: 'ho15', fig: 'fig. 3', doi: '10.1007/s11936-015-0370-5', t: 'PJRT: captura ortodrómica vs antidrómica del His', sim: 'figs/sim/ho15.png',
     vals: [['LC TSV', '521 ms'], ['Ortodrómica (estim. 490)', 'VA 309 · HA 259'], ['Antidrómica (estim. 480)', 'VA 314 · HA 284'], ['TSV', 'VA 290 · HA 335'], ['Resultado', 'PPI−LC 71 · ΔVA 19 · ΔHA −76 → TRAV']],
     nota: 'Con captura ortodrómica, la morfología del His es igual a la de la TSV. Demuestra la vía y su participación.' },
-  { m: 'diff', ref: 'segal09', fig: 'fig. 2 y 3', doi: '10.1016/j.hrthm.2008.12.033', t: 'Encarrilamiento diferencial en TRNAV y en TRAV',
+  { m: 'diff', ref: 'segal09', fig: 'fig. 2 y 3', doi: '10.1016/j.hrthm.2008.12.033', t: 'Encarrilamiento diferencial en TRNAV y en TRAV', sim: 'figs/sim/segal09.png', simde: 'Segal 2009, fig. 2 y 3 (ΔPPI−LC y ΔVA del artículo; la LC, el SA y el PPI absolutos son ilustrativos)',
     vals: [['TRNAV', 'ΔPPI−LC +42 · ΔVA +34 (base − ápex)'], ['TRAV', 'ΔPPI−LC −5 · ΔVA −39']] },
   { m: 'dfire', ref: 'burri12', fig: 'fig. 1 y 2', doi: '10.1136/heartjnl-2012-301800', t: 'Una P y dos QRS: doble disparo nodal', sim: 'figs/sim/burri12.png',
     vals: [['ECG', '134 lpm · RR levemente alternantes · P sinusal (V1) · P:QRS 1:2'], ['AD y His', 'una sola A, secuencia alta → baja · A-H1-V1-H2-V2'], ['Ablación de la vía lenta', 'cortó la taquicardia en 10 s; no reinducible']],
@@ -1678,7 +1678,7 @@ const CASOS = [
   { m: 'vai', ref: 'veen12', fig: 'fig. 4', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'Índice VA positivo', sim: 'figs/sim/veen12_vai.png',
     vals: [['VA desde el ápex / la base', '142 / 120 ms'], ['Índice VA', '+22 ms → vía accesoria']],
  },
-  { m: 'ehr', ref: 'veen12', fig: 'fig. 1 y 2', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'EV con His refractario que adelanta y que retrasa la A', sim: 'figs/sim/veen12_ehr.png',
+  { m: 'ehr', ref: 'veen12', fig: 'fig. 1 y 2', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'EV con His refractario que adelanta y que retrasa la A', sim: ['figs/sim/veen12_ehr.png', 'figs/sim/veen12_ehr2.png'], simde: 'Veenhuyzen 2012, fig. 1 y 2 (LC 444 y adelanto de 19 ms; LC 473 y retraso de 20 ms; el VA es ilustrativo)',
     vals: [['TSV de LC 444 (vía derecha)', 'adelanta la A 19 ms; QRS fusionado 122 ms vs 144 estimulado puro'], ['RP largo de LC 473 (vía septal lenta)', 'retrasa la A 20 ms']],
     nota: 'La EV coincide con el His esperado y el QRS sale fusionado: es His refractaria. Adelanta la A sin cambiar la secuencia.' },
   { m: 'parahis', ref: 'veen12', fig: 'fig. 3', doi: '10.1111/j.1540-8159.2012.03352.x', t: 'Para-Hisiana antes y después de ablacionar la vía', sim: 'figs/sim/parahis.png', simde: 'Veenhuyzen 2012, fig. 3 (el SA se alarga 61 ms después de la ablación; el SA de base es ilustrativo)',
@@ -1696,7 +1696,7 @@ const CASOS = [
     nota: 'Un AH de la TSV muy corto (menor que en ritmo sinusal) es la pista de un circuito superior intranodal.' },
   { m: 'basal', ref: 'kaneko11', fig: 'fig. 1 y 2', doi: '10.1111/j.1540-8167.2010.01997.x', t: 'RP largo con bloqueo AV 2:1',
     vals: [['TSV', 'HA 136 · AH 252 · A más precoz en el ostium del SC'], ['Con bloqueo AV 2:1', 'misma secuencia y LC → TRNAV rápida-lenta con bloqueo en el haz común inferior']] },
-  { m: 'basal', ref: 'lim11', fig: 'fig. 1–3', doi: '10.1111/j.1540-8167.2011.02073.x', t: 'LC alternante: dos vías lentas y una TA',
+  { m: 'basal', ref: 'lim11', fig: 'fig. 1–3', doi: '10.1111/j.1540-8167.2011.02073.x', t: 'LC alternante: dos vías lentas y una TA', sim: 'figs/sim/lim11.png', simde: 'Lim 2011, fig. 1–3 (RR 336 y 436 ms del artículo; el AH, el HV y el VA son ilustrativos)',
     vals: [['RR alternantes', '336 / 436 ms con AH distintos'], ['Mecanismo', 'TRNAV por dos vías lentas que resetea un foco de TA; tras ablacionar la vía lenta, apareció la TA']] },
   { m: 'hisorto', ref: 'nagashima20', fig: 'fig. 2', doi: '10.1016/j.jacep.2020.07.007', t: 'TRAV por vía nodoventricular con bloqueo VA',
     vals: [['TSV', 'bloqueo VA tipo Wenckebach'], ['Sobreestimulación del VD', 'PPI−LC 105 ms · His ortodrómico · respuesta V-V-A'], ['ECG durante la estimulación', 'fusión del QRS constante → nodoventricular (no nodofascicular)']] },

@@ -39,7 +39,7 @@ jobs = []   # (destino, [(nombre svg, escenario | ('ecg', clave))])
 def panels(base):
     if base in S:
         return [base]
-    return sorted(k for k in S if k.startswith(base + '_') and k[len(base) + 1:] in ('a', 'b', 'c'))
+    return sorted(k for k in S if k.startswith(base + '_') and k[len(base) + 1:] in ('a', 'b', 'c', 'd'))
 
 
 def add(dest, items):

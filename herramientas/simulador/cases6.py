@@ -1820,6 +1820,59 @@ S['basal_obs_a'] = obs(15, 'trnav', 0, 'A. VA septal 15 ms (≤ 70), activación
 S['basal_obs_b'] = obs(110, 'left', 40, 'B. VA 110 ms (septal 150), activación excéntrica: la A más precoz está en el SC 1-2',
                        [(3 * 340 + 110, 'V1', 'A después del QRS')])
 
+
+# ---- Casos publicados sin registro: Segal 2009, Veenhuyzen 2012 fig. 2 y Lim 2011 ----
+CHPUB = ['HRA', 'His d', 'His p', 'CS 1-2', 'CS 5-6', 'CS 9-10', 'RVA']
+
+
+def seg(LCx, VAx, seq, SCx, sa, ppi, base, title, src):
+    svt = [0, LCx]
+    sp = [svt[-1] + LCx - 30 + SCx * k for k in range(6)]
+    A = [v + VAx for v in svt] + [s + sa for s in sp]
+    ret = sp[-1] + ppi
+    after = [ret, ret + LCx]
+    return dict(win=(-80, after[-1] + 200), pxms=0.24, title=title, channels=CHPUB, src=src, spikes=sp, pace_ch='RVA',
+        beats=[(v, 'n') for v in svt + after] + [(s, 'pb' if base else 'pa') for s in sp],
+        atr=[(a, seq, -1) for a in A + [v + VAx for v in after]], h_ante=[v - HV for v in svt + after], h_retro=[s + sa - 60 for s in sp],
+        cal=[(svt[0], svt[1], 'RVA', f'LC {LCx}'), (sp[-1], A[-1] + 2, 'CS 9-10', f'SA {sa}'), (sp[-1], ret + 2, 'RVA', f'PPI {ppi} (PPI−LC {ppi - LCx})')])
+
+
+SRCSEG = 'Segal 2009: ΔPPI−LC y ΔVA del artículo; LC, SA y PPI absolutos ilustrativos'
+S['segal09_a'] = seg(360, 20, 'trnav', 330, 180, 520, False, 'A. TRNAV: encarrilamiento desde el ápex del VD (330 ms)', SRCSEG)
+S['segal09_b'] = seg(360, 20, 'trnav', 330, 214, 562, True, 'B. TRNAV: desde la base del VD. ΔVA +34, ΔPPI−LC +42 (base − ápex)', SRCSEG)
+S['segal09_c'] = seg(330, 110, 'conc_cs', 300, 190, 440, False, 'C. TRAV septal: encarrilamiento desde el ápex del VD (300 ms)', SRCSEG)
+S['segal09_d'] = seg(330, 110, 'conc_cs', 300, 151, 435, True, 'D. TRAV septal: desde la base del VD. ΔVA −39, ΔPPI−LC −5 (base − ápex)', SRCSEG)
+
+# Veenhuyzen 2012, fig. 2: RP largo por vía septal lenta (LC 473); la EV con His refractario retrasa la A 20 ms.
+LCv, VAv = 473, 300
+vs = [i * LCv for i in range(3)]
+pvc = 3 * LCv - HV - 10
+a_new = 3 * LCv + VAv + 20
+nxt = a_new + (LCv - VAv)
+after = [nxt, nxt + LCv]
+S['veen12_ehr2'] = dict(win=(-80, after[-1] + 200), pxms=0.22, title='EV con His refractario en una TSV de RP largo por vía septal lenta: retrasa la A 20 ms', channels=CHPUB,
+    src='Veenhuyzen 2012, fig. 2: LC 473 y retraso de 20 ms del artículo; VA ilustrativo',
+    beats=[(v, 'n') for v in vs] + [(pvc, 'pa')] + [(v, 'n') for v in after], spikes=[pvc], pace_ch='RVA',
+    atr=[(v + VAv, 'conc_cs', -1) for v in vs] + [(a_new, 'conc_cs', -1)] + [(v + VAv, 'conc_cs', -1) for v in after],
+    h_ante=[v - HV for v in vs] + [3 * LCv - HV] + [v - HV for v in after],
+    cal=[(vs[1] + VAv, vs[2] + VAv, 'CS 9-10', f'A-A {LCv}'), (vs[2] + VAv, a_new, 'CS 9-10', f'A-A {LCv + 20} (+20)')],
+    marks=[(pvc, 'V1', 'EV-HR'), (3 * LCv - HV, 'His p', 'H')])
+
+# Lim 2011: RR alternantes 336 / 436 con AH distintos (dos vías lentas anterógradas).
+HAl = HV + 20
+t, beats, hs, atr = 0, [], [], []
+cyc = [336, 436, 336, 436, 336, 436]
+for c in cyc:
+    a = t
+    h = a + (c - HAl)
+    hs.append(h); beats.append(h + HV); atr.append((h + HV + 20, 'trnav', -1))
+    t = h + HAl
+S['lim11'] = dict(win=(-60, t + 150), pxms=0.22, title='TSV con LC alternante: RR 336 / 436 ms con AH distintos (dos vías lentas)', channels=CHPUB,
+    src='Lim 2011: RR 336 y 436 del artículo; AH, HV y VA ilustrativos',
+    beats=[(b, 'n') for b in beats], atr=atr, h_ante=hs,
+    cal=[(beats[1], beats[2], 'RVA', f'RR {beats[2] - beats[1]}'), (beats[2], beats[3], 'RVA', f'RR {beats[3] - beats[2]}'),
+         (atr[1][0], hs[2], 'His p', f'AH {hs[2] - atr[1][0]}'), (atr[2][0], hs[3], 'His p', f'AH {hs[3] - atr[2][0]}')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
