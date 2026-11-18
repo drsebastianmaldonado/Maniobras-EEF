@@ -1568,7 +1568,8 @@ S['p16_parahis'] = dict(win=(-80, 2300), pxms=0.32, title='Estimulación para-Hi
     marks=[(sp[0] + 30, 'V1', 'His + V'), (sp[1] + 40, 'V1', 'solo V')])
 
 # Sobreestimulación auricular desde la AD alta a 320: el tren arranca después del último QRS; al cortar, VA 20 como en la TSV.
-AHs16 = LC16 - HV - VA16 + 10
+AH16 = LC16 - HV - VA16          # 285: AH de la TSV (de la A al His siguiente)
+AHs16 = AH16 + 50                 # 335 estimulando: ΔAH +50
 vs = [0, LC16, 2 * LC16]
 A = [v + VA16 for v in vs]
 sp = [vs[-1] + 10 + 320 * k for k in range(6)]
@@ -1578,8 +1579,10 @@ S['p16_aop'] = dict(win=(-80, vs2[-1] + 220), pxms=0.21, title='Sobreestimulaci�
     beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
     atr=[(a, 'conc_his', -1) for a in A[:-1]] + [(s + 5, 'sinus', 1) for s in sp] + [(v + VA16, 'conc_his', -1) for v in [pv[-1]] + vs2],
     h_ante=[v - HV for v in vs + pv + vs2],
-    cal=[(vs[0], vs[1], 'RVA', f'V-V {LC16}'), (vs[1], vs[1] + VA16 + 2, 'His d', f'VA {VA16}'), (sp[-2], sp[-1], 'HRA', 'S-S 320'),
-         (pv[-2], pv[-1], 'RVA', 'V-V 320'), (pv[-1], pv[-1] + VA16 + 2, 'His d', f'VA {VA16}')])
+    cal=[(vs[0], vs[1], 'RVA', f'V-V {LC16}'), (vs[1], vs[1] + VA16 + 2, 'His d', f'VA {VA16}'), (A[0], vs[1] - HV, 'His p', f'AH {AH16}'),
+         (sp[-2], sp[-1], 'HRA', 'S-S 320'), (sp[-1] + 28, pv[-1] - HV, 'His p', f'AH {AHs16}'),
+         (pv[-2], pv[-1], 'RVA', 'V-V 320'), (pv[-1], pv[-1] + VA16 + 2, 'His d', f'VA {VA16}')],
+    marks=[(pv[-1] + 120, 'I', f'ΔAH = {AHs16} − {AH16} = +{AHs16 - AH16} ms')])
 
 # Adenosina: termina con una A (bloqueo anterógrado en la vía lenta).
 vs = [i * LC16 for i in range(4)]
