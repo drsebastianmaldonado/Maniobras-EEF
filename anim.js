@@ -28,7 +28,7 @@
     const lastA = a;
     ev.find(e => e.t === lastA && e.ch === 'AD').tag = 'última A acelerada';
     v = ante(lastA, AH + 10);                     // el último A conduce al V: A-V
-    a = retro(v, VA, G.apex); v = ante(a, AH); retro(v, VA, G.apex);
+    for (let k = 0; k < 5; k++) { a = retro(v, VA, G.apex); v = ante(a, AH); }   // la taquicardia retoma su ciclo
     return { title: 'TRAV (o TRNAV): respuesta A-V', ap: true, ev, wv, flA, flV, stimEnd: 1900, verdictT: lastA + AH + 10 + HV,
       verdict: 'Después de la última A acelerada viene un V: <b>A-V</b>. Excluye la TA.',
       why: 'La A estimulada viajó por el circuito (V → vía → A) y sigue bajando por el nodo: la taquicardia continúa con el V.' };
@@ -55,7 +55,7 @@
     });
     ev.find(e => e.t === lastA && e.ch === 'AD').tag = 'última A acelerada';
     const f1 = lastA + 360;                       // el foco vuelve a disparar: A-A
-    focusBeat(f1); focusBeat(f1 + LC);
+    for (let k = 0; k < 5; k++) focusBeat(f1 + k * LC);   // el foco retoma su ciclo
     Object.assign(ev.find(e => e.t === f1 && e.ch === 'AD'), { tag: 'otra A (foco)', tagUp: true });
     return { title: 'TA: respuesta A-A-V', focus: true, ev, wv, flA, flV, stimEnd: 2060, verdictT: f1 + AH + HV,
       verdict: 'Después de la última A acelerada viene <b>otra A</b> y recién después el V: <b>A-A-V</b>. Es TA.',
@@ -63,10 +63,11 @@
   }
 
   const ANIMS = {
-    vop: { t: 'Sobreestimulación ventricular: A-V vs A-A-V', dur: 3250, panels: [travVop, taVop],
+    vop: { t: 'Sobreestimulación ventricular: A-V vs A-A-V', dur: 4200, panels: [travVop, taVop],
       fases: [[0, 'Taquicardia (LC 340 ms). Mirá el circuito en el esquema y las A, H y V en el trazado.'],
               [690, 'Estimulación del VD a 300 ms (E): cada estímulo llega a la aurícula y las A se aceleran a 300.'],
-              [2100, 'Se corta la estimulación. Mirá qué sigue a la <b>última A acelerada</b>.']] }
+              [2100, 'Se corta la estimulación. Mirá qué sigue a la <b>última A acelerada</b>.'],
+              [3000, 'La taquicardia retoma su ciclo (LC 340) en los dos casos: en la TRAV el frente vuelve a girar por el nodo, el ventrículo y la vía; en la TA vuelve a disparar el foco.']] }
   };
 
   // ---------- Dibujo ----------
