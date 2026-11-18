@@ -13,9 +13,13 @@
   const VEN = ['M84,292 C70,380 92,480 160,560 C200,605 245,628 284,636 C292,520 292,400 282,300 Z',
                'M300,300 C312,420 312,530 302,638 C385,642 470,595 516,512 C556,440 566,350 540,294 Z'];
   // Puntos del recorrido (coordenadas del corazón)
-  const G = { aSep: [232, 238], node: [268, 262], his: [293, 308], rb1: [288, 380], rb2: [270, 450], rb3: [238, 500], rb4: [200, 550], apex: [165, 590],
+  const G = { aSep: [232, 238], node: [268, 262], his: [293, 308], rb1: [288, 380], rb2: [270, 450], rb3: [238, 500], rb4: [200, 545], apex: [180, 562],
               lvA: [430, 410], lvB: [505, 345], apV: [526, 306], apA: [527, 262], la: [470, 200], focus: [140, 140], ra: [170, 180] };
-  const VB = '45 50 530 625';
+  const VB = '15 50 560 625';
+  // Desde el His el frente baja por las dos ramas: la derecha hasta el ápex del VD y la izquierda hasta la pared lateral del VI
+  const ramas = (h, HV) => [
+    { c: 'ante', pts: [[G.his, h], [G.rb1, h + 12], [G.rb2, h + 22], [G.rb3, h + 30], [G.rb4, h + 38], [G.apex, h + HV]] },
+    { c: 'ante', pts: [[G.his, h], [[312, 334], h + 8], [[360, 365], h + 20], [[405, 392], h + 32], [G.lvA, h + HV]] }];
 
   // ---------- Escenarios ----------
   // Cada uno devuelve { ev: eventos del trazado, wv: frentes que se mueven, flA / flV: activaciones para iluminar cámaras, ... }
@@ -23,8 +27,7 @@
     const LC = 340, VA = 110, AH = 185, HV = 45, SC = 300, ev = [], wv = [], flA = [], flV = [];
     const ante = (a, ah, stop) => { const h = a + ah; ev.push({ ch: 'His', t: h, l: 'H' });
       const pts = [[G.aSep, a], [G.node, a + 30], [G.his, h]];
-      if (!stop) pts.push([G.rb1, h + 12], [G.rb2, h + 22], [G.rb3, h + 30], [G.rb4, h + 38], [G.apex, h + HV]);
-      wv.push({ c: 'ante', pts }); if (!stop) { ev.push({ ch: 'VD', t: h + HV, l: 'V' }); flV.push(h + HV); } return h + HV; };
+      wv.push({ c: 'ante', pts }); if (!stop) wv.push(...ramas(h, HV)); if (!stop) { ev.push({ ch: 'VD', t: h + HV, l: 'V' }); flV.push(h + HV); } return h + HV; };
     // retrógrada por la vía: desde el VI (activado por el sistema de conducción) o desde el catéter del VD (estimulado)
     const retro = (v, sa, paced) => { const a = v + sa;
       const pts = paced ? [[G.apex, v], [[260, 600], v + 30], [[400, 560], v + 70], [[500, 430], v + 110], [G.apV, v + sa - 15], [G.apA, a], [G.la, a + 30]]
@@ -56,8 +59,7 @@
       wv.push({ c: 'focus', pts: [[G.focus, a], [[195, 195], a + 20], [G.aSep, a + 35]] });
       const h = a + AH; ev.push({ ch: 'His', t: h, l: 'H' });
       const pts = [[G.aSep, a + 35], [G.node, a + 60], [G.his, h]];
-      if (!stop) pts.push([G.rb1, h + 12], [G.rb2, h + 22], [G.rb3, h + 30], [G.rb4, h + 38], [G.apex, h + HV]);
-      wv.push({ c: 'ante', pts });
+      wv.push({ c: 'ante', pts }); if (!stop) wv.push(...ramas(h, HV));
       if (!stop) { ev.push({ ch: 'VD', t: h + HV, l: 'V' }); flV.push(h + HV); }
     };
     focusBeat(60); focusBeat(400); focusBeat(740, true);
@@ -103,9 +105,13 @@
       mk('text', { x: G.focus[0] + 20, y: G.focus[1] + 5, 'font-size': 15, 'font-weight': 700, fill: '#c62828' }, svg).textContent = 'foco';
     }
     // catéter del VD con el electrodo en el ápex
-    mk('path', { d: 'M48,660 C80,650 120,630 158,596', stroke: '#455a64', 'stroke-width': 6, fill: 'none', 'stroke-linecap': 'round' }, svg);
+    // entra por la vena cava inferior a la AD, cruza la tricúspide y baja por dentro del VD hasta el ápex
+    const cat = 'M18,336 C40,314 62,292 98,270 C140,246 172,258 182,296 C192,360 194,470 182,556';
+    mk('path', { d: cat, stroke: '#fff', 'stroke-width': 9, fill: 'none', 'stroke-linecap': 'round', opacity: 0.7 }, svg);
+    mk('path', { d: cat, stroke: '#37474f', 'stroke-width': 5, fill: 'none', 'stroke-linecap': 'round' }, svg);
+    mk('text', { x: 18, y: 356, 'font-size': 12, fill: '#37474f' }, svg).textContent = 'VCI';
     mk('circle', { cx: G.apex[0], cy: G.apex[1], r: 8, fill: '#c62828', stroke: '#fff', 'stroke-width': 2 }, svg);
-    mk('text', { x: 52, y: 672, 'font-size': 14, 'font-weight': 700, fill: '#c62828' }, svg).textContent = 'catéter en el ápex del VD';
+    mk('text', { x: 52, y: 672, 'font-size': 14, 'font-weight': 700, fill: '#c62828' }, svg).textContent = 'catéter endocavitario en el ápex del VD';
     return { atr, ven };
   }
 
