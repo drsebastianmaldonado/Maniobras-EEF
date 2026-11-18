@@ -313,7 +313,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script>
-const APPV = 186;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 187;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -351,6 +351,8 @@ const REFS = {
   josephson: ['Josephson (texto)', 'Josephson ME. <i>Clinical Cardiac Electrophysiology: Techniques and Interpretations</i>. 5.ª ed. Wolters Kluwer; 2016. (agregado: no estaba en el material base)'],
   glatter99: ['Glatter 1999', 'Glatter KA, Cheng J, Dorostkar P, et al. Electrophysiologic effects of adenosine in patients with supraventricular tachycardia. <i>Circulation</i> 1999;99:1034–40 (doi:10.1161/01.cir.99.8.1034). (datos del resumen)'],
   engelstein94: ['Engelstein 1994', 'Engelstein ED, Lippman N, Stein KM, Lerman BB. Mechanism-specific effects of adenosine on atrial tachycardia. <i>Circulation</i> 1994;89:2645–54 (doi:10.1161/01.cir.89.6.2645). (datos del resumen)'],
+  kannankeril10: ['Kannankeril 2010', 'Kannankeril PJ, Bonney WJ, Dzurik MV, Fish FA. Entrainment to distinguish orthodromic reciprocating tachycardia from atrioventricular nodal reentry tachycardia in children. <i>Pacing Clin Electrophysiol</i> 2010;33:469–74 (doi:10.1111/j.1540-8159.2009.02639.x). (datos del resumen)'],
+  schaffer91: ['Schaffer 1991', 'Schaffer MS, Gillette PC. Ventriculoatrial intervals during narrow complex reentrant tachycardia in children. <i>Am Heart J</i> 1991;121:1699–702 (doi:10.1016/0002-8703(91)90015-a). (datos del resumen)'],
   klein88: ['Klein 1988', 'Klein GJ, Guiraudon GM, Kerr CR, et al. "Nodoventricular" accessory pathway: evidence for a distinct accessory atrioventricular pathway with atrioventricular node-like properties. <i>J Am Coll Cardiol</i> 1988;11:1035–40 (doi:10.1016/s0735-1097(98)90063-8). (agregado: no estaba en el material base)'],
   sternick04: ['Sternick 2004', 'Sternick EB, Timmermans C, Sosa E, et al. The electrocardiogram during sinus rhythm and tachycardia in patients with Mahaim fibers: the importance of an "rS" pattern in lead III. <i>J Am Coll Cardiol</i> 2004;44:1626–35 (doi:10.1016/j.jacc.2004.07.035). (agregado: no estaba en el material base)'],
   merino01: ['Merino 2001', 'Merino JL, Peinado R, Fernández-Lozano I, et al. Bundle-branch reentry and the postpacing interval after entrainment by right ventricular apex stimulation: a new approach to elucidate the mechanism of wide-QRS-complex tachycardia with atrioventricular dissociation. <i>Circulation</i> 2001;103:1102–8. (citado en el consenso EHRA/HRS 2009)'],
@@ -434,6 +436,7 @@ const M = {
     como: ['Registrá la TSV estable con His, SC y AD alta (y VD).', 'Contá la relación A:V durante varios ciclos.', 'VA septal: desde el inicio del QRS (o del V más precoz) hasta la A del catéter de His.', 'Definí la secuencia retrógrada: más precoz en His/SC proximal (concéntrica), SC distal o pared libre derecha (excéntrica), o AD alta (descendente).', 'Observá las oscilaciones de ciclo, la terminación espontánea y los cambios con bloqueo de rama funcional.'],
     interp: [
       ['VA septal ≤ 70 ms', 'TRNAV típica (o, raro, TA) (excluye TRAV)', 'knight00 veen11'],
+      ['En niños: VA septal < 60 ms', 'Excluye la participación de una vía. Entre 60 y 70 ms hay superposición: 3 de 11 TRNAV tuvieron VA ≥ 70 y 5 de 28 TRAV, VA ≤ 70', 'schaffer91'],
       ['Secuencia descendente (alta → baja)', 'TA', 'veen11'],
       ['Continúa con bloqueo AV', 'TA o TRNAV (excluye TRAV). Es más frecuente en la TA, pero por prevalencia el diagnóstico final suele ser TRNAV (bloqueo en el haz común inferior)', 'knight00 ho15 kaneko11'],
       ['Termina espontáneamente con bloqueo AV (termina en A)', 'TRNAV o TRAV (excluye TA). Ocurre en el 28 % de las TSV', 'knight00'],
@@ -448,8 +451,8 @@ const M = {
       ['Inducción desde el ventrículo sin conducción VA rápida', 'Argumenta en contra de TA', 'ho15'],
       ['LC alternantes con AH distintos', 'Dos vías lentas anterógradas; pensar también en doble taquicardia (TRNAV + TA)', 'lim11'],
       ['Una A sinusal seguida de dos His y dos V (relación 1:2), con H1–H2 fijo', 'Taquicardia no reentrante por doble vía nodal ("double fire")', 'peiker16 burri12']],
-    trampas: ['En el RP largo, la vía decremental atenúa el efecto Coumel (la aceleración se compensa con decremento).', 'Las taquicardias con brazo retrógrado lento suelen oscilar y terminar en el brazo retrógrado: la terminación es poco útil.', 'El bloqueo AV 2:1 funcional en el haz común inferior puede verse en la TRNAV.'],
-    refs: ['knight00', 'veen11', 'ho15', 'kaneko11', 'lim11', 'autor'] },
+    trampas: ['Salvo el cPPI−LC y el VA en la TSV, los cortes de la app vienen de series de adultos; no encontré validaciones pediátricas.', 'En el RP largo, la vía decremental atenúa el efecto Coumel (la aceleración se compensa con decremento).', 'Las taquicardias con brazo retrógrado lento suelen oscilar y terminar en el brazo retrógrado: la terminación es poco útil.', 'El bloqueo AV 2:1 funcional en el haz común inferior puede verse en la TRNAV.'],
+    refs: ['knight00', 'veen11', 'schaffer91', 'ho15', 'kaneko11', 'lim11', 'autor'] },
 
   pre: { g: 'O', t: 'Estudio basal (antes de inducir)', s: 'Preexcitación, doble vía, conducción VA, para-Hisiana, índice VA',
     para: 'Antes de inducir, la estimulación en ritmo sinusal ya orienta: busca una vía accesoria y doble fisiología nodal. Sirve sobre todo cuando la TSV no se induce o no se sostiene.',
@@ -507,19 +510,20 @@ const M = {
       'Medí el AH de la TSV en cualquier latido estable, antes de estimular.',
       'Medí el AH del primer latido de retorno: en el His, desde la última A acelerada hasta el His que conduce ese latido.',
       'ΔAH = AH del retorno − AH de la TSV.',
-      'cPPI−LC = (PPI − LC) − ΔAH. Corte: < 110 ms TRAV, > 110 ms TRNAV.',
+      'cPPI−LC = (PPI − LC) − ΔAH. Corte: < 110 ms TRAV, > 110 ms TRNAV (en niños, 95 ms; Kannankeril 2010).',
       '<b>Ejemplo (González-Torrecilla 2006):</b> LC 300, PPI 440, AH 130 en el retorno y 80 en la TSV. PPI−LC = 140 (parece TRNAV con el corte de 115); ΔAH = 50; cPPI−LC = 140 − 50 = 90 → TRAV.'],
     interp: [
       ['PPI−LC < 115 ms', 'TRAV septal', 'michaud01'],
       ['PPI−LC > 115 ms', 'TRNAV atípica', 'michaud01'],
       ['cPPI−LC < 110 ms', 'TRAV (identificó a todos salvo un paciente)', 'gt06'],
+      ['En niños: cPPI−LC < 95 ms (ápex del VD)', 'TRAV (especificidad 100 %); > 95 ms, TRNAV (especificidad 95 %). Separa todavía mejor la TRAV por vía septal', 'kannankeril10'],
       ['RP largo: PPI−LC < 125 ms', 'TRAV (PJRT / NFRT)', 'ho13 ho15'],
       ['RP largo: PPI−LC > 125 ms', 'TRNAV atípica', 'ho13 ho15'],
       ['Base del VD: corte de cPPI−LC 110 ms, con mayor separación entre grupos', 'Mejor discriminación que desde el ápex', 'veen08 veen11'],
       ['Encarrilamiento para-Hisiano sin captura del His: PPI−LC > 100 ms', 'TRNAV (S 97 %, E 92 %)', 'perez08'],
       ['TSV con bloqueo VA: PPI−LC ≤ 125 ms', 'TRAV por vía nodoventricular (VPP y VPN 100 %); no discrimina la nodofascicular', 'nagashima20']],
-    trampas: ['Vía libre izquierda: el ápex del VD queda lejos del circuito y alarga el PPI (falso TRNAV).', 'Vía decremental (PJRT): el decremento retrógrado alarga PPI y SA−VA; el cPPI puede ser incluso mayor que el no corregido.', 'Salto a la vía lenta durante el encarrilamiento: alarga el AH de retorno (por eso se corrige).', 'Estimulá lo más lento posible (10–40 ms por debajo de la LC) para minimizar el decremento.'],
-    refs: ['michaud01', 'gt06', 'veen08', 'veen11', 'ho15', 'perez08', 'bennett11'] },
+    trampas: ['Salvo el cPPI−LC y el VA en la TSV, los cortes de la app vienen de series de adultos; no encontré validaciones pediátricas.', 'Vía libre izquierda: el ápex del VD queda lejos del circuito y alarga el PPI (falso TRNAV).', 'Vía decremental (PJRT): el decremento retrógrado alarga PPI y SA−VA; el cPPI puede ser incluso mayor que el no corregido.', 'Salto a la vía lenta durante el encarrilamiento: alarga el AH de retorno (por eso se corrige).', 'Estimulá lo más lento posible (10–40 ms por debajo de la LC) para minimizar el decremento.'],
+    refs: ['michaud01', 'gt06', 'kannankeril10', 'veen08', 'veen11', 'ho15', 'perez08', 'bennett11'] },
 
   sava: { g: 'V', t: 'SA − VA (ΔVA)', s: 'Activación en serie vs en paralelo',
     para: 'En la TRNAV, A y V se activan en paralelo durante la TSV y en serie durante el encarrilamiento: el SA es mucho mayor que el VA. En la TRAV se activan en serie en ambas situaciones.',
