@@ -313,7 +313,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script>
-const APPV = 184;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 185;   // igual al número de CACHE_VERSION de sw.js
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -349,6 +349,8 @@ const REFS = {
   alm13b: ['Almendral 2013 (II)', 'Almendral J. Resetting and entrainment of reentrant arrhythmias: part II. <i>Pacing Clin Electrophysiol</i> 2013;36:641–61.'],
   autor: ['Maldonado (presentación)', 'Maldonado S. Maniobras electrofisiológicas para interpretar TPSV (presentación docente).'],
   josephson: ['Josephson (texto)', 'Josephson ME. <i>Clinical Cardiac Electrophysiology: Techniques and Interpretations</i>. 5.ª ed. Wolters Kluwer; 2016. (agregado: no estaba en el material base)'],
+  glatter99: ['Glatter 1999', 'Glatter KA, Cheng J, Dorostkar P, et al. Electrophysiologic effects of adenosine in patients with supraventricular tachycardia. <i>Circulation</i> 1999;99:1034–40 (doi:10.1161/01.cir.99.8.1034). (datos del resumen)'],
+  engelstein94: ['Engelstein 1994', 'Engelstein ED, Lippman N, Stein KM, Lerman BB. Mechanism-specific effects of adenosine on atrial tachycardia. <i>Circulation</i> 1994;89:2645–54 (doi:10.1161/01.cir.89.6.2645). (datos del resumen)'],
   klein88: ['Klein 1988', 'Klein GJ, Guiraudon GM, Kerr CR, et al. "Nodoventricular" accessory pathway: evidence for a distinct accessory atrioventricular pathway with atrioventricular node-like properties. <i>J Am Coll Cardiol</i> 1988;11:1035–40 (doi:10.1016/s0735-1097(98)90063-8). (agregado: no estaba en el material base)'],
   sternick04: ['Sternick 2004', 'Sternick EB, Timmermans C, Sosa E, et al. The electrocardiogram during sinus rhythm and tachycardia in patients with Mahaim fibers: the importance of an "rS" pattern in lead III. <i>J Am Coll Cardiol</i> 2004;44:1626–35 (doi:10.1016/j.jacc.2004.07.035). (agregado: no estaba en el material base)'],
   merino01: ['Merino 2001', 'Merino JL, Peinado R, Fernández-Lozano I, et al. Bundle-branch reentry and the postpacing interval after entrainment by right ventricular apex stimulation: a new approach to elucidate the mechanism of wide-QRS-complex tachycardia with atrioventricular dissociation. <i>Circulation</i> 2001;103:1102–8. (citado en el consenso EHRA/HRS 2009)'],
@@ -467,12 +469,13 @@ const M = {
     para: 'La adenosina bloquea el nodo AV: las taquicardias que dependen del nodo terminan en el brazo nodal; la TA suele seguir con bloqueo AV.',
     como: ['Registrá con His, SC y AD alta antes de inyectar.', 'Inyectá un bolo rápido seguido de un lavado con solución fisiológica.', 'Mirá el último latido antes de la terminación (¿termina en A o en V?) o si aparece bloqueo AV sin terminar.'],
     interp: [
-      ['Termina en una A (la A retrógrada no conduce al V)', 'Bloqueo AV terminal: TRNAV o TRAV (excluye TA)', 'autor veen12'],
-      ['Bloqueo AV y la taquicardia auricular sigue', 'TA (excluye TRAV)', 'autor'],
+      ['Termina en una A (la A retrógrada no conduce al V)', 'Bloqueo AV terminal: TRNAV o TRAV (excluye TA); terminan en el nodo AV en proporciones similares (86 % y 85 %)', 'autor veen12 glatter99'],
+      ['Bloqueo AV y la taquicardia auricular sigue', 'TA (excluye TRAV); en la serie de Glatter, el bloqueo AV sin terminar se vio solo en la TA (27 %) y en la taquicardia sinusal inapropiada', 'autor glatter99'],
+      ['El VA se alarga antes de terminar', 'A favor de TRAV (13 % de las TRAV, ninguna TRNAV típica)', 'glatter99'],
       ['Termina en un V (sin A posterior)', 'No discrimina: bloqueo en el brazo retrógrado (vía lenta o vía decremental) o TA sensible a la adenosina', 'autor'],
       ['La A se separa de la V con persistencia de la TSV', 'TA o TRNAV (excluye TRAV)', 'autor']],
-    trampas: ['La TA focal sensible a la adenosina puede terminar.', 'Las vías decrementales (PJRT) pueden bloquearse con adenosina.', 'La adenosina puede desencadenar extrasístoles o fibrilación auricular.'],
-    refs: ['autor', 'veen12'] },
+    trampas: ['Algunas TA terminan: la adenosina termina la reentrada sinoauricular y la TA por actividad gatillada, suprime de forma transitoria la TA automática y no modifica la macrorreentrada auricular ni el aleteo (Engelstein 1994).', 'Las vías decrementales (PJRT) pueden bloquearse con adenosina.', 'La adenosina puede desencadenar extrasístoles o fibrilación auricular, más a menudo en la TRAV (15 %), la PJRT y la TA que en la TRNAV (0 %) (Glatter 1999).', 'En las TSV de RP largo, los cambios de los intervalos con la adenosina no predicen cómo termina la taquicardia (Glatter 1999).'],
+    refs: ['autor', 'veen12', 'glatter99', 'engelstein94'] },
 
   vop: { g: 'V', t: 'Sobreestimulación ventricular durante la TSV', s: 'Encarrilamiento desde el VD: respuesta A-V vs A-A-V, fusión, zona de transición',
     para: 'Es la maniobra más rendidora: descarta o confirma la TA, y con la misma tira se miden PPI, SA−VA y ΔHA, y se busca fusión.',
