@@ -52,10 +52,6 @@ for f in sorted(os.listdir(FIGS)):
     n = f[:-4]
     if n == 'trnav_bys':
         add(f, [(k, S[k]) for k in ('bys_a', 'bys_b', 'bys_c')])
-    elif n == 'p17_vop':
-        add(f, [(k, S[k]) for k in ('c17s_vop_a', 'c17s_vop_b')])
-    elif n == 'p17_ehr':
-        add(f, [('c17s_ehr', S['c17s_ehr'])])
     elif n in ('pm_doppa', 'tada05'):
         add(f, [(n, S[n]), (n + '_ecg', ('ecg', 'pm_ecg' if n == 'pm_doppa' else 'ma_ecg'))])
     elif panels(n):
@@ -63,8 +59,7 @@ for f in sorted(os.listdir(FIGS)):
     else:
         print('sin escenario:', f)
 
-NEUTRO = {'p17_vop': [('c17s_vop_a', 'A. TSV 1: sobreestimulación del VD a 360 ms'), ('c17s_vop_b', 'B. TSV 2: sobreestimulación del VD a 210 ms')],
-          'p17_ehr': [('c17s_ehr', 'TSV 1: EV con His refractario')]}
+NEUTRO = {}
 for f in sorted(os.listdir(os.path.join(FIGS, 'prac'))):
     if not f.endswith('.png'):
         continue

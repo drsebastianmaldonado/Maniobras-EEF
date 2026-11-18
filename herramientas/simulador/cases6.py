@@ -1604,6 +1604,162 @@ S['p16_eha'] = dict(win=(-100, vs[-1] + 250), pxms=0.22, title='EA con His refra
     cal=[(hs[3], hs[4], 'His d', f'H-H {LC16}'), (hs[4], hs[5], 'His d', f'H-H {LC16 + 15}')],
     marks=[(apb, 'V1', 'EA')])
 
+# =====================================================================================================
+# Caso 17 (registros reales): dos TSV. TSV 1: TRAV por vía posterolateral izquierda (LC 390 real; VA 130 ilustrativo, A precoz en el SC 3-4).
+# TSV 2: TRNAV típica (LC 230 real; VA 20 ilustrativo, concéntrica). Cada maniobra: panel A (TSV 1) y panel B (TSV 2).
+CH17 = ['HRA', 'His d', 'His p', 'CS 1-2', 'CS 3-4', 'CS 5-6', 'CS 9-10', 'RVA']
+SRC17 = 'caso 17: registro simulado; LC de cada TSV del estudio real, el resto ilustrativo'
+T17 = {1: dict(LC=390, VA=130, seq='left34', ch='CS 3-4', SC=360, SA=210, PPI=490, HR=110, SAb=195, AHs=230, d=55),
+       2: dict(LC=230, VA=20, seq='conc_his', ch='His d', SC=210, SA=170, PPI=400, HR=85, SAb=205, AHs=210, d=10)}
+
+
+def vop17(t, med, base=False, title=None):
+    P = T17[t]; LCx, VAx, SCx = P['LC'], P['VA'], P['SC']
+    sa = P['SAb'] if base else P['SA']
+    ppi = P['PPI'] + (sa - P['SA'])
+    hr = P['HR'] + (sa - P['SA'])
+    svt = [0, LCx, 2 * LCx]
+    sp = [svt[-1] + LCx - 40 + SCx * k for k in range(6)]
+    A = [v + VAx for v in svt] + [s + sa for s in sp]
+    ret = sp[-1] + ppi
+    after = [ret, ret + LCx]
+    cal = [(svt[0], svt[1], 'RVA', f'LC {LCx}'), (svt[1], svt[1] + VAx + 2, P['ch'], f'VA {VAx}'),
+           (sp[-1], A[-1] + 2, P['ch'], f'SA {sa}'), (sp[-1], ret + 2, 'RVA', f'PPI {ppi}')]
+    marks = []
+    if not med:
+        cal.insert(2, (A[-3] + 2, A[-2] + 2, 'HRA', f'A-A {SCx}'))
+    else:
+        HAt, HAp = HV + VAx, sa - hr
+        cal += [(svt[1] - HV, svt[1] + VAx, 'His p', f'HA {HAt}'), (sp[-1] + hr, A[-1], 'His p', f'HA {HAp}')]
+        x = sp[-1] + (ppi + 60) // 2 if t == 2 else sp[-1] + 230
+        marks = [(x, 'I', f'PPI − LC = {ppi} − {LCx} = {ppi - LCx} ms'), (x, 'aVF', f'SA − VA = {sa} − {VAx} = {sa - VAx} ms'),
+                 (x, 'V1', f'ΔHA = {HAp} − {HAt} = {HAp - HAt:+d} ms'.replace('-', '−'))]
+    lab = 'TSV 1 (LC 390)' if t == 1 else 'TSV 2 (LC 230)'
+    return dict(win=(-80, after[-1] + 200), pxms=0.20 if t == 1 else 0.26, channels=CH17, src=SRC17,
+        title=title or f'{"AB"[t - 1]}. {lab}: sobreestimulación desde el ápex del VD a {SCx} ms',
+        beats=[(v, 'n') for v in svt + after] + [(s, 'pb' if base else 'pa') for s in sp], spikes=sp, pace_ch='RVA',
+        atr=[(a, P['seq'], -1) for a in A + [v + VAx for v in after]], h_ante=[v - HV for v in svt + after],
+        h_retro=[s + hr for s in sp], cal=cal, marks=marks)
+
+
+S['p17_vop_a'] = vop17(1, False)
+S['p17_vop_b'] = vop17(2, False)
+S['p17_medidas_a'] = vop17(1, True, title='A. TSV 1 (LC 390): medidas desde el ápex del VD a 360 ms')
+S['p17_medidas_b'] = vop17(2, True, title='B. TSV 2 (LC 230): medidas desde el ápex del VD a 210 ms')
+
+
+def diff17(t):
+    P = T17[t]
+    a, b = vop17(t, False), vop17(t, False, base=True)
+    lab = 'TSV 1' if t == 1 else 'TSV 2'
+    a['title'] = f'{"AC"[t - 1]}. {lab}: encarrilamiento desde el ápex del VD ({P["SC"]} ms)'
+    b['title'] = f'{"BD"[t - 1]}. {lab}: desde la base del VD ({P["SC"]} ms)'
+    b['marks'] = [(b['spikes'][-1] + 260 if t == 1 else b['spikes'][-1] + 240, 'I', f'ΔVA (base − ápex) = {P["SAb"]} − {P["SA"]} = {P["SAb"] - P["SA"]:+d} ms'.replace('-', '−'))]
+    return a, b
+
+
+S['p17_diff_a'], S['p17_diff_b'] = diff17(1)
+S['p17_diff_c'], S['p17_diff_d'] = diff17(2)
+
+
+def ehr17(t):
+    P = T17[t]; LCx, VAx = P['LC'], P['VA']
+    k = 3
+    vs = [i * LCx for i in range(k)]
+    h_exp = k * LCx - HV
+    d = 20 if t == 1 else 0
+    A = [v + VAx for v in vs] + [k * LCx + VAx - d]
+    nxt = A[-1] + (LCx - VAx) if d else k * LCx + LCx
+    after = [nxt, nxt + LCx]
+    A += [v + VAx for v in after]
+    lab = 'TSV 1' if t == 1 else 'TSV 2'
+    return dict(win=(-80, after[-1] + 200), pxms=0.26 if t == 1 else 0.34, channels=CH17, src=SRC17,
+        title=f'{"AB"[t - 1]}. {lab}: EV con His refractario desde el ápex del VD',
+        spikes=[h_exp], pace_ch='RVA', beats=[(v, 'n') for v in vs] + [(h_exp, 'pa')] + [(v, 'n') for v in after],
+        atr=[(a, P['seq'], -1) for a in A], h_ante=[v - HV for v in vs] + [h_exp] + [v - HV for v in after],
+        cal=[(A[k - 2] + 2, A[k - 1] + 2, P['ch'], f'A-A {LCx}'), (A[k - 1] + 2, A[k] + 2, P['ch'], f'A-A {LCx - d}' + (f' (−{d})' if d else ''))],
+        marks=[(h_exp, 'V1', 'EV'), (h_exp, 'His p', 'H')])
+
+
+S['p17_ehr_a'] = ehr17(1)
+S['p17_ehr_b'] = ehr17(2)
+
+
+def aop17(t):
+    P = T17[t]; LCx, VAx, SCx = P['LC'], P['VA'], P['SC']
+    AHt, AHs = LCx - HV - VAx, P['AHs']
+    vs = [0, LCx, 2 * LCx]
+    A = [v + VAx for v in vs]
+    if t == 1:                      # VA largo: el tren arranca después del QRS siguiente, antes de su A retrógrada
+        sp = [vs[-1] + LCx + P['d'] + SCx * k for k in range(6)]
+        vs = vs + [vs[-1] + LCx]
+        atrA = A
+    else:                           # VA corto: la última A de la TSV conduce al último QRS; el tren sale después
+        sp = [vs[-1] + P['d'] + SCx * k for k in range(6)]
+        atrA = A[:-1]
+    pv = [s + 28 + AHs + HV for s in sp]
+    vs2 = [pv[-1] + LCx, pv[-1] + 2 * LCx]
+    lab = 'TSV 1' if t == 1 else 'TSV 2'
+    return dict(win=(-80, vs2[-1] + 200), pxms=0.17 if t == 1 else 0.24, channels=CH17, src=SRC17,
+        title=f'{"AB"[t - 1]}. {lab}: sobreestimulación auricular desde la AD alta a {SCx} ms',
+        beats=[(v, 'n') for v in vs + pv + vs2], aspikes=sp, apace_ch='HRA',
+        atr=[(a, P['seq'], -1) for a in atrA] + [(s + 5, 'sinus', 1) for s in sp] + [(v + VAx, P['seq'], -1) for v in [pv[-1]] + vs2],
+        h_ante=[v - HV for v in vs + pv + vs2],
+        cal=[(vs[0], vs[1], 'RVA', f'V-V {LCx}'), (vs[0], A[0] + 2, P['ch'], f'VA {VAx}'), (A[0], vs[1] - HV, 'His p', f'AH {AHt}'),
+             (sp[-2], sp[-1], 'HRA', f'S-S {SCx}'), (sp[-1] + 28, pv[-1] - HV, 'His p', f'AH {AHs}'),
+             (pv[-2], pv[-1], 'RVA', f'V-V {SCx}'), (pv[-1], pv[-1] + VAx + 2, P['ch'], f'VA {VAx}')],
+        marks=[(pv[-1] + (160 if t == 1 else 90), 'I', f'ΔAH = {AHs} − {AHt} = +{AHs - AHt} ms')])
+
+
+S['p17_aop_a'] = aop17(1)
+S['p17_aop_b'] = aop17(2)
+
+
+def eha17(t):
+    P = T17[t]; LCx, VAx = P['LC'], P['VA']
+    d = 15 if t == 2 else 0
+    hs = [i * LCx - HV for i in range(7 if t == 2 else 6)]
+    apb = hs[3] + 10
+    hs = hs[:4] + [h + d for h in hs[4:]]
+    vs = [h + HV for h in hs]
+    A = [v + VAx for k2, v in enumerate(vs) if k2 != 3]
+    lab = 'TSV 1' if t == 1 else 'TSV 2'
+    return dict(win=(-100, vs[-1] + 200), pxms=0.20 if t == 1 else 0.30, channels=CH17, src=SRC17,
+        title=f'{"AB"[t - 1]}. {lab}: EA con His refractario desde el ostium del SC',
+        beats=[(x, 'n') for x in vs], aspikes=[apb], apace_ch='CS 9-10',
+        atr=[(a, P['seq'], -1) for a in A] + [(apb + 4, 'conc_cs', 1)], h_ante=hs,
+        cal=[(hs[2], hs[3], 'His d', f'H-H {LCx}'), (hs[3], hs[4], 'His d', f'H-H {LCx + d}')],
+        marks=[(apb, 'V1', 'EA')])
+
+
+S['p17_eha_a'] = eha17(1)
+S['p17_eha_b'] = eha17(2)
+
+
+def ado17(t):
+    P = T17[t]; LCx, VAx = P['LC'], P['VA']
+    vs = [i * LCx for i in range(4)]
+    A = [v + VAx for v in vs]
+    lab = 'TSV 1' if t == 1 else 'TSV 2'
+    return dict(win=(-80, A[-1] + 700), pxms=0.22 if t == 1 else 0.30, channels=CH17, src=SRC17,
+        title=f'{"AB"[t - 1]}. {lab}: adenosina IV durante la taquicardia',
+        beats=[(v, 'n') for v in vs], atr=[(a, P['seq'], -1) for a in A], h_ante=[v - HV for v in vs],
+        cal=[(vs[0], vs[1], 'RVA', f'LC {LCx}'), (vs[3], A[3] + 2, P['ch'], f'VA {VAx}')],
+        marks=[(A[3] + 60, 'aVF', 'última: A sin V')])
+
+
+S['p17_ado_a'] = ado17(1)
+S['p17_ado_b'] = ado17(2)
+
+# Para-Hisiana en sinusal: SA 85 → 135 con la misma secuencia concéntrica (la vía posterolateral está lejos del sitio).
+sp = [0, 650, 1300, 1950]
+cap = [True, False, True, False]
+S['p17_parahis'] = dict(win=(-80, 2300), pxms=0.32, title='Estimulación para-Hisiana en ritmo sinusal', channels=CH17, src=SRC17,
+    spikes=sp, pace_ch='His p', beats=[(s + HV if c else s, 'n' if c else 'pa') for s, c in zip(sp, cap)],
+    atr=[(s + (85 if c else 135), 'conc_his', -1) for s, c in zip(sp, cap)],
+    cal=[(sp[0], sp[0] + 87, 'His d', 'SA 85'), (sp[1], sp[1] + 137, 'His d', 'SA 135'), (sp[2] + HV, sp[2] + HV + 95, 'RVA', 'QRS 95'), (sp[3], sp[3] + 150, 'RVA', 'QRS 150')],
+    marks=[(sp[0] + 30, 'V1', 'His + V'), (sp[1] + 40, 'V1', 'solo V')])
+
 if __name__ == '__main__':
     for k in (sys.argv[3:] or S):
         render(S[k], f'{OUT}/{k}.svg')
