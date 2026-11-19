@@ -84,7 +84,7 @@
 
   // ---------- Motor común para las maniobras de estimulación ventricular durante la TSV ----------
   const LCT = 340, HVT = 45, VBO = 25;            // LC de la TSV, HV, retraso del V basal respecto del apical
-  const HR = { apex: 60, base: 95 };              // estímulo → His retrógrado, según el sitio
+  const HR = { apex: 60, base: 105 };              // estímulo → His retrógrado, según el sitio
   const cut = (pts, tc) => { const o = []; for (let i = 0; i < pts.length; i++) { const [p, t] = pts[i]; if (t <= tc) { o.push(pts[i]); continue; }
     if (i > 0) { const [p0, t0] = pts[i - 1], f = (tc - t0) / Math.max(1, t - t0); o.push([[p0[0] + (p[0] - p0[0]) * f, p0[1] + (p[1] - p0[1]) * f], tc]); } break; } return o; };
   const at = (pts, tc) => { const c = cut(pts, tc); return c.length ? c[c.length - 1][0] : pts[0][0]; };
@@ -95,7 +95,8 @@
   const down = (sc, h, tcR, tcL) => { const [r, l] = ramas(h, HVT); W_(sc, 'ante', r.pts, tcR); W_(sc, 'ante', l.pts, tcL); };
   const stim = (sc, site, s) => { E(sc, site === 'base' ? 'VDb' : 'VD', s, 'E', { stim: true }); sc.flV.push(s); sc.stims.push({ t: s, pt: G[site] }); };
   const rbUp = (site, s) => site === 'base'
-    ? [[G.base, s], [[255, 420], s + 35], [G.rb2, s + 55], [G.rb1, s + 75], [G.his, s + 95], [G.node, s + 130]]
+    // desde la base el frente baja por el miocardio hasta el Purkinje de la punta y recién ahí sube por toda la rama derecha
+    ? [[G.base, s], [[226, 430], s + 30], [[196, 515], s + 55], [G.rb4, s + 60], [G.rb3, s + 73], [G.rb2, s + 83], [G.rb1, s + 93], [G.his, s + 105], [G.node, s + 140]]
     : [[G.apex, s], [G.rb4, s + 15], [G.rb3, s + 28], [G.rb2, s + 38], [G.rb1, s + 48], [G.his, s + 60], [G.node, s + 95]];
   const APS = { sep: [232, 268], sepV: [236, 312] };
   // Vía septal: retrógrada desde el septum (latido conducido) o desde el sitio de estimulación
@@ -295,8 +296,8 @@
       let h, A;
       if (hi) { h = s + 5; E(sc, 'His', h, 'H'); down(sc, h); E(sc, 'ECG', s + 20, '', { qrs: 'n' }); }
       else { h = s + 95; E(sc, 'His', h, 'H', { inv: true }); E(sc, 'ECG', s + 8, '', { qrs: 'w' });
-        W_(sc, 'retro', [[G.ph, s], [[262, 400], s + 40], [G.rb2, s + 55], [G.rb1, s + 75], [G.his, h]]);
-        W_(sc, 'retro', [[G.ph, s], [[240, 420], s + 70], [[200, 520], s + 130]]); }
+        W_(sc, 'retro', [[G.ph, s], [[240, 420], s + 25], [[200, 515], s + 45], [G.rb4, s + 50], [G.rb3, s + 63], [G.rb2, s + 73], [G.rb1, s + 83], [G.his, h]]);
+      }
       if (ap) { A = s + 70; W_(sc, 'retro', [[G.ph, s], [[258, 318], s + 20], [APS.sepV, s + 40], [APS.sep, s + 60], [[200, 215], s + 85], [G.ra, s + 105]]);
         W_(sc, 'retro', [[G.his, h], [G.node, h + 35]], Math.min(h + 35, A + 20)); E(sc, 'AD', A, 'A'); }
       else { W_(sc, 'retro', [[G.his, h], [G.node, h + 35]]); A = nodeUp(sc, h + 35); }
