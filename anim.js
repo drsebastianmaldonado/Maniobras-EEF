@@ -14,7 +14,7 @@
                'M300,300 C312,420 312,530 302,638 C385,642 470,595 516,512 C556,440 566,350 540,294 Z'];
   // Puntos del recorrido (coordenadas del corazón)
   const G = { aSep: [232, 238], node: [268, 262], his: [293, 308], rb1: [288, 380], rb2: [270, 450], rb3: [238, 500], rb4: [200, 545], apex: [180, 562],
-              lvA: [430, 410], lvB: [505, 345], apV: [526, 306], apA: [527, 262], la: [470, 200], focus: [140, 140], ra: [170, 180], base: [250, 345], ph: [278, 300], hra: [140, 108], cso: [215, 290], jx: [287, 288], ralat: [92, 238], afA: [92, 272], afV: [178, 512], vtf: [150, 470], sn: [196, 82] };
+              lvA: [430, 410], lvB: [505, 345], apV: [526, 306], apA: [527, 262], la: [470, 200], focus: [140, 140], ra: [170, 180], base: [250, 345], ph: [278, 300], hra: [140, 108], cso: [215, 290], jx: [287, 288], ralat: [92, 238], afA: [92, 272], afV: [178, 512], vtf: [150, 470], sn: [196, 82], cs: [516, 290] };
   const VB = '15 50 560 625';
   // Desde el His el frente baja por las dos ramas: la derecha hasta el ápex del VD y la izquierda hasta la pared lateral del VI
   const ramas = (h, HV) => [
@@ -522,6 +522,169 @@
     return sc;
   }
 
+
+  // ---------- Grupo 4: observaciones y estudio basal ----------
+  // vía lateral izquierda: latido de la TRAV desde la A del SC distal (a). bri: bloqueo funcional de la rama izquierda
+  const travLat = (sc, a, bri) => {
+    W_(sc, 'retro', [[G.apA, a], [G.la, a + 15], [[380, 250], a + 30], [G.aSep, a + 40]]); W_(sc, 'retro', [[G.apA, a], [[520, 200], a + 30]]);
+    E(sc, 'CSd', a, 'A'); E(sc, 'CSp', a + 30, 'A'); E(sc, 'His', a + 40, 'A');
+    const h = a + 185; W_(sc, 'ante', [[G.aSep, a + 40], [G.node, a + 70], [G.his, h]]); E(sc, 'His', h, 'H');
+    const [r, l] = ramas(h, HVT); W_(sc, 'ante', r.pts);
+    let lv = h + HVT;
+    if (bri) { W_(sc, 'ante', l.pts, h + 6); W_(sc, 'ante', [[G.rb2, h + 22], [[330, 430], h + 50], [[390, 425], h + 68], [G.lvA, lv = h + 85]]); E(sc, 'VD', h + HVT, 'V', { pre: 1 }); }
+    else { W_(sc, 'ante', l.pts); E(sc, 'VD', h + HVT, 'V'); }
+    sc.flV.push(h + HVT);
+    W_(sc, 'retro', [[G.lvA, lv], [G.lvB, lv + 40], [G.apV, lv + 95], [G.apA, lv + 110]]);
+    return { h, v: h + HVT, a: lv + 110 };
+  };
+
+  function basalSc(kind) {
+    const sc = newSc({ cats: [] });
+    if (kind === 'trnav') {
+      Object.assign(sc, { title: 'TRNAV típica: VA septal corto y activación concéntrica', nodal: true, cats: ['cs'] });
+      let a = 120, b; for (let i = 0; i < 5; i++) { b = trnavBeat(sc, a); E(sc, 'His', b.n + 90, 'A'); E(sc, 'CSp', b.n + 95, 'A'); E(sc, 'CSd', b.n + 125, 'A'); a = b.a; if (i === 2) sc.m.b = b; }
+      const v = sc.m.b.n + 75; brk(sc, 'His', v, v + 15, 'VA 15', { guide: 'VD', hot: 1, up: 1 });
+      Object.assign(sc, { verdictT: v + 200, verdict: 'VA septal <b>15 ms</b> (≤ 70) y la A más precoz en el His, después el SC proximal y por último el distal (<b>concéntrica</b>): patrón de TRNAV típica; <b>excluye la TRAV</b>.',
+        why: 'La A sale del nodo casi al mismo tiempo que el V. En la TRAV la A necesita que el impulso recorra el ventrículo y cruce la vía: el VA no puede ser tan corto (en niños, &lt; 60 ms la excluye).' });
+    } else if (kind === 'travl' || kind === 'coumel') {
+      Object.assign(sc, { title: kind === 'coumel' ? 'TRAV por vía lateral izquierda con BRI funcional' : 'TRAV por vía lateral izquierda: activación excéntrica', ap: 'lat', cats: ['cs'] });
+      let a = 150, b; const R = [];
+      const plan = kind === 'coumel' ? [0, 0, 0, 1, 1, 1, 0, 0] : [0, 0, 0, 0, 0];
+      plan.forEach(x => { b = travLat(sc, a, x); R.push(Object.assign({ a0: a, bri: x }, b)); a = b.a; });
+      if (kind === 'travl') { const r = R[2]; brk(sc, 'CSd', r.v, r.a, 'VA ' + (r.a - r.v), { guide: 'VD', hot: 1, up: 1 }); brk(sc, 'His', r.v, r.a + 40, 'VA ' + (r.a + 40 - r.v), { guide: 'VD', up: 1 });
+        Object.assign(sc, { verdictT: r.a + 300, verdict: 'A más precoz en el <b>SC distal</b> (VA 110 ms), después el proximal y por último el His (150 ms): activación <b>excéntrica</b> → TRAV por vía izquierda (o TA izquierda); <b>excluye la TRNAV</b> (salvo la rara variante izquierda).',
+          why: 'La A sale por la inserción auricular de la vía, en la pared lateral del AI, y desde ahí avanza hacia el septum.' }); }
+      else { const n = R[2], w = R[4]; brk(sc, 'CSd', n.v, n.a, 'VA ' + (n.a - n.v), { guide: 'VD', up: 1 }); brk(sc, 'CSd', w.v, w.a, 'VA ' + (w.a - w.v), { guide: 'VD', hot: 1, up: 1 });
+        brk(sc, 'VD', R[1].v, R[2].v, 'VV ' + (R[2].v - R[1].v)); brk(sc, 'VD', R[4].v, R[5].v, 'VV ' + (R[5].v - R[4].v), { hot: 1 });
+        sc.m.bri = R[3].v;
+        Object.assign(sc, { verdictT: R[5].v + 60, verdict: `Con BRI funcional el VA se alarga <b>${(w.a - w.v) - (n.a - n.v)} ms</b> (${n.a - n.v} → ${w.a - w.v}) y la LC también (${R[2].v - R[1].v} → ${R[5].v - R[4].v}): la vía izquierda es parte del circuito (<b>efecto Coumel</b>).`,
+          why: 'Con la rama izquierda bloqueada el frente baja por la derecha y cruza el septum hasta el VI: tarda más en llegar a la vía. Un aumento > 20–30 ms prueba una vía libre homolateral al bloqueo.' }); }
+    } else {
+      Object.assign(sc, { title: 'Taquicardia auricular con bloqueo AV', focus: true });
+      let f = 120; const plan = [120, 120, 120, 150, 180, 'b', 120, 150, 'b', 120];
+      plan.forEach((p, i) => { if (p === 'b') { taBeat(sc, f, 0, 30); if (i === 5) Object.assign(sc.ev.find(x => x.ch === 'AD' && x.t === f), { tag: 'A sin V', tagT: f + 40 }); } else taBeat(sc, f, p); f += LCT; });
+      brk(sc, 'AD', 120 + 4 * LCT, 120 + 5 * LCT, 'AA 340'); brk(sc, 'AD', 120 + 5 * LCT, 120 + 6 * LCT, 'AA 340', { hot: 1 });
+      Object.assign(sc, { verdictT: 120 + 6 * LCT, verdict: 'Una A no conduce (Wenckebach) y <b>la taquicardia sigue igual</b> (AA 340): no necesita al ventrículo → <b>TA o TRNAV</b>; <b>excluye la TRAV</b>.',
+        why: 'En la TRAV cada A necesita el V anterior: un bloqueo AV la termina. Es más frecuente en la TA, pero por prevalencia muchas veces es una TRNAV con bloqueo en el haz común inferior.' });
+    }
+    return sc;
+  }
+
+  // Estudio basal: doble vía nodal con extraestímulos auriculares
+  function dualSc() {
+    const sc = newSc({ title: 'Extraestímulos auriculares: salto del AH', nodal: true, cats: ['hra'] });
+    const fast = (a, ah) => { W_(sc, 'ante', [[G.hra, a - 10], [G.ra, a + 10], [[232, 234], a + 30], [[252, 246], a + 50], [G.node, a + ah - 30], [G.his, a + ah]]); };
+    const slow = (a, ah) => { W_(sc, 'ante', [[G.hra, a - 10], [G.ra, a + 10], [[226, 248], a + 30], [[206, 268], a + 90], [[220, 292], a + 140], [[250, 284], a + ah - 60], [G.node, a + ah - 30], [G.his, a + ah]]); };
+    const beat = (s, ah, viaSlow, mk) => { paceA(sc, 'hra', s); const a = s + 10; E(sc, 'AD', a, 'A'); (viaSlow ? slow : fast)(a, ah); const h = a + ah; E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h);
+      if (viaSlow) W_(sc, 'ante', [[G.ra, a + 10], [[232, 234], a + 30], [[252, 246], a + 45]], a + 40); return { a, h }; };
+    const P = [[400, 130], [320, 150], [280, 240]], R = [];
+    let t = 200;
+    P.forEach(([c, ah], i) => { beat(t, 100); const x = beat(t + c, ah, ah > 200); R.push(Object.assign({ c }, x)); brk(sc, 'His', x.a, x.h, 'A2H2 ' + ah, { hot: i === 2, up: 1 }); t += 1300; });
+    sc.m.R = R;
+    Object.assign(sc, { stimEnd: 0, verdictT: R[2].h + 30, verdict: 'Al acortar el acoplamiento 40 ms el A2H2 <b>salta 90 ms</b> (150 → 240): la vía rápida quedó refractaria y conduce la lenta → <b>doble fisiología nodal</b> (salto ≥ 50 ms).',
+      why: 'A favor de TRNAV (VPP 86 %), pero solo muestra el sustrato: puede ser espectador.' });
+    return sc;
+  }
+
+  // Estudio basal: estimulación ventricular incremental, VA por el nodo vs por una vía lateral izquierda
+  function vaPaceSc(mech) {
+    const ap = mech === 'ap', sc = newSc({ title: ap ? 'Conducción VA por una vía lateral izquierda' : 'Conducción VA por el nodo', cats: ['apex', 'cs'] });
+    if (ap) sc.ap = 'lat';
+    const PCL = [600, 600, 450, 450, 350, 350, 300, 300], R = []; let s = 200;
+    PCL.forEach((c, i) => { stim(sc, 'apex', s); const rH = s + HR.apex; E(sc, 'His', rH, 'H', { inv: true });
+      let a;
+      if (ap) { a = s + 140; W_(sc, 'retro', [[G.apex, s], [[260, 600], s + 30], [[400, 560], s + 70], [[500, 430], s + 105], [G.apV, s + 125], [G.apA, a]]);
+        W_(sc, 'retro', [[G.apA, a], [G.la, a + 15], [[380, 250], a + 30], [G.aSep, a + 40]]); W_(sc, 'retro', rbUp('apex', s), rH + 25);
+        E(sc, 'CSd', a, 'A'); E(sc, 'CSp', a + 30, 'A'); E(sc, 'His', a + 40, 'A'); }
+      else { const dec = [0, 0, 20, 20, 50, 50, 90, 'b'][i];
+        if (dec === 'b') { W_(sc, 'retro', rbUp('apex', s), rH + 30); R.push({ s, a: null }); s += c; return; }
+        W_(sc, 'retro', rbUp('apex', s)); const tn = rH + 35 + dec; W_(sc, 'retro', [[G.node, rH + 35], [G.node, tn], [G.aSep, tn + 40], [G.ra, tn + 85]]);
+        a = tn + 60; E(sc, 'His', a, 'A'); E(sc, 'CSp', a + 8, 'A'); E(sc, 'CSd', a + 35, 'A'); }
+      R.push({ s, a, c }); s += c; });
+    const ref = ap ? 'CSd' : 'His', fA = r => ap ? r.a : r.a;
+    [1, 3, 5].forEach((k, j) => brk(sc, ref, R[k].s, fA(R[k]), 'VA ' + (fA(R[k]) - R[k].s), { guide: 'VD', hot: j === 2, up: 1 }));
+    if (!ap) Object.assign(sc.ev.find(x => x.ch === 'His' && x.t === R[7].s + HR.apex), { tag: 'sin A', tagT: R[7].s + 200 });
+    Object.assign(sc, { stimEnd: 0, verdictT: R[7].s + 250,
+      verdict: ap ? 'Al acortar la LC el <b>VA no cambia</b> (140 ms) y la A más precoz está en el <b>SC distal</b>: conducción <b>no decremental y excéntrica</b> → vía accesoria lateral izquierda.'
+                  : `Al acortar la LC el <b>VA se alarga</b> (${[1, 3, 5].map(k => R[k].a - R[k].s).join(' → ')} ms) hasta que aparece <b>bloqueo VA</b>, con la A más precoz en el His: conducción <b>decremental y concéntrica</b> → nodo.`,
+      why: ap ? 'El tejido de la vía conduce como el miocardio: no tiene decremento. Ojo: las vías decrementales (PJRT) se comportan como el nodo.'
+              : 'El nodo conduce con decremento. Un bloqueo VA con LC larga (&gt; 600 ms) va en contra de una vía y también de la TRNAV.' });
+    return sc;
+  }
+
+  // Doble disparo nodal: una A, dos His y dos V
+  function dfireSc() {
+    const sc = newSc({ title: 'Taquicardia no reentrante por doble vía nodal', nodal: true, cats: [] });
+    const R = [];
+    [150, 950, 1750, 2550].forEach(a => {
+      W_(sc, 'ante', [[G.sn, a - 40], [G.ra, a - 10], [G.aSep, a + 15]]); E(sc, 'AD', a, 'A');
+      const h1 = a + 120, h2 = h1 + 360;
+      W_(sc, 'ante', [[G.aSep, a + 15], [[232, 234], a + 30], [[252, 246], a + 55], [G.node, a + 90], [G.his, h1]]); E(sc, 'His', h1, 'H'); down(sc, h1); Vs(sc, h1);
+      W_(sc, 'ante', [[[226, 248], a + 25], [[206, 268], a + 120], [[220, 292], a + 230], [[250, 284], a + 330], [G.node, h2 - 30], [G.his, h2]]); E(sc, 'His', h2, 'H'); down(sc, h2); Vs(sc, h2);
+      R.push({ a, h1, h2 }); });
+    brk(sc, 'His', R[1].h1, R[1].h2, 'H1–H2 360', { up: 1 }); brk(sc, 'His', R[2].h1, R[2].h2, 'H1–H2 360', { hot: 1, up: 1 });
+    Object.assign(sc, { stimEnd: 0, verdictT: R[2].h2 + 60, m: { R },
+      verdict: 'Cada A sinusal da <b>dos His y dos V</b> (A-H1-V1-H2-V2), con <b>H1–H2 fijo</b> (360 ms) y el mismo HV: <b>doble disparo nodal</b>. No es una reentrada.',
+      why: 'La misma A baja por la vía rápida y, cientos de ms después, por la lenta (que no quedó bloqueada). Se ve como una P y dos QRS angostos; se confunde con FA o extrasístoles. Se trata con ablación de la vía lenta.' });
+    return sc;
+  }
+
+  // Nodos AV gemelos
+  function twinSc(kind) {
+    const sc = newSc({ title: kind === 'tsv' ? 'TRAV por nodos AV gemelos' : 'Estimulación auricular desde dos sitios', twin: true, cats: kind === 'tsv' ? [] : ['hra', 'cso'] });
+    const NP = [226, 304], HP = [276, 376];
+    if (kind === 'tsv') {
+      let a = 120; const R = [];
+      for (let i = 0; i < 5; i++) {
+        const h = a + 100; W_(sc, 'ante', [[G.aSep, a], [G.node, a + 30], [G.his, h]]); E(sc, 'AD', a + 10, 'A'); E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h); E(sc, 'ECG', h + 20, '', { qrs: 'n' });
+        const hp = h + 95; W_(sc, 'retro', [[G.rb1, h + 18], [[282, 380], h + 30], [HP, h + 60], [NP, hp + 35], [G.cso, hp + 75], [G.aSep, hp + 145]]); E(sc, 'HisP', hp, 'H', { inv: true });
+        R.push({ a, h, hp }); a = hp + 145; }
+      brk(sc, 'AD', R[2].a + 10, R[3].a + 10, 'AA ' + (R[3].a - R[2].a), { hot: 1 });
+      Object.assign(sc, { stimEnd: 0, verdictT: R[3].h + 60, verdict: 'Baja por el nodo anterior (His anterior antes del V, QRS angosto) y <b>sube por el nodo posterior</b> (His posterior retrógrado, A más precoz cerca del ostium del SC): <b>TRAV por nodos gemelos</b>.',
+        why: 'Es un circuito AV con dos sistemas de conducción, como una TRAV con una "vía" que en realidad es otro nodo: decremental y sensible a la adenosina. Encarrilando desde los dos sitios nodales el PPI es corto.' });
+    } else {
+      const R = [];
+      [[200, 'hra'], [900, 'hra'], [1700, 'cso'], [2400, 'cso']].forEach(([s, site]) => {
+        paceA(sc, site, s); E(sc, 'AD', s + (site === 'hra' ? 10 : 40), 'A');
+        if (site === 'hra') { const h = s + 130; W_(sc, 'ante', [[G.hra, s], [G.ra, s + 20], [G.aSep, s + 40], [G.node, s + 70], [G.his, h]]); E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h); E(sc, 'ECG', h + 20, '', { qrs: 'n' }); R.push(h); }
+        else { const hp = s + 110; W_(sc, 'ante', [[G.cso, s], [NP, s + 40], [HP, hp]]); W_(sc, 'ante', [[HP, hp], [G.rb2, hp + 20], [G.rb3, hp + 35], [G.apex, hp + 50]]); W_(sc, 'ante', [[HP, hp], [[330, 430], hp + 25], [G.lvA, hp + 50]]);
+          W_(sc, 'ante', [[G.cso, s], [G.aSep, s + 25], [G.node, s + 50]], s + 45);
+          E(sc, 'HisP', hp, 'H'); E(sc, 'VD', hp + 40, 'V'); sc.flV.push(hp + 40); E(sc, 'ECG', hp + 15, '', { qrs: 'm' }); R.push(hp); } });
+      Object.assign(sc, { stimEnd: 0, verdictT: R[3] + 80, verdict: 'Desde la AD alta conduce el <b>nodo anterior</b> (His anterior, QRS 1); desde el ostium del SC, el <b>nodo posterior</b> (His posterior, QRS 2). <b>Dos QRS distintos no preexcitados</b>, cada uno con su His: dos sistemas de conducción AV.',
+        why: 'Así se demuestran en 2 de cada 3 pacientes (estimulación auricular diferencial). En el 93 % hay heterotaxia (sobre todo isomerismo derecho); también en la TCGA y el canal AV malalineado.' });
+    }
+    return sc;
+  }
+
+  // Vía oblicua lateral izquierda vista desde el seno coronario (canales de distal a proximal)
+  const CSX = { C12: [512, 292], C34: [450, 300], C56: [380, 304], C78: [300, 302] }, OBA = [446, 268], OBV = [516, 316];
+  function oblSc(kind) {
+    const retro = kind === 'retro', sc = newSc({ title: retro ? 'Conducción retrógrada (estimulación ventricular)' : 'Conducción anterógrada (ritmo sinusal, preexcitado)', ap: 'obl', cats: retro ? ['apex', 'cs'] : ['cs'] });
+    const R = [];
+    if (retro) {
+      [300, 1000, 1700].forEach(s => { stim(sc, 'apex', s);
+        W_(sc, 'retro', [[G.apex, s], [[300, 600], s + 35], [[430, 520], s + 70], [[500, 400], s + 95], [OBV, s + 110]]);
+        W_(sc, 'retro', [[OBV, s + 110], [OBA, s + 130]]);
+        W_(sc, 'retro', [[OBA, s + 130], [[380, 250], s + 150], [G.aSep, s + 185]]); W_(sc, 'retro', [[OBA, s + 130], [[522, 262], s + 150], [[520, 200], s + 175]]); sc.flA.push(s + 135);
+        const V = { C78: 70, C56: 85, C34: 98, C12: 106 }, A = { C34: 135, C12: 150, C56: 150, C78: 170 };
+        for (const k in V) E(sc, k, s + V[k], 'V'); for (const k in A) E(sc, k, s + A[k], 'A'); E(sc, 'C12', s + 116, 'P'); E(sc, 'C34', s + 125, 'P');
+        R.push(s); });
+      const s = R[1]; brk(sc, 'C34', s, s + 135, 'VA 135', { guide: 'VD', hot: 1, up: 1 }); brk(sc, 'C12', s, s + 150, 'VA 150', { guide: 'VD', up: 1 });
+      Object.assign(sc, { stimEnd: 0, verdictT: s + 400, verdict: 'La <b>A más precoz está en SC 3-4</b> (inserción auricular), no en 1-2, donde llega el frente ventricular a la vía. Entre el V y la A se registra el <b>potencial de la vía (P)</b>, de 1-2 a 3-4: la vía es oblicua.',
+        why: 'La inserción ventricular está más distal (anterior) que la auricular. El VA local más corto no siempre está sobre la vía: el blanco más preciso es el potencial.' });
+    } else {
+      [200, 900, 1600].forEach(a => { W_(sc, 'ante', [[G.sn, a - 70], [G.aSep, a - 25], [[380, 250], a + 10], [OBA, a + 30], [[522, 262], a + 45]]); sc.flA.push(a);
+        W_(sc, 'ante', [[OBA, a + 30], [OBV, a + 60]]); W_(sc, 'ante', [[OBV, a + 60], [[500, 400], a + 80], [[430, 520], a + 110], [G.apex, a + 160]]); sc.flV.push(a + 65);
+        const A = { C78: 0, C56: 15, C34: 30, C12: 40 }, V = { C12: 65, C34: 80, C56: 95, C78: 110 };
+        for (const k in A) E(sc, k, a + A[k], 'A'); for (const k in V) E(sc, k, a + V[k], 'V'); E(sc, 'C34', a + 40, 'P'); E(sc, 'C12', a + 52, 'P');
+        R.push(a); });
+      const a = R[1]; brk(sc, 'C12', a + 40, a + 65, 'AV 25', { hot: 1, up: 1 });
+      Object.assign(sc, { stimEnd: 0, verdictT: a + 400, verdict: 'El <b>V más precoz está en SC 1-2</b> (inserción ventricular), más distal que la A más precoz de la conducción retrógrada (3-4). El potencial de la vía (P) va ahora de 3-4 a 1-2.',
+        why: 'Comparando la A más precoz (retrógrada) y el V más precoz (anterógrado) se ve el recorrido de la vía: en las libres izquierdas la inserción ventricular está 4–30 mm más distal que la auricular.' });
+    }
+    return sc;
+  }
+
   // PPI−LC, SA−VA y ΔHA: un mismo encarrilamiento con un selector de medición (cada ficha arranca con la suya)
   const ENTM = { ppi: ['PPI − LC', 'Medí el <b>PPI</b> en el canal del VD: de la última espiga al primer V de retorno, y restale la LC.'],
     sava: ['SA − VA', 'Medí el <b>SA</b>: de la última espiga a la A del último latido acelerado, y comparalo con el <b>VA</b> de la TSV.', 'Antes de estimular, mirá el <b>VA</b> de la TSV (del V a la A).'],
@@ -575,6 +738,30 @@
       ['ado_' + m, { t: 'Adenosina en la ' + n, panels: [() => adoSc(m)], dur: 3700, win: 3000,
         fases: s => [[0, 'Taquicardia (LC 340 ms). Se inyecta adenosina.'], [s[0].ado[0], 'La adenosina llega al nodo (azul).'],
           [s[0].ado[0] + 700, 'Mirá <b>cómo termina</b>, o qué pasa con las A si no termina.']] }])),
+    basal_trnav: { t: 'Observaciones: VA septal y secuencia en la TRNAV típica', lanes: [['CSd', 'SC dist'], ['CSp', 'SC prox'], ['His', 'His'], ['VD', 'VD']], panels: [() => basalSc('trnav')],
+      fases: s => [[0, 'TRNAV típica (LC 340 ms). Mirá dónde aparece primero la A: His, SC proximal o SC distal.'], [s[0].m.b.n + 70, 'Medí el <b>VA septal</b>: del inicio del V a la A del His.']] },
+    basal_travl: { t: 'Observaciones: activación excéntrica en la TRAV por vía izquierda', lanes: [['CSd', 'SC dist'], ['CSp', 'SC prox'], ['His', 'His'], ['VD', 'VD']], panels: [() => basalSc('travl')],
+      fases: s => [[0, 'TRAV por una vía lateral izquierda (LC 340 ms). Mirá dónde aparece primero la A.'], [800, 'Medí el VA en el SC distal y en el His.']] },
+    basal_ta: { t: 'Observaciones: TA que sigue con bloqueo AV', panels: [() => basalSc('ta')],
+      fases: s => [[0, 'Taquicardia auricular (LC 340 ms).'], [120 + 3 * LCT, 'El AH se alarga de a poco (Wenckebach)...'], [120 + 5 * LCT, '...y una A no conduce. ¿Sigue la taquicardia?']] },
+    basal_coumel: { t: 'Observaciones: efecto Coumel (BRI funcional)', lanes: [['CSd', 'SC dist'], ['CSp', 'SC prox'], ['His', 'His'], ['VD', 'VD']], panels: [() => basalSc('coumel')], win: 2400,
+      fases: s => [[0, 'TRAV por una vía lateral izquierda con QRS angosto. Medí el VA y la LC.'], [s[0].m.bri - 60, 'Aparece <b>BRI funcional</b>: el frente ya no baja por la rama izquierda y el QRS se ensancha.'], [s[0].m.bri + 700, 'Compará el VA y la LC con y sin BRI.']] },
+    pre_dual: { t: 'Estudio basal: doble fisiología nodal', panels: [dualSc], win: 1400, gap: 50,
+      fases: s => { const R = s[0].m.R; return [[0, 'Ritmo sinusal. Se estimula la AD alta: un latido de base (S1) y un extraestímulo (S2), cada vez más precoz.'], [R[0].a - 5, 'Acoplamiento 400 ms: el S2 baja por la vía rápida.'], [R[1].a - 5, '320 ms: sigue por la rápida y el AH se alarga un poco.'], [R[2].a - 5, '280 ms: la vía rápida está refractaria y el S2 baja por la <b>vía lenta</b>.']]; } },
+    pre_vanode: { t: 'Estudio basal: conducción VA por el nodo', lanes: [['CSd', 'SC dist'], ['CSp', 'SC prox'], ['His', 'His'], ['VD', 'VD']], panels: [() => vaPaceSc('node')], win: 2600,
+      fases: s => [[0, 'Se estimula el VD con LC cada vez más cortas (600, 450, 350 y 300 ms).'], [1300, 'Mirá cómo cambia el VA y dónde aparece primero la A.']] },
+    pre_vaap: { t: 'Estudio basal: conducción VA por una vía accesoria', lanes: [['CSd', 'SC dist'], ['CSp', 'SC prox'], ['His', 'His'], ['VD', 'VD']], panels: [() => vaPaceSc('ap')], win: 2600,
+      fases: s => [[0, 'Se estimula el VD con LC cada vez más cortas (600, 450, 350 y 300 ms).'], [1300, 'Mirá cómo cambia el VA y dónde aparece primero la A.']] },
+    dfire: { t: 'Doble disparo nodal (respuesta 1:2)', panels: [dfireSc], win: 2600,
+      fases: s => { const R = s[0].m.R; return [[0, 'Ritmo sinusal. Mirá cuántos His y V salen de cada A.'], [R[0].h1 - 60, 'La A baja por la <b>vía rápida</b>: H1 y V1...'], [R[0].h1 + 80, '...y la misma A sigue bajando por la <b>vía lenta</b>: H2 y V2.']]; } },
+    twin_tsv: { t: 'Nodos AV gemelos: la taquicardia', lanes: [['ECG', 'ECG'], ['AD', 'AD alta'], ['His', 'His ant.'], ['HisP', 'His post.']], panels: [() => twinSc('tsv')],
+      fases: [[0, 'Paciente con heterotaxia: dos nodos AV (anterior y posterior), cada uno con su His. Mirá por dónde baja y por dónde sube la taquicardia.']] },
+    twin_ap: { t: 'Nodos AV gemelos: estimulación auricular diferencial', lanes: [['ECG', 'ECG'], ['AD', 'AD alta'], ['His', 'His ant.'], ['HisP', 'His post.']], panels: [() => twinSc('ap')], win: 2600,
+      fases: [[0, 'Ritmo sinusal. Se estimula primero la AD alta...'], [1650, '...y después el ostium del SC: conduce el otro nodo.']] },
+    obl_retro: { t: 'Vía oblicua: conducción retrógrada', win: 320, lanes: [['C12', 'SC 1-2'], ['C34', 'SC 3-4'], ['C56', 'SC 5-6'], ['C78', 'SC 7-8'], ['VD', 'VD']], panels: [() => oblSc('retro')],
+      fases: [[0, 'Catéter en el seno coronario, canales de distal (1-2, lateral) a proximal (7-8). Se estimula el VD.'], [400, 'Mirá dónde llega primero el V a la vía, dónde aparece primero la A y el potencial de la vía (P).']] },
+    obl_ante: { t: 'Vía oblicua: conducción anterógrada', win: 320, lanes: [['C12', 'SC 1-2'], ['C34', 'SC 3-4'], ['C56', 'SC 5-6'], ['C78', 'SC 7-8']], panels: [() => oblSc('ante')],
+      fases: [[0, 'Ritmo sinusal con preexcitación por la misma vía. Mirá dónde aparece primero el V.']] },
     vai: { t: 'Índice VA: nodo vs vía posteroseptal', n: 'Índice VA', win: 3900, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => vaiSc('node'), () => vaiSc('ap')],
       fases: s => { const v = s[0].m.va; return [[0, 'Ritmo sinusal, sin inducir la TSV. Un catéter en el ápex del VD y otro en la base posterior, cerca del ostium del SC.'],
         [250, 'Se estimula el <b>ápex</b> sin capturar la aurícula. Medí el VA (espiga → A).'],
@@ -611,13 +798,14 @@
                   ph: 'M18,316 C60,296 110,272 160,268 C210,264 250,280 278,300',
                   hra: 'M18,336 C50,320 70,280 82,230 C94,180 112,130 140,108',
                   cso: 'M18,336 C70,326 130,312 170,302 C190,297 204,293 215,290',
-                  ralat: 'M18,336 C40,320 60,296 72,272 C80,258 86,248 92,238' };
-    const CATN = { apex: 'el ápex del VD', base: 'la base del VD', ph: 'la región del His (para-Hisiano)', hra: 'la AD alta', cso: 'el ostium del SC', ralat: 'la pared lateral del AD' };
+                  ralat: 'M18,336 C40,320 60,296 72,272 C80,258 86,248 92,238',
+                  cs: 'M18,336 C80,322 170,300 215,292 C300,306 420,306 516,290' };
+    const CATN = { apex: 'el ápex del VD', base: 'la base del VD', ph: 'la región del His (para-Hisiano)', hra: 'la AD alta', cso: 'el ostium del SC', ralat: 'la pared lateral del AD', cs: 'el seno coronario' };
     const cats = sc.cats || ['apex'];
     cats.forEach(c => { mk('path', { d: CAT[c], stroke: '#fff', 'stroke-width': 9, fill: 'none', 'stroke-linecap': 'round', opacity: 0.7 }, svg);
       mk('path', { d: CAT[c], stroke: c === 'apex' ? '#37474f' : '#5d4037', 'stroke-width': 5, fill: 'none', 'stroke-linecap': 'round' }, svg);
-      mk('circle', { cx: G[c][0], cy: G[c][1], r: 8, fill: '#c62828', stroke: '#fff', 'stroke-width': 2 }, svg); });
-    mk('text', { x: 18, y: 356, 'font-size': 12, fill: '#37474f' }, svg).textContent = 'VCI';
+      if (c !== 'cs') mk('circle', { cx: G[c][0], cy: G[c][1], r: 8, fill: '#c62828', stroke: '#fff', 'stroke-width': 2 }, svg); });
+    if (cats.length) mk('text', { x: 18, y: 356, 'font-size': 12, fill: '#37474f' }, svg).textContent = 'VCI';
     mk('text', { x: 52, y: 672, 'font-size': 14, 'font-weight': 700, fill: '#c62828' }, svg).textContent = !cats.length ? '' : cats.length > 1 ? 'catéteres endocavitarios en ' + cats.map(c => CATN[c]).join(' y ') : 'catéter endocavitario en ' + CATN[cats[0]];
     if (sc.nodal) {
       mk('path', { d: 'M266,256 C258,244 246,236 230,234', stroke: '#6a3fb5', 'stroke-width': 4, fill: 'none', 'stroke-dasharray': '6 3', 'stroke-linecap': 'round' }, svg);
@@ -633,7 +821,7 @@
     } else if (sc.ap === 'af') {
       mk('path', { d: 'M92,272 C80,330 100,430 178,512', stroke: '#d81b60', 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round', opacity: 0.85 }, svg);
       lbl(58, 520, 'vía', '#d81b60'); lbl(58, 536, 'atriofascicular', '#d81b60');
-    } else if (sc.ap) {
+    } else if (sc.ap && sc.ap !== 'obl') {
       mk('path', { d: 'M519,246 C524,268 530,290 534,322', stroke: '#d81b60', 'stroke-width': 9, fill: 'none', 'stroke-linecap': 'round', opacity: 0.85 }, svg);
       mk('text', { x: 508, y: 238, 'font-size': 15, 'font-weight': 700, fill: '#d81b60', 'text-anchor': 'end' }, svg).textContent = 'vía accesoria';
     }
@@ -643,6 +831,11 @@
       lbl(FP[0] + 20, FP[1] + 5, 'foco', '#c62828');
     }
     if (cats.includes('base')) lbl(G.base[0] - 12, G.base[1] + 4, 'base', '#5d4037', 'end');
+    if (cats.includes('cs') && sc.ap === 'obl') for (const [k, [x, y]] of Object.entries(CSX)) { mk('rect', { x: x - 5, y: y - 4, width: 10, height: 8, fill: '#212121' }, svg); mk('text', { x, y: y + 22, 'font-size': 12, 'text-anchor': 'middle', fill: '#212121' }, svg).textContent = k.slice(1, 2) + '-' + k.slice(2); }
+    if (sc.ap === 'obl') { mk('path', { d: `M${OBA[0]},${OBA[1]} L${OBV[0]},${OBV[1]}`, stroke: '#d81b60', 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round', opacity: 0.85 }, svg); lbl(OBA[0] - 6, OBA[1] - 10, 'vía oblicua', '#d81b60', 'end'); }
+    if (sc.twin) { mk('ellipse', { cx: 226, cy: 304, rx: 16, ry: 9, fill: '#f3d36b', stroke: '#9a7300', 'stroke-width': 1.5 }, svg);
+      mk('path', { d: 'M232,310 C248,330 264,352 276,376', stroke: '#e2a915', 'stroke-width': 5, fill: 'none', 'stroke-linecap': 'round' }, svg);
+      lbl(206, 330, 'nodo posterior', '#6d4c41', 'end'); lbl(300, 240, 'nodo anterior', '#6d4c41'); }
     if (!cats.length) mk('text', { x: 18, y: 356, 'font-size': 12, fill: 'transparent' }, svg);
     if (sc.ado) { const g = mk('g', { opacity: 0 }, svg); g.innerHTML = `<circle cx="${G.node[0]}" cy="${G.node[1]}" r="26" fill="#1565c0" fill-opacity=".35" stroke="#1565c0" stroke-width="3"/>`; lbl(G.node[0] + 30, G.node[1] - 24, 'adenosina', '#1565c0'); svg.lastChild.setAttribute('opacity', 0); return { atr, ven, ado: [g, svg.lastChild] }; }
     return { atr, ven };
@@ -655,7 +848,7 @@
   function mount(root) {
     if (root.dataset.on) return; root.dataset.on = 1;
     const A = ANIMS[root.dataset.anim]; if (!A) return;
-    const LANES = (A.lanes || LANES0).map(([c, l], i) => [c, l, 46 + i * 41]), TH = LANES[LANES.length - 1][2] + 26;
+    const LANES = (A.lanes || LANES0).map(([c, l], i) => [c, l, 46 + i * (A.gap || 41)]), TH = LANES[LANES.length - 1][2] + 26;
     const sel = A.sel ? (root.dataset.sel || A.def) : null;
     const PL = A.sel ? A.panels(sel) : A.panels, scs = (A.pi != null ? [PL[A.pi]] : PL).map(f => f());
     const fases = typeof A.fases === 'function' ? A.fases(scs, sel) : A.fases;
@@ -678,12 +871,13 @@
       const tr = mk('path', { d: '', stroke: 'var(--ink)', 'stroke-width': 1.3, fill: 'none' }, svg);
       const st = mk('path', { d: '', stroke: 'var(--red)', 'stroke-width': 1.6, fill: 'none' }, svg);
       const tg = mk('path', { d: '', stroke: 'var(--blue)', 'stroke-width': 2.2, fill: 'none' }, svg);
+      const tp = mk('path', { d: '', stroke: '#d81b60', 'stroke-width': 1.8, fill: 'none' }, svg);
       const ints = mk('g', { 'font-size': 9, 'text-anchor': 'middle' }, svg);
       const lab = mk('g', { 'font-size': 9, fill: 'var(--ink2)', 'text-anchor': 'middle' }, svg);
       const cur = mk('line', { x1: 0, y1: 4, x2: 0, y2: TH - 4, stroke: 'var(--blue)', 'stroke-width': 1 }, svg);
       const ver = document.createElement('div'); ver.className = 'anver'; wrap.appendChild(ver);
       root.querySelector('.anp').appendChild(wrap);
-      return { sc, h, tr, st, tg, lab, cur, dots, ver, ints };
+      return { sc, h, tr, st, tg, tp, lab, cur, dots, ver, ints };
     });
     const fas = root.querySelector('.anf'), btn = root.querySelector('.anplay'), rng = root.querySelector('.ant'), vel = root.querySelector('.anv');
     let t = 0, play = false, last = 0;
@@ -715,13 +909,15 @@
         p.dots.innerHTML = dh;
         // trazado con ventana móvil
         const Wn = A.win || W, tStart = Math.max(0, T - Wn * 0.85), k = (X1 - X0) / Wn, xOf = tt => X0 + (tt - tStart) * k;
-        let d = '', ds = '', dt = '', lh = '';
+        let d = '', ds = '', dt = '', dp = '', lh = '';
         LANES.forEach(([ch, , y]) => { d += `M${X0} ${y} L${xOf(Math.min(T, tStart + Wn))} ${y} `; });
         for (const e of sc.ev) {
           if (e.t > T || e.t < tStart) continue;
           const ln = LANES.find(l => l[0] === e.ch); if (!ln) continue;
           const y = ln[2], x = xOf(e.t);
           if (e.stim) { ds += `M${x} ${y - 16} L${x} ${y + 12} `; lh += `<text x="${x}" y="${y - 18}" style="fill:var(--red)">E</text>`; continue; }
+          if (e.l === 'P') { dp += spike(x, y, false); lh += `<text x="${x}" y="${y - 14}" style="fill:#d81b60">P</text>`; continue; }
+          if (e.qrs === 'm') { d += `M${x - 1} ${y} L${x + 2} ${y + 9} L${x + 6} ${y - 12} L${x + 9} ${y + 4} L${x + 11} ${y} `; continue; }
           if (e.qrs) { d += e.qrs === 'w' ? `M${x - 1} ${y} L${x + 5} ${y - 12} L${x + 13} ${y - 11} L${x + 19} ${y + 6} L${x + 24} ${y} ` : `M${x - 1} ${y} L${x + 2} ${y - 13} L${x + 5} ${y + 6} L${x + 8} ${y} `; continue; }
           const hot = e.tag && T > (e.tagT || sc.stimEnd);
           if (e.pre && !hot) { d += `M${x - 1} ${y} L${x + 4} ${y - 12} L${x + 10} ${y - 10} L${x + 14} ${y + 6} L${x + 18} ${y} `; lh += `<text x="${x}" y="${y - 14}">${e.l}</text>`; continue; }
@@ -738,7 +934,7 @@
           if (it.guide) { const g = LANES.find(l => l[0] === it.guide); if (g) di += `<line x1="${x0}" y1="${g[2]}" x2="${x0}" y2="${y}" style="stroke:${col}" stroke-dasharray="2 2"/>`; }
         }
         p.ints.innerHTML = di;
-        p.tr.setAttribute('d', d); p.st.setAttribute('d', ds); p.tg.setAttribute('d', dt); p.lab.innerHTML = lh;
+        p.tr.setAttribute('d', d); p.tp.setAttribute('d', dp); p.st.setAttribute('d', ds); p.tg.setAttribute('d', dt); p.lab.innerHTML = lh;
         const xc = xOf(T); p.cur.setAttribute('x1', xc); p.cur.setAttribute('x2', xc);
         p.ver.innerHTML = T >= sc.verdictT ? `<p>${sc.verdict}</p><p class="small" style="margin:0">${sc.why}</p>` : '';
         p.ver.classList.toggle('on', T >= sc.verdictT);
@@ -763,10 +959,11 @@
   }
 
   // fichas con varias animaciones, cada una con una sola taquicardia y sus propios controles
-  const FOR = { ado: ['ado_trav', 'ado_trnav', 'ado_ta', 'ado_nv', 'ado_jet', 'ado_anti'] };
+  const FOR = { ado: ['ado_trav', 'ado_trnav', 'ado_ta', 'ado_nv', 'ado_jet', 'ado_anti'], basal: ['basal_trnav', 'basal_travl', 'basal_coumel', 'basal_ta'],
+    pre: ['pre_dual', 'pre_vanode', 'pre_vaap'], twin: ['twin_tsv', 'twin_ap'], obl: ['obl_retro', 'obl_ante'] };
   for (const k of Object.keys(ANIMS)) {
     const A = ANIMS[k]; if (k.startsWith('ado_')) continue;
-    const np = (A.sel ? A.panels(A.def) : A.panels).length; if (np < 2) continue;
+    const np = (A.sel ? A.panels(A.def) : A.panels).length; if (np < 2 || FOR[k]) continue;
     FOR[k] = []; for (let i = 0; i < np; i++) { ANIMS[k + '_' + i] = Object.assign({}, A, { pi: i }); FOR[k].push(k + '_' + i); }
   }
   window.ANIM_IDS = Object.keys(ANIMS);
