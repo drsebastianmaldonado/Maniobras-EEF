@@ -561,10 +561,10 @@
       fases: s => { const e = s[0].stimEnd; return [[0, 'Taquicardia de QRS ancho con morfología de BRI (LC 340 ms). Catéter en la pared lateral del AD.'],
         [e - 60, 'El septum y la unión AV ya se activaron (están refractarios).'],
         [e - 1, 'Se da <b>un EA</b> desde la pared lateral del AD.'], [e + 120, 'Mirá el <b>V siguiente</b>: ¿se adelanta con el mismo QRS?']]; } },
-    ado: { t: 'Adenosina durante la TSV', def: 'trav', selL: 'Comparar', sel: [['trav', 'TRAV vs TA'], ['trnav', 'TRNAV vs TA'], ['both', 'TRNAV vs TRAV'], ['nv', 'Nodoventricular vs TRAV'], ['jet', 'JET (VA 1:1) vs TA'], ['anti', 'Antidrómica vs TRAV']],
-      panels: k => ({ both: ['trnav', 'trav'], nv: ['nv', 'trav'], jet: ['jet', 'ta'], anti: ['anti', 'trav'] }[k] || [k, 'ta']).map(m => () => adoSc(m)), dur: 3700, win: 3000,
-      fases: s => [[0, 'Taquicardia (LC 340 ms). Se inyecta adenosina.'], [s[0].ado[0], 'La adenosina llega al nodo (azul).'],
-        [s[0].ado[0] + 700, 'Mirá <b>cómo termina</b>, o qué pasa con las A si no termina.']] },
+    ...Object.fromEntries([['trav', 'TRAV'], ['trnav', 'TRNAV típica'], ['ta', 'taquicardia auricular'], ['nv', 'taquicardia por vía nodoventricular'], ['jet', 'taquicardia de la unión (JET) con VA 1:1'], ['anti', 'TRAV antidrómica']].map(([m, n]) =>
+      ['ado_' + m, { t: 'Adenosina en la ' + n, panels: [() => adoSc(m)], dur: 3700, win: 3000,
+        fases: s => [[0, 'Taquicardia (LC 340 ms). Se inyecta adenosina.'], [s[0].ado[0], 'La adenosina llega al nodo (azul).'],
+          [s[0].ado[0] + 700, 'Mirá <b>cómo termina</b>, o qué pasa con las A si no termina.']] }])),
     vai: { t: 'Índice VA: nodo vs vía posteroseptal', win: 3900, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => vaiSc('node'), () => vaiSc('ap')],
       fases: s => { const v = s[0].m.va; return [[0, 'Ritmo sinusal, sin inducir la TSV. Un catéter en el ápex del VD y otro en la base posterior, cerca del ostium del SC.'],
         [250, 'Se estimula el <b>ápex</b> sin capturar la aurícula. Medí el VA (espiga → A).'],
@@ -750,5 +750,7 @@
   }
 
   window.ANIM_IDS = Object.keys(ANIMS);
+  // fichas con varias animaciones, cada una con sus propios controles
+  window.ANIM_FOR = { ado: ['ado_trav', 'ado_trnav', 'ado_ta', 'ado_nv', 'ado_jet', 'ado_anti'] };
   window.mountAnims = r => r.querySelectorAll('.anim[data-anim]').forEach(mount);
 })();
