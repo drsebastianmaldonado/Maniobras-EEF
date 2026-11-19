@@ -88,7 +88,7 @@
   const cut = (pts, tc) => { const o = []; for (let i = 0; i < pts.length; i++) { const [p, t] = pts[i]; if (t <= tc) { o.push(pts[i]); continue; }
     if (i > 0) { const [p0, t0] = pts[i - 1], f = (tc - t0) / Math.max(1, t - t0); o.push([[p0[0] + (p[0] - p0[0]) * f, p0[1] + (p[1] - p0[1]) * f], tc]); } break; } return o; };
   const at = (pts, tc) => { const c = cut(pts, tc); return c.length ? c[c.length - 1][0] : pts[0][0]; };
-  const newSc = o => Object.assign({ ev: [], wv: [], flA: [], flV: [], ints: [], cols: [], stims: [], m: {} }, o);
+  const newSc = o => Object.assign({ ev: [], wv: [], flA: [], flV: [], ints: [], cols: [], stims: [], notes: [], m: {} }, o);
   const E = (sc, ch, t, l, x) => { const e = Object.assign({ ch, t, l }, x); sc.ev.push(e); if (ch === 'AD') sc.flA.push(t); return e; };
   const W_ = (sc, c, pts, tc) => { const p = tc == null ? pts : cut(pts, tc); if (p.length > 1) sc.wv.push({ c, pts: p }); if (tc != null && tc < pts[pts.length - 1][1]) sc.cols.push({ t: tc, pt: at(pts, tc) }); };
   const Vs = (sc, h) => { E(sc, 'VD', h + HVT, 'V'); E(sc, 'VDb', h + HVT + VBO, 'V'); sc.flV.push(h + HVT); };
@@ -394,9 +394,13 @@
       // latido en el que entra el EA
       const n = a + NSLOW; W_(sc, 'ante', slowP(a, n)); const h = n + 30; E(sc, 'His', h, 'H'); Hs.push(h); W_(sc, 'ante', [[G.node, n], [G.his, h]]); down(sc, h); Vs(sc, h);
       W_(sc, 'retro', [[G.node, n], [[252, 246], n + 30], [[232, 236], n + 55]], n + 45);
-      e = h + 2; paceA(sc, 'cso', e, 'CS'); E(sc, 'AD', e + 60, 'A'); W_(sc, 'ante', [[G.cso, e], [G.aSep, e + 20], [G.ra, e + 50], [G.hra, e + 65]]);
+      e = h + 2; paceA(sc, 'cso', e, 'CS'); E(sc, 'AD', e + 60, 'A'); W_(sc, 'ante', [[G.cso, e], [[168, 262], e + 30], [G.ra, e + 50], [G.hra, e + 65]]);
+      // la vía rápida está refractaria (el His acaba de activarse): el EA no puede bajar por ella
+      W_(sc, 'ante', [[G.cso, e], [[222, 264], e + 15], [[230, 240], e + 30]], e + 18);
+      // entra por la vía lenta y baja con decremento: el His siguiente se retrasa
+      sc.notes.push({ t0: e, t1: e + 260, x: 250, y: 208, txt: 'vía rápida refractaria', col: '#212121', anc: 'end' }, { t0: e + 20, t1: e + 340, x: 236, y: 340, txt: 'baja por la vía lenta', col: '#ef6c00', anc: 'end' });
       hExp = h + LCT; const n2 = e + 338; hNext = n2 + 30;
-      W_(sc, 'ante', [[G.cso, e], [[236, 288], e + 120], [[250, 284], e + 240], [G.node, n2]]);
+      W_(sc, 'ante', [[G.cso, e], [[220, 292], e + 40], [[236, 288], e + 130], [[250, 284], e + 240], [G.node, n2]]);
       E(sc, 'His', hNext, 'H'); W_(sc, 'ante', [[G.node, n2], [G.his, hNext]]); down(sc, hNext); Vs(sc, hNext); a = fastUp(sc, n2); E(sc, 'CS', n2 + 60, 'A');
       for (let i = 0; i < 3; i++) { b = trnavBeat(sc, a); E(sc, 'CS', b.n + 60, 'A'); a = b.a; }
     } else {
@@ -405,7 +409,7 @@
         W_(sc, 'retro', [[G.jx, f - 12], [G.node, f + 10], [G.aSep, f + 40], [G.ra, f + 70]], cutR); if (!cutR) { E(sc, 'AD', f + 65, 'A'); E(sc, 'CS', f + 40, 'A'); } };
       let f = 200; for (let i = 0; i < 4; i++, f += LCT) { jbeat(f); Hs.push(f); }
       const h = f; jbeat(f, f + 25); Hs.push(h);
-      e = h + 2; paceA(sc, 'cso', e, 'CS'); E(sc, 'AD', e + 60, 'A'); W_(sc, 'ante', [[G.cso, e], [G.aSep, e + 20], [G.ra, e + 50], [G.hra, e + 65]]);
+      e = h + 2; paceA(sc, 'cso', e, 'CS'); E(sc, 'AD', e + 60, 'A'); W_(sc, 'ante', [[G.cso, e], [[168, 262], e + 30], [G.ra, e + 50], [G.hra, e + 65]]);
       W_(sc, 'ante', [[G.cso, e], [[250, 284], e + 20], [G.node, e + 35]], e + 28);
       hExp = hNext = h + LCT; for (let i = 0; i < 4; i++) jbeat(hNext + i * LCT);
     }
@@ -414,7 +418,7 @@
     Object.assign(sc, { stimEnd: e, verdictT: hNext + 30,
       verdict: nav ? `El EA cae con el His refractario y <b>retrasa el His siguiente ${d} ms</b> (HH ${hNext - prevH}): entró al circuito por la vía lenta → <b>TRNAV</b>.`
                    : `El EA cae con el His refractario y <b>el His siguiente llega a tiempo</b> (HH ${LCT}): no alcanzó el foco → <b>taquicardia de la unión</b>.`,
-      why: nav ? 'La vía lenta se entra desde el ostium del SC aunque el His esté refractario; como el EA es precoz, conduce con decremento y el His siguiente se retrasa (también puede adelantarlo o terminar la TSV).'
+      why: nav ? 'La vía rápida está refractaria (el His acaba de activarse), así que el EA no puede bajar por ella. Entra por la vía lenta desde el ostium del SC y, como es precoz, conduce con decremento: el His siguiente se retrasa (también puede adelantarlo o terminar la TSV).'
                : 'El foco está en la unión, que acaba de activarse: el EA choca en el nodo refractario y no lo modifica.' });
     return sc;
   }
@@ -699,6 +703,7 @@
         }
         for (const c of sc.cols || []) if (T >= c.t && T < c.t + 140) dh += `<path d="M${c.pt[0] - 11},${c.pt[1] - 11} L${c.pt[0] + 11},${c.pt[1] + 11} M${c.pt[0] + 11},${c.pt[1] - 11} L${c.pt[0] - 11},${c.pt[1] + 11}" stroke="#212121" stroke-width="5" stroke-linecap="round"/>`;
         for (const c of sc.stims || []) if (T >= c.t && T < c.t + 70) dh += `<circle cx="${c.pt[0]}" cy="${c.pt[1]}" r="${c.r || 20}" fill="none" stroke="#c62828" stroke-width="5"/>`;
+        for (const n of sc.notes || []) if (T >= n.t0 && T < n.t1) dh += `<text x="${n.x}" y="${n.y}" font-size="15" font-weight="700" fill="${n.col}" text-anchor="${n.anc || 'start'}" stroke="#fff" stroke-width="4" paint-order="stroke">${n.txt}</text>`;
         p.dots.innerHTML = dh;
         // trazado con ventana móvil
         const Wn = A.win || W, tStart = Math.max(0, T - Wn * 0.85), k = (X1 - X0) / Wn, xOf = tt => X0 + (tt - tStart) * k;
