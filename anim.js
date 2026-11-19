@@ -656,31 +656,47 @@
     return sc;
   }
 
-  // Vía oblicua lateral izquierda vista desde el seno coronario (canales de distal a proximal)
+  // Vía oblicua lateral izquierda: vista ampliada del anillo mitral (aurícula arriba, ventrículo abajo, SC en el medio).
+  // Los canales del SC van de distal (1-2, lateral) a proximal (7-8, septal).
   const CSX = { C12: [512, 292], C34: [450, 300], C56: [380, 304], C78: [300, 302] }, OBA = [446, 268], OBV = [516, 316];
+  const RX = { C78: 110, C56: 230, C34: 350, C12: 460 }, RAI = [330, 118], RVI = [470, 186];
   function oblSc(kind) {
-    const retro = kind === 'retro', sc = newSc({ title: retro ? 'Conducción retrógrada (estimulación ventricular)' : 'Conducción anterógrada (ritmo sinusal, preexcitado)', ap: 'obl', cats: retro ? ['apex', 'cs'] : ['cs'] });
-    const R = [];
+    const retro = kind === 'retro', sc = newSc({ title: retro ? 'Conducción retrógrada (estimulación ventricular)' : 'Conducción anterógrada (ritmo sinusal, preexcitado)', view: 'ring', vb: '0 0 560 320', cats: [], fronts: [] });
+    const R = [], r = Math.round;
+    const local = (lane, t, l) => E(sc, lane, r(t), l);
     if (retro) {
-      [300, 1000, 1700].forEach(s => { stim(sc, 'apex', s);
-        W_(sc, 'retro', [[G.apex, s], [[300, 600], s + 35], [[430, 520], s + 70], [[500, 400], s + 95], [OBV, s + 110]]);
-        W_(sc, 'retro', [[OBV, s + 110], [OBA, s + 130]]);
-        W_(sc, 'retro', [[OBA, s + 130], [[380, 250], s + 150], [G.aSep, s + 185]]); W_(sc, 'retro', [[OBA, s + 130], [[522, 262], s + 150], [[520, 200], s + 175]]); sc.flA.push(s + 135);
-        const V = { C78: 70, C56: 85, C34: 98, C12: 106 }, A = { C34: 135, C12: 150, C56: 150, C78: 170 };
-        for (const k in V) E(sc, k, s + V[k], 'V'); for (const k in A) E(sc, k, s + A[k], 'A'); E(sc, 'C12', s + 116, 'P'); E(sc, 'C34', s + 125, 'P');
-        R.push(s); });
-      const s = R[1]; brk(sc, 'C34', s, s + 135, 'VA 135', { guide: 'VD', hot: 1, up: 1 }); brk(sc, 'C12', s, s + 150, 'VA 150', { guide: 'VD', up: 1 });
-      Object.assign(sc, { stimEnd: 0, verdictT: s + 400, verdict: 'La <b>A más precoz está en SC 3-4</b> (inserción auricular), no en 1-2, donde llega el frente ventricular a la vía. Entre el V y la A se registra el <b>potencial de la vía (P)</b>, de 1-2 a 3-4: la vía es oblicua.',
-        why: 'La inserción ventricular está más distal (anterior) que la auricular. El VA local más corto no siempre está sobre la vía: el blanco más preciso es el potencial.' });
+      [300, 1000, 1700].forEach(s => {
+        stim(sc, 'apex', s);
+        const v0 = s + 62, kV = 0.1, tV = x => v0 + (x - 30) * kV;          // el frente ventricular llega desde el septum
+        const tVI = tV(RVI[0]), tAI = tVI + 30, kA = 0.15, tA = x => tAI + Math.abs(x - RAI[0]) * kA;
+        sc.fronts.push({ band: 'V', x0: 30, t0: v0, k: kV, dir: 'right' }, { band: 'A', x0: RAI[0], t0: tAI, k: kA, dir: 'both' });
+        W_(sc, 'retro', [[RVI, tVI], [RAI, tAI]]); sc.flA.push(tAI); sc.flV.push(v0);
+        for (const k in RX) { local(k, tV(RX[k]), 'V'); local(k, tA(RX[k]), 'A'); }
+        local('C12', tVI + 30 * (RVI[0] - RX.C12) / (RVI[0] - RAI[0]), 'P'); local('C34', tVI + 30 * (RVI[0] - RX.C34) / (RVI[0] - RAI[0]), 'P');
+        R.push({ s, tV, tA, tAI });
+      });
+      const x = R[1], va34 = r(x.tA(RX.C34)) - r(x.tV(RX.C34)), va12 = r(x.tA(RX.C12)) - r(x.tV(RX.C12));
+      brk(sc, 'C34', r(x.tV(RX.C34)), r(x.tA(RX.C34)), 'VA ' + va34, { hot: 1, up: 1 }); brk(sc, 'C12', r(x.tV(RX.C12)), r(x.tA(RX.C12)), 'VA ' + va12, { up: 1 });
+      sc.notes.push({ t0: r(x.tA(RX.C34)), t1: 99999, x: RX.C34, y: 104, txt: 'A más precoz', col: '#6a3fb5', anc: 'middle' });
+      Object.assign(sc, { stimEnd: 0, verdictT: x.s + 200, m: { R },
+        verdict: `El frente ventricular viene del septum, pasa por debajo de 3-4 y recién entra a la vía en su <b>inserción ventricular</b> (1-2). Sube en diagonal y sale en la <b>inserción auricular</b> (3-4): ahí está la <b>A más precoz</b> (VA local ${va34} ms en 3-4, ${va12} ms en 1-2). Entre el V y la A se registra el <b>potencial de la vía</b> (P).`,
+        why: 'La A más precoz marca la inserción auricular, no el lugar donde la vía toma al ventrículo. Comparala con el V más precoz de la conducción anterógrada.' });
     } else {
-      [200, 900, 1600].forEach(a => { W_(sc, 'ante', [[G.sn, a - 70], [G.aSep, a - 25], [[380, 250], a + 10], [OBA, a + 30], [[522, 262], a + 45]]); sc.flA.push(a);
-        W_(sc, 'ante', [[OBA, a + 30], [OBV, a + 60]]); W_(sc, 'ante', [[OBV, a + 60], [[500, 400], a + 80], [[430, 520], a + 110], [G.apex, a + 160]]); sc.flV.push(a + 65);
-        const A = { C78: 0, C56: 15, C34: 30, C12: 40 }, V = { C12: 65, C34: 80, C56: 95, C78: 110 };
-        for (const k in A) E(sc, k, a + A[k], 'A'); for (const k in V) E(sc, k, a + V[k], 'V'); E(sc, 'C34', a + 40, 'P'); E(sc, 'C12', a + 52, 'P');
-        R.push(a); });
-      const a = R[1]; brk(sc, 'C12', a + 40, a + 65, 'AV 25', { hot: 1, up: 1 });
-      Object.assign(sc, { stimEnd: 0, verdictT: a + 400, verdict: 'El <b>V más precoz está en SC 1-2</b> (inserción ventricular), más distal que la A más precoz de la conducción retrógrada (3-4). El potencial de la vía (P) va ahora de 3-4 a 1-2.',
-        why: 'Comparando la A más precoz (retrógrada) y el V más precoz (anterógrado) se ve el recorrido de la vía: en las libres izquierdas la inserción ventricular está 4–30 mm más distal que la auricular.' });
+      [200, 900, 1600].forEach(a => {
+        const a0 = a - 10, kA = 0.13, tA = x => a0 + (x - 30) * kA;          // el frente auricular sinusal llega desde el septum
+        const tAI = tA(RAI[0]), tVI = tAI + 30, kV = 0.12, tV = x => tVI + Math.abs(x - RVI[0]) * kV;
+        sc.fronts.push({ band: 'A', x0: 30, t0: a0, k: kA, dir: 'right' }, { band: 'V', x0: RVI[0], t0: tVI, k: kV, dir: 'both' });
+        W_(sc, 'ante', [[RAI, tAI], [RVI, tVI]]); sc.flA.push(a0); sc.flV.push(tVI);
+        for (const k in RX) { local(k, tA(RX[k]), 'A'); local(k, tV(RX[k]), 'V'); }
+        local('C34', tAI + 30 * (RX.C34 - RAI[0]) / (RVI[0] - RAI[0]), 'P'); local('C12', tAI + 30 * (RX.C12 - RAI[0]) / (RVI[0] - RAI[0]), 'P');
+        R.push({ a, tA, tV });
+      });
+      const x = R[1], av12 = r(x.tV(RX.C12)) - r(x.tA(RX.C12)), av34 = r(x.tV(RX.C34)) - r(x.tA(RX.C34));
+      brk(sc, 'C12', r(x.tA(RX.C12)), r(x.tV(RX.C12)), 'AV ' + av12, { hot: 1, up: 1 }); brk(sc, 'C34', r(x.tA(RX.C34)), r(x.tV(RX.C34)), 'AV ' + av34, { up: 1 });
+      sc.notes.push({ t0: r(x.tV(RX.C12)), t1: 99999, x: RX.C12, y: 252, txt: 'V más precoz', col: '#ef6c00', anc: 'middle' });
+      Object.assign(sc, { stimEnd: 0, verdictT: x.a + 130, m: { R },
+        verdict: `El frente auricular viene del septum y entra a la vía en su <b>inserción auricular</b> (3-4). Baja en diagonal y sale en la <b>inserción ventricular</b> (1-2): ahí está el <b>V más precoz</b> (AV local ${av12} ms en 1-2, ${av34} ms en 3-4). El potencial de la vía (P) va ahora de 3-4 a 1-2.`,
+        why: 'En la conducción retrógrada la A más precoz está en 3-4; en la anterógrada, el V más precoz está en 1-2. Esa separación (4–30 mm, mediana 14–15 mm en las libres izquierdas) es la oblicuidad: el blanco más preciso es el potencial de la vía.' });
     }
     return sc;
   }
@@ -758,10 +774,10 @@
       fases: [[0, 'Paciente con heterotaxia: dos nodos AV (anterior y posterior), cada uno con su His. Mirá por dónde baja y por dónde sube la taquicardia.']] },
     twin_ap: { t: 'Nodos AV gemelos: estimulación auricular diferencial', lanes: [['ECG', 'ECG'], ['AD', 'AD alta'], ['His', 'His ant.'], ['HisP', 'His post.']], panels: [() => twinSc('ap')], win: 2600,
       fases: [[0, 'Ritmo sinusal. Se estimula primero la AD alta...'], [1650, '...y después el ostium del SC: conduce el otro nodo.']] },
-    obl_retro: { t: 'Vía oblicua: conducción retrógrada', win: 320, lanes: [['C12', 'SC 1-2'], ['C34', 'SC 3-4'], ['C56', 'SC 5-6'], ['C78', 'SC 7-8'], ['VD', 'VD']], panels: [() => oblSc('retro')],
-      fases: [[0, 'Catéter en el seno coronario, canales de distal (1-2, lateral) a proximal (7-8). Se estimula el VD.'], [400, 'Mirá dónde llega primero el V a la vía, dónde aparece primero la A y el potencial de la vía (P).']] },
-    obl_ante: { t: 'Vía oblicua: conducción anterógrada', win: 320, lanes: [['C12', 'SC 1-2'], ['C34', 'SC 3-4'], ['C56', 'SC 5-6'], ['C78', 'SC 7-8']], panels: [() => oblSc('ante')],
-      fases: [[0, 'Ritmo sinusal con preexcitación por la misma vía. Mirá dónde aparece primero el V.']] },
+    obl_retro: { t: 'Vía oblicua: conducción retrógrada', win: 260, dur: 1270, lanes: [['C12', 'SC 1-2'], ['C34', 'SC 3-4'], ['C56', 'SC 5-6'], ['C78', 'SC 7-8']], panels: [() => oblSc('retro')],
+      fases: s => { const R = s[0].m.R[0]; return [[0, 'Vista ampliada del anillo mitral: aurícula arriba, ventrículo abajo y el catéter del SC en el medio. Se estimula el VD.'], [R.s + 55, 'Seguí el <b>frente ventricular</b> (naranja): llega desde el septum y pasa por debajo de 3-4 sin activar la vía.'], [R.tAI - 32, 'Entra a la vía en la <b>inserción ventricular</b> (1-2), sube en diagonal (violeta) y sale en la <b>inserción auricular</b> (3-4).'], [R.tAI + 5, 'Desde la inserción auricular la aurícula se activa hacia los dos lados: la <b>A más precoz</b> está en 3-4.']]; } },
+    obl_ante: { t: 'Vía oblicua: conducción anterógrada', win: 260, dur: 1100, lanes: [['C12', 'SC 1-2'], ['C34', 'SC 3-4'], ['C56', 'SC 5-6'], ['C78', 'SC 7-8']], panels: [() => oblSc('ante')],
+      fases: s => { const R = s[0].m.R[0]; return [[0, 'Vista ampliada del anillo mitral. Ritmo sinusal con preexcitación por la misma vía.'], [R.a - 10, 'Seguí el <b>frente auricular</b> (violeta): llega desde el septum y entra a la vía en la <b>inserción auricular</b> (3-4).'], [R.a + 25, 'Baja por la vía en diagonal (naranja) y sale en la <b>inserción ventricular</b> (1-2).'], [R.a + 55, 'Desde la inserción ventricular el ventrículo se activa hacia los dos lados: el <b>V más precoz</b> está en 1-2.']]; } },
     vai: { t: 'Índice VA: nodo vs vía posteroseptal', n: 'Índice VA', win: 3900, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => vaiSc('node'), () => vaiSc('ap')],
       fases: s => { const v = s[0].m.va; return [[0, 'Ritmo sinusal, sin inducir la TSV. Un catéter en el ápex del VD y otro en la base posterior, cerca del ostium del SC.'],
         [250, 'Se estimula el <b>ápex</b> sin capturar la aurícula. Medí el VA (espiga → A).'],
@@ -786,7 +802,25 @@
 
   // ---------- Dibujo ----------
   const COL = { ante: '#ef6c00', retro: '#6a3fb5', focus: '#c62828' };
+  function drawRing(svg, sc) {
+    const T = (x, y, t, o) => { const e = mk('text', Object.assign({ x, y, 'font-size': 14, fill: '#5d1f16' }, o || {}), svg); e.textContent = t; return e; };
+    mk('rect', { x: 30, y: 40, width: 500, height: 78, rx: 14, fill: '#f4c7bd', stroke: '#9c4f42', 'stroke-width': 2 }, svg);
+    mk('rect', { x: 30, y: 186, width: 500, height: 78, rx: 14, fill: '#e6a091', stroke: '#9c4f42', 'stroke-width': 2 }, svg);
+    mk('rect', { x: 30, y: 128, width: 500, height: 48, fill: '#f3e6cc', stroke: '#c9ad7d', 'stroke-width': 1 }, svg);
+    T(40, 62, 'aurícula izquierda', { 'font-weight': 700 }); T(40, 256, 'ventrículo izquierdo', { 'font-weight': 700 });
+    T(522, 146, 'anillo mitral', { 'font-size': 12, 'text-anchor': 'end', fill: '#7a5a2a' });
+    mk('path', { d: 'M18,156 L520,156', stroke: '#5d4037', 'stroke-width': 6, 'stroke-linecap': 'round' }, svg);
+    for (const [k, x] of Object.entries(RX)) { mk('rect', { x: x - 7, y: 151, width: 14, height: 10, fill: '#212121' }, svg); T(x, 174, k.slice(1, 2) + '-' + k.slice(2), { 'font-size': 12, 'text-anchor': 'middle', fill: '#212121' }); }
+    T(20, 300, '← septal (SC proximal)', { 'font-size': 13, fill: '#455a64' }); T(540, 300, 'lateral (SC distal) →', { 'font-size': 13, fill: '#455a64', 'text-anchor': 'end' });
+    mk('path', { d: `M${RAI[0]},${RAI[1]} L${RVI[0]},${RVI[1]}`, stroke: '#d81b60', 'stroke-width': 9, 'stroke-linecap': 'round', opacity: 0.85 }, svg);
+    mk('circle', { cx: RAI[0], cy: RAI[1], r: 6, fill: '#d81b60' }, svg); mk('circle', { cx: RVI[0], cy: RVI[1], r: 6, fill: '#d81b60' }, svg);
+    T(RAI[0] - 10, 30, 'inserción auricular', { 'font-size': 13, 'font-weight': 700, fill: '#d81b60', 'text-anchor': 'middle' }); mk('path', { d: `M${RAI[0] - 10},34 L${RAI[0]},${RAI[1] - 6}`, stroke: '#d81b60', 'stroke-width': 1.5, 'stroke-dasharray': '3 3' }, svg);
+    T(RVI[0], 284, 'inserción ventricular', { 'font-size': 13, 'font-weight': 700, fill: '#d81b60', 'text-anchor': 'middle' }); mk('path', { d: `M${RVI[0]},272 L${RVI[0]},${RVI[1] + 6}`, stroke: '#d81b60', 'stroke-width': 1.5, 'stroke-dasharray': '3 3' }, svg);
+    T(345, 146, 'vía oblicua', { 'font-size': 13, 'font-weight': 700, fill: '#d81b60', 'text-anchor': 'end' });
+    return { atr: [], ven: [] };
+  }
   function drawHeart(svg, sc) {
+    if (sc.view === 'ring') return drawRing(svg, sc);
     const g = mk('g', {}, svg); g.innerHTML = HEART;
     const atr = ATR.map(d => mk('path', { d, fill: 'none', opacity: 0 }, svg));
     const ven = VEN.map(d => mk('path', { d, fill: 'none', opacity: 0 }, svg));
@@ -863,7 +897,7 @@
     const panels = scs.map(sc => {
       const wrap = document.createElement('div'); wrap.className = 'anpanel';
       wrap.innerHTML = A.pi != null ? '' : `<div class="ant2">${sc.title}</div>`;
-      const hsv = mk('svg', { viewBox: VB, role: 'img', 'aria-label': sc.title, class: 'anh' }, wrap);
+      const hsv = mk('svg', { viewBox: sc.vb || VB, role: 'img', 'aria-label': sc.title, class: 'anh' }, wrap);
       const h = drawHeart(hsv, sc);
       const dots = mk('g', {}, hsv);
       const svg = mk('svg', { viewBox: `0 0 310 ${TH}`, role: 'img', 'aria-label': 'Trazado', class: 'antr' }, wrap);
@@ -903,6 +937,16 @@
           const trail = w.pts.slice(0, k + 1).map(q => q[0].join(' ')).join(' L') + ` L${x} ${y}`;
           dh += `<path d="M${trail}" stroke="${COL[w.c]}" fill="none" stroke-width="8" stroke-linecap="round" opacity=".55"/><circle cx="${x}" cy="${y}" r="13" fill="${COL[w.c]}" stroke="#fff" stroke-width="3"/>`;
         }
+        let df = '';
+        for (const f of sc.fronts || []) {
+          const dt = T - f.t0; if (dt < 0) continue;
+          const maxD = f.dir === 'right' ? 530 - f.x0 : Math.max(f.x0 - 30, 530 - f.x0), tE = maxD * f.k; if (dt > tE + 220) continue;
+          const rr = dt / f.k, L = f.dir === 'right' ? f.x0 : Math.max(30, f.x0 - rr), Rr = Math.min(530, f.x0 + rr), y = f.band === 'A' ? 40 : 186, col = f.band === 'A' ? '#7e57c2' : '#ef6c00';
+          const op = dt < tE ? 0.5 : 0.5 * (1 - (dt - tE) / 220);
+          df += `<rect x="${L}" y="${y}" width="${Math.max(0, Rr - L)}" height="78" fill="${col}" opacity="${op.toFixed(2)}"/>`;
+          if (dt < tE) { if (Rr < 530) df += `<circle cx="${Rr}" cy="${y + 39}" r="10" fill="${col}" stroke="#fff" stroke-width="3"/>`; if (f.dir === 'both' && L > 30) df += `<circle cx="${L}" cy="${y + 39}" r="10" fill="${col}" stroke="#fff" stroke-width="3"/>`; }
+        }
+        dh = df + dh;
         for (const c of sc.cols || []) if (T >= c.t && T < c.t + 140) dh += `<path d="M${c.pt[0] - 11},${c.pt[1] - 11} L${c.pt[0] + 11},${c.pt[1] + 11} M${c.pt[0] + 11},${c.pt[1] - 11} L${c.pt[0] - 11},${c.pt[1] + 11}" stroke="#212121" stroke-width="5" stroke-linecap="round"/>`;
         for (const c of sc.stims || []) if (T >= c.t && T < c.t + 70) dh += `<circle cx="${c.pt[0]}" cy="${c.pt[1]}" r="${c.r || 20}" fill="none" stroke="#c62828" stroke-width="5"/>`;
         for (const n of sc.notes || []) if (T >= n.t0 && T < n.t1) dh += `<text x="${n.x}" y="${n.y}" font-size="15" font-weight="700" fill="${n.col}" text-anchor="${n.anc || 'start'}" stroke="#fff" stroke-width="4" paint-order="stroke">${n.txt}</text>`;
@@ -916,7 +960,7 @@
           const ln = LANES.find(l => l[0] === e.ch); if (!ln) continue;
           const y = ln[2], x = xOf(e.t);
           if (e.stim) { ds += `M${x} ${y - 16} L${x} ${y + 12} `; lh += `<text x="${x}" y="${y - 18}" style="fill:var(--red)">E</text>`; continue; }
-          if (e.l === 'P') { dp += spike(x, y, false); lh += `<text x="${x}" y="${y - 14}" style="fill:#d81b60">P</text>`; continue; }
+          if (e.l === 'P') { dp += spike(x, y, false); lh += `<text x="${x}" y="${y + 20}" style="fill:#d81b60">P</text>`; continue; }
           if (e.qrs === 'm') { d += `M${x - 1} ${y} L${x + 2} ${y + 9} L${x + 6} ${y - 12} L${x + 9} ${y + 4} L${x + 11} ${y} `; continue; }
           if (e.qrs) { d += e.qrs === 'w' ? `M${x - 1} ${y} L${x + 5} ${y - 12} L${x + 13} ${y - 11} L${x + 19} ${y + 6} L${x + 24} ${y} ` : `M${x - 1} ${y} L${x + 2} ${y - 13} L${x + 5} ${y + 6} L${x + 8} ${y} `; continue; }
           const hot = e.tag && T > (e.tagT || sc.stimEnd);
