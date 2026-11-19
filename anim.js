@@ -217,6 +217,7 @@
     const sc = simTRAV({ title: ortho ? `TRAV, estimulando a ${pcl} ms` : `TRAV, estimulando a ${pcl} ms`, PCL: pcl, AHp: ortho ? 190 : 215, AHr: ortho ? 185 : 200, runs: [{ site: 'apex', n: 7 }] });
     const R = sc.m.runs[0], k = R.H.length - 2, h = R.H[k];
     Object.assign(h, { tag: ortho ? 'H ortodrómico' : 'H retrógrado', tagT: h.t + 1 });
+    sc.ortho = ortho;
     if (ortho) brk(sc, 'His', R.A[k - 1], h.t, 'AH ' + (h.t - R.A[k - 1]), { hot: 1 });
     Object.assign(sc, { verdictT: h.t + 20,
       verdict: ortho ? 'El His se activa <b>de arriba hacia abajo</b>, con el mismo AH que en la TSV, aunque el ventrículo esté estimulado: <b>captura ortodrómica del His</b>.' : 'El estímulo sube por la rama derecha y llega primero al His: <b>His retrógrado</b> (morfología distinta de la TSV).',
@@ -527,41 +528,46 @@
     dha: ['ΔHA', 'Medí el <b>HA</b> del último latido estimulado (del His retrógrado a la A) y comparalo con el HA de la TSV.', 'Antes de estimular, mirá el <b>HA</b> de la TSV (del His a la A).'],
     all: ['Las tres', 'Las tres mediciones salen del mismo encarrilamiento: PPI en el canal del VD, SA y VA en la AD alta y HA en el His.', 'Antes de estimular, mirá la LC, el VA y el HA de la TSV.'] };
   const ANIMS = {
-    vop: { t: 'Sobreestimulación ventricular: A-V vs A-A-V', dur: 4200, panels: [travVop, taVop],
-      fases: [[0, 'Taquicardia (LC 340 ms). Mirá el circuito en el esquema y las A, H y V en el trazado.'],
-              [690, 'Estimulación del VD a 300 ms (E): cada estímulo llega a la aurícula y las A se aceleran a 300.'],
-              [2100, 'Se corta la estimulación. Mirá qué sigue a la <b>última A acelerada</b>.'],
-              [3000, 'La taquicardia retoma su ciclo (LC 340) en los dos casos: en la TRAV el frente vuelve a girar por el nodo, el ventrículo y la vía; en la TA vuelve a disparar el foco.']] },
+    vop: { t: 'Sobreestimulación ventricular: A-V vs A-A-V', n: 'Sobreestimulación ventricular', dur: 4200, panels: [travVop, taVop],
+      fases: s => s[0].focus
+        ? [[0, 'Taquicardia auricular (LC 340 ms): el foco dispara y cada A conduce por el nodo. Mirá las A, H y V en el trazado.'],
+           [850, 'Estimulación del VD a 300 ms (E): cada estímulo sube por la rama, el His y el nodo, y las A se aceleran a 300.'],
+           [2100, 'Se corta la estimulación. Mirá qué sigue a la <b>última A acelerada</b>.'],
+           [3000, 'El foco vuelve a disparar y la taquicardia retoma su ciclo (LC 340).']]
+        : [[0, 'TRAV (LC 340 ms): baja por el nodo y sube por la vía. Mirá el circuito en el esquema y las A, H y V en el trazado.'],
+           [690, 'Estimulación del VD a 300 ms (E): cada estímulo sube por la vía y las A se aceleran a 300.'],
+           [2100, 'Se corta la estimulación. Mirá qué sigue a la <b>última A acelerada</b>.'],
+           [3000, 'La taquicardia retoma su ciclo (LC 340): el frente vuelve a girar por el nodo, el ventrículo y la vía.']] },
     ppi: entA('ppi'), sava: entA('sava'), dha: entA('dha'),
-    hisorto: { t: 'Captura ortodrómica del His', panels: [() => hisorto(320), () => hisorto(270)],
-      fases: s => [[0, 'La misma TRAV, encarrilada desde el ápex del VD a dos LC distintas. Mirá cómo y cuándo se activa el His.'],
-        [s[0].m.runs[0].S[0] - 10, 'Estimulación del VD. A la izquierda, a 320 ms (20 ms menos que la LC); a la derecha, a 270 ms.'],
-        [s[0].m.runs[0].S[3], 'Seguí el His: a la izquierda baja desde el nodo (naranja) y choca con el estímulo en la rama derecha; a la derecha, el estímulo sube primero por la rama (violeta).'],
-        [s[0].stimEnd + 200, 'Al cortar, la taquicardia sigue igual en los dos casos.']] },
-    diff: { t: 'Encarrilamiento diferencial: ápex vs base', lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => diffSc('trav'), () => diffSc('trnav')],
+    hisorto: { t: 'Captura ortodrómica del His', n: 'Captura ortodrómica del His', panels: [() => hisorto(320), () => hisorto(270)],
+      fases: s => [[0, 'TRAV (LC 340 ms), encarrilada desde el ápex del VD. Mirá cómo y cuándo se activa el His.'],
+        [s[0].m.runs[0].S[0] - 10, s[0].ortho ? 'Estimulación del VD a 320 ms, 20 ms menos que la LC (lo más lento posible).' : 'Estimulación del VD a 270 ms, 70 ms menos que la LC.'],
+        [s[0].m.runs[0].S[3], s[0].ortho ? 'Seguí el His: baja desde el nodo (naranja) y choca con el estímulo en la rama derecha.' : 'Seguí el His: el estímulo sube primero por la rama derecha (violeta) y lo activa desde abajo.'],
+        [s[0].stimEnd + 200, 'Al cortar, la taquicardia sigue igual.']] },
+    diff: { t: 'Encarrilamiento diferencial: ápex vs base', n: 'Encarrilamiento diferencial', lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => diffSc('trav'), () => diffSc('trnav')],
       fases: s => { const [a, b] = s[0].m.runs; return [[0, 'Taquicardia. Hay un catéter en el ápex del VD y otro en la base, cerca del His.'],
         [a.S[0] - 10, 'Primero se encarrila desde el <b>ápex</b> (a 300 ms).'], [a.lastS + 1, 'Medí el VA (espiga → A) y el PPI desde el ápex.'],
         [b.S[0] - 10, 'Ahora se encarrila desde la <b>base</b>, a la misma LC.'], [b.lastS + 1, 'Medí el VA y el PPI desde la base y restá: base − ápex.']]; } },
-    ehr: { t: 'EV con His refractario: TRAV vs TRNAV', dur: 2500, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base']], panels: [() => ehrSc('trav'), () => ehrSc('trnav')],
+    ehr: { t: 'EV con His refractario: TRAV vs TRNAV', n: 'EV con His refractario', dur: 2500, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base']], panels: [() => ehrSc('trav'), () => ehrSc('trnav')],
       fases: s => { const e = s[0].stimEnd; return [[0, 'Taquicardia (LC 340 ms). Hay un catéter en la base del VD, cerca de la vía septal.'],
         [e - 60, 'Mirá el His: se activa en forma anterógrada. Desde ese momento el His está refractario.'],
         [e - 4, 'Se da <b>una sola EV</b> desde la base del VD, justo después del His (His refractario). El frente no puede subir por el His.'],
         [e + 110, 'Mirá la A siguiente: ¿llega antes de lo esperado (AA &lt; 340) o a tiempo?'],
-        [e + 450, 'Después de la EV la taquicardia sigue. En la TRAV, desde la A adelantada (se reseteó).']]; } },
-    parahis: { t: 'Estimulación para-Hisiana: nodo vs vía septal', win: 2600, lanes: [['ECG', 'ECG'], ['AD', 'AD alta'], ['His', 'His']], panels: [() => parahisSc('node'), () => parahisSc('ap')],
+        [e + 450, s[0].ap ? 'Después de la EV la taquicardia sigue desde la A adelantada (se reseteó).' : 'Después de la EV la taquicardia sigue igual, sin cambios.']]; } },
+    parahis: { t: 'Estimulación para-Hisiana: nodo vs vía septal', n: 'Estimulación para-Hisiana', win: 2600, lanes: [['ECG', 'ECG'], ['AD', 'AD alta'], ['His', 'His']], panels: [() => parahisSc('node'), () => parahisSc('ap')],
       fases: s => { const R = s[0].m.R; return [[0, 'Ritmo sinusal. El catéter está en la región del His.'],
         [R[0].s - 10, '<b>Salida alta</b>: se captura el His y el miocardio vecino. QRS angosto y His inmediato (SH corto).'],
         [R[2].s - 10, '<b>Salida baja</b>: se captura solo el miocardio. QRS ancho (BRI) y aparece el His retrógrado, más tarde (SH largo).'],
         [R[3].s + 1, 'Compará el <b>SA</b> con y sin captura del His (y la secuencia auricular).']]; } },
-    aop: { t: 'Sobreestimulación auricular: VA linking', panels: [() => aopSc('trnav'), () => aopSc('ta')],
-      fases: s => { const m = s[0].m; return [[0, 'Taquicardia (LC 340 ms). A la izquierda TRNAV; a la derecha, TA.'],
+    aop: { t: 'Sobreestimulación auricular: VA linking', n: 'Sobreestimulación auricular', panels: [() => aopSc('trnav'), () => aopSc('ta')],
+      fases: s => { const m = s[0].m; return [[0, s[0].nodal ? 'TRNAV típica (LC 340 ms): baja por la vía lenta y sube por la rápida.' : 'Taquicardia auricular (LC 340 ms): el foco dispara y conduce por el nodo.'],
         [m.S[0] - 10, 'Estimulación de la AD alta a 300 ms (E): confirmá que el V se acelera a 300.'],
         [m.lastS + 1, 'Se corta la estimulación. Medí el <b>VA del primer latido de retorno</b> y comparalo con el VA de la TSV.']]; } },
-    eha: { t: 'EA con His refractario: TRNAV vs unión', lanes: [['AD', 'AD alta'], ['CS', 'SC ostium'], ['His', 'His'], ['VD', 'VD']], panels: [() => ehaSc('trnav'), () => ehaSc('jet')],
+    eha: { t: 'EA con His refractario: TRNAV vs unión', n: 'EA con His refractario', lanes: [['AD', 'AD alta'], ['CS', 'SC ostium'], ['His', 'His'], ['VD', 'VD']], panels: [() => ehaSc('trnav'), () => ehaSc('jet')],
       fases: s => { const e = s[0].stimEnd; return [[0, 'Taquicardia (LC 340 ms) con A y V casi simultáneos. Catéter en el ostium del SC, en la región de la vía lenta.'],
         [e - 40, 'Mirá el His: se activa ahora, así que el His (la vía rápida) queda refractario.'],
         [e - 1, 'Se da <b>un EA</b> desde el ostium del SC <b>en el momento del His</b>.'], [e + 150, 'Mirá el <b>His siguiente</b>: ¿se retrasa, se adelanta o llega a tiempo?']]; } },
-    preex: { t: 'EA en taquicardia preexcitada: antidrómica vs TV', lanes: [['ADl', 'AD lateral'], ['His', 'His'], ['VD', 'VD ápex']], panels: [() => preexSc('af'), () => preexSc('vt')],
+    preex: { t: 'EA en taquicardia preexcitada: antidrómica vs TV', n: 'EA en taquicardia preexcitada', lanes: [['ADl', 'AD lateral'], ['His', 'His'], ['VD', 'VD ápex']], panels: [() => preexSc('af'), () => preexSc('vt')],
       fases: s => { const e = s[0].stimEnd; return [[0, 'Taquicardia de QRS ancho con morfología de BRI (LC 340 ms). Catéter en la pared lateral del AD.'],
         [e - 60, 'El septum y la unión AV ya se activaron (están refractarios).'],
         [e - 1, 'Se da <b>un EA</b> desde la pared lateral del AD.'], [e + 120, 'Mirá el <b>V siguiente</b>: ¿se adelanta con el mismo QRS?']]; } },
@@ -569,23 +575,25 @@
       ['ado_' + m, { t: 'Adenosina en la ' + n, panels: [() => adoSc(m)], dur: 3700, win: 3000,
         fases: s => [[0, 'Taquicardia (LC 340 ms). Se inyecta adenosina.'], [s[0].ado[0], 'La adenosina llega al nodo (azul).'],
           [s[0].ado[0] + 700, 'Mirá <b>cómo termina</b>, o qué pasa con las A si no termina.']] }])),
-    vai: { t: 'Índice VA: nodo vs vía posteroseptal', win: 3900, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => vaiSc('node'), () => vaiSc('ap')],
+    vai: { t: 'Índice VA: nodo vs vía posteroseptal', n: 'Índice VA', win: 3900, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => vaiSc('node'), () => vaiSc('ap')],
       fases: s => { const v = s[0].m.va; return [[0, 'Ritmo sinusal, sin inducir la TSV. Un catéter en el ápex del VD y otro en la base posterior, cerca del ostium del SC.'],
         [250, 'Se estimula el <b>ápex</b> sin capturar la aurícula. Medí el VA (espiga → A).'],
         [2250, 'Ahora se estimula la <b>base posterior</b>. Medí el VA.'], [v.base.A + 1, 'Índice VA = VA ápex − VA base.']]; } }
   };
   function entA(def) {
-    return { t: 'Encarrilamiento desde el VD: TRAV septal vs TRNAV', def, sel: Object.keys(ENTM).map(k => [k, ENTM[k][0]]),
+    return { t: 'Encarrilamiento desde el VD: TRAV septal vs TRNAV', n: 'Encarrilamiento desde el VD', def, sel: Object.keys(ENTM).map(k => [k, ENTM[k][0]]),
       panels: k => [() => entr(k, 'trav'), () => entr(k, 'trnav')], fases: (s, k) => entFases(s, ENTM[k][1], ENTM[k][2]) };
   }
   function entFases(s, medir, antes) {
-    const [tr, nv] = s, R = tr.m.runs[0], N = nv.m.runs[0], c = N.cap.indexOf(true);
-    const f = [[0, 'Taquicardia (LC 340 ms). A la izquierda, TRAV por una vía septal; a la derecha, TRNAV típica (baja por la vía lenta y sube por la rápida).']];
-    if (antes) f.push([tr.m.pre[1].v, antes]);
-    f.push([R.S[0] - 10, 'Encarrilamiento desde el ápex del VD a 300 ms (E).'],
-      [N.S[0] + 120, 'En la TRNAV las primeras E no cambian las A: el ventrículo no forma parte del circuito y el frente choca en el His. En la TRAV el V es parte del circuito y las A se aceleran enseguida.'],
-      [N.S[c] + 100, 'Cuando el estímulo se adelanta lo suficiente sube por el His hasta el nodo y también acelera las A de la TRNAV (a 300 ms).'],
-      [R.lastS + 1, 'Se corta la estimulación. ' + medir]);
+    const sc = s[0], R = sc.m.runs[0], nav = !!sc.nodal;
+    const f = [[0, nav ? 'TRNAV típica (LC 340 ms): baja por la vía lenta y sube por la rápida.' : 'TRAV por una vía septal (LC 340 ms): baja por el nodo y sube por la vía.']];
+    if (antes) f.push([sc.m.pre[1].v, antes]);
+    f.push([R.S[0] - 10, 'Encarrilamiento desde el ápex del VD a 300 ms (E).']);
+    if (nav) { const c = R.cap.indexOf(true);
+      f.push([R.S[0] + 120, 'Las primeras E no cambian las A: el ventrículo no forma parte del circuito y el frente choca en el His.'],
+        [R.S[c] + 100, 'Cuando el estímulo se adelanta lo suficiente, sube por el His hasta el nodo y acelera las A a 300.']); }
+    else f.push([R.S[1] + 100, 'El V es parte del circuito: el estímulo sube por la vía y las A se aceleran a 300.']);
+    f.push([R.lastS + 1, 'Se corta la estimulación. ' + medir]);
     return f;
   }
 
@@ -649,10 +657,10 @@
     const A = ANIMS[root.dataset.anim]; if (!A) return;
     const LANES = (A.lanes || LANES0).map(([c, l], i) => [c, l, 46 + i * 41]), TH = LANES[LANES.length - 1][2] + 26;
     const sel = A.sel ? (root.dataset.sel || A.def) : null;
-    const scs = (A.sel ? A.panels(sel) : A.panels).map(f => f());
+    const PL = A.sel ? A.panels(sel) : A.panels, scs = (A.pi != null ? [PL[A.pi]] : PL).map(f => f());
     const fases = typeof A.fases === 'function' ? A.fases(scs, sel) : A.fases;
     const dur = A.dur || Math.round(Math.max(...scs.map(s => s.verdictT)) + 650);
-    root.innerHTML = `<div class="bl">Animación: ${A.t}</div>
+    root.innerHTML = `<div class="bl">Animación: ${A.pi != null ? (A.n || A.t) + ' · ' + scs[0].title : A.t}</div>
       <div class="anc"><button class="btn anplay" type="button">▶ Reproducir</button><button class="btn anre" type="button">↺ Reiniciar</button>
       <label class="small">Velocidad <select class="anv"><option value="0.12">muy lenta</option><option value="0.25" selected>lenta</option><option value="0.5">normal</option></select></label>${A.sel ? `<label class="small">${A.selL || 'Medir'} <select class="ansel">${A.sel.map(([k, l]) => `<option value="${k}"${k === sel ? ' selected' : ''}>${l}</option>`).join('')}</select></label>` : ''}</div>
       <input class="ant" type="range" min="0" max="${dur}" value="0" step="10" aria-label="Momento de la animación">
@@ -661,7 +669,7 @@
       <p class="small" style="margin:4px 0 0;opacity:.7">Animación didáctica: tiempos ilustrativos. Naranja: conducción anterógrada · violeta: retrógrada · rojo: foco y estímulo. Las cámaras se iluminan al activarse.</p>`;
     const panels = scs.map(sc => {
       const wrap = document.createElement('div'); wrap.className = 'anpanel';
-      wrap.innerHTML = `<div class="ant2">${sc.title}</div>`;
+      wrap.innerHTML = A.pi != null ? '' : `<div class="ant2">${sc.title}</div>`;
       const hsv = mk('svg', { viewBox: VB, role: 'img', 'aria-label': sc.title, class: 'anh' }, wrap);
       const h = drawHeart(hsv, sc);
       const dots = mk('g', {}, hsv);
@@ -754,8 +762,14 @@
     frame(0);
   }
 
+  // fichas con varias animaciones, cada una con una sola taquicardia y sus propios controles
+  const FOR = { ado: ['ado_trav', 'ado_trnav', 'ado_ta', 'ado_nv', 'ado_jet', 'ado_anti'] };
+  for (const k of Object.keys(ANIMS)) {
+    const A = ANIMS[k]; if (k.startsWith('ado_')) continue;
+    const np = (A.sel ? A.panels(A.def) : A.panels).length; if (np < 2) continue;
+    FOR[k] = []; for (let i = 0; i < np; i++) { ANIMS[k + '_' + i] = Object.assign({}, A, { pi: i }); FOR[k].push(k + '_' + i); }
+  }
   window.ANIM_IDS = Object.keys(ANIMS);
-  // fichas con varias animaciones, cada una con sus propios controles
-  window.ANIM_FOR = { ado: ['ado_trav', 'ado_trnav', 'ado_ta', 'ado_nv', 'ado_jet', 'ado_anti'] };
+  window.ANIM_FOR = FOR;
   window.mountAnims = r => r.querySelectorAll('.anim[data-anim]').forEach(mount);
 })();
