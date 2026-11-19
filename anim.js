@@ -455,9 +455,18 @@
 
   // Adenosina durante la TSV: cómo termina o qué pasa si no termina
   function adoSc(mech) {
-    const trav = mech === 'trav', sc = newSc({ title: trav ? 'TRAV por vía septal' : 'Taquicardia auricular', cats: [] });
+    const trav = mech === 'trav', sc = newSc({ title: trav ? 'TRAV por vía septal' : mech === 'trnav' ? 'TRNAV típica' : 'Taquicardia auricular', cats: [] });
     let tEnd, t0;
-    if (trav) {
+    if (mech === 'trnav') {
+      // la adenosina enlentece y después bloquea la vía lenta (brazo anterógrado): termina después de una A
+      sc.nodal = true; let a = 120; E(sc, 'AD', a, 'A'); const dec = [0, 0, 0, 20, 50];
+      dec.forEach((d, i) => { if (i === 3) t0 = a - 40; const n = a + NSLOW + d; W_(sc, 'ante', slowP(a, n)); E(sc, 'His', n + 30, 'H'); W_(sc, 'ante', [[G.node, n], [G.his, n + 30]]); down(sc, n + 30); Vs(sc, n + 30); a = fastUp(sc, n); });
+      W_(sc, 'ante', slowP(a, a + NSLOW + 80), a + 200);
+      Object.assign(sc.ev.find(x => x.ch === 'AD' && x.t === a), { tag: 'última A (no conduce)', tagT: a + 60 });
+      tEnd = a; const s1 = a + 1100;
+      W_(sc, 'ante', [[G.sn, s1 - 30], [G.ra, s1], [G.aSep, s1 + 25], [G.node, s1 + 60], [G.his, s1 + 160]]); E(sc, 'AD', s1, 'A'); E(sc, 'His', s1 + 160, 'H'); down(sc, s1 + 160); Vs(sc, s1 + 160);
+      sc.ado = [t0, tEnd + 500];
+    } else if (trav) {
       sc.ap = 'sep'; let a = 120; E(sc, 'AD', a, 'A'); const AHs = [185, 185, 185, 200, 230];
       AHs.forEach((ah, i) => { if (i === 3) t0 = a - 40; a = travBeat(sc, a, ah).a; });
       W_(sc, 'ante', [[G.aSep, a], [G.node, a + 40]], a + 35);
@@ -471,9 +480,11 @@
       tEnd = 120 + 5 * LCT; sc.ado = [t0, 120 + 8 * LCT];
     }
     Object.assign(sc, { stimEnd: 0, verdictT: tEnd + 200,
-      verdict: trav ? 'El AH se alarga y la taquicardia <b>termina con una A que no conduce</b> (bloqueo en el nodo): TRNAV o TRAV, <b>excluye la TA</b>.'
+      verdict: mech === 'trnav' ? 'La vía lenta se enlentece (el AH se alarga) y la taquicardia <b>termina con una A que no conduce</b>: el bloqueo es en la vía lenta (brazo anterógrado) → TRNAV o TRAV, <b>excluye la TA</b>.'
+             : trav ? 'El AH se alarga y la taquicardia <b>termina con una A que no conduce</b> (bloqueo en el nodo): TRNAV o TRAV, <b>excluye la TA</b>.'
                     : 'Aparece <b>bloqueo AV y las A siguen</b> a la misma LC: la aurícula no necesita al nodo → <b>TA</b> (excluye la TRAV).',
-      why: trav ? 'El nodo es un brazo del circuito: al bloquearse, el circuito se corta. Después vuelve el ritmo sinusal.'
+      why: mech === 'trnav' ? 'Las dos vías del nodo son el circuito. Lo habitual es que se bloquee la vía lenta después de la A; si se bloquea la rápida (retrógrada), termina con un V, que no discrimina. Después vuelve el sinusal.'
+             : trav ? 'El nodo es un brazo del circuito: al bloquearse, el circuito se corta. Después vuelve el ritmo sinusal.'
                 : 'La adenosina bloquea el nodo, que no es parte del circuito: el foco sigue disparando y se ve mientras dura el bloqueo.' });
     return sc;
   }
@@ -522,7 +533,8 @@
       fases: s => { const e = s[0].stimEnd; return [[0, 'Taquicardia de QRS ancho con morfología de BRI (LC 340 ms). Catéter en la pared lateral del AD.'],
         [e - 60, 'El septum y la unión AV ya se activaron (están refractarios).'],
         [e - 1, 'Se da <b>un EA</b> desde la pared lateral del AD.'], [e + 120, 'Mirá el <b>V siguiente</b>: ¿se adelanta con el mismo QRS?']]; } },
-    ado: { t: 'Adenosina durante la TSV', panels: [() => adoSc('trav'), () => adoSc('ta')], dur: 3700, win: 3000,
+    ado: { t: 'Adenosina durante la TSV', def: 'trav', selL: 'Comparar', sel: [['trav', 'TRAV vs TA'], ['trnav', 'TRNAV vs TA'], ['both', 'TRNAV vs TRAV']],
+      panels: k => k === 'both' ? [() => adoSc('trnav'), () => adoSc('trav')] : [() => adoSc(k), () => adoSc('ta')], dur: 3700, win: 3000,
       fases: s => [[0, 'Taquicardia (LC 340 ms). Se inyecta adenosina.'], [s[0].ado[0], 'La adenosina llega al nodo (azul): el AH se alarga.'],
         [s[0].ado[0] + 700, 'Mirá <b>cómo termina</b>, o qué pasa con las A si no termina.']] },
     vai: { t: 'Índice VA: nodo vs vía posteroseptal', win: 3900, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => vaiSc('node'), () => vaiSc('ap')],
@@ -607,7 +619,7 @@
     const dur = A.dur || Math.round(Math.max(...scs.map(s => s.verdictT)) + 650);
     root.innerHTML = `<div class="bl">Animación: ${A.t}</div>
       <div class="anc"><button class="btn anplay" type="button">▶ Reproducir</button><button class="btn anre" type="button">↺ Reiniciar</button>
-      <label class="small">Velocidad <select class="anv"><option value="0.12">muy lenta</option><option value="0.25" selected>lenta</option><option value="0.5">normal</option></select></label>${A.sel ? `<label class="small">Medir <select class="ansel">${A.sel.map(([k, l]) => `<option value="${k}"${k === sel ? ' selected' : ''}>${l}</option>`).join('')}</select></label>` : ''}</div>
+      <label class="small">Velocidad <select class="anv"><option value="0.12">muy lenta</option><option value="0.25" selected>lenta</option><option value="0.5">normal</option></select></label>${A.sel ? `<label class="small">${A.selL || 'Medir'} <select class="ansel">${A.sel.map(([k, l]) => `<option value="${k}"${k === sel ? ' selected' : ''}>${l}</option>`).join('')}</select></label>` : ''}</div>
       <input class="ant" type="range" min="0" max="${dur}" value="0" step="10" aria-label="Momento de la animación">
       <p class="anf small"></p>
       <div class="anp"></div>
