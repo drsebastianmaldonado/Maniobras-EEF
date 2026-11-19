@@ -457,7 +457,35 @@
   function adoSc(mech) {
     const trav = mech === 'trav', sc = newSc({ title: trav ? 'TRAV por vía septal' : mech === 'trnav' ? 'TRNAV típica' : 'Taquicardia auricular', cats: [] });
     let tEnd, t0;
-    if (mech === 'trnav') {
+    if (mech === 'nv') {
+      // vía nodoventricular: baja por el nodo y el His, sube por la vía al nodo; la aurícula es espectadora
+      sc.title = 'Vía nodoventricular (NVRT)'; sc.ap = 'nv'; let n = 200; const plan = [30, 30, 30, 40, 45, 50], NVV = [250, 362];
+      plan.forEach((hd, i) => { if (i === 3) t0 = n - 40; const h = n + hd, blockA = i >= 4; E(sc, 'His', h, 'H'); W_(sc, 'ante', [[G.node, n], [G.his, h]]); down(sc, h); Vs(sc, h);
+        if (blockA) W_(sc, 'retro', [[G.node, n], [G.aSep, n + 35]], n + 12); else { W_(sc, 'retro', [[G.node, n], [G.aSep, n + 35], [G.ra, n + 70]]); E(sc, 'AD', n + 60, 'A'); }
+        if (i === 4) Object.assign(sc.ev.find(x => x.ch === 'His' && x.t === h), { tag: 'sin A', tagT: h + 80 });
+        const nn = h + 310, last = i === plan.length - 1; W_(sc, 'retro', [[NVV, h + 40], [[256, 318], h + 170], [G.node, nn]], last ? nn - 8 : null);
+        if (last) tEnd = h + HVT; n = nn; });
+      const s1 = tEnd + 1100; W_(sc, 'ante', [[G.sn, s1 - 30], [G.ra, s1], [G.aSep, s1 + 25], [G.node, s1 + 60], [G.his, s1 + 160]]); E(sc, 'AD', s1, 'A'); E(sc, 'His', s1 + 160, 'H'); down(sc, s1 + 160); Vs(sc, s1 + 160);
+      sc.ado = [t0, tEnd + 500];
+    } else if (mech === 'jet') {
+      sc.title = 'JET con conducción VA 1:1'; sc.focus = true; sc.focusPt = G.jx; let f = 200;
+      for (let i = 0; i < 10; i++, f += LCT) { const blockA = i >= 4 && i <= 6; if (i === 3) t0 = f - 40;
+        E(sc, 'His', f, 'H'); W_(sc, 'focus', [[G.jx, f - 12], [G.his, f]]); down(sc, f); Vs(sc, f);
+        if (blockA) W_(sc, 'retro', [[G.jx, f - 12], [G.node, f + 10], [G.aSep, f + 40]], f + 15); else { W_(sc, 'retro', [[G.jx, f - 12], [G.node, f + 10], [G.aSep, f + 40], [G.ra, f + 70]]); E(sc, 'AD', f + 65, 'A'); }
+        if (i === 4) Object.assign(sc.ev.find(x => x.ch === 'His' && x.t === f), { tag: 'sin A', tagT: f + 80 }); }
+      tEnd = 200 + 6 * LCT; sc.ado = [t0, 200 + 7 * LCT];
+    } else if (mech === 'anti') {
+      // antidrómica: baja por la vía atriofascicular y sube por la rama derecha, el His y el nodo
+      sc.title = 'Antidrómica (vía atriofascicular)'; sc.ap = 'af'; let t = 100; const plan = [0, 0, 0, 20, 50, 'b'];
+      plan.forEach((x, i) => { if (i === 3) t0 = t - 40;
+        W_(sc, 'ante', [[G.afA, t], [[86, 360], t + 50], [[118, 460], t + 100], [G.afV, t + 140]]); const v = t + 150; E(sc, 'VD', v, 'V', { pre: 1 }); sc.flV.push(v);
+        const up = [[G.afV, t + 140], [G.rb3, t + 158], [G.rb2, t + 168], [G.rb1, t + 180], [G.his, t + 195], [G.node, t + 225]]; E(sc, 'His', t + 195, 'H', { inv: true });
+        if (x === 'b') { W_(sc, 'retro', up, t + 222); tEnd = v; Object.assign(sc.ev.find(e => e.ch === 'VD' && e.t === v), { tag: 'último V', tagT: v + 150 }); return; }
+        const as = t + 285 + x; W_(sc, 'retro', up.concat([[G.aSep, as]])); W_(sc, 'retro', [[G.aSep, as], [G.ra, as + 25], [G.ralat, as + 45], [G.afA, as + 55]]); E(sc, 'AD', as + 25, 'A');
+        t = as + 55; });
+      const s1 = tEnd + 1100; W_(sc, 'ante', [[G.sn, s1 - 30], [G.ra, s1], [G.aSep, s1 + 25], [G.node, s1 + 60], [G.his, s1 + 160]]); E(sc, 'AD', s1, 'A'); E(sc, 'His', s1 + 160, 'H'); down(sc, s1 + 160); Vs(sc, s1 + 160);
+      sc.ado = [t0, tEnd + 500];
+    } else if (mech === 'trnav') {
       // la adenosina enlentece y después bloquea la vía lenta (brazo anterógrado): termina después de una A
       sc.nodal = true; let a = 120; E(sc, 'AD', a, 'A'); const dec = [0, 0, 0, 20, 50];
       dec.forEach((d, i) => { if (i === 3) t0 = a - 40; const n = a + NSLOW + d; W_(sc, 'ante', slowP(a, n)); E(sc, 'His', n + 30, 'H'); W_(sc, 'ante', [[G.node, n], [G.his, n + 30]]); down(sc, n + 30); Vs(sc, n + 30); a = fastUp(sc, n); });
@@ -480,10 +508,10 @@
       tEnd = 120 + 5 * LCT; sc.ado = [t0, 120 + 8 * LCT];
     }
     Object.assign(sc, { stimEnd: 0, verdictT: tEnd + 200,
-      verdict: mech === 'trnav' ? 'La vía lenta se enlentece (el AH se alarga) y la taquicardia <b>termina con una A que no conduce</b>: el bloqueo es en la vía lenta (brazo anterógrado) → TRNAV o TRAV, <b>excluye la TA</b>.'
+      verdict: mech === 'nv' ? 'Aparece <b>bloqueo VA y la taquicardia sigue</b> (desaparecen las A sin que cambie el ritmo ventricular): la aurícula no es parte del circuito. Después termina en el nodo, <b>con un V</b>.' : mech === 'jet' ? 'Las A desaparecen (<b>bloqueo VA</b>) y <b>el His y el V siguen igual</b> (HH 340): el foco está debajo del nodo → JET. Excluye la TRAV.' : mech === 'anti' ? 'La conducción retrógrada por el nodo se enlentece (el VA se alarga) y la taquicardia <b>termina con un V, sin A</b>: el nodo era el brazo retrógrado.' : mech === 'trnav' ? 'La vía lenta se enlentece (el AH se alarga) y la taquicardia <b>termina con una A que no conduce</b>: el bloqueo es en la vía lenta (brazo anterógrado) → TRNAV o TRAV, <b>excluye la TA</b>.'
              : trav ? 'El AH se alarga y la taquicardia <b>termina con una A que no conduce</b> (bloqueo en el nodo): TRNAV o TRAV, <b>excluye la TA</b>.'
                     : 'Aparece <b>bloqueo AV y las A siguen</b> a la misma LC: la aurícula no necesita al nodo → <b>TA</b> (excluye la TRAV).',
-      why: mech === 'trnav' ? 'Las dos vías del nodo son el circuito. Lo habitual es que se bloquee la vía lenta después de la A; si se bloquea la rápida (retrógrada), termina con un V, que no discrimina. Después vuelve el sinusal.'
+      why: mech === 'nv' ? 'Lo que la separa de la TRAV es el bloqueo VA con la TSV que sigue (la TRAV no puede seguir sin la A). Lo mismo puede verse en la TRNAV con bloqueo del haz común superior y en la JET.' : mech === 'jet' ? 'La adenosina bloquea el nodo, que acá es solo el camino hacia la aurícula: el foco de la unión sigue disparando. Cuando pasa el efecto vuelve la conducción VA 1:1.' : mech === 'anti' ? 'Ojo: la vía atriofascicular también es sensible a la adenosina (conduce como un nodo), así que puede terminar después de una A, bloqueando la vía. Si el brazo retrógrado es otra vía accesoria, la adenosina no la corta.' : mech === 'trnav' ? 'Las dos vías del nodo son el circuito. Lo habitual es que se bloquee la vía lenta después de la A; si se bloquea la rápida (retrógrada), termina con un V, que no discrimina. Después vuelve el sinusal.'
              : trav ? 'El nodo es un brazo del circuito: al bloquearse, el circuito se corta. Después vuelve el ritmo sinusal.'
                 : 'La adenosina bloquea el nodo, que no es parte del circuito: el foco sigue disparando y se ve mientras dura el bloqueo.' });
     return sc;
@@ -533,9 +561,9 @@
       fases: s => { const e = s[0].stimEnd; return [[0, 'Taquicardia de QRS ancho con morfología de BRI (LC 340 ms). Catéter en la pared lateral del AD.'],
         [e - 60, 'El septum y la unión AV ya se activaron (están refractarios).'],
         [e - 1, 'Se da <b>un EA</b> desde la pared lateral del AD.'], [e + 120, 'Mirá el <b>V siguiente</b>: ¿se adelanta con el mismo QRS?']]; } },
-    ado: { t: 'Adenosina durante la TSV', def: 'trav', selL: 'Comparar', sel: [['trav', 'TRAV vs TA'], ['trnav', 'TRNAV vs TA'], ['both', 'TRNAV vs TRAV']],
-      panels: k => k === 'both' ? [() => adoSc('trnav'), () => adoSc('trav')] : [() => adoSc(k), () => adoSc('ta')], dur: 3700, win: 3000,
-      fases: s => [[0, 'Taquicardia (LC 340 ms). Se inyecta adenosina.'], [s[0].ado[0], 'La adenosina llega al nodo (azul): el AH se alarga.'],
+    ado: { t: 'Adenosina durante la TSV', def: 'trav', selL: 'Comparar', sel: [['trav', 'TRAV vs TA'], ['trnav', 'TRNAV vs TA'], ['both', 'TRNAV vs TRAV'], ['nv', 'Nodoventricular vs TRAV'], ['jet', 'JET (VA 1:1) vs TA'], ['anti', 'Antidrómica vs TRAV']],
+      panels: k => ({ both: ['trnav', 'trav'], nv: ['nv', 'trav'], jet: ['jet', 'ta'], anti: ['anti', 'trav'] }[k] || [k, 'ta']).map(m => () => adoSc(m)), dur: 3700, win: 3000,
+      fases: s => [[0, 'Taquicardia (LC 340 ms). Se inyecta adenosina.'], [s[0].ado[0], 'La adenosina llega al nodo (azul).'],
         [s[0].ado[0] + 700, 'Mirá <b>cómo termina</b>, o qué pasa con las A si no termina.']] },
     vai: { t: 'Índice VA: nodo vs vía posteroseptal', win: 3900, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => vaiSc('node'), () => vaiSc('ap')],
       fases: s => { const v = s[0].m.va; return [[0, 'Ritmo sinusal, sin inducir la TSV. Un catéter en el ápex del VD y otro en la base posterior, cerca del ostium del SC.'],
@@ -587,6 +615,9 @@
     if (sc.ap === 'sep') {
       mk('path', { d: 'M231,262 C233,280 235,298 237,318', stroke: '#d81b60', 'stroke-width': 9, fill: 'none', 'stroke-linecap': 'round', opacity: 0.85 }, svg);
       lbl(222, 228, 'vía septal', '#d81b60', 'end');
+    } else if (sc.ap === 'nv') {
+      mk('path', { d: 'M250,362 C252,332 256,300 264,272', stroke: '#d81b60', 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round', opacity: 0.85 }, svg);
+      lbl(240, 392, 'vía nodoventricular', '#d81b60', 'end');
     } else if (sc.ap === 'af') {
       mk('path', { d: 'M92,272 C80,330 100,430 178,512', stroke: '#d81b60', 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round', opacity: 0.85 }, svg);
       lbl(58, 520, 'vía', '#d81b60'); lbl(58, 536, 'atriofascicular', '#d81b60');
