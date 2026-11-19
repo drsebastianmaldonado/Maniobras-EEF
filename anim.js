@@ -14,7 +14,7 @@
                'M300,300 C312,420 312,530 302,638 C385,642 470,595 516,512 C556,440 566,350 540,294 Z'];
   // Puntos del recorrido (coordenadas del corazón)
   const G = { aSep: [232, 238], node: [268, 262], his: [293, 308], rb1: [288, 380], rb2: [270, 450], rb3: [238, 500], rb4: [200, 545], apex: [180, 562],
-              lvA: [430, 410], lvB: [505, 345], apV: [526, 306], apA: [527, 262], la: [470, 200], focus: [140, 140], ra: [170, 180], base: [250, 345] };
+              lvA: [430, 410], lvB: [505, 345], apV: [526, 306], apA: [527, 262], la: [470, 200], focus: [140, 140], ra: [170, 180], base: [250, 345], ph: [278, 300] };
   const VB = '15 50 560 625';
   // Desde el His el frente baja por las dos ramas: la derecha hasta el ápex del VD y la izquierda hasta la pared lateral del VI
   const ramas = (h, HV) => [
@@ -179,27 +179,34 @@
   function entr(kind, mech) {
     const sc = mech === 'trav' ? simTRAV(Object.assign({ title: 'TRAV por vía septal', runs: [{ site: 'apex', n: 7 }] }, ENT))
                                : simTRNAV(Object.assign({ title: 'TRNAV típica', runs: [{ site: 'apex', n: 7 }] }, ENT));
-    const [p0, p1] = sc.m.pre, R = sc.m.runs[0], ret = R.ret[0], trav = mech === 'trav';
-    const lastH = R.H[R.H.length - 1].t;
-    if (kind === 'ppi') {
+    const [p0, p1] = sc.m.pre, R = sc.m.runs[0], ret = R.ret[0], trav = mech === 'trav', all = kind === 'all';
+    const lastH = R.H[R.H.length - 1].t, dx = trav ? 'TRAV' : 'TRNAV', V = [], W = [];
+    const lt = (d, c) => `(${d < c ? '&lt;' : '&gt;'} ${c})`;
+    if (kind === 'ppi' || all) {
       const ppi = ret.v - R.lastS, d = ppi - LCT;
       brk(sc, 'VD', p0.v, p1.v, 'LC ' + LCT); brk(sc, 'VD', R.lastS, ret.v, 'PPI ' + ppi, { hot: 1 });
-      Object.assign(sc, { verdictT: ret.v, verdict: `PPI − LC = ${ppi} − ${LCT} = <b>${d} ms</b> (${d < 115 ? '&lt;' : '&gt;'} 115): ${trav ? 'el VD está cerca del circuito → <b>TRAV</b>' : 'el VD está lejos del circuito → <b>TRNAV</b>'}.`,
-        why: trav ? 'El estímulo entra al circuito por el ventrículo, sube por la vía y vuelve por el nodo: el retorno recorre solo el circuito.'
-                  : 'El estímulo tiene que subir por la rama derecha y el His hasta el nodo, dar la vuelta al circuito y volver a bajar: el retorno suma ida y vuelta por el His-Purkinje.' });
-    } else if (kind === 'sava') {
+      V.push([ret.v, `PPI − LC = ${ppi} − ${LCT} = <b>${d} ms</b> ${lt(d, 115)}` + (all ? '' : `: ${trav ? 'el VD está cerca del circuito' : 'el VD está lejos del circuito'} → <b>${dx}</b>.`)]);
+      W.push(trav ? 'El estímulo entra al circuito por el ventrículo, sube por la vía y vuelve por el nodo: el retorno recorre solo el circuito.'
+                  : 'El estímulo tiene que subir por la rama derecha y el His hasta el nodo, dar la vuelta al circuito y volver a bajar: el retorno suma ida y vuelta por el His-Purkinje.');
+    }
+    if (kind === 'sava' || all) {
       const va = p1.a - p1.v, sa = R.lastA - R.lastS, d = sa - va;
       brk(sc, 'AD', p1.v, p1.a, 'VA ' + va, { guide: 'VD' }); brk(sc, 'AD', R.lastS, R.lastA, 'SA ' + sa, { guide: 'VD', hot: 1 });
-      Object.assign(sc, { verdictT: R.lastA, verdict: `SA − VA = ${sa} − ${va} = <b>${d} ms</b> (${d < 85 ? '&lt;' : '&gt;'} 85) → <b>${trav ? 'TRAV' : 'TRNAV'}</b>.`,
-        why: trav ? 'En la TSV y al estimular, V y A se activan en serie a través de la vía: el SA es apenas más largo que el VA.'
-                  : 'En la TSV, V y A se activan en paralelo desde el nodo (VA casi 0); al estimular, en serie (V → His → nodo → A): el SA es mucho más largo.' });
-    } else {
-      const hat = p1.a - p1.h, hap = R.lastA - lastH, d = hap - hat;
-      brk(sc, 'AD', p1.h, p1.a, 'HA ' + hat, { guide: 'His' }); brk(sc, 'AD', lastH, R.lastA, 'HA ' + hap, { guide: 'His', hot: 1 });
-      Object.assign(sc, { verdictT: R.lastA, verdict: `ΔHA = HA estimulando − HA en TSV = ${hap} − ${hat} = <b>${sg(d)} ms</b> (${d < 0 ? '&lt; 0' : '&gt; 0'}) → <b>${trav ? 'TRAV' : 'TRNAV'}</b>.`,
-        why: trav ? 'En la TSV el His y la A se activan en serie (His → V → vía → A); al estimular, en paralelo (la rama sube al His y la vía a la aurícula): el HA se acorta.'
-                  : 'En la TSV el His y la A se activan en paralelo desde el nodo (seudointervalo corto); al estimular, en serie (His → nodo → A): el HA se alarga.' });
+      V.push([R.lastA, `SA − VA = ${sa} − ${va} = <b>${d} ms</b> ${lt(d, 85)}` + (all ? '' : ` → <b>${dx}</b>.`)]);
+      W.push(trav ? 'En la TSV y al estimular, V y A se activan en serie a través de la vía: el SA es apenas más largo que el VA.'
+                  : 'En la TSV, V y A se activan en paralelo desde el nodo (VA casi 0); al estimular, en serie (V → His → nodo → A): el SA es mucho más largo.');
     }
+    if (kind === 'dha' || all) {
+      const hat = p1.a - p1.h, hap = R.lastA - lastH, d = hap - hat, ch = all ? 'His' : 'AD', g = all ? null : 'His';
+      brk(sc, ch, p1.h, p1.a, 'HA ' + hat, { guide: g }); brk(sc, ch, lastH, R.lastA, 'HA ' + hap, { guide: g, hot: 1 });
+      V.push([R.lastA, (all ? '' : 'ΔHA = HA estimulando − HA en TSV = ') + `${all ? 'ΔHA = ' : ''}${hap} − ${hat} = <b>${sg(d)} ms</b> (${d < 0 ? '&lt; 0' : '&gt; 0'})` + (all ? '' : ` → <b>${dx}</b>.`)]);
+      W.push(trav ? 'En la TSV el His y la A se activan en serie (His → V → vía → A); al estimular, en paralelo (la rama sube al His y la vía a la aurícula): el HA se acorta.'
+                  : 'En la TSV el His y la A se activan en paralelo desde el nodo (seudointervalo corto); al estimular, en serie (His → nodo → A): el HA se alarga.');
+    }
+    const vt = Math.max(...V.map(v => v[0]));
+    Object.assign(sc, all ? { verdictT: vt, verdict: V.map(v => v[1]).join('<br>') + `<br>Las tres → <b>${dx}</b>.`,
+        why: trav ? 'El ventrículo es parte del circuito y la vía conecta V y A en serie.' : 'El ventrículo está fuera del circuito: el estímulo tiene que subir por el His hasta el nodo.' }
+      : { verdictT: vt, verdict: V[0][1], why: W[0] });
     return sc;
   }
 
@@ -231,18 +238,115 @@
     sc.stimEnd = ra.lastS; return sc;
   }
 
+
+  // ---------- Grupo 2 ----------
+  // Latidos sueltos de cada mecanismo, para armar escenarios que no son un encarrilamiento
+  const travBeat = (sc, a, ah) => { const h = a + (ah || 185); E(sc, 'His', h, 'H'); W_(sc, 'ante', [[G.aSep, a], [G.node, a + 30], [G.his, h]]); down(sc, h); Vs(sc, h);
+    W_(sc, 'retro', VIA.sep.desc(h)); const a2 = h + VIA.sep.dAP + 20; E(sc, 'AD', a2, 'A'); return { h, a: a2 }; };
+  const NSLOW = 255;
+  const slowP = (a, nd) => [[[226, 248], a], [[206, 268], a + 70], [[220, 292], a + 150], [[250, 284], a + 220], [G.node, nd]];
+  const fastUp = (sc, n) => { W_(sc, 'retro', [[G.node, n], [[252, 246], n + 30], [[232, 236], n + 55], [[200, 212], n + 75], [G.ra, n + 95]]); E(sc, 'AD', n + 85, 'A'); return n + 85; };
+  const nodeUp = (sc, tn) => { W_(sc, 'retro', [[G.node, tn], [G.aSep, tn + 40], [G.ra, tn + 85]]); E(sc, 'AD', tn + 85, 'A'); return tn + 85; };
+  const trnavBeat = (sc, a, cutDown) => { const n = a + NSLOW; W_(sc, 'ante', slowP(a, n)); E(sc, 'His', n + 30, 'H'); W_(sc, 'ante', [[G.node, n], [G.his, n + 30]]);
+    if (cutDown) down(sc, n + 30, cutDown, cutDown); else { down(sc, n + 30); Vs(sc, n + 30); } return { n, h: n + 30, a: fastUp(sc, n) }; };
+
+  // EV con His refractario durante la TSV, desde la base del VD
+  function ehrSc(mech) {
+    const trav = mech === 'trav', sc = newSc({ title: trav ? 'TRAV por vía septal' : 'TRNAV típica', cats: ['base'] });
+    if (trav) sc.ap = 'sep'; else sc.nodal = true;
+    let a = 120, b; E(sc, 'AD', a, 'A');
+    const As = [a];
+    for (let i = 0; i < 2; i++) { b = trav ? travBeat(sc, a) : trnavBeat(sc, a); a = b.a; As.push(a); }
+    let e, hRef, aNew, aExp;
+    if (trav) {
+      const h = a + 185; hRef = E(sc, 'His', h, 'H'); W_(sc, 'ante', [[G.aSep, a], [G.node, a + 30], [G.his, h]]);
+      e = h + 5; stim(sc, 'base', e);
+      const rb = rbUp('base', e), tc = h + 32; W_(sc, 'retro', rb, tc); down(sc, h, tc, h + 30);
+      aExp = h + VIA.sep.dAP + 20; aNew = e + VIA.sep.dS.base + 15;
+      W_(sc, 'retro', VIA.sep.paced('base', e)); W_(sc, 'retro', VIA.sep.desc(h), h + 70);
+    } else {
+      const n = a + NSLOW; W_(sc, 'ante', slowP(a, n)); hRef = E(sc, 'His', n + 30, 'H'); W_(sc, 'ante', [[G.node, n], [G.his, n + 30]]);
+      e = n + 35; stim(sc, 'base', e);
+      W_(sc, 'retro', rbUp('base', e), e + 40); down(sc, n + 30, n + 70, n + 70);
+      aExp = aNew = fastUp(sc, n);
+    }
+    const prevA = a; a = aNew; if (trav) E(sc, 'AD', a, 'A');
+    const tagA = sc.ev.find(x => x.ch === 'AD' && x.t === a);
+    Object.assign(tagA, { tag: trav ? 'A adelantada' : 'A sin cambios', tagT: a + 1, tagUp: true });
+    Object.assign(hRef, { tag: ' ', tagT: e + 1 });
+    for (let i = 0; i < 4; i++) { b = trav ? travBeat(sc, a) : trnavBeat(sc, a); a = b.a; }
+    brk(sc, 'AD', As[1], As[2], 'AA ' + (As[2] - As[1]), ); brk(sc, 'AD', prevA, aNew, 'AA ' + (aNew - prevA), { hot: 1 });
+    const d = aExp - aNew;
+    Object.assign(sc, { stimEnd: e, verdictT: aNew + 60,
+      verdict: trav ? `La EV cae con el His ya activado y <b>adelanta la A ${d} ms</b> (AA ${aNew - prevA} en vez de ${LCT}), sin cambiar la secuencia: hay una vía y participa del circuito → <b>TRAV</b>.`
+                    : `La EV cae con el His ya activado y <b>la A no cambia</b> (AA ${LCT}): el estímulo no tiene otro camino a la aurícula que el His, que está refractario.`,
+      why: trav ? 'El estímulo de la base llega antes a la vía septal que el frente de la taquicardia, sube a la aurícula y la taquicardia sigue desde esa A adelantada (reset).'
+                : 'El frente sube por la rama derecha y choca en el sistema de conducción. No excluye una vía espectadora ni una TA: excluye una vía que participe.' });
+    return sc;
+  }
+
+  // Estimulación para-Hisiana en ritmo sinusal: salida alta (His + miocardio) y baja (solo miocardio)
+  function parahisSc(mech) {
+    const ap = mech === 'ap', sc = newSc({ title: ap ? 'Vía accesoria septal' : 'Conducción por el nodo', cats: ['ph'] });
+    if (ap) sc.ap = 'sep';
+    const S = [200, 800, 1400, 2000], R = [];
+    S.forEach((s, i) => {
+      const hi = i < 2; E(sc, 'ECG', s, 'E', { stim: true }); sc.flV.push(s + 10); sc.stims.push({ t: s, pt: G.ph, r: hi ? 30 : 15 });
+      let h, A;
+      if (hi) { h = s + 5; E(sc, 'His', h, 'H'); down(sc, h); E(sc, 'ECG', s + 20, '', { qrs: 'n' }); }
+      else { h = s + 95; E(sc, 'His', h, 'H', { inv: true }); E(sc, 'ECG', s + 8, '', { qrs: 'w' });
+        W_(sc, 'retro', [[G.ph, s], [[262, 400], s + 40], [G.rb2, s + 55], [G.rb1, s + 75], [G.his, h]]);
+        W_(sc, 'retro', [[G.ph, s], [[240, 420], s + 70], [[200, 520], s + 130]]); }
+      if (ap) { A = s + 70; W_(sc, 'retro', [[G.ph, s], [[258, 318], s + 20], [APS.sepV, s + 40], [APS.sep, s + 60], [[200, 215], s + 85], [G.ra, s + 105]]);
+        W_(sc, 'retro', [[G.his, h], [G.node, h + 35]], Math.min(h + 35, A + 20)); E(sc, 'AD', A, 'A'); }
+      else { W_(sc, 'retro', [[G.his, h], [G.node, h + 35]]); A = nodeUp(sc, h + 35); }
+      R.push({ s, h, A });
+    });
+    const [, x, , y] = R;
+    brk(sc, 'AD', x.s, x.A, 'SA ' + (x.A - x.s), { guide: 'ECG' }); brk(sc, 'AD', y.s, y.A, 'SA ' + (y.A - y.s), { guide: 'ECG', hot: 1 });
+    brk(sc, 'His', x.s, x.h, 'SH ' + (x.h - x.s)); brk(sc, 'His', y.s, y.h, 'SH ' + (y.h - y.s), { hot: 1 });
+    const dSA = (y.A - y.s) - (x.A - x.s), dSH = (y.h - y.s) - (x.h - x.s);
+    sc.ev.find(e => e.ch === 'His' && e.t === y.h).tag = 'H retrógrado'; sc.ev.find(e => e.ch === 'His' && e.t === y.h).tagT = y.h + 1;
+    Object.assign(sc, { stimEnd: 0, verdictT: y.A + 30, m: { R },
+      verdict: ap ? `Al perder la captura del His el SH se alarga ${dSH} ms pero <b>el SA no cambia</b> (${x.A - x.s} ms): <b>conducción retrógrada por una vía accesoria</b>.`
+                  : `Al perder la captura del His <b>el SA se alarga ${dSA} ms, lo mismo que el SH</b> (${dSH} ms): <b>conducción retrógrada por el nodo</b>.`,
+      why: ap ? 'La vía se activa desde el miocardio vecino al catéter, capture o no el His. El HA se acorta (la A llega antes que el His retrógrado) y la secuencia auricular no cambia.'
+              : 'La aurícula solo se alcanza a través del His: si el estímulo ya no lo captura directamente, tiene que bajar por el miocardio hasta el Purkinje y subir. El HA queda igual.' });
+    return sc;
+  }
+
+  // Índice VA en ritmo sinusal: VA desde el ápex menos VA desde la base posterior
+  function vaiSc(mech) {
+    const ap = mech === 'ap', sc = newSc({ title: ap ? 'Vía posteroseptal' : 'Conducción por el nodo', cats: ['apex', 'base'] });
+    if (ap) sc.ap = 'sep';
+    const runs = [['apex', [300, 900, 1500]], ['base', [2300, 2900, 3500]]], va = {};
+    runs.forEach(([site, S]) => S.forEach(s => {
+      stim(sc, site, s); const rH = s + HR[site]; E(sc, 'His', rH, 'H', { inv: true }); let A;
+      if (ap) { W_(sc, 'retro', VIA.sep.paced(site, s)); A = s + VIA.sep.dS[site] + 15; W_(sc, 'retro', rbUp(site, s), Math.min(rH + 35, A + 15)); E(sc, 'AD', A, 'A'); }
+      else { W_(sc, 'retro', rbUp(site, s)); A = nodeUp(sc, rH + 35); }
+      va[site] = { s, A };
+    }));
+    const vA = va.apex.A - va.apex.s, vB = va.base.A - va.base.s, idx = vA - vB;
+    brk(sc, 'AD', va.apex.s, va.apex.A, 'VA ápex ' + vA, { guide: 'VD', hot: 1 }); brk(sc, 'AD', va.base.s, va.base.A, 'VA base ' + vB, { guide: 'VDb', hot: 1 });
+    Object.assign(sc, { stimEnd: 0, verdictT: va.base.A + 30, m: { va },
+      verdict: `Índice VA = VA ápex − VA base = ${vA} − ${vB} = <b>${sg(idx)} ms</b> → ${idx > 10 ? '<b>vía accesoria posteroseptal</b> (&gt; +10)' : '<b>conducción por el nodo</b> (negativo)'}.`,
+      why: ap ? 'La base posterior está al lado de la inserción ventricular de la vía: desde ahí la A llega antes que desde el ápex.'
+              : 'El nodo se alcanza por el His-Purkinje, que se entra cerca del ápex: desde la base el estímulo tiene que bajar hasta el Purkinje y subir, y el VA se alarga.' });
+    return sc;
+  }
+
+  // PPI−LC, SA−VA y ΔHA: un mismo encarrilamiento con un selector de medición (cada ficha arranca con la suya)
+  const ENTM = { ppi: ['PPI − LC', 'Medí el <b>PPI</b> en el canal del VD: de la última espiga al primer V de retorno, y restale la LC.'],
+    sava: ['SA − VA', 'Medí el <b>SA</b>: de la última espiga a la A del último latido acelerado, y comparalo con el <b>VA</b> de la TSV.', 'Antes de estimular, mirá el <b>VA</b> de la TSV (del V a la A).'],
+    dha: ['ΔHA', 'Medí el <b>HA</b> del último latido estimulado (del His retrógrado a la A) y comparalo con el HA de la TSV.', 'Antes de estimular, mirá el <b>HA</b> de la TSV (del His a la A).'],
+    all: ['Las tres', 'Las tres mediciones salen del mismo encarrilamiento: PPI en el canal del VD, SA y VA en la AD alta y HA en el His.', 'Antes de estimular, mirá la LC, el VA y el HA de la TSV.'] };
   const ANIMS = {
     vop: { t: 'Sobreestimulación ventricular: A-V vs A-A-V', dur: 4200, panels: [travVop, taVop],
       fases: [[0, 'Taquicardia (LC 340 ms). Mirá el circuito en el esquema y las A, H y V en el trazado.'],
               [690, 'Estimulación del VD a 300 ms (E): cada estímulo llega a la aurícula y las A se aceleran a 300.'],
               [2100, 'Se corta la estimulación. Mirá qué sigue a la <b>última A acelerada</b>.'],
               [3000, 'La taquicardia retoma su ciclo (LC 340) en los dos casos: en la TRAV el frente vuelve a girar por el nodo, el ventrículo y la vía; en la TA vuelve a disparar el foco.']] },
-    ppi: { t: 'PPI − LC: TRAV septal vs TRNAV', panels: [() => entr('ppi', 'trav'), () => entr('ppi', 'trnav')],
-      fases: s => entFases(s, 'Medí el <b>PPI</b> en el canal del VD: de la última espiga al primer V de retorno, y restale la LC.') },
-    sava: { t: 'SA − VA: TRAV septal vs TRNAV', panels: [() => entr('sava', 'trav'), () => entr('sava', 'trnav')],
-      fases: s => entFases(s, 'Medí el <b>SA</b>: de la última espiga a la A del último latido acelerado, y comparalo con el <b>VA</b> de la TSV.', 'Antes de estimular, mirá el <b>VA</b> de la TSV (del V a la A).') },
-    dha: { t: 'ΔHA: TRAV septal vs TRNAV', panels: [() => entr('dha', 'trav'), () => entr('dha', 'trnav')],
-      fases: s => entFases(s, 'Medí el <b>HA</b> del último latido estimulado (del His retrógrado a la A) y comparalo con el HA de la TSV.', 'Antes de estimular, mirá el <b>HA</b> de la TSV (del His a la A).') },
+    ppi: entA('ppi'), sava: entA('sava'), dha: entA('dha'),
     hisorto: { t: 'Captura ortodrómica del His', panels: [() => hisorto(320), () => hisorto(270)],
       fases: s => [[0, 'La misma TRAV, encarrilada desde el ápex del VD a dos LC distintas. Mirá cómo y cuándo se activa el His.'],
         [s[0].m.runs[0].S[0] - 10, 'Estimulación del VD. A la izquierda, a 320 ms (20 ms menos que la LC); a la derecha, a 270 ms.'],
@@ -251,8 +355,27 @@
     diff: { t: 'Encarrilamiento diferencial: ápex vs base', lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => diffSc('trav'), () => diffSc('trnav')],
       fases: s => { const [a, b] = s[0].m.runs; return [[0, 'Taquicardia. Hay un catéter en el ápex del VD y otro en la base, cerca del His.'],
         [a.S[0] - 10, 'Primero se encarrila desde el <b>ápex</b> (a 300 ms).'], [a.lastS + 1, 'Medí el VA (espiga → A) y el PPI desde el ápex.'],
-        [b.S[0] - 10, 'Ahora se encarrila desde la <b>base</b>, a la misma LC.'], [b.lastS + 1, 'Medí el VA y el PPI desde la base y restá: base − ápex.']]; } }
+        [b.S[0] - 10, 'Ahora se encarrila desde la <b>base</b>, a la misma LC.'], [b.lastS + 1, 'Medí el VA y el PPI desde la base y restá: base − ápex.']]; } },
+    ehr: { t: 'EV con His refractario: TRAV vs TRNAV', dur: 2500, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base']], panels: [() => ehrSc('trav'), () => ehrSc('trnav')],
+      fases: s => { const e = s[0].stimEnd; return [[0, 'Taquicardia (LC 340 ms). Hay un catéter en la base del VD, cerca de la vía septal.'],
+        [e - 60, 'Mirá el His: se activa en forma anterógrada. Desde ese momento el His está refractario.'],
+        [e - 4, 'Se da <b>una sola EV</b> desde la base del VD, justo después del His (His refractario). El frente no puede subir por el His.'],
+        [e + 110, 'Mirá la A siguiente: ¿llega antes de lo esperado (AA &lt; 340) o a tiempo?'],
+        [e + 450, 'Después de la EV la taquicardia sigue. En la TRAV, desde la A adelantada (se reseteó).']]; } },
+    parahis: { t: 'Estimulación para-Hisiana: nodo vs vía septal', win: 2600, lanes: [['ECG', 'ECG'], ['AD', 'AD alta'], ['His', 'His']], panels: [() => parahisSc('node'), () => parahisSc('ap')],
+      fases: s => { const R = s[0].m.R; return [[0, 'Ritmo sinusal. El catéter está en la región del His.'],
+        [R[0].s - 10, '<b>Salida alta</b>: se captura el His y el miocardio vecino. QRS angosto y His inmediato (SH corto).'],
+        [R[2].s - 10, '<b>Salida baja</b>: se captura solo el miocardio. QRS ancho (BRI) y aparece el His retrógrado, más tarde (SH largo).'],
+        [R[3].s + 1, 'Compará el <b>SA</b> con y sin captura del His (y la secuencia auricular).']]; } },
+    vai: { t: 'Índice VA: nodo vs vía posteroseptal', win: 3900, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => vaiSc('node'), () => vaiSc('ap')],
+      fases: s => { const v = s[0].m.va; return [[0, 'Ritmo sinusal, sin inducir la TSV. Un catéter en el ápex del VD y otro en la base posterior, cerca del ostium del SC.'],
+        [250, 'Se estimula el <b>ápex</b> sin capturar la aurícula. Medí el VA (espiga → A).'],
+        [2250, 'Ahora se estimula la <b>base posterior</b>. Medí el VA.'], [v.base.A + 1, 'Índice VA = VA ápex − VA base.']]; } }
   };
+  function entA(def) {
+    return { t: 'Encarrilamiento desde el VD: TRAV septal vs TRNAV', def, sel: Object.keys(ENTM).map(k => [k, ENTM[k][0]]),
+      panels: k => [() => entr(k, 'trav'), () => entr(k, 'trnav')], fases: (s, k) => entFases(s, ENTM[k][1], ENTM[k][2]) };
+  }
   function entFases(s, medir, antes) {
     const [tr, nv] = s, R = tr.m.runs[0], N = nv.m.runs[0], c = N.cap.indexOf(true);
     const f = [[0, 'Taquicardia (LC 340 ms). A la izquierda, TRAV por una vía septal; a la derecha, TRNAV típica (baja por la vía lenta y sube por la rápida).']];
@@ -291,13 +414,14 @@
     // catéter del VD con el electrodo en el ápex
     // entra por la vena cava inferior a la AD, cruza la tricúspide y baja por dentro del VD hasta el ápex
     const CAT = { apex: 'M18,336 C40,314 62,292 98,270 C140,246 172,258 182,296 C192,360 194,470 182,556',
-                  base: 'M18,316 C50,300 90,276 130,268 C180,258 214,270 232,300 C240,314 246,330 250,345' };
+                  base: 'M18,316 C50,300 90,276 130,268 C180,258 214,270 232,300 C240,314 246,330 250,345',
+                  ph: 'M18,316 C60,296 110,272 160,268 C210,264 250,280 278,300' };
     const cats = sc.cats || ['apex'];
     cats.forEach(c => { mk('path', { d: CAT[c], stroke: '#fff', 'stroke-width': 9, fill: 'none', 'stroke-linecap': 'round', opacity: 0.7 }, svg);
-      mk('path', { d: CAT[c], stroke: c === 'base' ? '#5d4037' : '#37474f', 'stroke-width': 5, fill: 'none', 'stroke-linecap': 'round' }, svg);
+      mk('path', { d: CAT[c], stroke: c === 'apex' ? '#37474f' : '#5d4037', 'stroke-width': 5, fill: 'none', 'stroke-linecap': 'round' }, svg);
       mk('circle', { cx: G[c][0], cy: G[c][1], r: 8, fill: '#c62828', stroke: '#fff', 'stroke-width': 2 }, svg); });
     mk('text', { x: 18, y: 356, 'font-size': 12, fill: '#37474f' }, svg).textContent = 'VCI';
-    mk('text', { x: 52, y: 672, 'font-size': 14, 'font-weight': 700, fill: '#c62828' }, svg).textContent = cats.length > 1 ? 'catéteres endocavitarios: ápex y base del VD' : 'catéter endocavitario en el ápex del VD';
+    mk('text', { x: 52, y: 672, 'font-size': 14, 'font-weight': 700, fill: '#c62828' }, svg).textContent = cats.length > 1 ? 'catéteres endocavitarios: ápex y base del VD' : cats[0] === 'base' ? 'catéter endocavitario en la base del VD' : cats[0] === 'ph' ? 'catéter para-Hisiano (endocavitario)' : 'catéter endocavitario en el ápex del VD';
     if (cats.includes('base')) lbl(G.base[0] - 12, G.base[1] + 4, 'base', '#5d4037', 'end');
     return { atr, ven };
   }
@@ -310,12 +434,13 @@
     if (root.dataset.on) return; root.dataset.on = 1;
     const A = ANIMS[root.dataset.anim]; if (!A) return;
     const LANES = (A.lanes || LANES0).map(([c, l], i) => [c, l, 46 + i * 41]), TH = LANES[LANES.length - 1][2] + 26;
-    const scs = A.panels.map(f => f());
-    const fases = typeof A.fases === 'function' ? A.fases(scs) : A.fases;
+    const sel = A.sel ? (root.dataset.sel || A.def) : null;
+    const scs = (A.sel ? A.panels(sel) : A.panels).map(f => f());
+    const fases = typeof A.fases === 'function' ? A.fases(scs, sel) : A.fases;
     const dur = A.dur || Math.round(Math.max(...scs.map(s => s.verdictT)) + 650);
     root.innerHTML = `<div class="bl">Animación: ${A.t}</div>
       <div class="anc"><button class="btn anplay" type="button">▶ Reproducir</button><button class="btn anre" type="button">↺ Reiniciar</button>
-      <label class="small">Velocidad <select class="anv"><option value="0.12">muy lenta</option><option value="0.25" selected>lenta</option><option value="0.5">normal</option></select></label></div>
+      <label class="small">Velocidad <select class="anv"><option value="0.12">muy lenta</option><option value="0.25" selected>lenta</option><option value="0.5">normal</option></select></label>${A.sel ? `<label class="small">Medir <select class="ansel">${A.sel.map(([k, l]) => `<option value="${k}"${k === sel ? ' selected' : ''}>${l}</option>`).join('')}</select></label>` : ''}</div>
       <input class="ant" type="range" min="0" max="${dur}" value="0" step="10" aria-label="Momento de la animación">
       <p class="anf small"></p>
       <div class="anp"></div>
@@ -362,27 +487,28 @@
           dh += `<path d="M${trail}" stroke="${COL[w.c]}" fill="none" stroke-width="8" stroke-linecap="round" opacity=".55"/><circle cx="${x}" cy="${y}" r="13" fill="${COL[w.c]}" stroke="#fff" stroke-width="3"/>`;
         }
         for (const c of sc.cols || []) if (T >= c.t && T < c.t + 140) dh += `<path d="M${c.pt[0] - 11},${c.pt[1] - 11} L${c.pt[0] + 11},${c.pt[1] + 11} M${c.pt[0] + 11},${c.pt[1] - 11} L${c.pt[0] - 11},${c.pt[1] + 11}" stroke="#212121" stroke-width="5" stroke-linecap="round"/>`;
-        for (const c of sc.stims || []) if (T >= c.t && T < c.t + 70) dh += `<circle cx="${c.pt[0]}" cy="${c.pt[1]}" r="20" fill="none" stroke="#c62828" stroke-width="5"/>`;
+        for (const c of sc.stims || []) if (T >= c.t && T < c.t + 70) dh += `<circle cx="${c.pt[0]}" cy="${c.pt[1]}" r="${c.r || 20}" fill="none" stroke="#c62828" stroke-width="5"/>`;
         p.dots.innerHTML = dh;
         // trazado con ventana móvil
-        const tStart = Math.max(0, T - W * 0.85), k = (X1 - X0) / W, xOf = tt => X0 + (tt - tStart) * k;
+        const Wn = A.win || W, tStart = Math.max(0, T - Wn * 0.85), k = (X1 - X0) / Wn, xOf = tt => X0 + (tt - tStart) * k;
         let d = '', ds = '', dt = '', lh = '';
-        LANES.forEach(([ch, , y]) => { d += `M${X0} ${y} L${xOf(Math.min(T, tStart + W))} ${y} `; });
+        LANES.forEach(([ch, , y]) => { d += `M${X0} ${y} L${xOf(Math.min(T, tStart + Wn))} ${y} `; });
         for (const e of sc.ev) {
           if (e.t > T || e.t < tStart) continue;
           const ln = LANES.find(l => l[0] === e.ch); if (!ln) continue;
           const y = ln[2], x = xOf(e.t);
           if (e.stim) { ds += `M${x} ${y - 16} L${x} ${y + 12} `; lh += `<text x="${x}" y="${y - 18}" style="fill:var(--red)">E</text>`; continue; }
+          if (e.qrs) { d += e.qrs === 'w' ? `M${x - 1} ${y} L${x + 5} ${y - 12} L${x + 13} ${y - 11} L${x + 19} ${y + 6} L${x + 24} ${y} ` : `M${x - 1} ${y} L${x + 2} ${y - 13} L${x + 5} ${y + 6} L${x + 8} ${y} `; continue; }
           const hot = e.tag && T > (e.tagT || sc.stimEnd);
           if (hot) dt += spike(x, y, false, e.inv); else d += spike(x, y, e.l === 'V', e.inv);
           lh += `<text x="${x}" y="${y - 14}">${e.l}</text>`;
-          if (hot) { const yy = y - (e.tagUp ? 36 : 24); lh += `<text x="${x}" y="${yy}" style="fill:var(--blue)" font-weight="700">${e.tag}</text><line x1="${x}" y1="${yy + 2}" x2="${x}" y2="${y - 22}" style="stroke:var(--blue)"/>`; }
+          if (hot && e.tag.trim()) { const yy = y - (e.tagUp ? 36 : 24); lh += `<text x="${x}" y="${yy}" style="fill:var(--blue)" font-weight="700">${e.tag}</text><line x1="${x}" y1="${yy + 2}" x2="${x}" y2="${y - 22}" style="stroke:var(--blue)"/>`; }
         }
         let di = '';
         for (const it of sc.ints || []) {
           if (T < it.t1 || it.t1 < tStart) continue;
           const ln = LANES.find(l => l[0] === it.ch); if (!ln) continue;
-          const up = it.ch === 'AD', y = ln[2] + (up ? -20 : 15), dy = up ? 4 : -4, x0 = Math.max(X0, xOf(it.t0)), x1 = xOf(it.t1), col = it.hot ? 'var(--blue)' : 'var(--ink2)';
+          const up = it.ch === 'AD' && !it.below, y = ln[2] + (up ? -20 : 15), dy = up ? 4 : -4, x0 = Math.max(X0, xOf(it.t0)), x1 = xOf(it.t1), col = it.hot ? 'var(--blue)' : 'var(--ink2)';
           di += `<path d="M${x0} ${y + dy} L${x0} ${y} L${x1} ${y} L${x1} ${y + dy}" fill="none" style="stroke:${col}" stroke-width="1.2"/><text x="${(x0 + x1) / 2}" y="${up ? y - 4 : y + 11}" style="fill:${col}" font-weight="700">${it.l}</text>`;
           if (it.guide) { const g = LANES.find(l => l[0] === it.guide); if (g) di += `<line x1="${x0}" y1="${g[2]}" x2="${x0}" y2="${y}" style="stroke:${col}" stroke-dasharray="2 2"/>`; }
         }
@@ -404,6 +530,8 @@
       if (play) requestAnimationFrame(loop);
     }
     btn.onclick = () => { play = !play; btn.textContent = play ? '❚❚ Pausa' : '▶ Reproducir'; if (play) { if (t >= dur) t = 0; last = performance.now(); requestAnimationFrame(loop); } };
+    const ss = root.querySelector('.ansel');
+    if (ss) ss.onchange = () => { play = false; root.dataset.sel = ss.value; delete root.dataset.on; mount(root); };
     root.querySelector('.anre').onclick = () => { t = 0; frame(t); };
     rng.oninput = () => { t = +rng.value; frame(t); };
     frame(0);
