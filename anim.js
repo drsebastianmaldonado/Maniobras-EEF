@@ -661,20 +661,30 @@
   const CSX = { C12: [512, 292], C34: [450, 300], C56: [380, 304], C78: [300, 302] }, OBA = [446, 268], OBV = [516, 316];
   const RX = { C78: 110, C56: 230, C34: 350, C12: 460 }, RAI = [330, 118], RVI = [470, 186];
   function oblSc(kind) {
-    const retro = kind === 'retro', sc = newSc({ title: retro ? 'Conducción retrógrada (estimulación ventricular)' : 'Conducción anterógrada (ritmo sinusal, preexcitado)', view: 'ring', vb: '0 0 560 320', cats: [], fronts: [] });
+    const retro = kind === 'retro', sc = newSc({ title: retro ? 'Conducción retrógrada (estimulación ventricular)' : 'Conducción anterógrada (ritmo sinusal, preexcitado)', view: 'ring', vb: kind === 'rev' ? '0 0 560 325' : '0 0 560 320', cats: [], fronts: [] });
     const R = [], r = Math.round;
     const local = (lane, t, l) => E(sc, lane, r(t), l);
-    if (retro) {
-      [300, 1000, 1700].forEach(s => {
-        stim(sc, 'apex', s);
-        const v0 = s + 62, kV = 0.1, tV = x => v0 + (x - 30) * kV;          // el frente ventricular llega desde el septum
-        const tVI = tV(RVI[0]), tAI = tVI + 30, kA = 0.15, tA = x => tAI + Math.abs(x - RAI[0]) * kA;
-        sc.fronts.push({ band: 'V', x0: 30, t0: v0, k: kV, dir: 'right' }, { band: 'A', x0: RAI[0], t0: tAI, k: kA, dir: 'both' });
-        W_(sc, 'retro', [[RVI, tVI], [RAI, tAI]]); sc.flA.push(tAI); sc.flV.push(v0);
-        for (const k in RX) { local(k, tV(RX[k]), 'V'); local(k, tA(RX[k]), 'A'); }
-        local('C12', tVI + 30 * (RVI[0] - RX.C12) / (RVI[0] - RAI[0]), 'P'); local('C34', tVI + 30 * (RVI[0] - RX.C34) / (RVI[0] - RAI[0]), 'P');
-        R.push({ s, tV, tA, tAI });
-      });
+    const vBeat = (s, lat) => {
+      const v0 = s + 62, kV = 0.1, tV = x => v0 + (lat ? 530 - x : x - 30) * kV;
+      const tVI = tV(RVI[0]), tAI = tVI + 15, kA = 0.15, tA = x => tAI + Math.abs(x - RAI[0]) * kA;
+      sc.fronts.push({ band: 'V', x0: lat ? 530 : 30, t0: v0, k: kV, dir: lat ? 'left' : 'right' }, { band: 'A', x0: RAI[0], t0: tAI, k: kA, dir: 'both' });
+      sc.stims.push({ t: s + 50, pt: lat ? [520, 225] : [40, 225] });
+      W_(sc, 'retro', [[RVI, tVI], [RAI, tAI]]); sc.flA.push(tAI); sc.flV.push(v0);
+      for (const k in RX) { local(k, tV(RX[k]), 'V'); local(k, tA(RX[k]), 'A'); }
+      local('C12', tVI + 15 * (RVI[0] - RX.C12) / (RVI[0] - RAI[0]), 'P'); local('C34', tVI + 15 * (RVI[0] - RX.C34) / (RVI[0] - RAI[0]), 'P');
+      return { s, tV, tA, tAI, lat };
+    };
+    if (kind === 'rev') {
+      sc.title = 'Invertir el frente ventricular (Otomo 2001)';
+      [300, 1000].forEach(t => R.push(vBeat(t, false))); [1800, 2500].forEach(t => R.push(vBeat(t, true)));
+      const va = x => r(x.tA(RX.C34)) - r(x.tV(RX.C34)), [a, b] = [R[1], R[3]];
+      brk(sc, 'C34', r(a.tV(RX.C34)), r(a.tA(RX.C34)), 'VA ' + va(a), { up: 1 }); brk(sc, 'C34', r(b.tV(RX.C34)), r(b.tA(RX.C34)), 'VA ' + va(b), { hot: 1, up: 1 });
+      sc.notes.push({ t0: 250, t1: 1700, x: 280, y: 312, txt: 'frente ventricular: septal → lateral', col: '#ef6c00', anc: 'middle' }, { t0: 1700, t1: 99999, x: 280, y: 312, txt: 'frente ventricular: lateral → septal', col: '#ef6c00', anc: 'middle' });
+      Object.assign(sc, { stimEnd: 0, verdictT: b.s + 200, m: { R },
+        verdict: `Al invertir el frente ventricular el <b>VA local en 3-4</b> (la A más precoz) pasa de <b>${va(a)} a ${va(b)} ms</b>: cambia ≥ 15 ms, así que la vía es <b>oblicua</b>. Con el frente lateral → septal el V cae casi encima de la A y tapa el potencial de la vía; con el septal → lateral se separan y el potencial (P) se ve.`,
+        why: 'Con el frente en el mismo sentido que la conducción por la vía, el ventrículo debajo de la inserción auricular se activa tarde, casi junto con la A. En el sentido contrario se activa temprano y queda separado. Otomo 2001: el VA local aumentó ≥ 15 ms en el 91 % de las vías y, mapeando con el VA largo, se encontró el potencial en el 89 %.' });
+    } else if (retro) {
+      [300, 1000, 1700].forEach(t => R.push(vBeat(t, false)));         // el frente ventricular llega desde el septum
       const x = R[1], va34 = r(x.tA(RX.C34)) - r(x.tV(RX.C34)), va12 = r(x.tA(RX.C12)) - r(x.tV(RX.C12));
       brk(sc, 'C34', r(x.tV(RX.C34)), r(x.tA(RX.C34)), 'VA ' + va34, { hot: 1, up: 1 }); brk(sc, 'C12', r(x.tV(RX.C12)), r(x.tA(RX.C12)), 'VA ' + va12, { up: 1 });
       sc.notes.push({ t0: r(x.tA(RX.C34)), t1: 99999, x: RX.C34, y: 104, txt: 'A más precoz', col: '#6a3fb5', anc: 'middle' });
@@ -776,6 +786,9 @@
       fases: [[0, 'Ritmo sinusal. Se estimula primero la AD alta...'], [1650, '...y después el ostium del SC: conduce el otro nodo.']] },
     obl_retro: { t: 'Vía oblicua: conducción retrógrada', win: 260, dur: 1270, lanes: [['C12', 'SC 1-2'], ['C34', 'SC 3-4'], ['C56', 'SC 5-6'], ['C78', 'SC 7-8']], panels: [() => oblSc('retro')],
       fases: s => { const R = s[0].m.R[0]; return [[0, 'Vista ampliada del anillo mitral: aurícula arriba, ventrículo abajo y el catéter del SC en el medio. Se estimula el VD.'], [R.s + 55, 'Seguí el <b>frente ventricular</b> (naranja): llega desde el septum y pasa por debajo de 3-4 sin activar la vía.'], [R.tAI - 32, 'Entra a la vía en la <b>inserción ventricular</b> (1-2), sube en diagonal (violeta) y sale en la <b>inserción auricular</b> (3-4).'], [R.tAI + 5, 'Desde la inserción auricular la aurícula se activa hacia los dos lados: la <b>A más precoz</b> está en 3-4.']]; } },
+    obl_rev: { t: 'Vía oblicua: invertir el frente de estimulación', win: 260, dur: 2770, lanes: [['C12', 'SC 1-2'], ['C34', 'SC 3-4'], ['C56', 'SC 5-6'], ['C78', 'SC 7-8']], panels: [() => oblSc('rev')],
+      fases: [[0, 'La misma vía. Primero se estimula el ventrículo del lado <b>septal</b>: el frente ventricular va de septal a lateral.'], [1050, 'Medí el VA local en 3-4 (la A más precoz): V, potencial de la vía y A bien separados.'],
+        [1700, 'Ahora se estimula del lado <b>lateral</b>: el frente ventricular va al revés, de lateral a septal.'], [2550, 'Medí de nuevo el VA local en 3-4: el V cae casi encima de la A.']] },
     obl_ante: { t: 'Vía oblicua: conducción anterógrada', win: 260, dur: 1100, lanes: [['C12', 'SC 1-2'], ['C34', 'SC 3-4'], ['C56', 'SC 5-6'], ['C78', 'SC 7-8']], panels: [() => oblSc('ante')],
       fases: s => { const R = s[0].m.R[0]; return [[0, 'Vista ampliada del anillo mitral. Ritmo sinusal con preexcitación por la misma vía.'], [R.a - 10, 'Seguí el <b>frente auricular</b> (violeta): llega desde el septum y entra a la vía en la <b>inserción auricular</b> (3-4).'], [R.a + 25, 'Baja por la vía en diagonal (naranja) y sale en la <b>inserción ventricular</b> (1-2).'], [R.a + 55, 'Desde la inserción ventricular el ventrículo se activa hacia los dos lados: el <b>V más precoz</b> está en 1-2.']]; } },
     vai: { t: 'Índice VA: nodo vs vía posteroseptal', n: 'Índice VA', win: 3900, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => vaiSc('node'), () => vaiSc('ap')],
@@ -940,11 +953,11 @@
         let df = '';
         for (const f of sc.fronts || []) {
           const dt = T - f.t0; if (dt < 0) continue;
-          const maxD = f.dir === 'right' ? 530 - f.x0 : Math.max(f.x0 - 30, 530 - f.x0), tE = maxD * f.k; if (dt > tE + 220) continue;
-          const rr = dt / f.k, L = f.dir === 'right' ? f.x0 : Math.max(30, f.x0 - rr), Rr = Math.min(530, f.x0 + rr), y = f.band === 'A' ? 40 : 186, col = f.band === 'A' ? '#7e57c2' : '#ef6c00';
+          const maxD = f.dir === 'right' ? 530 - f.x0 : f.dir === 'left' ? f.x0 - 30 : Math.max(f.x0 - 30, 530 - f.x0), tE = maxD * f.k; if (dt > tE + 220) continue;
+          const rr = dt / f.k, L = f.dir === 'right' ? f.x0 : Math.max(30, f.x0 - rr), Rr = f.dir === 'left' ? f.x0 : Math.min(530, f.x0 + rr), y = f.band === 'A' ? 40 : 186, col = f.band === 'A' ? '#7e57c2' : '#ef6c00';
           const op = dt < tE ? 0.5 : 0.5 * (1 - (dt - tE) / 220);
           df += `<rect x="${L}" y="${y}" width="${Math.max(0, Rr - L)}" height="78" fill="${col}" opacity="${op.toFixed(2)}"/>`;
-          if (dt < tE) { if (Rr < 530) df += `<circle cx="${Rr}" cy="${y + 39}" r="10" fill="${col}" stroke="#fff" stroke-width="3"/>`; if (f.dir === 'both' && L > 30) df += `<circle cx="${L}" cy="${y + 39}" r="10" fill="${col}" stroke="#fff" stroke-width="3"/>`; }
+          if (dt < tE) { if (Rr < 530 && f.dir !== 'left') df += `<circle cx="${Rr}" cy="${y + 39}" r="10" fill="${col}" stroke="#fff" stroke-width="3"/>`; if (f.dir !== 'right' && L > 30) df += `<circle cx="${L}" cy="${y + 39}" r="10" fill="${col}" stroke="#fff" stroke-width="3"/>`; }
         }
         dh = df + dh;
         for (const c of sc.cols || []) if (T >= c.t && T < c.t + 140) dh += `<path d="M${c.pt[0] - 11},${c.pt[1] - 11} L${c.pt[0] + 11},${c.pt[1] + 11} M${c.pt[0] + 11},${c.pt[1] - 11} L${c.pt[0] - 11},${c.pt[1] + 11}" stroke="#212121" stroke-width="5" stroke-linecap="round"/>`;
@@ -1004,7 +1017,7 @@
 
   // fichas con varias animaciones, cada una con una sola taquicardia y sus propios controles
   const FOR = { ado: ['ado_trav', 'ado_trnav', 'ado_ta', 'ado_nv', 'ado_jet', 'ado_anti'], basal: ['basal_trnav', 'basal_travl', 'basal_coumel', 'basal_ta'],
-    pre: ['pre_dual', 'pre_vanode', 'pre_vaap'], twin: ['twin_tsv', 'twin_ap'], obl: ['obl_retro', 'obl_ante'] };
+    pre: ['pre_dual', 'pre_vanode', 'pre_vaap'], twin: ['twin_tsv', 'twin_ap'], obl: ['obl_retro', 'obl_ante', 'obl_rev'] };
   for (const k of Object.keys(ANIMS)) {
     const A = ANIMS[k]; if (k.startsWith('ado_')) continue;
     const np = (A.sel ? A.panels(A.def) : A.panels).length; if (np < 2 || FOR[k]) continue;
