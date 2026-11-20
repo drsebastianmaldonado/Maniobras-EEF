@@ -171,6 +171,13 @@ figcaption{font-size:13px;color:var(--ink2)}
 .seg2 button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 /* hoja con la ficha (desde el algoritmo) */
 dialog{border:0;padding:0;border-radius:20px;background:var(--bg);color:var(--ink);width:min(720px,calc(100vw - 20px));max-height:calc(100dvh - 20px)}
+.fnav{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;margin:0 0 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.fnav::-webkit-scrollbar{display:none}
+.fnav button{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;font-weight:600;padding:7px 11px;border-radius:999px;cursor:pointer;min-height:34px;white-space:nowrap;flex:none}
+.fnav button:active{background:var(--seg)}
+#dlgB .fnav{position:sticky;top:0;z-index:3;background:var(--bg);margin:0 -16px 10px;padding:8px 16px;border-bottom:1px solid var(--line)}
+.ficha [data-sec]{scroll-margin-top:150px}
+#dlgB .ficha [data-sec]{scroll-margin-top:68px}
+.bl.isec{margin:16px 4px 6px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
 dialog::backdrop{background:rgba(0,0,0,.45)}
 .dlg{display:flex;flex-direction:column;gap:12px;padding:16px}
 .dlgh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
@@ -316,7 +323,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script src="anim.js"></script>
 <script>
-const APPV = 216;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 217;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -1796,17 +1803,22 @@ function casosHTML(id) {
 
 function fichaHTML(id) {
   const m = M[id];
-  let h = `<div class="ficha"><p class="para">${m.para}</p>`;
-  h += `<div class="box"><div class="bl">Cómo se hace</div><ol>${m.como.map(x => `<li>${x}</li>`).join('')}</ol></div>`;
+  const anims = window.ANIM_IDS ? ((window.ANIM_FOR && ANIM_FOR[id]) || (ANIM_IDS.includes(id) ? [id] : [])) : [];
+  const ncas = CASOS.filter(c => c.m === id).length;
+  // índice para saltar a cada parte de la ficha
+  const nav = [['como', 'Cómo se hace'], anims.length && ['anim', anims.length > 1 ? `Animaciones (${anims.length})` : 'Animación'], ['interp', 'Interpretación'],
+    ncas && ['casos', `Casos (${ncas})`], ['trampas', 'Trampas'], ['refs', 'Referencias']].filter(Boolean);
+  let h = `<div class="ficha"><nav class="fnav" aria-label="Partes de la ficha">${nav.map(([k, t]) => `<button type="button" data-jump="${k}">${t}</button>`).join('')}</nav><p class="para">${m.para}</p>`;
+  h += `<div class="box" data-sec="como"><div class="bl">Cómo se hace</div><ol>${m.como.map(x => `<li>${x}</li>`).join('')}</ol></div>`;
   h += `<figure class="real esq"><a href="figs/esq/${id}.jpg" target="_blank" rel="noopener"><img src="figs/esq/${id}.jpg" alt="Esquema de la maniobra" loading="lazy"></a><figcaption>Esquema: corazón en OAI ~30° con el sistema de conducción. Tocá para ampliar.</figcaption></figure>`;
-  if (window.ANIM_IDS) for (const k of (window.ANIM_FOR && ANIM_FOR[id]) || (ANIM_IDS.includes(id) ? [id] : [])) h += `<div class="box anim" data-anim="${k}"></div>`;
+  anims.forEach((k, i) => { h += `<div class="box anim" data-anim="${k}"${i ? '' : ' data-sec="anim"'}></div>`; });
   if (m.sim) h += `<figure class="real sim"><a href="${m.sim}" target="_blank" rel="noopener"><img src="${m.sim}" alt="Registro simulado" loading="lazy"></a><figcaption>${m.simt} Registro simulado (no es un registro real). Tocá para ampliar.</figcaption></figure>`;
   if (m.medir) h += `<div class="box"><div class="bl">Qué medir con la misma tira</div><ul>${m.medir.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
-  h += `<div class="tw"><table><thead><tr><th>Hallazgo</th><th>Indica</th><th>Fuente</th></tr></thead><tbody>${m.interp.map(r => `<tr><td>${r[0]}</td><td class="dx">${r[1]}</td><td>${cite(r[2].split(' '))}</td></tr>`).join('')}</tbody></table></div>`;
-  h += casosHTML(id);
+  h += `<div class="bl isec" data-sec="interp">Interpretación</div><div class="tw"><table><thead><tr><th>Hallazgo</th><th>Indica</th><th>Fuente</th></tr></thead><tbody>${m.interp.map(r => `<tr><td>${r[0]}</td><td class="dx">${r[1]}</td><td>${cite(r[2].split(' '))}</td></tr>`).join('')}</tbody></table></div>`;
+  h += casosHTML(id).replace('<div class="box casos">', '<div class="box casos" data-sec="casos">');
   if (m.vs) h += `<div class="box"><div class="bl">${m.vs.t}</div><ul>${m.vs.l.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
-  h += `<div class="box trap"><div class="bl">Trampas y limitaciones</div><ul>${m.trampas.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
-  h += `<ol class="refs">${m.refs.map(k => `<li>${REFS[k][1]}</li>`).join('')}</ol></div>`;
+  h += `<div class="box trap" data-sec="trampas"><div class="bl">Trampas y limitaciones</div><ul>${m.trampas.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
+  h += `<div class="bl isec" data-sec="refs">Referencias</div><ol class="refs">${m.refs.map(k => `<li>${REFS[k][1]}</li>`).join('')}</ol></div>`;
   return h;
 }
 
@@ -2073,6 +2085,10 @@ function openFicha(k) {
   d.scrollTop = 0;
 }
 $('#dlgX').onclick = () => $('#dlg').close();
+document.addEventListener('click', e => {
+  const b = e.target.closest('.fnav [data-jump]'); if (!b) return;
+  const t = b.closest('.ficha').querySelector(`[data-sec="${b.dataset.jump}"]`); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 $('#dlg').addEventListener('click', e => { if (e.target.id === 'dlg') $('#dlg').close(); });
 
 // ---------- fichas
