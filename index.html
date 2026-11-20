@@ -33,13 +33,14 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 .wrap{max-width:760px;margin:0 auto;padding:20px 16px 48px;display:flex;flex-direction:column;gap:18px}
 .card{background:var(--card);border-radius:20px;box-shadow:var(--shadow);min-width:0}
-.hero{--hc:var(--violet);margin:-20px -16px 0;padding:40px 20px 24px;border-radius:0 0 32px 32px;
+.hero{--hc:var(--violet);margin:-20px -16px 0;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-radius:0 0 20px 20px;display:flex;align-items:center;gap:10px;
   background:linear-gradient(165deg,color-mix(in srgb,var(--hc) 28%,var(--bg)),color-mix(in srgb,var(--hc) 5%,var(--bg)))}
-.hicon{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;color:#fff;background:linear-gradient(135deg,var(--hc),color-mix(in srgb,var(--hc) 62%,#000))}
-.hicon svg{width:26px;height:26px}
-.hero h1{margin:14px 0 6px;font-size:clamp(30px,8.6vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.06}
+.hicon{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;color:#fff;background:linear-gradient(135deg,var(--hc),color-mix(in srgb,var(--hc) 62%,#000))}
+.hicon svg{width:20px;height:20px}
+.hero h1{margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.about{margin:0 0 10px;text-align:center}
 .hero .sub{margin:0;color:var(--ink2);max-width:56ch}
-.seg{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;background:var(--seg);padding:4px;border-radius:14px;position:sticky;top:8px;z-index:5;box-shadow:var(--shadow)}
+.seg{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;background:var(--seg);padding:4px;border-radius:14px;position:sticky;top:calc(6px + env(safe-area-inset-top));z-index:5;box-shadow:var(--shadow);margin-top:12px}
 .seg button{appearance:none;border:0;border-radius:11px;padding:10px 6px;font:inherit;font-weight:700;font-size:14px;line-height:1.2;color:var(--ink2);background:transparent;cursor:pointer}
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 h2.sec{margin:8px 4px -6px;font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
@@ -193,7 +194,6 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
   <header class="hero">
     <div class="hicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h3l1.5-4 2 8 1.5-4h2"/><path d="M14 6v12M17 9v6M20 6v12"/></svg></div>
     <h1>Maniobras en el EEF</h1>
-    <p class="sub">Maniobras del polígrafo para el diagnóstico diferencial de las taquicardias supraventriculares: cómo hacerlas, qué medir y cómo interpretarlas, con un algoritmo paso a paso. Para fellows y electrofisiólogos.</p>
   </header>
 
   <div class="seg" role="tablist">
@@ -307,7 +307,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     <summary>Fuentes y referencias</summary>
     <div class="refb"><ol class="refs" id="refsAll"></ol></div>
   </details>
-  <p class="small" style="text-align:center;margin:0">Dr. Sebastián Maldonado · Electrofisiólogo infantil</p>
+  <p class="small about">Maniobras del polígrafo para el diagnóstico diferencial de las taquicardias: cómo hacerlas, qué medir y cómo interpretarlas, con un algoritmo paso a paso. Para fellows y electrofisiólogos.</p>
+  <p class="small" style="text-align:center;margin:0">Dr. Sebastián Maldonado · Electrofisiólogo infantil · <span id="verPie"></span></p>
 </div>
 
 <dialog id="dlg"><div class="dlg"><div class="dlgh"><h3 id="dlgT"></h3><button class="btn" id="dlgX">Cerrar</button></div><div id="dlgB"></div></div></dialog>
@@ -315,7 +316,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script src="anim.js"></script>
 <script>
-const APPV = 215;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 216;   // igual al número de CACHE_VERSION de sw.js
+try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
 // ===============================================================================================================
@@ -2144,6 +2146,8 @@ function checkReview() {
 }
 addEventListener('hashchange', checkReview);
 function tab(p) {
+  const sg = document.querySelector('.seg'), top0 = document.querySelector('.hero').offsetHeight + 24;
+  if (window.scrollY > top0 && sg) window.scrollTo({ top: top0 });
   document.querySelectorAll('.seg button').forEach(b => { const on = b.dataset.p === p; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
   ['algo', 'arr', 'man', 'loc', 'calc', 'prac'].forEach(x => $('#p-' + x).hidden = x !== p);
   if (p === 'prac' && pCur === null) renderPracList();
