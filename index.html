@@ -401,7 +401,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 228;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 229;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -1183,12 +1183,16 @@ const AESQ = {
   ta: ['ado', 'vop', 'aop', 'basal'],
   jet: ['eha', 'aop', 'vop'],
 };
+const ARR_ANIM = { pjrt: ['pjrt_circ', 'ehr_pjrt'] };
+const animHome = k => { const f = Object.keys(ANIM_FOR).find(x => M[x] && ANIM_FOR[x].includes(k)) || (M[k] ? k : null);
+  if (f) return { f, n: M[f].t }; const a = Object.keys(ARR_ANIM).find(x => ARR_ANIM[x].includes(k)); return a ? { f: 'arr:' + a, n: ARR.find(r => r.id === a).n } : { f: k, n: k }; };   // animaciones dentro de la tarjeta de la arritmia
 function renderArr() {
   const q = norm(arrQ.trim());
   const list = ARR.filter(a => !q || norm(a.n + ' ' + a.al).includes(q));
   $('#arrList').innerHTML = list.length ? list.map(a => `<details class="card ref arr" id="a-${a.id}"${q && list.length <= 2 ? ' open' : ''}><summary><span class="sumt"><span>${a.n}</span><small>Diferencial: ${a.dif}</small></span></summary><div class="refb"><div class="shrow"><button type="button" class="shr" data-share="arritmia-${a.id}" data-st="${a.n.replace(/"/g, '&quot;')}">Compartir ↗</button></div>
     ${a.mec ? `<div class="box"><div class="bl">Cómo y por qué se reconoce</div><div class="mec">${a.mec}</div>${a.img ? `<figure class="real sim"><a href="${a.img}" target="_blank" rel="noopener"><img src="${a.img}" alt="Registro simulado" loading="lazy"></a><figcaption>${a.imgcap || ''} Registro simulado (no es un registro real). Tocá para ampliar.</figcaption></figure>` : ''}</div>` : ''}
     ${AESQ[a.id] ? `<div class="box"><div class="bl">Esquemas de las maniobras útiles</div>${esqStrip(AESQ[a.id])}<p class="small" style="margin:6px 0 0">Tocá un esquema para ampliarlo.</p></div>` : ''}
+    ${(ARR_ANIM[a.id] || []).filter(k => window.ANIM_IDS && ANIM_IDS.includes(k)).map(k => `<div class="box anim" data-anim="${k}"></div>`).join('')}
     <div class="box"><div class="bl ok">Lo confirma</div>${arrRows(a.conf, 'ok')}</div>
     <div class="box"><div class="bl fav">Lo apoya</div>${arrRows(a.apoya, 'fav')}</div>
     <div class="box"><div class="bl no">Lo descarta</div>${arrRows(a.desc, 'no')}</div>
@@ -1682,13 +1686,13 @@ function presFigs(c) {
 function startCase(i) { pCur = i; pLog = []; pDone = null; pFase = 0; pPrev = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
 // animaciones que muestran el mecanismo de cada caso (por diagnóstico; revisadas a mano)
 const DX_ANIM = { trnav_t: ['ppi_1', 'eha_0'], trav_s: ['ppi_0', 'ehr_0'], ta: ['vop_1', 'aop_1'], trav_l: ['basal_travl', 'basal_coumel'], trnav_a: ['ppi_1', 'diff_1'],
-  pjrt: ['vop_0', 'ehr_0'], jet: ['eha_1', 'ado_jet'], tvf: ['tvf_circ', 'tvf_vera'], nvrt: ['ado_nv'], mahaim: ['preex_0'], antid: ['ado_anti'], dfire: ['dfire', 'pre_dual'], bys: [] };
+  pjrt: ['pjrt_circ', 'ehr_pjrt'], jet: ['eha_1', 'ado_jet'], tvf: ['tvf_circ', 'tvf_vera'], nvrt: ['ado_nv'], mahaim: ['preex_0'], antid: ['ado_anti'], dfire: ['dfire', 'pre_dual'], bys: [] };
 function caseAnims(c) {
   if (!window.ANIM_IDS) return '';
   const ks = [...new Set((c.dx || []).flatMap(d => DX_ANIM[d] || []))].filter(k => ANIM_IDS.includes(k)).slice(0, 3);
   if (!ks.length) return '';
   return `<div class="box"><div class="bl">Animaciones del mecanismo</div>${ks.map(k => { const f = Object.keys(ANIM_FOR).find(x => ANIM_FOR[x].includes(k)) || k;
-    return `<button type="button" class="anlink" data-ganim="${f}|${k}">▶ ${M[f].t} · ${animLabel(k)}</button>`; }).join('')}</div>`;
+    const hm = animHome(k); return `<button type="button" class="anlink" data-ganim="${hm.f}|${k}">▶ ${hm.n} · ${animLabel(k)}</button>`; }).join('')}</div>`;
 }
 // caso en curso: se guarda para retomarlo si se cierra la app a mitad de camino
 const curSave = () => { try { localStorage.setItem('mef_prac_cur', JSON.stringify(pCur === null || pDone !== null ? null : { id: PCASOS[pCur].id, log: pLog, fase: pFase, prev: pPrev })); } catch (e) {} };
@@ -2322,12 +2326,14 @@ const LEAF_ANIM = { L_at: ['vop_1'], L_at_l: ['vop_1', 'aop_1'], L_at_bl: ['ado_
   L_mahaim: ['preex_0'], L_pwind: ['preex_0'], L_pwvt: ['preex_1'], L_dfire: ['dfire', 'pre_dual'], L_bbr: ['bbr_tv', 'bbr_ppi'], L_tvf: ['tvf_circ', 'tvfabl_rf'] };
 function animLinks(L, id) {
   if (!window.ANIM_IDS || !LEAF_ANIM[id]) return '';
-  return LEAF_ANIM[id].filter(k => ANIM_IDS.includes(k)).map(k => { const f = Object.keys(ANIM_FOR).find(x => ANIM_FOR[x].includes(k)) || k;
-    return `<button type="button" class="anlink" data-ganim="${f}|${k}">▶ Ver la animación: ${M[f].t} · ${animLabel(k)}</button>`; }).join('');
+  return LEAF_ANIM[id].filter(k => ANIM_IDS.includes(k)).map(k => { const hm = animHome(k);
+    return `<button type="button" class="anlink" data-ganim="${hm.f}|${k}">▶ Ver la animación: ${hm.n} · ${animLabel(k)}</button>`; }).join('');
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-ganim]'); if (!b) return;
-  const [f, k] = b.dataset.ganim.split('|'); openFicha(f);
+  const [f, k] = b.dataset.ganim.split('|');
+  if (f.startsWith('arr:')) { openArr(f.slice(4)); setTimeout(() => { const a = document.querySelector(`#a-${f.slice(4)} .anim[data-anim="${k}"]`); if (a) scrollTo({ top: a.getBoundingClientRect().top + scrollY - document.querySelector('.seg').offsetHeight - 20 }); }, 120); return; }
+  openFicha(f);
   setTimeout(() => { const a = document.querySelector(`#dlgB .anim[data-anim="${k}"]`); if (a) a.scrollIntoView({ block: 'start' }); }, 60);
 });
 

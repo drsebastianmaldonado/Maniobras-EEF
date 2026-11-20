@@ -855,6 +855,52 @@
     return sc;
   }
 
+
+  // PJRT: TRAV ortodrómica que sube por una vía posteroseptal lenta y decremental (cerca del ostium del SC)
+  const PJV = [240, 356], PJA = [212, 288];
+  function pjrtSc(kind) {
+    const sc = newSc({ title: kind === 'ehr' ? 'PJRT: EV con His refractario' : 'PJRT: el circuito', ap: 'pjrt', cats: kind === 'ehr' ? ['base'] : [] });
+    const AH = 120, VP = 230;                       // VP: conducción por la vía (V septal → A), lenta
+    const beat = (a, vp) => {                       // a: A en el ostium del SC
+      E(sc, 'CSp', a, 'A'); E(sc, 'AD', a + 45, 'A'); sc.flA.push(a);
+      W_(sc, 'retro', [[PJA, a], [G.cso, a + 8], [G.aSep, a + 25], [G.ra, a + 45]]);
+      const h = a + AH; W_(sc, 'ante', [[G.aSep, a + 25], [G.node, a + 55], [G.his, h]]); E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h);
+      const v0 = h + HVT + 15; W_(sc, 'retro', [[G.rb2, h + 25], [[236, 400], h + 45], [PJV, v0]]);
+      const an = v0 + (vp || VP); W_(sc, 'retro', [[PJV, v0], [[230, 328], v0 + (vp || VP) * 0.35], [[219, 306], v0 + (vp || VP) * 0.7], [PJA, an]]);
+      return { h, v0, an };
+    };
+    let a = 120, b; const A = [a];
+    for (let i = 0; i < 3; i++) { b = beat(a); a = b.an; A.push(a); }
+    const LC = A[2] - A[1], va = A[2] - (A[1] + AH + HVT);
+    if (kind !== 'ehr') {
+      for (let i = 0; i < 2; i++) { b = beat(a); a = b.an; }
+      brk(sc, 'CSp', A[1] + AH + HVT, A[2], 'VA ' + va, { guide: 'VD', hot: 1, up: 1 });
+      Object.assign(sc, { stimEnd: 0, verdictT: A[3] + 40,
+        verdict: `Baja por el nodo (AH ${AH}) y <b>sube por una vía posteroseptal lenta</b>: VA ${va} ms, más largo que el AV (<b>RP largo</b>), con la A más precoz en el <b>ostium del SC</b>.`,
+        why: 'Es una TRAV ortodrómica: la aurícula y el ventrículo son parte del circuito. La vía conduce lento y con decremento, por eso la taquicardia es incesante y el RP es largo. Con la sobreestimulación ventricular la respuesta es A-V, como en cualquier TRAV.' });
+      return sc;
+    }
+    // EV con His refractario desde la base del VD
+    const h = a + AH; E(sc, 'CSp', a, 'A'); E(sc, 'AD', a + 45, 'A'); sc.flA.push(a);
+    W_(sc, 'retro', [[PJA, a], [G.cso, a + 8], [G.aSep, a + 25], [G.ra, a + 45]]);
+    W_(sc, 'ante', [[G.aSep, a + 25], [G.node, a + 55], [G.his, h]]); const hRef = E(sc, 'His', h, 'H');
+    const e = h + 5; stim(sc, 'base', e);
+    W_(sc, 'retro', rbUp('base', e), h + 32); down(sc, h, h + 32, h + 30);
+    const vExp = h + HVT + 15, vEv = e + 25, pre = vExp - vEv;            // la EV llega antes a la vía...
+    const vp = VP + 70, aNew = vEv + vp, aExp = vExp + VP;                 // ...pero la vía conduce con decremento
+    W_(sc, 'retro', [[G.base, e], [[236, 318], e + 12], [PJV, vEv]]);
+    W_(sc, 'retro', [[PJV, vEv], [[230, 328], vEv + vp * 0.35], [[219, 306], vEv + vp * 0.7], [PJA, aNew]]);
+    sc.flV.push(e);
+    const prevA = a; a = aNew;
+    Object.assign(hRef, { tag: ' ', tagT: e + 1 });
+    for (let i = 0; i < 4; i++) { b = beat(a); if (i === 0) Object.assign(sc.ev.find(x => x.ch === 'CSp' && x.t === a), { tag: 'A retrasada', tagT: a + 1, tagUp: true }); a = b.an; }
+    brk(sc, 'CSp', A[1], A[2], 'AA ' + LC); brk(sc, 'CSp', prevA, aNew, 'AA ' + (aNew - prevA), { hot: 1 });
+    Object.assign(sc, { stimEnd: e, verdictT: aNew + 60, m: { e },
+      verdict: `La EV cae con el His ya activado y llega antes a la vía (${pre} ms), pero <b>la A se retrasa ${aNew - aExp} ms</b> (AA ${aNew - prevA} en vez de ${LC}) con la misma secuencia: la vía es <b>decremental</b> y participa → <b>PJRT</b>.`,
+      why: 'El estímulo prematuro encuentra a la vía menos recuperada y la atraviesa más lento: el retraso supera lo que se adelantó. La taquicardia sigue desde la A retrasada (reset con retraso). Si la vía se bloquea, la TSV termina sin activar la aurícula. Entregá varias EV: el decremento puede compensar la prematuridad y no cambiar la A (falso negativo).' });
+    return sc;
+  }
+
   // PPI−LC, SA−VA y ΔHA: un mismo encarrilamiento con un selector de medición (cada ficha arranca con la suya)
   const ENTM = { ppi: ['PPI − LC', 'Medí el <b>PPI</b> en el canal del VD: de la última espiga al primer V de retorno, y restale la LC.'],
     sava: ['SA − VA', 'Medí el <b>SA</b>: de la última espiga a la A del último latido acelerado, y comparalo con el <b>VA</b> de la TSV.', 'Antes de estimular, mirá el <b>VA</b> de la TSV (del V a la A).'],
@@ -881,6 +927,12 @@
       fases: s => { const [a, b] = s[0].m.runs; return [[0, 'Taquicardia. Hay un catéter en el ápex del VD y otro en la base, cerca del His.'],
         [a.S[0] - 10, 'Primero se encarrila desde el <b>ápex</b> (a 300 ms).'], [a.lastS + 1, 'Medí el VA (espiga → A) y el PPI desde el ápex.'],
         [b.S[0] - 10, 'Ahora se encarrila desde la <b>base</b>, a la misma LC.'], [b.lastS + 1, 'Medí el VA y el PPI desde la base y restá: base − ápex.']]; } },
+    pjrt_circ: { t: 'PJRT: el circuito', lanes: [['AD', 'AD alta'], ['CSp', 'SC ostium'], ['His', 'His'], ['VD', 'VD']], panels: [() => pjrtSc('circ')], win: 1800,
+      fases: [[0, 'PJRT (taquicardia reciprocante permanente de la unión): mirá por dónde baja y por dónde sube el frente, y dónde aparece primero la A.']] },
+    ehr_pjrt: { t: 'EV con His refractario en la PJRT', lanes: [['AD', 'AD alta'], ['CSp', 'SC ostium'], ['His', 'His'], ['VDb', 'VD base']], panels: [() => pjrtSc('ehr')], win: 1900,
+      fases: s => { const e = s[0].m.e; return [[0, 'PJRT: baja por el nodo y sube por una vía posteroseptal lenta y decremental (VA largo).'],
+        [e - 60, 'Mirá el His: se activa ahora y queda refractario.'], [e - 4, 'Se da <b>una EV</b> desde la base del VD, justo después del His.'],
+        [e + 120, 'El frente entra a la vía antes que el de la taquicardia… pero la vía conduce más lento. Mirá cuándo llega la A.']]; } },
     ehr: { t: 'EV con His refractario: TRAV vs TRNAV', n: 'EV con His refractario', dur: 2500, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base']], panels: [() => ehrSc('trav'), () => ehrSc('trnav')],
       fases: s => { const e = s[0].stimEnd; return [[0, 'Taquicardia (LC 340 ms). Hay un catéter en la base del VD, cerca de la vía septal.'],
         [e - 60, 'Mirá el His: se activa en forma anterógrada. Desde ese momento el His está refractario.'],
@@ -1042,6 +1094,9 @@
     } else if (sc.ap === 'nv') {
       mk('path', { d: 'M250,362 C252,332 256,300 264,272', stroke: '#d81b60', 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round', opacity: 0.85 }, svg);
       lbl(240, 392, 'vía nodoventricular', '#d81b60', 'end');
+    } else if (sc.ap === 'pjrt') {
+      mk('path', { d: `M${PJV[0]},${PJV[1]} C222,344 240,330 228,322 C214,312 230,302 ${PJA[0]},${PJA[1]}`, stroke: '#d81b60', 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round', 'stroke-dasharray': '4 5', opacity: 0.9 }, svg);
+      lbl(204, 372, 'vía lenta', '#d81b60', 'end'); lbl(204, 388, 'decremental', '#d81b60', 'end');
     } else if (sc.ap === 'af') {
       mk('path', { d: 'M92,272 C80,330 100,430 178,512', stroke: '#d81b60', 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round', opacity: 0.85 }, svg);
       lbl(58, 520, 'vía', '#d81b60'); lbl(58, 536, 'atriofascicular', '#d81b60');
@@ -1054,7 +1109,7 @@
       f.innerHTML = '<path d="M0,-15 L4.5,-4.5 L15,-4.5 L7,2.5 L10,14 L0,7 L-10,14 L-7,2.5 L-15,-4.5 L-4.5,-4.5 Z" fill="#fdd835" stroke="#c62828" stroke-width="2"/>';
       lbl(FP[0] + 20, FP[1] + 5, 'foco', '#c62828');
     }
-    if (cats.includes('base')) lbl(G.base[0] - 12, G.base[1] + 4, 'base', '#5d4037', 'end');
+    if (cats.includes('base')) { if (sc.ap === 'pjrt') lbl(G.base[0] + 14, G.base[1] - 8, 'base', '#5d4037'); else lbl(G.base[0] - 12, G.base[1] + 4, 'base', '#5d4037', 'end'); }
     if (cats.includes('cs') && sc.ap === 'obl') for (const [k, [x, y]] of Object.entries(CSX)) { mk('rect', { x: x - 5, y: y - 4, width: 10, height: 8, fill: '#212121' }, svg); mk('text', { x, y: y + 22, 'font-size': 12, 'text-anchor': 'middle', fill: '#212121' }, svg).textContent = k.slice(1, 2) + '-' + k.slice(2); }
     if (sc.ap === 'obl') { mk('path', { d: `M${OBA[0]},${OBA[1]} L${OBV[0]},${OBV[1]}`, stroke: '#d81b60', 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round', opacity: 0.85 }, svg); lbl(OBA[0] - 6, OBA[1] - 10, 'vía oblicua', '#d81b60', 'end'); }
     if (sc.fasc) { mk('path', { d: `M${P1t[0]},${P1t[1]} L${P1b[0]},${P1b[1]}`, stroke: '#ef6c00', 'stroke-width': 5, 'stroke-dasharray': '7 5', fill: 'none' }, svg);
@@ -1216,6 +1271,7 @@
     if (A.pi != null) { const PL = A.sel ? A.panels(A.def) : A.panels; try { return PL[A.pi]().title; } catch (e) { return A.t; } }
     if (k.startsWith('ado_')) return A.t.replace(/^Adenosina en la /, '').replace(/^./, c => c.toUpperCase());
     return A.t.includes(': ') ? A.t.split(': ').slice(1).join(': ').replace(/^./, c => c.toUpperCase()) : A.t; };
+  FOR.ehr.push('ehr_pjrt'); FOR.pjrt = ['pjrt_circ', 'ehr_pjrt'];   // la PJRT también se muestra en su tarjeta de Arritmias
   window.ANIM_IDS = Object.keys(ANIMS);
   window.ANIM_FOR = FOR;
   window.mountAnims = r => r.querySelectorAll('.anim[data-anim]').forEach(mount);
