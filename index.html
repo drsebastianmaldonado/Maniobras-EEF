@@ -109,7 +109,10 @@ h2.sec{margin:8px 4px -6px;font-size:13px;font-weight:700;letter-spacing:.07em;t
 .btn{appearance:none;border:0;background:var(--blue-soft);color:var(--blue);font:inherit;font-weight:600;font-size:14px;border-radius:999px;padding:8px 14px;cursor:pointer;min-height:36px}
 .btn:active{opacity:.6}
 :focus-visible{outline:3px solid var(--blue);outline-offset:2px}
-.cit{font-size:11px;font-weight:700;color:var(--ink2);white-space:nowrap}
+.cit{appearance:none;border:0;background:none;padding:6px 0;margin:-6px 0;font:inherit;font-size:11.5px;font-weight:700;color:var(--blue);white-space:nowrap;cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px}
+.rlk{white-space:nowrap}.rlk a,.refpop a{color:var(--blue);font-weight:600}
+#refpop{border:0;border-radius:16px;padding:16px;width:min(560px,calc(100vw - 24px));background:var(--card);color:var(--ink);box-shadow:0 10px 40px rgba(0,0,0,.3)}
+#refpop::backdrop{background:rgba(0,0,0,.35)}#refpop p{margin:0 0 12px;line-height:1.45}#refpop .rpl{display:flex;gap:8px;flex-wrap:wrap}
 /* fichas */
 .filt{display:flex;flex-wrap:wrap;gap:6px}
 .filt button{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:inherit;font-size:13px;font-weight:700;border-radius:99px;padding:6px 12px;cursor:pointer}
@@ -387,13 +390,14 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 </div>
 
 <div id="toast" role="status"></div>
+<dialog id="refpop" aria-label="Referencia"><p id="rpT"></p><div class="rpl" id="rpL"></div></dialog>
 <dialog id="sdlg" aria-label="Buscar"><div class="dlg"><div class="dlgh"><input id="sq" type="search" placeholder="Buscar: PPI, Coumel, PJRT, Mahaim, 115…" autocomplete="off" enterkeyhint="search"><button class="btn" id="sX">Cerrar</button></div><div id="sres" class="sres"></div></div></dialog>
 <dialog id="dlg"><div class="dlg"><div class="dlgh"><h3 id="dlgT"></h3><button class="btn" id="dlgX">Cerrar</button></div><div id="dlgB"></div></div></dialog>
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim.js"></script>
 <script>
-const APPV = 226;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 227;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -511,7 +515,11 @@ const REFS = {
   transz: ['Dandamudi 2010 · AlMahameed 2010', 'Dandamudi G, Mokabberi R, Assal C, et al. <i>Heart Rhythm</i> 2010;7:1326–9 (doi:10.1016/j.hrthm.2010.05.033); AlMahameed ST, Buxton AE, Michaud GF. <i>Circ Arrhythm Electrophysiol</i> 2010;3:578–84 (doi:10.1161/CIRCEP.109.931311). Criterios de la zona de transición. (citados en Veenhuyzen 2011)'],
   obey11: ['Obeyesekere 2011', 'Obeyesekere M, Leong-Sit P, Skanes A, et al. Determination of inadvertent atrial capture during para-Hisian pacing. <i>Circ Arrhythm Electrophysiol</i> 2011;4:510–4 (doi:10.1161/CIRCEP.111.963058). (citado en Veenhuyzen 2012)']
 };
-const cite = ks => ks.map(k => `<span class="cit">${REFS[k][0]}</span>`).join(' · ');
+// links de cada referencia: PMID (p) y DOI (d), buscados en PubMed (herramientas: ver el commit)
+const REFLINK = {"peiker16":{"p":"25888570","d":"10.1093/europace/euv056"},"burri12":{"p":"22543311","d":"10.1136/heartjnl-2012-301800"},"jastrz09":{"p":"19502251","d":"10.1093/europace/eup137"},"kaczmarek14":{"p":"24438503","d":"10.1111/anec.12129"},"singh16":{"p":"26920170","d":"10.1016/j.ccep.2015.10.004"},"adusumalli17":{"p":"28401722","d":"10.1111/imj.13385"},"wang11":{"p":"21950798","d":"10.1111/j.1540-8159.2011.03218.x"},"knight99":{"p":"10080480","d":"10.1016/s0735-1097(98)00614-7"},"knight00":{"p":"10933374","d":"10.1016/s0735-1097(00)00770-1"},"michaud01":{"p":"11583898","d":"10.1016/s0735-1097(01)01480-2"},"gt06":{"p":"16731468","d":"10.1016/j.hrthm.2006.02.019"},"gt11":{"p":"21385264","d":"10.1111/j.1540-8167.2011.02020.x"},"miller91":{"p":"1927917","d":"10.1016/0002-9149(91"},"miller87":{"p":"3568310","d":"10.1161/01.cir.75.5.930"},"segal09":{"p":"19324309","d":"10.1016/j.hrthm.2008.12.033"},"ma94":{"p":"8124791","d":"10.1161/01.cir.89.3.1060"},"ormaetxe93":{"p":"8252673","d":"10.1161/01.cir.88.6.2623"},"perez08":{"p":"18776198","d":"10.1093/europace/eun249"},"veen08":{"p":"18554986","d":"10.1016/j.hrthm.2008.04.010"},"veen11":{"p":"21438892","d":"10.1111/j.1540-8159.2011.03076.x"},"veen12":{"p":"22385228","d":"10.1111/j.1540-8159.2012.03352.x"},"ho15":{"p":"25778422","d":"10.1007/s11936-015-0370-5"},"arias10":{"p":"19817919","d":"10.1111/j.1540-8167.2009.01632.x"},"kaneko11":{"p":"21235676","d":"10.1111/j.1540-8167.2010.01997.x"},"lim11":{"p":"21545362","d":"10.1111/j.1540-8167.2011.02073.x"},"saba11":{"p":"21227952","d":"10.1093/europace/euq502"},"sra95":{"p":"7850946","d":"10.1161/01.cir.91.4.1095"},"alm13a":{"p":"23305213","d":"10.1111/pace.12075"},"alm13b":{"p":"23330693","d":"10.1111/pace.12075"},"glatter99":{"p":"10051297","d":"10.1161/01.cir.99.8.1034"},"engelstein94":{"p":"8205677","d":"10.1161/01.cir.89.6.2645"},"kannankeril10":{"p":"20015126","d":"10.1111/j.1540-8159.2009.02639.x"},"schaffer91":{"p":"2035384","d":"10.1016/0002-8703(91"},"nagashima24":{"p":"39139886","d":"10.1002/joa3.13112"},"klein88":{"p":"3128586","d":"10.1016/s0735-1097(98"},"sternick04":{"p":"15489095","d":"10.1016/j.jacc.2004.07.035"},"merino01":{"p":"11222473","d":"10.1161/01.cir.103.8.1102"},"nagashima20":{"p":"33357576","d":"10.1016/j.jacep.2020.07.007"},"sriramoju22":{"p":"35492851","d":"10.1016/j.hrcr.2021.11.024"},"li22":{"p":"36237859","d":"10.1002/joa3.12759"},"caceres89":{"p":"2914345","d":"10.1161/01.cir.79.2.256"},"tchou88":{"p":"3396163","d":"10.1161/01.cir.78.2.246"},"mizusawa09":{"p":"19661115","d":"10.1093/europace/eup206"},"guo01":{"p":"11333048","d":"10.1053/eupc.2001.0151"},"ehra09":{"p":"19443434","d":"10.1093/europace/eup098"},"koplan09":{"p":"19252119","d":"10.4065/84.3.289"},"wagshal95":{"p":"7811123"},"moore22":{"p":"34600852","d":"10.1016/j.jacep.2021.08.004"},"gardey21":{"p":"34377926","d":"10.1093/ehjcr/ytab303"},"enriquez19":{"p":"30954600","d":"10.1016/j.hrthm.2019.04.002"},"nogami02":{"p":"12438827","d":"10.1023/a:1021100828459"},"belhassen81":{"p":"7317238","d":"10.1136/hrt.46.6.679"},"wellens93":{"p":"8252711","d":"10.1161/01.cir.88.6.2978"},"katritsis96":{"p":"8705767","d":"10.1136/hrt.75.4.384"},"bennett97":{"p":"9068390","d":"10.1136/hrt.77.2.104"},"kuo03":{"p":"14516339","d":"10.1046/j.1460-9592.2003.00306.x"},"lin05":{"p":"16171747","d":"10.1016/j.hrthm.2005.06.009"},"ma06":{"p":"16542578"},"magalhaes06":{"p":"16910156"},"ramprakash08":{"p":"18679520"},"wissner12":{"p":"22697499","d":"10.1111/j.1540-8167.2012.02377.x"},"sung13":{"p":"23110306","d":"10.1111/jce.12020"},"kataria13":{"p":"23313803","d":"10.1016/j.hrthm.2013.01.001"},"herkommer14":{"p":"24293179","d":"10.1007/s10840-013-9850-2"},"suzuki14":{"p":"24954241","d":"10.1016/j.hrthm.2014.06.024"},"gopi15":{"p":"26139310","d":"10.1007/s10840-015-0022-4"},"letsas15":{"p":"26298383","d":"10.1016/j.ijcard.2015.08.008"},"liu15":{"p":"26386017","d":"10.1161/CIRCEP.115.003080"},"chen16":{"p":"26654921","d":"10.1016/j.hrthm.2015.12.003"},"talib16":{"p":"26920179","d":"10.1016/j.ccep.2015.10.012"},"kapa17":{"p":"28087563","d":"10.1161/CIRCEP.116.002476"},"takase19":{"p":"30693206","d":"10.1016/j.hrcr.2018.10.009"},"morishima20":{"p":"33012738","d":"10.1253/circj.CJ-20-0597"},"sanchez21":{"p":"33640350","d":"10.1016/j.jacep.2020.12.012"},"li23":{"p":"36514946","d":"10.1093/europace/euac233"},"talib15":{"p":"29759464","d":"10.1016/j.jacep.2015.05.011"},"fu26":{"p":"43022198","d":"10.3389/fcvm.2026.1933819"},"oneill25":{"p":"39886404","d":"10.1016/j.jaccas.2024.102811"},"kanai26":{"p":"41948224","d":"10.1002/joa3.70329"},"wei23":{"p":"37971899","d":"10.1093/europace/euad339"},"liuq23":{"p":"37480871","d":"10.1016/j.jacep.2023.05.036"},"nogami23":{"p":"37498249","d":"10.1016/j.jacep.2023.06.002"},"wong23":{"p":"37256250","d":"10.1016/j.jacep.2023.05.001"},"doppalapudi08":{"p":"19808390","d":"10.1161/CIRCEP.107.742940"},"yamada09":{"p":"19298560","d":"10.1111/j.1540-8167.2009.01448.x"},"yamada10":{"p":"19793147","d":"10.1111/j.1540-8167.2009.01594.x"},"rivera16":{"p":"27069089","d":"10.1161/CIRCEP.115.003874"},"kistler06":{"p":"16949495","d":"10.1016/j.jacc.2006.03.058"},"tada05":{"p":"15766824","d":"10.1016/j.jacc.2004.12.025"},"kumagai05":{"p":"16191111","d":"10.1111/j.1540-8167.2005.40749.x"},"vanbeeumen08":{"p":"18495675","d":"10.1093/europace/eun119"},"chen12":{"p":"21979993","d":"10.1093/europace/eur318"},"li13":{"d":"10.1371/journal.pone.0080777"},"jackman88":{"p":"3409499","d":"10.1161/01.cir.78.3.598"},"jackman89":{"p":"2466254","d":"10.1111/j.1540-8159.1989.tb02648.x"},"otomo01":{"p":"11479252","d":"10.1161/hc3001.093499"},"hirao96":{"p":"8790042","d":"10.1161/01.cir.94.5.1027"},"ho08":{"p":"18180023","d":"10.1016/j.hrthm.2007.09.017"},"ho13":{"p":"23629734","d":"10.1161/CIRCEP.113.000187"},"man95":{"p":"8556190","d":"10.1111/j.1540-8167.1995.tb00446.x"},"bennett11":{"p":"21636810","d":"10.1161/CIRCEP.111.961987"},"padanilam08":{"p":"19007691","d":"10.1016/j.jacc.2008.08.030"},"fan11":{"p":"21220046","d":"10.1016/j.hrthm.2011.01.011"},"maruyama07":{"p":"17711437","d":"10.1111/j.1540-8167.2007.00928.x"},"transz":{"d":"10.1016/j.hrthm.2010.05.033"},"obey11":{"p":"21665982","d":"10.1161/CIRCEP.111.963058"}};
+const refLinks = k => { const l = REFLINK[k] || {}; return [l.p && `<a href="https://pubmed.ncbi.nlm.nih.gov/${l.p}/" target="_blank" rel="noopener">PubMed ↗</a>`, l.d && `<a href="https://doi.org/${l.d}" target="_blank" rel="noopener">Artículo (DOI) ↗</a>`].filter(Boolean).join(' · '); };
+const refFull = k => REFS[k][1] + (refLinks(k) ? ` <span class="rlk">${refLinks(k)}</span>` : '');
+const cite = ks => ks.map(k => `<button type="button" class="cit" data-ref="${k}">${REFS[k][0]}</button>`).join(' · ');
 
 // ===============================================================================================================
 // Fichas de maniobras. g: grupo (O observación, V ventricular, A auricular, C concepto).
@@ -1668,6 +1676,16 @@ function presFigs(c) {
   return f(c.ecg, c.ecgt || 'ECG de la taquicardia', c.ecgReal) + f(c.ecg2, c.ecg2t || 'ECG en ritmo sinusal, después de la conversión', c.ecgReal) + f(c.basal, 'Estudio basal', c.basalReal) + f(c.ind, c.indt || 'Inducción', c.indReal) + (c.extra || []).map(x => f(x[0], x[1], x[2])).join('');
 }
 function startCase(i) { pCur = i; pLog = []; pDone = null; pFase = 0; pPrev = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
+// animaciones que muestran el mecanismo de cada caso (por diagnóstico; revisadas a mano)
+const DX_ANIM = { trnav_t: ['ppi_1', 'eha_0'], trav_s: ['ppi_0', 'ehr_0'], ta: ['vop_1', 'aop_1'], trav_l: ['basal_travl', 'basal_coumel'], trnav_a: ['ppi_1', 'diff_1'],
+  pjrt: ['vop_0', 'ehr_0'], jet: ['eha_1', 'ado_jet'], tvf: ['tvf_circ', 'tvf_vera'], nvrt: ['ado_nv'], mahaim: ['preex_0'], antid: ['ado_anti'], dfire: ['dfire', 'pre_dual'], bys: [] };
+function caseAnims(c) {
+  if (!window.ANIM_IDS) return '';
+  const ks = [...new Set((c.dx || []).flatMap(d => DX_ANIM[d] || []))].filter(k => ANIM_IDS.includes(k)).slice(0, 3);
+  if (!ks.length) return '';
+  return `<div class="box"><div class="bl">Animaciones del mecanismo</div>${ks.map(k => { const f = Object.keys(ANIM_FOR).find(x => ANIM_FOR[x].includes(k)) || k;
+    return `<button type="button" class="anlink" data-ganim="${f}|${k}">▶ ${M[f].t} · ${animLabel(k)}</button>`; }).join('')}</div>`;
+}
 // caso en curso: se guarda para retomarlo si se cierra la app a mitad de camino
 const curSave = () => { try { localStorage.setItem('mef_prac_cur', JSON.stringify(pCur === null || pDone !== null ? null : { id: PCASOS[pCur].id, log: pLog, fase: pFase, prev: pPrev })); } catch (e) {} };
 function resumeCase(cur) { const i = PCASOS.findIndex(c => c.id === cur.id); if (i < 0) return; pCur = i; pLog = cur.log || []; pFase = cur.fase || 0; pPrev = cur.prev || null; pDone = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
@@ -1691,6 +1709,7 @@ function renderCase() {
       <div class="box"><div class="bl">Por qué</div><p>${c.ex}</p></div>
       <div class="box"><div class="bl">Tu estudio</div><ul><li>Hiciste ${pLog.length} maniobra${pLog.length === 1 ? '' : 's'}.</li><li>Maniobras clave: ${claves.map(k => `${pLog.includes(k) ? '✓' : '○'} ${mLab(c, k)}`).join(' · ')}</li>${trampas.length ? `<li>Resultados engañosos que viste: ${trampas.map(k => mLab(c, k)).join(', ')}.</li>` : ''}</ul></div>
       <div class="mlinks">${[...new Set(claves.map(k => mKey(c, k)))].map(m => `<button class="ml" data-m="${m}">${M[m].t}</button>`).join('')}</div>
+      ${caseAnims(c)}
       <div class="box"><div class="bl">Esquemas de las maniobras clave</div>${esqStrip(claves.flatMap(k => k === 'medidas' ? ['ppi', 'sava', 'dha'] : [mKey(c, k)]))}</div>
       <p class="small" style="margin:0">${cite(c.refs)}</p>
       <div class="ctrl">${c.fase2 && !pFase ? '<button class="btn" id="pFase2" style="background:var(--violet);color:#fff">Continuar: después de la ablación →</button>' : ''}<button class="btn" id="pRetry">Reintentar</button>${pCur < PCASOS.length - 1 ? '<button class="btn" id="pNext">Siguiente caso →</button>' : ''}</div></div>`;
@@ -1899,7 +1918,7 @@ function fichaHTML(id) {
   h += casosHTML(id).replace('<div class="box casos">', '<div class="box casos" data-sec="casos">');
   if (m.vs) h += `<div class="box"><div class="bl">${m.vs.t}</div><ul>${m.vs.l.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
   h += `<div class="box trap" data-sec="trampas"><div class="bl">Trampas y limitaciones</div><ul>${m.trampas.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
-  h += `<div class="bl isec" data-sec="refs">Referencias</div><ol class="refs">${m.refs.map(k => `<li>${REFS[k][1]}</li>`).join('')}</ol></div>`;
+  h += `<div class="bl isec" data-sec="refs">Referencias</div><ol class="refs">${m.refs.map(k => `<li>${refFull(k)}</li>`).join('')}</ol></div>`;
   return h;
 }
 
@@ -2259,9 +2278,22 @@ document.querySelectorAll('.seg button').forEach(b => b.onclick = () => tab(b.da
 const segH = () => document.documentElement.style.setProperty('--segH', (document.querySelector('.seg').offsetHeight + 10) + 'px');
 segH(); addEventListener('resize', segH);
 
-$('#refsAll').innerHTML = Object.values(REFS).map(r => `<li>${r[1]}</li>`).join('');
+$('#refsAll').innerHTML = Object.keys(REFS).map(k => `<li>${refFull(k)}</li>`).join('');
 renderAlgo(); renderFichas(); renderArr(); calc();
 $('#arrQ').addEventListener('input', e => { arrQ = e.target.value; renderArr(); });
+
+// ---------- tocar una cita muestra la referencia completa con sus links
+document.addEventListener('click', e => {
+  const b = e.target.closest('.cit[data-ref]'); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  const k = b.dataset.ref, l = REFLINK[k] || {};
+  $('#rpT').innerHTML = REFS[k][1];
+  $('#rpL').innerHTML = (l.p ? `<a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/${l.p}/" target="_blank" rel="noopener">PubMed ↗</a>` : '') + (l.d ? `<a class="btn" href="https://doi.org/${l.d}" target="_blank" rel="noopener">Artículo ↗</a>` : '') + '<button class="btn" type="button" id="rpX">Cerrar</button>';
+  const d = $('#refpop'); if (d.showModal) d.showModal(); else d.setAttribute('open', '');
+  $('#rpX').onclick = () => d.close();
+}, true);
+$('#refpop').addEventListener('click', e => { if (e.target.id === 'refpop') $('#refpop').close(); });
+
 // ---------- compartir: link directo a una ficha o a una arritmia
 function toast(t) { const e = $('#toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('on'), 2200); }
 document.addEventListener('click', async e => {
@@ -2332,6 +2364,15 @@ const SIX = (() => {
   Object.entries(M).forEach(([k, m]) => it.push({ g: 'Maniobras', t: m.t, s: m.s, body: tx([m.para, m.como, m.medir, rows(m.interp), m.trampas, m.vs]), go: () => openFicha(k) }));
   ARR.forEach(a => it.push({ g: 'Arritmias', t: a.n, s: 'Diferencial: ' + tx(a.dif), kw: tx(a.al), body: tx([a.mec, (a.conf || []).map(x => x[0]), (a.apoya || []).map(x => x[0]), (a.desc || []).map(x => x[0]), a.trampa]), go: () => openArr(a.id) }));
   PCASOS.forEach((c, i) => it.push({ g: 'Casos de práctica', t: `Caso ${i + 1}: ${c.t}`, s: tx(c.p), body: tx(c.h), go: () => { tab('prac'); startCase(i); } }));
+  const treeTxt = T => tx(Object.values(T).map(n => [n.q, n.help, (n.opts || []).map(o => [o.t, o.s]), n.dx, n.f, n.dif, n.crit, n.why, n.next]));
+  it.push({ g: 'Localizadores y herramientas', t: 'Algoritmo de Enriquez: arritmias ventriculares idiopáticas', s: 'Sitio de origen de las EV y TV idiopáticas por el ECG: tractos de salida, cúspides, anillos, papilares, fascículos',
+    kw: 'enriquez localizar origen ev tv idiopatica ecg 12 derivaciones', body: treeTxt(EN), go: () => { tab('loc'); locView('enr'); } });
+  it.push({ g: 'Localizadores y herramientas', t: 'Algoritmo de Kistler: foco de la taquicardia auricular', s: 'Localización del foco auricular por la morfología de la onda P',
+    kw: 'kistler localizar foco ta onda p', body: treeTxt(KN), go: () => { tab('loc'); locView('kis'); } });
+  it.push({ g: 'Localizadores y herramientas', t: 'Localización de la vía accesoria', s: 'Algoritmo por pasos según la onda delta, con ECG de ejemplo y modo práctica',
+    kw: 'via accesoria wpw wolff parkinson white preexcitacion onda delta localizar kent algoritmo ecg', body: '', go: () => { location.href = 'localizar/via-accesoria.html'; } });
+  it.push({ g: 'Localizadores y herramientas', t: 'Calcular índices', s: 'PPI−LC, cPPI−LC, SA−VA, ΔHA, encarrilamiento diferencial y ΔAH a partir de los intervalos medidos',
+    kw: 'calcular calculadora indices intervalos', body: tx([...document.querySelectorAll('#p-calc label, #p-calc .bl')].map(e => e.textContent)), go: () => tab('calc') });
   it.forEach(x => { x.nt = norm(x.t); x.ns = norm(x.s); x.nk = norm(x.kw || ''); x.nb = norm(x.body); });
   return it;
 })();
@@ -2358,7 +2399,7 @@ function runSearch() {
     .sort((a, b) => b.sc - a.sc);
   if (!sHits.length) { $('#sres').innerHTML = '<p class="sv">Sin resultados. Probá con otra palabra o una sigla (TRNAV, PJRT, JET, EV-HR).</p>'; return; }
   let h = '', i = 0;
-  const gs = [...new Set(sHits.map(r => r.x.g))];   // los grupos, en el orden del mejor resultado de cada uno
+  const gs = [...new Set(sHits.map(r => r.x.g))];   // incluye 'Localizadores y herramientas'   // los grupos, en el orden del mejor resultado de cada uno
   for (const g of gs) {
     const hs = sHits.filter(r => r.x.g === g); if (!hs.length) continue;
     h += `<div class="sg">${g} (${hs.length})</div>`;
