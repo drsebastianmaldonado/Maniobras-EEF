@@ -405,7 +405,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 230;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 231;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -1939,7 +1939,7 @@ function fichaHTML(id) {
 // man, refs} o {leaf, fn(flags)} cuando el resultado combina respuestas previas (circuito inferior + superior).
 // ===============================================================================================================
 const VOP_OPTS = (onAV) => [
-  { t: 'A-A-V (A-A-H), reproducible', s: 'Verificado contando desde el último A acelerado', go: 'L_at' },
+  { t: 'A-A-V (A-A-H), reproducible', s: 'Verificado contando desde el último A acelerado', go: 'P_at_' + onAV },
   { t: 'A-V (A-H)', s: 'Incluye el seudo A-A-V: A₁–A₂ = LC de estimulación y secuencia idéntica a la TSV', go: onAV },
   { t: 'Las A no se aceleran a la LC de estimulación', s: 'Disociación VA durante la estimulación', go: 'noacc' },
   { t: 'La TSV se corta durante la estimulación', go: 'term' }];
@@ -1998,8 +1998,12 @@ const N = {
     { t: 'Más A que V', s: 'TSV con aberrancia y bloqueo AV', go: 'av' },
     { t: 'Más V que A', s: 'Disociación AV: TV con His en el circuito o TV miocárdica', go: 'bbr1' }] },
   bbr1: { q: 'Durante la TV, ¿los cambios de los HH preceden y predicen los de los VV, con HV igual o mayor que en sinusal?', help: 'Si el VV cambia primero y el His lo sigue, el His se activa en forma pasiva. Ojo con el His pasivo de VH largo, que parece preceder al V siguiente: buscá la disociación VH intermitente.', man: ['bbr'], opts: [
-    { t: 'Sí', go: 'bbr2' },
+    { t: 'Sí', go: 'P_bbr' },
     { t: 'No: el VV cambia primero, o el HV es claramente más corto', go: 'L_vtmyo' }] },
+  P_bbr: { pre: true, q: 'Diagnóstico más probable: reentrada rama-rama', dx: 'TV por reentrada rama-rama',
+    why: ['TV con el His (y la rama) antes de cada V, con HV igual o mayor que en sinusal.', 'Los cambios de los HH preceden y predicen los de los VV: el His-Purkinje gobierna la taquicardia.', 'Más todavía si en sinusal hay HV prolongado y trastorno de la conducción (o distrofia miotónica, enfermedad del sistema de conducción o posoperatorio valvular).'],
+    alt: 'VH largo con disociación VH intermitente, o QRS parecido al sinusal sin trastorno de conducción de base: puede ser una TV miocárdica con His pasivo. Confirmalo con el encarrilamiento desde el ápex del VD.',
+    opts: [{ t: 'Lo tomo como diagnóstico más probable', go: 'L_bbr' }, { t: 'Sigo sospechando otro mecanismo', s: 'Por el contexto del paciente o un hallazgo que no cierra: te sugiero qué maniobras hacer', go: 'bbr2' }] },
   bbr2: { q: 'Encarrilamiento desde el ápex del VD: ¿cuánto vale el PPI−LC?', man: ['bbr', 'ppi'], opts: [
     { t: '≤ 30 ms', go: 'L_bbr' },
     { t: '> 30 ms', go: 'L_vtmyo' }] },
@@ -2168,6 +2172,17 @@ const N = {
     return { tone: 'warn', dx: 'Resultados discordantes', why: ['El circuito inferior dio valores de TRNAV, pero el ΔAH < 20 ms ubica la aurícula en el circuito.', 'Lo más probable es una PJRT con valores de encarrilamiento falsamente largos por el decremento retrógrado de la vía.', apNote], next: ['Priorizá la EV con His refractario (varios acoplamientos) y el encarrilamiento diferencial: no dependen del decremento.', 'Reencarrilá a la LC más larga posible (10 ms por debajo de la LC).'], man: ['ehr', 'diff', 'ppi'], refs: ['bennett11', 'arias10', 'ho15', 'veen12'] };
   } }
 };
+// atajo a la TA después de una respuesta A-A-V: si se sigue dudando, sobreestimulación auricular desde varios sitios
+for (const av of ['P_avnrt_t', 'P_avrt_free', 'fus_s']) {
+  N['P_at_' + av] = { pre: true, q: 'Diagnóstico más probable: taquicardia auricular', dx: 'Taquicardia auricular',
+    why: ['Respuesta A-A-V reproducible a la sobreestimulación ventricular, contando desde el último A acelerado: excluye la TRAV y la TRNAV.', 'El último A acelerado no conduce al ventrículo y la A siguiente es del foco: la aurícula no depende del ventrículo.'],
+    alt: 'Seudo A-A-V: VA largo (la A del último latido estimulado cae después del V siguiente), respuesta 1:2 por doble vía nodal (A-H-H), o secuencia auricular distinta durante la estimulación. Confirmá que no hay VA linking con la sobreestimulación auricular desde varios sitios.',
+    opts: [{ t: 'Lo tomo como diagnóstico más probable', go: 'L_at' }, { t: 'Sigo sospechando otro mecanismo', s: 'Por el contexto del paciente o un hallazgo que no cierra: te sugiero qué maniobras hacer', go: 'atc_' + av }] };
+  N['atc_' + av] = { q: 'Sobreestimulación auricular desde dos o tres sitios (AD alta, SC proximal y SC distal): ¿cómo es el VA del primer latido de retorno?', help: 'Medí el VA del primer retorno después de cada tren y compará los sitios.', man: ['aop'], opts: [
+    { t: 'Varía más de 20 ms entre los sitios', s: 'Sin VA linking', go: 'L_at' },
+    { t: 'Fijo (≤ 20 ms) desde los tres sitios', s: 'VA linking: era un seudo A-A-V; seguí como respuesta A-V', go: av }] };
+}
+
 
 // ===============================================================================================================
 // Estado y render del algoritmo
