@@ -754,21 +754,23 @@
 
   // TV fascicular posterior: baja por P1 (Purkinje anormal, lento) y sube por el fascículo posterior (P2)
   function tvfSc(kind) {
-    const sc = newSc({ title: kind === 'vera' ? 'TV fascicular posterior: verapamilo' : kind === 'abl' ? 'TV fascicular posterior: ablación en P1' : 'TV fascicular posterior (P1 y P2)', fasc: true, cats: kind === 'abl' ? ['abl'] : [] });
-    if (kind === 'abl') sc.ablPt = P1m;
+    const sc = newSc({ title: kind === 'vera' ? 'TV fascicular posterior: verapamilo' : kind === 'abl' ? 'TV fascicular posterior: ablación en P2' : 'TV fascicular posterior (P1 y P2)', fasc: true, cats: kind === 'abl' ? ['abl'] : [] });
+    if (kind === 'abl') sc.ablPt = LPFl;   // P2 presistólico más precoz, en el fascículo posterior distal (sitio de salida)
     const R = [];
-    const cyc = (t0, span, block) => {
+    const cyc = (t0, span, block, turn) => {
+      const tr = turn || 10;
+      if (block === 'turn') { W_(sc, 'ante', [[P1t, t0], [P1m, t0 + span / 2], [P1b, t0 + span], [LPFb, t0 + span + 60]], t0 + span + 25); E(sc, 'LV', t0 + span / 2, 'P1'); R.push({ t0, span, block: true }); return null; }
       W_(sc, 'ante', [[P1t, t0], [P1m, t0 + span / 2], [P1b, t0 + span]], block ? t0 + span * 0.75 : null); E(sc, 'LV', t0 + span / 2, 'P1');
       if (block) { R.push({ t0, span, block: true }); return null; }
-      const b = t0 + span + 10, qrs = b + 25; W_(sc, 'ante', [[P1b, t0 + span], [LPFb, b]]);
+      const b = t0 + span + tr, qrs = b + 25; W_(sc, 'ante', [[P1b, t0 + span], [LPFb, b]]);
       W_(sc, 'retro', [[LPFb, b], [LPFl, b + 10], [LPFm, b + 25], [LPF0, b + 42], [G.his, b + 50]]); E(sc, 'LV', b + 10, 'P2'); E(sc, 'His', b + 50, 'H', { inv: true });
       W_(sc, 'ante', [[LPFb, b + 10], [[440, 560], b + 50]]); W_(sc, 'ante', [[LPFb, b + 10], [[300, 560], b + 55], [G.apex, b + 75]]);
       E(sc, 'ECG', qrs, '', { qrs: 'w' }); sc.flV.push(qrs);
       W_(sc, 'retro', [[LPFm, b + 25], [P1t, b + 50]]);
       R.push({ t0, span, b, qrs }); return b + 50; };
     let t = 150, spans = kind === 'circ' ? [300, 300, 300, 300, 300] : [300, 300, 300, 340, 390, 'b'];
-    if (kind === 'abl') spans = [300, 300, 300, 330, 370, 'b'];
-    spans.forEach((sp, i) => { if (sp === 'b') { cyc(t, 420, true); return; } t = cyc(t, sp); });
+    if (kind === 'abl') { [10, 10, 10, 35, 70].forEach(tr => { t = cyc(t, 300, false, tr); }); cyc(t, 300, 'turn'); }
+    else spans.forEach((sp, i) => { if (sp === 'b') { cyc(t, 420, true); return; } t = cyc(t, sp); });
     const c = R[1];
     brk(sc, 'LV', c.t0 + c.span / 2, c.b + 10, 'P1–P2 ' + (c.b + 10 - (c.t0 + c.span / 2)), { up: 1 }); brk(sc, 'LV', c.b + 10, c.qrs, 'P2–QRS ' + (c.qrs - c.b - 10), { below: 1 });
     if (kind === 'circ') {
@@ -780,13 +782,15 @@
       brk(sc, 'LV', last.t0 + last.span / 2, last.b + 10, 'P1–P2 ' + (last.b + 10 - (last.t0 + last.span / 2)), { up: 1, hot: 1 });
       const tEnd = blk.t0 + 210;
       // ritmo sinusal después
-      const hs = tEnd + 700; sinusDown(sc, hs, 45, { ecg: 'n' }); W_(sc, 'ante', [[G.his, hs], [LPF0, hs + 8], [LPFm, hs + 25], [LPFb, hs + 40]]); E(sc, 'LV', hs + 25, 'P2');
-      if (kind === 'abl') { E(sc, 'LV', hs + 95, 'P1', { tag: 'P1 después del QRS', tagT: hs + 120 }); W_(sc, 'retro', [[LPFb, hs + 40], [P1b, hs + 60], [P1m, hs + 95]]); sc.rf = [R[2].t0 + 100, tEnd + 300, P1m]; }
+      const hs = tEnd + 700; sinusDown(sc, hs, 45, { ecg: 'n' });
+      if (kind === 'abl') { W_(sc, 'ante', [[G.his, hs], [LPF0, hs + 8], [LPFm, hs + 25], [LPFl, hs + 35]], hs + 30); E(sc, 'LV', hs + 75, 'P2', { tag: 'P2 tardío', tagT: hs + 90 }); }
+      else { W_(sc, 'ante', [[G.his, hs], [LPF0, hs + 8], [LPFm, hs + 25], [LPFb, hs + 40]]); E(sc, 'LV', hs + 25, 'P2'); }
+      if (kind === 'abl') { sc.rf = [R[2].t0 + 150, tEnd + 300, LPFl]; }
       Object.assign(sc, { stimEnd: tEnd, verdictT: tEnd + 60,
         verdict: kind === 'vera' ? 'El verapamilo <b>alarga P1–P2</b> (y la LC) <b>sin cambiar P2–QRS</b>, hasta que la conducción se bloquea dentro de P1 y la TV termina.'
-                                 : 'Durante la RF en P1, <b>P1–P2 se alarga</b> y la TV termina por <b>bloqueo entre P1 y P2</b>: sitio correcto. Después, en sinusal, P1 aparece <b>después del QRS</b>.',
+                                 : 'Durante la RF en el <b>P2 presistólico más precoz</b> (sitio de salida, en el fascículo posterior distal), <b>P1–P2 se alarga</b> y la TV termina con un P1 que no llega a P2: el giro inferior del circuito quedó bloqueado. Después, en sinusal, el fascículo posterior se bloquea en el sitio de ablación y <b>P2 aparece tarde</b>.',
         why: kind === 'vera' ? 'P1 es tejido de Purkinje anormal, decremental y sensible al verapamilo: es el brazo lento del circuito.'
-                             : 'P1 tardío en sinusal muestra bloqueo P2 → P1 (unidireccional): no alcanza como punto final; confirmá que no haya ecos ventriculares.' });
+                             : 'Es el blanco cuando no se registra P1. El bloqueo fascicular posterior izquierdo nuevo en el ECG (eje derecho) sirvió como punto final (38 de 39 sin recurrencia, Ma 2006). Ojo: en el septum basal hay riesgo de BRI y BAV transitorios.' });
     }
     return sc;
   }
@@ -900,8 +904,8 @@
       fases: [[0, 'TV fascicular posterior (LC 360 ms). El circuito está en el septum del VI: baja por <b>P1</b> (Purkinje anormal, lento, línea punteada) y sube por el <b>fascículo posterior</b> (P2).'], [500, 'Mirá en el septo: P1 en la mitad de la diástole y P2 justo antes del QRS. El His se activa después del inicio del QRS.']] },
     tvf_vera: { t: 'TV fascicular posterior: efecto del verapamilo', lanes: [['His', 'His'], ['LV', 'Septo VI'], ['ECG', 'ECG']], panels: [() => tvfSc('vera')], win: 1600,
       fases: s => [[0, 'TV fascicular posterior (LC 360 ms).'], [1100, 'Se da <b>verapamilo</b>: P1 conduce cada vez más lento.'], [s[0].stimEnd - 200, 'Medí P1–P2 y P2–QRS: ¿qué intervalo se alarga?'], [s[0].stimEnd, 'La conducción se bloquea dentro de P1: la TV termina y vuelve el sinusal.']] },
-    tvfabl_rf: { t: 'TV fascicular: ablación en P1', lanes: [['His', 'His'], ['LV', 'Septo VI'], ['ECG', 'ECG']], panels: [() => tvfSc('abl')], win: 1600,
-      fases: s => [[0, 'TV fascicular posterior. El catéter de ablación (acceso retroaórtico) está sobre P1, en el tercio apical del septum.'], [s[0].rf[0], 'Se aplica <b>RF</b>: P1–P2 se alarga.'], [s[0].stimEnd, 'La TV termina por bloqueo entre P1 y P2.'], [s[0].stimEnd + 650, 'En sinusal, P1 aparece después del QRS: bloqueo P2 → P1.']] },
+    tvfabl_rf: { t: 'TV fascicular: ablación en P2', lanes: [['His', 'His'], ['LV', 'Septo VI'], ['ECG', 'ECG']], panels: [() => tvfSc('abl')], win: 1600,
+      fases: s => [[0, 'TV fascicular posterior. El catéter de ablación (acceso retroaórtico) está sobre el <b>P2 presistólico más precoz</b>, en el fascículo posterior distal (sitio de salida).'], [s[0].rf[0], 'Se aplica <b>RF</b>: el giro inferior se enlentece y P1–P2 se alarga.'], [s[0].stimEnd, 'P1 ya no llega a P2: la TV termina.'], [s[0].stimEnd + 650, 'En sinusal, el fascículo posterior queda bloqueado en el sitio de ablación: P2 aparece tarde.']] },
     pm_ev: { t: 'Arritmias del músculo papilar', lanes: [['ECG', 'ECG'], ['MAP', 'Ablación']], panels: [() => focalSc('pm')], win: 1100,
       fases: [[0, 'Ritmo sinusal. El catéter de ablación está en la base del papilar posteromedial.'], [600, 'Aparece una <b>EV del papilar</b> (foco): se propaga desde el músculo.'], [1550, 'Compará el orden del potencial de Purkinje (Pk) y del V local en sinusal y en la EV.']] },
     ma_ev: { t: 'Arritmias del anillo mitral', lanes: [['ECG', 'ECG'], ['MAP', 'Ablación']], panels: [() => focalSc('ma')], win: 1100,
@@ -1000,7 +1004,7 @@
       lbl(P1m[0] - 10, P1m[1] + 4, 'P1', '#ef6c00', 'end'); lbl(LPFl[0] + 12, LPFl[1] + 2, 'P2', '#6a3fb5'); lbl(LPFb[0] + 6, LPFb[1] + 30, 'fascículo posterior', '#6d4c41');
       mk('path', { d: 'M312,334 C330,400 360,470 400,520', stroke: '#6a3fb5', 'stroke-width': 3, fill: 'none', opacity: 0.45 }, svg); }
     if (sc.papil) { mk('path', { d: 'M436,548 C426,520 428,480 446,462 C462,478 466,520 458,548 Z', fill: '#b85a4b', stroke: '#7a2e24', 'stroke-width': 2 }, svg); lbl(446, 604, 'papilar posteromedial', '#5d1f16', 'middle'); }
-    if (sc.rf) { const g = mk('g', { opacity: 0 }, svg); g.innerHTML = `<circle cx="${sc.rf[2][0]}" cy="${sc.rf[2][1]}" r="22" fill="#ff7043" fill-opacity=".45" stroke="#d84315" stroke-width="3"/>`; sc._rfg = g; lbl(sc.rf[2][0] - 30, sc.rf[2][1] - 18, 'RF', '#d84315', 'end'); svg.lastChild.setAttribute('opacity', 0); sc._rfl = svg.lastChild; }
+    if (sc.rf) { const g = mk('g', { opacity: 0 }, svg); g.innerHTML = `<circle cx="${sc.rf[2][0]}" cy="${sc.rf[2][1]}" r="22" fill="#ff7043" fill-opacity=".45" stroke="#d84315" stroke-width="3"/>`; sc._rfg = g; lbl(sc.rf[2][0] + 26, sc.rf[2][1] + 34, 'RF', '#d84315'); svg.lastChild.setAttribute('opacity', 0); sc._rfl = svg.lastChild; }
     if (sc.twin) { mk('ellipse', { cx: 226, cy: 304, rx: 16, ry: 9, fill: '#f3d36b', stroke: '#9a7300', 'stroke-width': 1.5 }, svg);
       mk('path', { d: 'M232,310 C248,330 264,352 276,376', stroke: '#e2a915', 'stroke-width': 5, fill: 'none', 'stroke-linecap': 'round' }, svg);
       lbl(206, 330, 'nodo posterior', '#6d4c41', 'end'); lbl(300, 240, 'nodo anterior', '#6d4c41'); }
