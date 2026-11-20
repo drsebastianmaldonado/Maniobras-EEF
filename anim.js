@@ -1211,6 +1211,11 @@
     const np = (A.sel ? A.panels(A.def) : A.panels).length; if (np < 2 || FOR[k]) continue;
     FOR[k] = []; for (let i = 0; i < np; i++) { ANIMS[k + '_' + i] = Object.assign({}, A, { pi: i }); FOR[k].push(k + '_' + i); }
   }
+  // nombre corto de cada animación, para el menú de la ficha
+  window.animLabel = k => { const A = ANIMS[k]; if (!A) return k;
+    if (A.pi != null) { const PL = A.sel ? A.panels(A.def) : A.panels; try { return PL[A.pi]().title; } catch (e) { return A.t; } }
+    if (k.startsWith('ado_')) return A.t.replace(/^Adenosina en la /, '').replace(/^./, c => c.toUpperCase());
+    return A.t.includes(': ') ? A.t.split(': ').slice(1).join(': ').replace(/^./, c => c.toUpperCase()) : A.t; };
   window.ANIM_IDS = Object.keys(ANIMS);
   window.ANIM_FOR = FOR;
   window.mountAnims = r => r.querySelectorAll('.anim[data-anim]').forEach(mount);
