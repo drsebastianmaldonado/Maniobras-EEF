@@ -228,6 +228,10 @@ dialog{border:0;padding:0;border-radius:20px;background:var(--bg);color:var(--in
 #toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none}
 #toast.on{opacity:1}
 .anlink{display:block;width:100%;text-align:left;appearance:none;border:1px solid color-mix(in srgb,var(--blue) 35%,var(--line));background:var(--blue-soft);color:var(--blue);font:inherit;font-size:14px;font-weight:700;padding:10px 14px;border-radius:14px;cursor:pointer;margin:0 0 8px}
+.step.pre{--t:var(--green);background:linear-gradient(145deg,color-mix(in srgb,var(--green) 16%,var(--card)),var(--card));border:1.5px solid color-mix(in srgb,var(--green) 45%,var(--line))}
+.step.pre .lt{font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--green)}
+.step.pre h3{margin:2px 0 4px;font-size:24px;letter-spacing:-.02em}
+.step.pre .opt.accept{border-color:var(--green);background:color-mix(in srgb,var(--green) 12%,var(--card))}
 .hsrch{margin-left:auto;display:flex;align-items:center;gap:6px;appearance:none;border:1px solid color-mix(in srgb,var(--violet) 30%,transparent);background:var(--card);color:var(--ink);font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer;min-height:36px}
 .hsrch svg{width:17px;height:17px}
 #sdlg{align-self:start;margin-top:10px}
@@ -401,7 +405,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 229;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 230;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -2024,7 +2028,11 @@ const N = {
     { t: 'Por otra vía', s: 'Secuencia retrógrada excéntrica, distinta de la inserción de la vía anterógrada', go: 'L_antid2' }] },
 
   // ---------- VA ≤ 70 ms
-  vop_t: { q: 'Sobreestimulación ventricular: ¿qué respuesta obtenés al cortar?', help: 'Con VA ≤ 70 ms la TRAV está excluida. La pregunta es TRNAV típica vs TA septal (rara), y en niños, la taquicardia de la unión.', man: ['vop'], opts: VOP_OPTS('jt') },
+  vop_t: { q: 'Sobreestimulación ventricular: ¿qué respuesta obtenés al cortar?', help: 'Con VA ≤ 70 ms la TRAV está excluida. La pregunta es TRNAV típica vs TA septal (rara), y en niños, la taquicardia de la unión.', man: ['vop'], opts: VOP_OPTS('P_avnrt_t') },
+  P_avnrt_t: { pre: true, q: 'Diagnóstico más probable: TRNAV típica', dx: 'TRNAV típica (lenta-rápida)',
+    why: ['VA septal ≤ 70 ms: excluye la TRAV (en niños, < 60 ms la excluye).', 'Respuesta A-V a la sobreestimulación ventricular: excluye la TA.', 'Si además hubo doble fisiología nodal y la inducción dependió del salto a la vía lenta, la probabilidad de otro mecanismo es muy baja.'],
+    alt: 'Lactante, posoperatorio cardíaco, o inducción que no dependió de un salto a la vía lenta: pensá en la taquicardia de la unión (JET).',
+    opts: [{ t: 'Lo tomo como diagnóstico más probable', go: 'L_avnrt_t' }, { t: 'Sigo sospechando otro mecanismo', s: 'Por el contexto del paciente o un hallazgo que no cierra: te sugiero qué maniobras hacer', go: 'jt' }] },
   jt: { q: '¿Queda la duda con una taquicardia de la unión (JET)?', help: 'Pensalo en lactantes, en el posoperatorio o si la inducción no depende de un salto a la vía lenta. Ambas dan respuesta A-H a la sobreestimulación ventricular.', man: ['aop', 'eha'], opts: [
     { t: 'No: hay doble vía y la inducción depende del salto', go: 'L_avnrt_t' },
     { t: 'Sí: hago EA con His refractario o sobreestimulación auricular', go: 'jt2' }] },
@@ -2035,7 +2043,11 @@ const N = {
     { t: 'Ninguna es concluyente', go: 'L_jetind' }] },
 
   // ---------- excéntrica
-  vop_e: { q: 'Sobreestimulación ventricular: ¿qué respuesta obtenés al cortar?', help: 'Secuencia excéntrica: TRAV por vía libre o TA. La TRNAV con salida auricular izquierda existe pero es rara.', man: ['vop'], opts: VOP_OPTS('ecc2') },
+  vop_e: { q: 'Sobreestimulación ventricular: ¿qué respuesta obtenés al cortar?', help: 'Secuencia excéntrica: TRAV por vía libre o TA. La TRNAV con salida auricular izquierda existe pero es rara.', man: ['vop'], opts: VOP_OPTS('P_avrt_free') },
+  P_avrt_free: { pre: true, q: 'Diagnóstico más probable: TRAV por vía libre', dx: 'TRAV por vía libre',
+    why: ['Activación auricular excéntrica: TRAV por vía libre o TA (la TRNAV con salida auricular izquierda es rara).', 'Respuesta A-V a la sobreestimulación ventricular: excluye la TA.'],
+    alt: 'Secuencia excéntrica dudosa, más de una vía, o sospecha de una vía espectadora (por ejemplo, conducción VA excéntrica en sinusal pero TSV concéntrica): confirmá que la vía participa con la EV con His refractario.',
+    opts: [{ t: 'Lo tomo como diagnóstico más probable', go: 'L_avrt_free' }, { t: 'Sigo sospechando otro mecanismo', s: 'Por el contexto del paciente o un hallazgo que no cierra: te sugiero qué maniobras hacer', go: 'ecc2' }] },
   ecc2: { q: '¿La EV con His refractario modifica la A?', help: 'Estimulá lo más cerca posible de la A más precoz: VI basal por una rama del SC si la vía es izquierda.', man: ['ehr', 'diff'], opts: [
     { t: 'Sí: la adelanta (misma secuencia), la retrasa o termina sin A', go: 'L_avrt_free' },
     { t: 'No la modifica', go: 'L_ecc_ind' }] },
@@ -2064,11 +2076,15 @@ const N = {
     { t: 'Las A no se aceleran a la LC de estimulación', go: 'noacc' },
     { t: 'La TSV se corta durante la estimulación', go: 'term' }] },
   ehr_l: { q: 'EV con His refractario (varios acoplamientos): ¿qué pasa con la A siguiente?', help: 'Es la mejor maniobra para demostrar una vía accesoria. En el RP largo, una sola EV puede dar un falso negativo.', man: ['ehr'], opts: [
-    { t: 'Termina la TSV sin activar la A', go: 'low_l', set: { ehr: 'pos' } },
-    { t: 'Adelanta la A (misma secuencia)', go: 'low_l', set: { ehr: 'pos' } },
-    { t: 'Retrasa la A (misma secuencia)', go: 'low_l', set: { ehr: 'pos' } },
+    { t: 'Termina la TSV sin activar la A', go: 'P_pjrt', set: { ehr: 'pos' } },
+    { t: 'Adelanta la A (misma secuencia)', go: 'P_pjrt', set: { ehr: 'pos' } },
+    { t: 'Retrasa la A (misma secuencia)', go: 'P_pjrt', set: { ehr: 'pos' } },
     { t: 'No la modifica, con el V local adelantado > 60 ms', s: 'TRNAV atípica o TA (excluye una vía decremental participante)', go: 'low_l', set: { ehr: 'neg' } },
     { t: 'No se pudo hacer o no es concluyente', go: 'low_l', set: { ehr: 'nd' } }] },
+  P_pjrt: { pre: true, q: 'Diagnóstico más probable: PJRT', dx: 'PJRT', sub: 'TRAV por vía accesoria oculta, lenta y decremental',
+    why: ['RP largo con respuesta A-V a la sobreestimulación ventricular: excluye la TA.', 'La EV con His refractario modificó la A o terminó la TSV sin A: hay una vía y participa del circuito.', 'En niños con taquicardia incesante de RP largo es el mecanismo más frecuente.'],
+    alt: 'Bloqueo VA durante la TSV, AH de la TSV más corto que en sinusal, o una EV que adelanta el His más que la A: pensá en una vía nodofascicular o nodoventricular (NFRT), o en una TRNAV atípica con vía espectadora. Seguí con el encarrilamiento (circuito inferior) y el ΔAH (circuito superior).',
+    opts: [{ t: 'Lo tomo como diagnóstico más probable', go: 'L_pjrt_p' }, { t: 'Sigo sospechando otro mecanismo', s: 'Por el contexto del paciente o un hallazgo que no cierra: te sugiero qué maniobras hacer', go: 'low_l' }] },
   low_l: { q: 'Circuito inferior: encarrilamiento desde el VD. ¿Qué encontrás?', help: 'Estimulá lo más lento posible (10–40 ms por debajo de la LC). En el RP largo usá el corte de 125 ms para el PPI−LC.', man: ['ppi', 'sava', 'dha', 'hisorto', 'diff'], opts: [
     { t: 'Captura ortodrómica del His', go: 'up_l', set: { low: 'av' } },
     { t: 'PPI−LC < 125 ms, SA−VA < 85 ms o ΔHA < 0', s: 'Los criterios disponibles apuntan a TRAV', go: 'up_l', set: { low: 'av' } },
@@ -2105,6 +2121,7 @@ const N = {
     { t: 'No es interpretable', go: 'L_term_retry' }] },
 
   // ================= RESULTADOS =================
+  L_pjrt_p: { leaf: true, dx: 'PJRT (diagnóstico más probable)', sub: 'TRAV por vía accesoria oculta, lenta y decremental', why: ['RP largo con respuesta A-V: excluye la TA.', 'La EV con His refractario mostró una vía que participa del circuito.', 'No se completó el estudio del circuito inferior y superior: la NFRT y la TRNAV atípica con vía espectadora quedan como diferencial poco probable.'], next: ['Mapeá la A más precoz durante la TSV (suele estar en el ostium del SC o la región posteroseptal) y buscá el potencial de la vía.', 'Si algo no cierra durante el mapeo, volvé al paso anterior y completá el encarrilamiento y el ΔAH.'], man: ['ehr', 'vop', 'aop'], refs: ['ho15', 'veen12'] },
   L_twin: { leaf: true, dx: 'TRAV por nodos AV gemelos', why: ['Dos sistemas de conducción AV con conducción decremental y una TSV que baja por uno y sube por el otro.', 'La respuesta A-V excluye la TA; el QRS de la TSV coincide con el de uno de los nodos.'], next: ['Identificá el brazo retrógrado (A más precoz junto a uno de los nodos) y ablacionalo: éxito 91 %, recurrencia 7 %, sin BAV de alto grado.', 'Buscá otras taquicardias asociadas: TRNAV, flutter intraauricular, vía accesoria.', 'Si es posible, hacelo antes del Fontan: después el acceso es la principal causa de fracaso.'], man: ['twin', 'vop'], refs: ['moore22', 'gardey21'] },
   L_tvf: { leaf: true, dx: 'TV fascicular posterior o anterior', why: ['TV de BRD, relativamente angosta, con His retrógrado y disociación AV.', 'Confirmá el mecanismo: P1 y P2 en el septum medio, encarrilamiento y sensibilidad al verapamilo.'], next: ['Con TV inducible: ablación en P1 (tercio apical del septum) o, si no hay P1, en el P2 más precoz.', 'No inducible: isoproterenol, atropina o clase IA; si sigue sin inducirse, abordaje anatómico (línea en el septum medioinferior), potenciales en sinusal o falso tendón con ecografía intracardíaca.', 'Punto final: no inducibilidad y ausencia de ecos con estimulación auricular.'], man: ['tvf', 'tvfabl'], refs: ['nogami10', 'liu15', 'talib16', 'wei23', 'liuq23'] },
   L_tvfus: { leaf: true, dx: 'TV fascicular septal superior', why: ['QRS angosto con HV más corto que en sinusal: el His se activa desde el circuito, no es el origen.', 'Diferencial: TSV con aberrancia (A antes de cada His y HV normal) y vía nodofascicular o nodoventricular (HV sinusal, se encarrila desde la aurícula con AH fijo al cortar).'], next: ['Mapeo del septum superior izquierdo: P1 retrógrado y P2 anterógrado (Talib 2015) o, en la variante del His izquierdo, Purkinje precoz a ≤ 7 mm del His sin P1 (Li 2023).', 'Ablación en sinusal con potencia baja (10 W) en aumento, vigilando ritmo de la unión y BAV (1 de 18 tuvo BAV completo).'], man: ['tvf', 'tvfabl'], refs: ['nogami10', 'talib15', 'li23', 'liu15'] },
@@ -2172,6 +2189,12 @@ function renderAlgo() {
       <div class="box"><div class="bl">Por qué</div><ul>${L.why.map(x => `<li>${x}</li>`).join('')}</ul></div>
       <div class="box"><div class="bl">Qué hacer ahora</div><ul>${L.next.map(x => `<li>${x}</li>`).join('')}</ul></div>
       ${animLinks(L, id)}${manBtns(L.man)}<p class="small" style="margin:0">${cite(L.refs)}</p></div>`;
+  } else if (n.pre) {
+    h = `<div class="card step pre"><div class="lt">Diagnóstico más probable</div><h3>${n.dx}</h3>${n.sub ? `<p class="small" style="margin:-6px 0 0">${n.sub}</p>` : ''}
+      <div class="box"><div class="bl">Lo que ya lo sostiene</div><ul>${n.why.map(x => `<li>${x}</li>`).join('')}</ul></div>
+      <div class="box"><div class="bl">¿Cuándo seguir buscando otro mecanismo?</div><p style="margin:0">${n.alt}</p></div>
+      <div class="q" style="font-size:16px">¿Lo tomás como diagnóstico, o seguís sospechando otro mecanismo por el contexto del paciente?</div>
+      <div class="opts">${n.opts.map((o, i) => `<button class="opt${i ? '' : ' accept'}" data-i="${i}">${o.t}${o.s ? `<small>${o.s}</small>` : ''}</button>`).join('')}</div></div>`;
   } else {
     h = `<div class="card step"><div class="q">${n.q}</div>${n.help ? `<div class="help">${n.help}</div>` : ''}${manBtns(n.man)}
       <div class="opts">${n.opts.map((o, i) => `<button class="opt" data-i="${i}">${o.t}${o.s ? `<small>${o.s}</small>` : ''}</button>`).join('')}</div></div>`;
@@ -2320,7 +2343,7 @@ document.addEventListener('click', async e => {
 });
 
 // ---------- del resultado del algoritmo a la animación del mecanismo (lista revisada a mano)
-const LEAF_ANIM = { L_at: ['vop_1'], L_at_l: ['vop_1', 'aop_1'], L_at_bl: ['ado_ta'], L_atdesc: ['basal_ta', 'vop_1'], L_atprob: ['aop_1'], L_atblock: ['basal_ta'],
+const LEAF_ANIM = { L_pjrt_p: ['pjrt_circ', 'ehr_pjrt'], L_at: ['vop_1'], L_at_l: ['vop_1', 'aop_1'], L_at_bl: ['ado_ta'], L_atdesc: ['basal_ta', 'vop_1'], L_atprob: ['aop_1'], L_atblock: ['basal_ta'],
   L_avnrt_t: ['ppi_1', 'eha_0'], L_avnrt_a: ['ppi_1', 'diff_1'], L_avnrt_vab: ['eha_0'], L_jet: ['eha_1', 'ado_jet'], L_jetind: ['eha_0', 'eha_1'],
   L_avrt_s: ['ppi_0', 'ehr_0'], L_avrt_free: ['basal_travl', 'basal_coumel'], L_avrt_gen: ['vop_0', 'ehr_0'], L_nvrt: ['ado_nv'], L_twin: ['twin_tsv'],
   L_mahaim: ['preex_0'], L_pwind: ['preex_0'], L_pwvt: ['preex_1'], L_dfire: ['dfire', 'pre_dual'], L_bbr: ['bbr_tv', 'bbr_ppi'], L_tvf: ['tvf_circ', 'tvfabl_rf'] };
