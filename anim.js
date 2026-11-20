@@ -795,26 +795,7 @@
     return sc;
   }
 
-  // Arritmias focales: músculo papilar posteromedial y anillo mitral anterolateral
-  function focalSc(kind) {
-    const pm = kind === 'pm', F = pm ? [446, 540] : [505, 300], sc = newSc({ title: pm ? 'EV del papilar posteromedial' : 'EV del anillo mitral anterolateral', focus: true, focusPt: F, cats: ['abl'], ablPt: pm ? [446, 520] : [500, 306], papil: pm });
-    const R = [];
-    [200, 1100].forEach(a => { // latidos sinusales
-      const h = a + 120; E(sc, 'ECG', h + 40, '', { qrs: 'n' }); W_(sc, 'ante', [[G.sn, a - 30], [G.aSep, a + 20], [G.node, a + 50], [G.his, h]]); down(sc, h); sc.flV.push(h + 45); sc.flA.push(a);
-      if (pm) { E(sc, 'MAP', h + 38, 'Pk'); E(sc, 'MAP', h + 52, 'V'); } else { E(sc, 'MAP', a + 35, 'A', { small: 1 }); E(sc, 'MAP', h + 60, 'V'); }
-      R.push({ a, h }); });
-    const e = 700, e2 = 1600;
-    [e, e2].forEach(t => { W_(sc, 'focus', [[F, t - 30], [[400, 470], t + 10], [[300, 560], t + 50], [G.apex, t + 80]]); W_(sc, 'focus', [[F, t - 30], [[520, 420], t + 5]]);
-      W_(sc, 'focus', [[F, t - 30], [pm ? LPFl : [430, 360], t - 5]]); E(sc, 'ECG', t, '', { qrs: 'w' }); sc.flV.push(t);
-      if (pm) { E(sc, 'MAP', t - 22, 'V'); E(sc, 'MAP', t - 8, 'Pk'); } else { E(sc, 'MAP', t - 38, 'p'); E(sc, 'MAP', t - 28, 'V'); } });
-    if (pm) brk(sc, 'MAP', e2 - 22, e2, 'V–QRS 22', { up: 1, hot: 1 }); else brk(sc, 'MAP', e2 - 28, e2, 'V–QRS 28', { up: 1, hot: 1 });
-    Object.assign(sc, { stimEnd: 0, verdictT: e2 + 60,
-      verdict: pm ? 'En sinusal el potencial de Purkinje (Pk) precede al V local; en la EV <b>el V local precede al Pk</b>: el origen está en el músculo del papilar, no en el Purkinje. Es <b>focal</b>: no se induce con estimulación programada ni se encarrila.'
-                  : 'En el anillo mitral la señal local tiene una <b>A pequeña y un V grande</b> (A/V &lt; 1). En la EV aparece un <b>potencial discreto</b> antes del V local, que precede al QRS: sitio de origen en el anillo.',
-      why: pm ? 'Imita a la TV fascicular por el BRD, pero es focal y aparece con isoproterenol. Se necesitan lesiones profundas (irrigada o crioablación) porque el catéter es inestable sobre el papilar.'
-              : 'BRD con transición en V1–V2 y S en V6; las anterolaterales tienen inferiores positivas y DI y aVL negativas. Si falla desde el endocardio, mapeá por el seno coronario.' });
-    return sc;
-  }
+
 
   // PPI−LC, SA−VA y ΔHA: un mismo encarrilamiento con un selector de medición (cada ficha arranca con la suya)
   const ENTM = { ppi: ['PPI − LC', 'Medí el <b>PPI</b> en el canal del VD: de la última espiga al primer V de retorno, y restale la LC.'],
@@ -906,10 +887,6 @@
       fases: s => [[0, 'TV fascicular posterior (LC 360 ms).'], [1100, 'Se da <b>verapamilo</b>: P1 conduce cada vez más lento.'], [s[0].stimEnd - 200, 'Medí P1–P2 y P2–QRS: ¿qué intervalo se alarga?'], [s[0].stimEnd, 'La conducción se bloquea dentro de P1: la TV termina y vuelve el sinusal.']] },
     tvfabl_rf: { t: 'TV fascicular: ablación en P2', lanes: [['His', 'His'], ['LV', 'Septo VI'], ['ECG', 'ECG']], panels: [() => tvfSc('abl')], win: 1600,
       fases: s => [[0, 'TV fascicular posterior. El catéter de ablación (acceso retroaórtico) está sobre el <b>P2 presistólico más precoz</b>, en el fascículo posterior distal (sitio de salida).'], [s[0].rf[0], 'Se aplica <b>RF</b>: el giro inferior se enlentece y P1–P2 se alarga.'], [s[0].stimEnd, 'P1 ya no llega a P2: la TV termina.'], [s[0].stimEnd + 650, 'En sinusal, el fascículo posterior queda bloqueado en el sitio de ablación: P2 aparece tarde.']] },
-    pm_ev: { t: 'Arritmias del músculo papilar', lanes: [['ECG', 'ECG'], ['MAP', 'Ablación']], panels: [() => focalSc('pm')], win: 1100,
-      fases: [[0, 'Ritmo sinusal. El catéter de ablación está en la base del papilar posteromedial.'], [600, 'Aparece una <b>EV del papilar</b> (foco): se propaga desde el músculo.'], [1550, 'Compará el orden del potencial de Purkinje (Pk) y del V local en sinusal y en la EV.']] },
-    ma_ev: { t: 'Arritmias del anillo mitral', lanes: [['ECG', 'ECG'], ['MAP', 'Ablación']], panels: [() => focalSc('ma')], win: 1100,
-      fases: [[0, 'Ritmo sinusal. El catéter de ablación está en el anillo mitral anterolateral: registra una A pequeña y un V grande.'], [600, 'Aparece una <b>EV del anillo mitral</b>.'], [1550, 'Mirá el potencial discreto (p) antes del V local, que precede al QRS.']] },
     vai: { t: 'Índice VA: nodo vs vía posteroseptal', n: 'Índice VA', win: 3900, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => vaiSc('node'), () => vaiSc('ap')],
       fases: s => { const v = s[0].m.va; return [[0, 'Ritmo sinusal, sin inducir la TSV. Un catéter en el ápex del VD y otro en la base posterior, cerca del ostium del SC.'],
         [250, 'Se estimula el <b>ápex</b> sin capturar la aurícula. Medí el VA (espiga → A).'],
@@ -1003,7 +980,6 @@
     if (sc.fasc) { mk('path', { d: `M${P1t[0]},${P1t[1]} L${P1b[0]},${P1b[1]}`, stroke: '#ef6c00', 'stroke-width': 5, 'stroke-dasharray': '7 5', fill: 'none' }, svg);
       lbl(P1m[0] - 10, P1m[1] + 4, 'P1', '#ef6c00', 'end'); lbl(LPFl[0] + 12, LPFl[1] + 2, 'P2', '#6a3fb5'); lbl(LPFb[0] + 6, LPFb[1] + 30, 'fascículo posterior', '#6d4c41');
       mk('path', { d: 'M312,334 C330,400 360,470 400,520', stroke: '#6a3fb5', 'stroke-width': 3, fill: 'none', opacity: 0.45 }, svg); }
-    if (sc.papil) { mk('path', { d: 'M436,548 C426,520 428,480 446,462 C462,478 466,520 458,548 Z', fill: '#b85a4b', stroke: '#7a2e24', 'stroke-width': 2 }, svg); lbl(446, 604, 'papilar posteromedial', '#5d1f16', 'middle'); }
     if (sc.rf) { const g = mk('g', { opacity: 0 }, svg); g.innerHTML = `<circle cx="${sc.rf[2][0]}" cy="${sc.rf[2][1]}" r="22" fill="#ff7043" fill-opacity=".45" stroke="#d84315" stroke-width="3"/>`; sc._rfg = g; lbl(sc.rf[2][0] + 26, sc.rf[2][1] + 34, 'RF', '#d84315'); svg.lastChild.setAttribute('opacity', 0); sc._rfl = svg.lastChild; }
     if (sc.twin) { mk('ellipse', { cx: 226, cy: 304, rx: 16, ry: 9, fill: '#f3d36b', stroke: '#9a7300', 'stroke-width': 1.5 }, svg);
       mk('path', { d: 'M232,310 C248,330 264,352 276,376', stroke: '#e2a915', 'stroke-width': 5, fill: 'none', 'stroke-linecap': 'round' }, svg);
@@ -1143,7 +1119,7 @@
 
   // fichas con varias animaciones, cada una con una sola taquicardia y sus propios controles
   const FOR = { ado: ['ado_trav', 'ado_trnav', 'ado_ta', 'ado_nv', 'ado_jet', 'ado_anti'], basal: ['basal_trnav', 'basal_travl', 'basal_coumel', 'basal_ta'],
-    pre: ['pre_dual', 'pre_vanode', 'pre_vaap'], twin: ['twin_tsv', 'twin_ap'], bbr: ['bbr_tv', 'bbr_ppi'], tvf: ['tvf_circ', 'tvf_vera'], tvfabl: ['tvfabl_rf'], pm: ['pm_ev'], ma: ['ma_ev'], obl: ['obl_retro', 'obl_ante', 'obl_rev'] };
+    pre: ['pre_dual', 'pre_vanode', 'pre_vaap'], twin: ['twin_tsv', 'twin_ap'], bbr: ['bbr_tv', 'bbr_ppi'], tvf: ['tvf_circ', 'tvf_vera'], tvfabl: ['tvfabl_rf'], obl: ['obl_retro', 'obl_ante', 'obl_rev'] };
   for (const k of Object.keys(ANIMS)) {
     const A = ANIMS[k]; if (k.startsWith('ado_')) continue;
     const np = (A.sel ? A.panels(A.def) : A.panels).length; if (np < 2 || FOR[k]) continue;
