@@ -27,7 +27,15 @@
   --green:#30d158;--orange:#ffa733;--red:#ff6259;--violet:#a98bff;--slate:#9fb0d0;--teal:#2fd0b8;--rose:#ff7aa8;
   --seg:#1c1c1e;--shadow:none;color-scheme:dark}
 *{box-sizing:border-box}
-.anim .anp{display:flex;flex-wrap:wrap;gap:12px}.anim .anpanel:only-child{max-width:520px;margin:0 auto}.anim .anpanel{flex:1 1 280px;min-width:0}.anim svg{width:100%;height:auto;display:block;border:1px solid var(--line)}.anim svg.anh{background:#fff;border-radius:12px 12px 0 0;border-bottom:0}.anim svg.antr{background:var(--card);border-radius:0 0 12px 12px}.anim .ant2{font-weight:700;font-size:14px;margin:2px 0 6px}.anim .anhead{position:sticky;top:var(--segH,0px);z-index:4;background:inherit;margin:0 -2px;padding:4px 2px 2px}#dlgB .anim .anhead{top:56px}.anim .anc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}.anim .ant{width:100%;height:34px;margin:2px 0;accent-color:var(--blue)}
+.anim .anp{display:flex;flex-wrap:wrap;gap:12px}.anim .anpanel:only-child{max-width:520px;margin:0 auto}
+@media (orientation:landscape) and (max-height:520px){
+  .anim .anpanel:only-child{max-width:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);column-gap:10px;align-items:start}
+  .anim .anpanel:only-child > .ant2,.anim .anpanel:only-child > .anver{grid-column:1 / -1}
+  .anim .anpanel:only-child svg.anh{max-height:calc(100dvh - 150px);width:auto;max-width:100%;justify-self:center;border-radius:12px;border-bottom:1px solid var(--line)}
+  .anim .anpanel:only-child svg.antr{border-radius:12px;align-self:center}
+  .anim .anhead,#dlgB .anim .anhead,#dlgB .fnav{position:static !important}
+  .anim .anpanel:only-child svg.anh{max-height:calc(100dvh - 40px)}
+}.anim .anpanel{flex:1 1 280px;min-width:0}.anim svg{width:100%;height:auto;display:block;border:1px solid var(--line)}.anim svg.anh{background:#fff;border-radius:12px 12px 0 0;border-bottom:0}.anim svg.antr{background:var(--card);border-radius:0 0 12px 12px}.anim .ant2{font-weight:700;font-size:14px;margin:2px 0 6px}.anim .anhead{position:sticky;top:var(--segH,0px);z-index:4;background:inherit;margin:0 -2px;padding:4px 2px 2px}#dlgB .anim .anhead{top:56px}.anim .anc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}.anim .ant{width:100%;height:34px;margin:2px 0;accent-color:var(--blue)}
 .anim select{font:inherit;font-size:15px;min-height:36px;padding:4px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
 figure.real > a{display:block}
 /* zona táctil cómoda (≥ 36 px) en el celular */
@@ -200,6 +208,11 @@ dialog{border:0;padding:0;border-radius:20px;background:var(--bg);color:var(--in
 .ficha .anim{scroll-margin-top:150px}#dlgB .ficha .anim{scroll-margin-top:66px}
 .bl.isec{margin:16px 4px 6px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
 .prow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border:1px solid color-mix(in srgb,var(--violet) 35%,var(--line))}.prow2{display:flex;justify-content:center;margin:6px 0 0}
+.shr{appearance:none;border:1px solid color-mix(in srgb,var(--blue) 35%,var(--line));background:var(--blue-soft);color:var(--blue);font:inherit;font-size:13px;font-weight:700;padding:7px 12px;border-radius:999px;cursor:pointer;min-height:34px;white-space:nowrap;flex:none}
+.shrow{display:flex;justify-content:flex-end;margin:0 0 8px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none}
+#toast.on{opacity:1}
+.anlink{display:block;width:100%;text-align:left;appearance:none;border:1px solid color-mix(in srgb,var(--blue) 35%,var(--line));background:var(--blue-soft);color:var(--blue);font:inherit;font-size:14px;font-weight:700;padding:10px 14px;border-radius:14px;cursor:pointer;margin:0 0 8px}
 .hsrch{margin-left:auto;display:flex;align-items:center;gap:6px;appearance:none;border:1px solid color-mix(in srgb,var(--violet) 30%,transparent);background:var(--card);color:var(--ink);font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer;min-height:36px}
 .hsrch svg{width:17px;height:17px}
 #sdlg{align-self:start;margin-top:10px}
@@ -361,13 +374,14 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
   <p class="small" style="text-align:center;margin:0">Dr. Sebastián Maldonado · Electrofisiólogo infantil · <span id="verPie"></span></p>
 </div>
 
+<div id="toast" role="status"></div>
 <dialog id="sdlg" aria-label="Buscar"><div class="dlg"><div class="dlgh"><input id="sq" type="search" placeholder="Buscar: PPI, Coumel, PJRT, Mahaim, 115…" autocomplete="off" enterkeyhint="search"><button class="btn" id="sX">Cerrar</button></div><div id="sres" class="sres"></div></div></dialog>
 <dialog id="dlg"><div class="dlg"><div class="dlgh"><h3 id="dlgT"></h3><button class="btn" id="dlgX">Cerrar</button></div><div id="dlgB"></div></div></dialog>
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script src="anim.js"></script>
 <script>
-const APPV = 224;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 225;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -1148,7 +1162,7 @@ const AESQ = {
 function renderArr() {
   const q = norm(arrQ.trim());
   const list = ARR.filter(a => !q || norm(a.n + ' ' + a.al).includes(q));
-  $('#arrList').innerHTML = list.length ? list.map(a => `<details class="card ref arr" id="a-${a.id}"${q && list.length <= 2 ? ' open' : ''}><summary><span class="sumt"><span>${a.n}</span><small>Diferencial: ${a.dif}</small></span></summary><div class="refb">
+  $('#arrList').innerHTML = list.length ? list.map(a => `<details class="card ref arr" id="a-${a.id}"${q && list.length <= 2 ? ' open' : ''}><summary><span class="sumt"><span>${a.n}</span><small>Diferencial: ${a.dif}</small></span></summary><div class="refb"><div class="shrow"><button type="button" class="shr" data-share="arritmia-${a.id}" data-st="${a.n.replace(/"/g, '&quot;')}">Compartir ↗</button></div>
     ${a.mec ? `<div class="box"><div class="bl">Cómo y por qué se reconoce</div><div class="mec">${a.mec}</div>${a.img ? `<figure class="real sim"><a href="${a.img}" target="_blank" rel="noopener"><img src="${a.img}" alt="Registro simulado" loading="lazy"></a><figcaption>${a.imgcap || ''} Registro simulado (no es un registro real). Tocá para ampliar.</figcaption></figure>` : ''}</div>` : ''}
     ${AESQ[a.id] ? `<div class="box"><div class="bl">Esquemas de las maniobras útiles</div>${esqStrip(AESQ[a.id])}<p class="small" style="margin:6px 0 0">Tocá un esquema para ampliarlo.</p></div>` : ''}
     <div class="box"><div class="bl ok">Lo confirma</div>${arrRows(a.conf, 'ok')}</div>
@@ -1862,7 +1876,7 @@ function fichaHTML(id) {
   // índice para saltar a cada parte de la ficha
   const nav = [['como', 'Cómo se hace'], anims.length && ['anim', anims.length > 1 ? `Animaciones (${anims.length})` : 'Animación'], ['interp', 'Interpretación'],
     ncas && ['casos', `Casos (${ncas})`], ['trampas', 'Trampas'], ['refs', 'Referencias']].filter(Boolean);
-  let h = `<div class="ficha"><nav class="fnav" aria-label="Partes de la ficha">${nav.map(([k, t]) => `<button type="button" data-jump="${k}">${t}</button>`).join('')}</nav><p class="para">${m.para}</p>`;
+  let h = `<div class="ficha"><nav class="fnav" aria-label="Partes de la ficha">${nav.map(([k, t]) => `<button type="button" data-jump="${k}">${t}</button>`).join('')}<button type="button" class="shr" data-share="ficha-${id}" data-st="${m.t.replace(/"/g, '&quot;')}">Compartir ↗</button></nav><p class="para">${m.para}</p>`;
   h += `<div class="box" data-sec="como"><div class="bl">Cómo se hace</div><ol>${m.como.map(x => `<li>${x}</li>`).join('')}</ol></div>`;
   h += `<figure class="real esq"><a href="figs/esq/${id}.jpg" target="_blank" rel="noopener"><img src="figs/esq/${id}.jpg" alt="Esquema de la maniobra" loading="lazy"></a><figcaption>Esquema: corazón en OAI ~30° con el sistema de conducción. Tocá para ampliar.</figcaption></figure>`;
   if (anims.length > 1) h += `<div class="anchips" data-sec="anim"><div class="bl isec">${anims.length} animaciones: tocá una para ir</div>${anims.map((k, i) => `<button type="button" data-goanim="${k}"><span>${i + 1}</span>${window.animLabel ? animLabel(k) : k}</button>`).join('')}</div>`;
@@ -2118,7 +2132,7 @@ function renderAlgo() {
     h = `<div class="card leaf ${L.tone || ''}"><div class="lt">Resultado</div><h3>${L.dx}</h3>${L.sub ? `<p class="small" style="margin:-6px 0 0">${L.sub}</p>` : ''}
       <div class="box"><div class="bl">Por qué</div><ul>${L.why.map(x => `<li>${x}</li>`).join('')}</ul></div>
       <div class="box"><div class="bl">Qué hacer ahora</div><ul>${L.next.map(x => `<li>${x}</li>`).join('')}</ul></div>
-      ${manBtns(L.man)}<p class="small" style="margin:0">${cite(L.refs)}</p></div>`;
+      ${animLinks(L, id)}${manBtns(L.man)}<p class="small" style="margin:0">${cite(L.refs)}</p></div>`;
   } else {
     h = `<div class="card step"><div class="q">${n.q}</div>${n.help ? `<div class="help">${n.help}</div>` : ''}${manBtns(n.man)}
       <div class="opts">${n.opts.map((o, i) => `<button class="opt" data-i="${i}">${o.t}${o.s ? `<small>${o.s}</small>` : ''}</button>`).join('')}</div></div>`;
@@ -2209,6 +2223,8 @@ function renderReview(n) {
   return true;
 }
 function checkReview() {
+  const am = location.hash.match(/^#arritmia-(\w+)$/);
+  if (am && ARR.some(a => a.id === am[1])) { setTimeout(() => openArr(am[1]), 0); return true; }
   const fm = location.hash.match(/^#ficha-(\w+)$/);
   if (fm && M[fm[1]]) { tab('man'); openFicha(fm[1]); return true; }
   const m = location.hash.match(/^#revision-(\d+)$/);
@@ -2234,6 +2250,32 @@ segH(); addEventListener('resize', segH);
 $('#refsAll').innerHTML = Object.values(REFS).map(r => `<li>${r[1]}</li>`).join('');
 renderAlgo(); renderFichas(); renderArr(); calc();
 $('#arrQ').addEventListener('input', e => { arrQ = e.target.value; renderArr(); });
+// ---------- compartir: link directo a una ficha o a una arritmia
+function toast(t) { const e = $('#toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('on'), 2200); }
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-share]'); if (!b) return;
+  e.preventDefault();
+  const url = location.origin + location.pathname + '#' + b.dataset.share, title = b.dataset.st + ' · Maniobras en el EEF';
+  if (navigator.share) { try { await navigator.share({ title, url }); } catch (er) {} return; }
+  try { await navigator.clipboard.writeText(url); toast('Link copiado'); } catch (er) { prompt('Copiá el link:', url); }
+});
+
+// ---------- del resultado del algoritmo a la animación del mecanismo (lista revisada a mano)
+const LEAF_ANIM = { L_at: ['vop_1'], L_at_l: ['vop_1', 'aop_1'], L_at_bl: ['ado_ta'], L_atdesc: ['basal_ta', 'vop_1'], L_atprob: ['aop_1'], L_atblock: ['basal_ta'],
+  L_avnrt_t: ['ppi_1', 'eha_0'], L_avnrt_a: ['ppi_1', 'diff_1'], L_avnrt_vab: ['eha_0'], L_jet: ['eha_1', 'ado_jet'], L_jetind: ['eha_0', 'eha_1'],
+  L_avrt_s: ['ppi_0', 'ehr_0'], L_avrt_free: ['basal_travl', 'basal_coumel'], L_avrt_gen: ['vop_0', 'ehr_0'], L_nvrt: ['ado_nv'], L_twin: ['twin_tsv'],
+  L_mahaim: ['preex_0'], L_pwind: ['preex_0'], L_pwvt: ['preex_1'], L_dfire: ['dfire', 'pre_dual'], L_bbr: ['bbr_tv', 'bbr_ppi'], L_tvf: ['tvf_circ', 'tvfabl_rf'] };
+function animLinks(L, id) {
+  if (!window.ANIM_IDS || !LEAF_ANIM[id]) return '';
+  return LEAF_ANIM[id].filter(k => ANIM_IDS.includes(k)).map(k => { const f = Object.keys(ANIM_FOR).find(x => ANIM_FOR[x].includes(k)) || k;
+    return `<button type="button" class="anlink" data-ganim="${f}|${k}">▶ Ver la animación: ${M[f].t} · ${animLabel(k)}</button>`; }).join('');
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-ganim]'); if (!b) return;
+  const [f, k] = b.dataset.ganim.split('|'); openFicha(f);
+  setTimeout(() => { const a = document.querySelector(`#dlgB .anim[data-anim="${k}"]`); if (a) a.scrollIntoView({ block: 'start' }); }, 60);
+});
+
 // ---------- descarga para usar sin conexión: guarda todas las imágenes en una caché que sobrevive a las actualizaciones
 const OFFC = 'mef-imagenes';
 const fmtMB = b => (b / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 0 }) + ' MB';
