@@ -178,6 +178,15 @@ dialog{border:0;padding:0;border-radius:20px;background:var(--bg);color:var(--in
 .ficha [data-sec]{scroll-margin-top:150px}
 #dlgB .ficha [data-sec]{scroll-margin-top:68px}
 .bl.isec{margin:16px 4px 6px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
+.hsrch{margin-left:auto;display:flex;align-items:center;gap:6px;appearance:none;border:1px solid color-mix(in srgb,var(--violet) 30%,transparent);background:var(--card);color:var(--ink);font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer;min-height:36px}
+.hsrch svg{width:17px;height:17px}
+#sdlg{align-self:start;margin-top:10px}
+#sq{flex:1;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.sres .sg{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);margin:12px 4px 6px}
+.sres button{display:block;width:100%;text-align:left;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;padding:10px 12px;border-radius:12px;margin:0 0 6px;cursor:pointer}
+.sres button b{display:block;font-size:15px}.sres button small{display:block;color:var(--ink2);font-size:13px;margin-top:2px;line-height:1.35}
+.sres mark{background:color-mix(in srgb,var(--violet) 22%,transparent);color:inherit;border-radius:3px;padding:0 1px}
+.sres .sv{color:var(--ink2);font-size:14px;padding:8px 4px}
 dialog::backdrop{background:rgba(0,0,0,.45)}
 .dlg{display:flex;flex-direction:column;gap:12px;padding:16px}
 .dlgh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
@@ -201,6 +210,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
   <header class="hero">
     <div class="hicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h3l1.5-4 2 8 1.5-4h2"/><path d="M14 6v12M17 9v6M20 6v12"/></svg></div>
     <h1>Maniobras en el EEF</h1>
+    <button type="button" class="hsrch" id="srchBtn" aria-label="Buscar en toda la app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Buscar</span></button>
   </header>
 
   <div class="seg" role="tablist">
@@ -318,12 +328,13 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
   <p class="small" style="text-align:center;margin:0">Dr. Sebastián Maldonado · Electrofisiólogo infantil · <span id="verPie"></span></p>
 </div>
 
+<dialog id="sdlg" aria-label="Buscar"><div class="dlg"><div class="dlgh"><input id="sq" type="search" placeholder="Buscar: PPI, Coumel, PJRT, Mahaim, 115…" autocomplete="off" enterkeyhint="search"><button class="btn" id="sX">Cerrar</button></div><div id="sres" class="sres"></div></div></dialog>
 <dialog id="dlg"><div class="dlg"><div class="dlgh"><h3 id="dlgT"></h3><button class="btn" id="dlgX">Cerrar</button></div><div id="dlgB"></div></div></dialog>
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script src="anim.js"></script>
 <script>
-const APPV = 217;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 218;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -2174,6 +2185,58 @@ document.querySelectorAll('.seg button').forEach(b => b.onclick = () => tab(b.da
 $('#refsAll').innerHTML = Object.values(REFS).map(r => `<li>${r[1]}</li>`).join('');
 renderAlgo(); renderFichas(); renderArr(); calc();
 $('#arrQ').addEventListener('input', e => { arrQ = e.target.value; renderArr(); });
+// ---------- buscador general: maniobras, arritmias y casos de práctica
+const SIX = (() => {
+  const tx = v => (Array.isArray(v) ? v.map(tx).join(' ') : v && typeof v === 'object' ? Object.values(v).map(tx).join(' ') : String(v ?? '')).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  const it = [];
+  const rows = r => (r || []).map(x => x.slice(0, 2));   // sin las claves de las citas
+  Object.entries(M).forEach(([k, m]) => it.push({ g: 'Maniobras', t: m.t, s: m.s, body: tx([m.para, m.como, m.medir, rows(m.interp), m.trampas, m.vs]), go: () => openFicha(k) }));
+  ARR.forEach(a => it.push({ g: 'Arritmias', t: a.n, s: 'Diferencial: ' + tx(a.dif), kw: tx(a.al), body: tx([a.mec, (a.conf || []).map(x => x[0]), (a.apoya || []).map(x => x[0]), (a.desc || []).map(x => x[0]), a.trampa]), go: () => openArr(a.id) }));
+  PCASOS.forEach((c, i) => it.push({ g: 'Casos de práctica', t: `Caso ${i + 1}: ${c.t}`, s: tx(c.p), body: tx(c.h), go: () => { tab('prac'); startCase(i); } }));
+  it.forEach(x => { x.nt = norm(x.t); x.ns = norm(x.s); x.nk = norm(x.kw || ''); x.nb = norm(x.body); });
+  return it;
+})();
+function openArr(id) {
+  tab('arr'); arrQ = ''; $('#arrQ').value = ''; renderArr();
+  const d = $('#a-' + id); if (!d) return; d.open = true; if (window.mountAnims) mountAnims(d);
+  scrollTo({ top: d.getBoundingClientRect().top + scrollY - document.querySelector('.seg').offsetHeight - 20 });
+}
+const escH = t => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function snip(raw, terms) {
+  const n = norm(raw); let i = -1; for (const t of terms) { i = n.indexOf(t); if (i >= 0) break; }
+  if (i < 0) return '';
+  const a = Math.max(0, i - 50), b = Math.min(raw.length, i + 90);
+  let out = escH(raw.slice(a, b)), nn = norm(out);
+  for (const t of terms) { const j = nn.indexOf(t); if (j >= 0) { out = out.slice(0, j) + '<mark>' + out.slice(j, j + t.length) + '</mark>' + out.slice(j + t.length); nn = norm(out); } }
+  return (a ? '…' : '') + out + (b < raw.length ? '…' : '');
+}
+let sHits = [];
+function runSearch() {
+  const q = norm($('#sq').value.trim()), terms = q.split(/\s+/).filter(Boolean);
+  if (!terms.length) { $('#sres').innerHTML = '<p class="sv">Buscá una maniobra, una arritmia, un valor de corte o un hallazgo. Busca en los títulos y en todo el texto de las fichas, las arritmias y los casos.</p>'; sHits = []; return; }
+  sHits = SIX.map(x => { const all = x.nt + ' ' + x.ns + ' ' + x.nk + ' ' + x.nb; if (!terms.every(t => all.includes(t))) return null;
+    const sc = terms.reduce((a, t) => a + (x.nt.includes(t) ? 10 : 0) + (x.ns.includes(t) || x.nk.includes(t) ? 3 : 0) + (x.nb.includes(t) ? 1 : 0), 0); return { x, sc }; }).filter(Boolean)
+    .sort((a, b) => b.sc - a.sc);
+  if (!sHits.length) { $('#sres').innerHTML = '<p class="sv">Sin resultados. Probá con otra palabra o una sigla (TRNAV, PJRT, JET, EV-HR).</p>'; return; }
+  let h = '', i = 0;
+  const gs = [...new Set(sHits.map(r => r.x.g))];   // los grupos, en el orden del mejor resultado de cada uno
+  for (const g of gs) {
+    const hs = sHits.filter(r => r.x.g === g); if (!hs.length) continue;
+    h += `<div class="sg">${g} (${hs.length})</div>`;
+    hs.forEach(r => { const x = r.x, inTitle = terms.some(t => x.nt.includes(t) || x.ns.includes(t)) || !terms.some(t => x.nb.includes(t));
+      h += `<button type="button" data-i="${sHits.indexOf(r)}"><b>${escH(x.t)}</b><small>${inTitle ? escH(x.s) : snip(x.body, terms)}</small></button>`; i++; });
+  }
+  $('#sres').innerHTML = h;
+}
+function openSearch() { const d = $('#sdlg'); if (d.showModal) d.showModal(); else d.setAttribute('open', ''); runSearch(); setTimeout(() => $('#sq').focus(), 30); }
+$('#srchBtn').onclick = openSearch;
+$('#sX').onclick = () => $('#sdlg').close();
+$('#sdlg').addEventListener('click', e => { if (e.target.id === 'sdlg') $('#sdlg').close(); });
+$('#sq').addEventListener('input', runSearch);
+$('#sq').addEventListener('keydown', e => { const b = $('#sres [data-i]'); if (e.key === 'Enter' && b) { e.preventDefault(); $('#sdlg').close(); sHits[+b.dataset.i].x.go(); } });
+$('#sres').addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (!b) return; $('#sdlg').close(); sHits[+b.dataset.i].x.go(); });
+document.addEventListener('keydown', e => { if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) && !document.querySelector('dialog[open]')) { e.preventDefault(); openSearch(); } });
+
 $('#goEnr').onclick = () => locView('enr'); $('#goObl').onclick = () => openFicha('obl'); $('#goKis').onclick = () => locView('kis');
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => locView('hub'));
 try { const t = location.hash === '#localizar' ? 'loc' : localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
