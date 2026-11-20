@@ -187,6 +187,11 @@ dialog{border:0;padding:0;border-radius:20px;background:var(--bg);color:var(--in
 .sres button b{display:block;font-size:15px}.sres button small{display:block;color:var(--ink2);font-size:13px;margin-top:2px;line-height:1.35}
 .sres mark{background:color-mix(in srgb,var(--violet) 22%,transparent);color:inherit;border-radius:3px;padding:0 1px}
 .sres .sv{color:var(--ink2);font-size:14px;padding:8px 4px}
+.offc{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px 16px;margin:0 0 12px}
+.offc > div{flex:1;min-width:0}.offc p{margin:4px 0 0}
+.offc .btn{flex:none}
+.offbar{height:8px;border-radius:99px;background:var(--seg);margin-top:8px;overflow:hidden}
+.offbar i{display:block;height:100%;width:0;background:var(--violet);transition:width .2s}
 dialog::backdrop{background:rgba(0,0,0,.45)}
 .dlg{display:flex;flex-direction:column;gap:12px;padding:16px}
 .dlgh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
@@ -320,6 +325,12 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
   <div class="warnbox">Material de consulta y formación para profesionales. Ninguna maniobra es infalible: el diagnóstico surge de integrar las observaciones basales y varias maniobras concordantes. No reemplaza el juicio del electrofisiólogo.</div>
 
+  <div class="card offc" id="offc">
+    <div><b>Usar sin conexión</b><p class="small" id="offEst">Guardá en este dispositivo todas las imágenes (registros de los casos, esquemas y figuras) para usar la app en el laboratorio sin señal.</p>
+      <div class="offbar" id="offBar" hidden><i id="offFill"></i></div></div>
+    <button type="button" class="btn" id="offBtn">Descargar</button>
+  </div>
+
   <details class="card ref" id="biblio">
     <summary>Fuentes y referencias</summary>
     <div class="refb"><ol class="refs" id="refsAll"></ol></div>
@@ -334,7 +345,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script src="anim.js"></script>
 <script>
-const APPV = 218;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 219;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -2185,6 +2196,42 @@ document.querySelectorAll('.seg button').forEach(b => b.onclick = () => tab(b.da
 $('#refsAll').innerHTML = Object.values(REFS).map(r => `<li>${r[1]}</li>`).join('');
 renderAlgo(); renderFichas(); renderArr(); calc();
 $('#arrQ').addEventListener('input', e => { arrQ = e.target.value; renderArr(); });
+// ---------- descarga para usar sin conexión: guarda todas las imágenes en una caché que sobrevive a las actualizaciones
+const OFFC = 'mef-imagenes';
+const fmtMB = b => (b / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 0 }) + ' MB';
+async function offEstado() {
+  if (!('caches' in window)) { $('#offc').hidden = true; return; }
+  try {
+    const L = await (await fetch('offline.json', { cache: 'no-cache' })).json();
+    const c = await caches.open(OFFC), ks = new Set((await c.keys()).map(r => new URL(r.url).pathname.replace(/^.*?\/(figs|localizar)\//, '$1/')));
+    const falta = L.archivos.filter(a => !ks.has(a));
+    let fecha = ''; try { fecha = localStorage.getItem('mef_off') || ''; } catch (e) {}
+    if (!falta.length) { $('#offEst').textContent = `Listo: las ${L.archivos.length} imágenes están guardadas en este dispositivo${fecha ? ' (' + fecha + ')' : ''}. Si se agregan casos nuevos, volvé a tocar Actualizar.`; $('#offBtn').textContent = 'Actualizar'; }
+    else if (falta.length < L.archivos.length) { $('#offEst').textContent = `Guardadas ${L.archivos.length - falta.length} de ${L.archivos.length} imágenes. Tocá Descargar para completar.`; $('#offBtn').textContent = 'Descargar'; }
+    else { $('#offEst').textContent = `Guardá en este dispositivo todas las imágenes (registros de los casos, esquemas y figuras; ${fmtMB(L.bytes)}) para usar la app en el laboratorio sin señal. Conviene hacerlo con wifi.`; }
+    return L;
+  } catch (e) { $('#offEst').textContent = 'Sin conexión: la descarga se puede hacer cuando haya señal.'; }
+}
+$('#offBtn').onclick = async () => {
+  const b = $('#offBtn'); b.disabled = true;
+  try {
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+    const L = await (await fetch('offline.json', { cache: 'no-cache' })).json();
+    const c = await caches.open(OFFC), n = L.archivos.length; let ok = 0, err = 0, i = 0;
+    $('#offBar').hidden = false;
+    const una = async () => { while (i < n) { const a = L.archivos[i++];
+      try { const r = await fetch(a, { cache: 'no-cache' }); if (!r.ok) throw 0; await c.put(a, r); ok++; } catch (e) { err++; }
+      $('#offFill').style.width = (100 * (ok + err) / n) + '%'; $('#offEst').textContent = `Descargando… ${ok + err} de ${n}`; } };
+    await Promise.all([una(), una(), una(), una()]);
+    try { localStorage.setItem('mef_off', new Date().toLocaleDateString('es-AR')); } catch (e) {}
+    $('#offBar').hidden = true;
+    if (err) $('#offEst').textContent = `Se guardaron ${ok} de ${n}; ${err} fallaron (¿se cortó la señal?). Tocá Descargar para reintentar.`;
+    else await offEstado();
+  } catch (e) { $('#offEst').textContent = 'No se pudo descargar. Revisá la conexión y probá de nuevo.'; }
+  b.disabled = false;
+};
+offEstado();
+
 // ---------- buscador general: maniobras, arritmias y casos de práctica
 const SIX = (() => {
   const tx = v => (Array.isArray(v) ? v.map(tx).join(' ') : v && typeof v === 'object' ? Object.values(v).map(tx).join(' ') : String(v ?? '')).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
@@ -2242,7 +2289,7 @@ document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => locView(
 try { const t = location.hash === '#localizar' ? 'loc' : localStorage.getItem('mef_tab'); if (t) tab(t); } catch (e) {}
 checkReview();
 
-if ('serviceWorker' in navigator && location.protocol === 'https:') {
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
