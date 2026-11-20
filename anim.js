@@ -797,6 +797,64 @@
 
 
 
+
+  // ---------- Grupo 6: reset y encarrilamiento sobre un circuito esquemático ----------
+  // Anillo de reentrada: 0° arriba, sentido horario. LC 340 ms; período refractario 230 ms (brecha excitable 110 ms).
+  const LC6 = 340, RF6 = 230, W6 = 360 / LC6, RC = [280, 178], RR = 112;
+  const rpos = a => [RC[0] + RR * Math.sin(a * Math.PI / 180), RC[1] - RR * Math.cos(a * Math.PI / 180)];
+  const nrm = a => ((a % 360) + 360) % 360;
+  // tiempo de la última activación de un punto del anillo por una onda, hasta T
+  const actT = (w, a, T) => { if (T < w.t0) return null; const d = nrm((a - w.a0) * w.dir); let t = w.t0 + d / W6; const lim = Math.min(T, w.t1);
+    if (t > lim) return null; if (w.dir > 0) t += Math.floor((lim - t) / LC6) * LC6; return t; };
+  const headA = (w, T) => nrm(w.a0 + w.dir * W6 * (T - w.t0));
+  const passes = (w, a) => { const out = []; let t = w.t0 + nrm((a - w.a0) * w.dir) / W6; while (t <= w.t1) { out.push(t); if (w.dir < 0) break; t += LC6; } return out; };
+
+  function loopSc(kind) {
+    const out = kind === 'out', reset = kind === 'reset';
+    const sc = newSc({ title: reset ? 'Reset con un extraestímulo' : out ? 'Encarrilamiento desde fuera del circuito' : 'Encarrilamiento desde el circuito (istmo protegido)', view: 'loop', vb: '0 0 560 360', cats: [], loop: [] });
+    const PS = 90, PX = 160, PE = 90, SOUT = [500, 300], DST = 60;        // sitio de estimulación, salida, entrada desde fuera
+    sc.loopSite = out ? SOUT : rpos(PS); sc.loopEntry = out ? rpos(PE) : null; sc.loopExit = rpos(PX);
+    const L = sc.loop; const nat = { a0: 0, dir: 1, t0: -LC6 * 3, t1: 1e9, k: 'o' }; L.push(nat);
+    const pa = out ? PE : PS, dIn = out ? DST : 0;                           // punto del anillo donde entra el estímulo y demora
+    const collide = (prev, ts) => { const g = nrm(pa - headA(prev, ts)); return ts + g / (2 * W6); };
+    const S = [];
+    if (reset) { const lastAct = actT(nat, pa, 1000); const ts = lastAct + 265; S.push(ts); }
+    else { const first = actT(nat, pa, 900) + 250 - dIn; for (let k = 0; k < 6; k++) S.push(first + k * 300); }
+    let prev = nat;
+    S.forEach((s, k) => { const ta = s + dIn; const tc = collide(prev, ta); prev.t1 = tc;
+      L.push({ a0: pa, dir: -1, t0: ta, t1: tc, k: 'a' }); const o = { a0: pa, dir: 1, t0: ta, t1: 1e9, k: 'o' }; L.push(o); prev = o;
+      E(sc, 'S', s, 'E', { stim: true }); sc.stims.push({ t: s, pt: sc.loopSite });
+      if (out) W_(sc, 'ante', [[SOUT, s], [rpos(PE), ta]]); });
+    const lastS = S[S.length - 1];
+    // electrogramas: salida (cada vez que pasa el frente ortodrómico) y sitio de estimulación
+    const exits = []; L.filter(w => w.k === 'o').forEach(w => passes(w, PX).forEach(t => { if (t > 0 && t < lastS + 1400) exits.push(t); }));
+    exits.sort((a, b) => a - b);
+    exits.forEach(t => { E(sc, 'X', t, 'V'); const pacing = !reset && t > S[0] && t < lastS + 60; E(sc, 'ECG', t + 20, '', { qrs: out && pacing ? 'm' : 'w' }); sc.flV.push(t); });
+    const siteActs = []; L.filter(w => w.k === 'o').forEach(w => passes(w, pa).forEach(t => { if (t > 0 && t > w.t0 + 1 && t < lastS + 1400) siteActs.push(t); }));
+    if (!out) siteActs.forEach(t => { if (!S.some(s => Math.abs(s - t) < 2)) E(sc, 'S', t, 'V'); });
+    const ret = (out ? passes(prev, PE).find(t => t > lastS + dIn + 1) + DST : passes(prev, PS).find(t => t > lastS + 1));
+    if (out) { W_(sc, 'retro', [[rpos(PE), ret - DST], [SOUT, ret]]); E(sc, 'S', ret, 'V'); }
+    sc.m = { S, exits, ret };
+    if (reset) {
+      const s = S[0], before = exits.filter(t => t < s).pop(), after = exits.find(t => t > s), expected = before + LC6;
+      brk(sc, 'X', before - LC6, before, 'LC ' + LC6, { up: 1 }); brk(sc, 'X', before, after, 'VV ' + Math.round(after - before), { up: 1, hot: 1 });
+      Object.assign(sc, { stimEnd: s, verdictT: after + 60,
+        verdict: `El extraestímulo cae en la <b>brecha excitable</b>: el frente antidrómico choca con el que viene y el ortodrómico sigue por el circuito. La salida siguiente se <b>adelanta ${Math.round(expected - after)} ms</b> y la pausa es menos que compensadora: <b>reset</b>.`,
+        why: 'Solo se puede resetear una reentrada si tiene brecha excitable (el tejido delante del frente ya se recuperó). Después del reset la taquicardia sigue con su LC, desde el nuevo frente.' });
+    } else {
+      const ppi = Math.round(ret - lastS);
+      brk(sc, 'S', lastS, ret, 'PPI ' + ppi, { hot: 1, up: 1 });
+      const lastPure = exits.find(t => t > lastS);
+      if (out) { const q = sc.ev.find(e => e.ch === 'ECG' && Math.abs(e.t - lastPure - 20) < 1); if (q) Object.assign(q, { tag: 'sin fusión', tagT: lastPure + 30 }); }
+      Object.assign(sc, { stimEnd: lastS, verdictT: ret + 40,
+        verdict: out ? `Desde fuera del circuito el estímulo tiene que llegar al circuito, dar la vuelta y volver: <b>PPI ${ppi} ms</b>, PPI − LC = <b>${ppi - LC6} ms</b>. Durante la estimulación hay <b>fusión constante</b> (el frente estimulado sale también por fuera del circuito) y el último latido no tiene fusión.`
+                     : `Desde el circuito, el frente ortodrómico da una vuelta y vuelve al sitio en una LC: <b>PPI = ${ppi} ms</b> (PPI − LC = <b>${ppi - LC6}</b>). En un istmo protegido el QRS no cambia (<b>encarrilamiento oculto</b>).`,
+        why: out ? 'El PPI − LC es el doble del tiempo de conducción entre el sitio y el circuito: cuanto más lejos, más largo. Es lo que se usa en el PPI − LC desde el VD.'
+                 : 'Cada estímulo genera un frente antidrómico que choca con el ortodrómico anterior y uno ortodrómico que sigue: la taquicardia se acelera a la LC de estimulación y, al cortar, retoma su LC.' });
+    }
+    return sc;
+  }
+
   // PPI−LC, SA−VA y ΔHA: un mismo encarrilamiento con un selector de medición (cada ficha arranca con la suya)
   const ENTM = { ppi: ['PPI − LC', 'Medí el <b>PPI</b> en el canal del VD: de la última espiga al primer V de retorno, y restale la LC.'],
     sava: ['SA − VA', 'Medí el <b>SA</b>: de la última espiga a la A del último latido acelerado, y comparalo con el <b>VA</b> de la TSV.', 'Antes de estimular, mirá el <b>VA</b> de la TSV (del V a la A).'],
@@ -887,6 +945,12 @@
       fases: s => [[0, 'TV fascicular posterior (LC 360 ms).'], [1100, 'Se da <b>verapamilo</b>: P1 conduce cada vez más lento.'], [s[0].stimEnd - 200, 'Medí P1–P2 y P2–QRS: ¿qué intervalo se alarga?'], [s[0].stimEnd, 'La conducción se bloquea dentro de P1: la TV termina y vuelve el sinusal.']] },
     tvfabl_rf: { t: 'TV fascicular: ablación en P2', lanes: [['His', 'His'], ['LV', 'Septo VI'], ['ECG', 'ECG']], panels: [() => tvfSc('abl')], win: 1600,
       fases: s => [[0, 'TV fascicular posterior. El catéter de ablación (acceso retroaórtico) está sobre el <b>P2 presistólico más precoz</b>, en el fascículo posterior distal (sitio de salida).'], [s[0].rf[0], 'Se aplica <b>RF</b>: el giro inferior se enlentece y P1–P2 se alarga.'], [s[0].stimEnd, 'P1 ya no llega a P2: la TV termina.'], [s[0].stimEnd + 650, 'En sinusal, el fascículo posterior queda bloqueado en el sitio de ablación: P2 aparece tarde.']] },
+    conc_gap: { t: 'Reset: la brecha excitable', lanes: [['X', 'Salida'], ['S', 'Sitio de est.'], ['ECG', 'ECG']], panels: [() => loopSc('reset')], win: 1500,
+      fases: s => { const t = s[0].m.S[0]; return [[0, 'Circuito de reentrada (LC 340 ms). El frente (naranja) deja detrás tejido refractario; el tramo gris ya se recuperó: es la <b>brecha excitable</b>.'], [t - 120, 'Mirá el sitio de estimulación: el frente ya pasó y el tejido se recuperó.'], [t - 1, 'Se da <b>un extraestímulo</b> en la brecha: sale un frente para cada lado.'], [t + 40, 'El antidrómico (violeta) choca con el frente que venía; el ortodrómico sigue y la salida llega antes.']]; } },
+    conc_in: { t: 'Encarrilamiento desde el circuito', lanes: [['X', 'Salida'], ['S', 'Sitio de est.'], ['ECG', 'ECG']], panels: [() => loopSc('in')], win: 1500,
+      fases: s => { const S = s[0].m.S; return [[0, 'Circuito de reentrada (LC 340 ms). El sitio de estimulación está en el circuito, en un istmo protegido.'], [S[0] - 10, 'Se estimula a 300 ms: cada estímulo da un frente antidrómico (choca con el anterior) y uno ortodrómico (sigue).'], [S[2], 'La taquicardia se acelera a 300 ms y el QRS no cambia.'], [S[5] + 1, 'Se corta: medí el <b>PPI</b> en el sitio de estimulación.']]; } },
+    conc_out: { t: 'Encarrilamiento desde fuera del circuito', lanes: [['X', 'Salida'], ['S', 'Sitio de est.'], ['ECG', 'ECG']], panels: [() => loopSc('out')], win: 1500,
+      fases: s => { const S = s[0].m.S; return [[0, 'Circuito de reentrada (LC 340 ms). El sitio de estimulación está fuera, a 60 ms del circuito.'], [S[0] - 10, 'Se estimula a 300 ms: el frente tarda 60 ms en llegar al circuito.'], [S[2], 'La taquicardia se acelera a 300 ms; el QRS tiene <b>fusión constante</b>.'], [S[5] + 1, 'Se corta: medí el <b>PPI</b> en el sitio de estimulación.']]; } },
     vai: { t: 'Índice VA: nodo vs vía posteroseptal', n: 'Índice VA', win: 3900, lanes: [['AD', 'AD alta'], ['His', 'His'], ['VDb', 'VD base'], ['VD', 'VD ápex']], panels: [() => vaiSc('node'), () => vaiSc('ap')],
       fases: s => { const v = s[0].m.va; return [[0, 'Ritmo sinusal, sin inducir la TSV. Un catéter en el ápex del VD y otro en la base posterior, cerca del ostium del SC.'],
         [250, 'Se estimula el <b>ápex</b> sin capturar la aurícula. Medí el VA (espiga → A).'],
@@ -928,8 +992,24 @@
     T(345, 146, 'vía oblicua', { 'font-size': 13, 'font-weight': 700, fill: '#d81b60', 'text-anchor': 'end' });
     return { atr: [], ven: [] };
   }
+  function drawLoop(svg, sc) {
+    const T = (x, y, t, o) => { const e = mk('text', Object.assign({ x, y, 'font-size': 14, fill: '#37474f', stroke: '#fff', 'stroke-width': 4, 'paint-order': 'stroke' }, o || {}), svg); e.textContent = t; return e; };
+    mk('circle', { cx: RC[0], cy: RC[1], r: RR, fill: 'none', stroke: '#cfd8dc', 'stroke-width': 20 }, svg);
+    mk('circle', { cx: RC[0], cy: RC[1], r: RR - 34, fill: '#eceff1', stroke: '#b0bec5', 'stroke-width': 1.5 }, svg);
+    T(RC[0], RC[1] - 4, 'obstáculo', { 'text-anchor': 'middle', fill: '#78909c', 'font-size': 13 });
+    T(RC[0], RC[1] + 14, '(cicatriz, anillo)', { 'text-anchor': 'middle', fill: '#90a4ae', 'font-size': 12 });
+    const [ex, ey] = sc.loopExit; mk('path', { d: `M${ex},${ey} L${ex + 50},${ey + 46}`, stroke: '#90a4ae', 'stroke-width': 3, 'stroke-dasharray': '5 4' }, svg); T(ex + 56, ey + 60, 'salida al miocardio', { 'font-size': 13 });
+    if (sc.loopEntry) { const [sx, sy] = sc.loopSite, [nx, ny] = sc.loopEntry; mk('path', { d: `M${sx},${sy} L${nx},${ny}`, stroke: '#cfd8dc', 'stroke-width': 12, 'stroke-linecap': 'round' }, svg); T(552, sy - 22, 'sitio de estimulación', { 'font-size': 13, 'text-anchor': 'end' }); }
+    else { const [sx, sy] = sc.loopSite; T(sx + 22, sy + 5, 'sitio de estimulación', { 'font-size': 13 }); }
+    const [qx, qy] = sc.loopSite; mk('circle', { cx: qx, cy: qy, r: 8, fill: '#c62828', stroke: '#fff', 'stroke-width': 2 }, svg);
+    mk('path', { d: `M${RC[0] - 20},${RC[1] - RR - 26} L${RC[0] + 20},${RC[1] - RR - 26}`, stroke: '#ef6c00', 'stroke-width': 2.5, 'marker-end': 'url(#ao)' }, svg);
+    T(14, 22, 'naranja: refractario (más claro al recuperarse)', { 'font-size': 12, fill: '#546e7a' }); T(14, 38, 'gris: excitable (brecha)', { 'font-size': 12, fill: '#546e7a' });
+    const d = mk('defs', {}, svg); d.innerHTML = '<marker id="ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ef6c00"/></marker>';
+    return { atr: [], ven: [] };
+  }
   function drawHeart(svg, sc) {
     if (sc.view === 'ring') return drawRing(svg, sc);
+    if (sc.view === 'loop') return drawLoop(svg, sc);
     const g = mk('g', {}, svg); g.innerHTML = HEART;
     const atr = ATR.map(d => mk('path', { d, fill: 'none', opacity: 0 }, svg));
     const ven = VEN.map(d => mk('path', { d, fill: 'none', opacity: 0 }, svg));
@@ -1061,6 +1141,12 @@
           df += `<rect x="${L}" y="${y}" width="${Math.max(0, Rr - L)}" height="78" fill="${col}" opacity="${op.toFixed(2)}"/>`;
           if (dt < tE) { if (Rr < 530 && f.dir !== 'left') df += `<circle cx="${Rr}" cy="${y + 39}" r="10" fill="${col}" stroke="#fff" stroke-width="3"/>`; if (f.dir !== 'right' && L > 30) df += `<circle cx="${L}" cy="${y + 39}" r="10" fill="${col}" stroke="#fff" stroke-width="3"/>`; }
         }
+        if (sc.loop) {
+          for (let a = 0; a < 360; a += 3) { let last = null; for (const w of sc.loop) { const t = actT(w, a + 1.5, T); if (t != null && (last == null || t > last)) last = t; }
+            if (last != null && T - last < RF6) { const [x1, y1] = rpos(a), [x2, y2] = rpos(a + 3.2); df += `<path d="M${x1},${y1} L${x2},${y2}" stroke="#ef6c00" stroke-width="20" opacity="${(0.9 - 0.75 * (T - last) / RF6).toFixed(2)}"/>`; } }
+          for (const w of sc.loop) if (T >= w.t0 && T < w.t1 && T - w.t0 < 4000) { const [x, y] = rpos(headA(w, T)); df += `<circle cx="${x}" cy="${y}" r="12" fill="${w.k === 'a' ? '#6a3fb5' : '#ef6c00'}" stroke="#fff" stroke-width="3"/>`; }
+          for (const w of sc.loop) if (T >= w.t1 && T < w.t1 + 160) { const [x, y] = rpos(headA(w, w.t1)); df += `<path d="M${x - 11},${y - 11} L${x + 11},${y + 11} M${x + 11},${y - 11} L${x - 11},${y + 11}" stroke="#212121" stroke-width="5" stroke-linecap="round"/>`; }
+        }
         dh = df + dh;
         for (const c of sc.cols || []) if (T >= c.t && T < c.t + 140) dh += `<path d="M${c.pt[0] - 11},${c.pt[1] - 11} L${c.pt[0] + 11},${c.pt[1] + 11} M${c.pt[0] + 11},${c.pt[1] - 11} L${c.pt[0] - 11},${c.pt[1] + 11}" stroke="#212121" stroke-width="5" stroke-linecap="round"/>`;
         for (const c of sc.stims || []) if (T >= c.t && T < c.t + 70) dh += `<circle cx="${c.pt[0]}" cy="${c.pt[1]}" r="${c.r || 20}" fill="none" stroke="#c62828" stroke-width="5"/>`;
@@ -1119,7 +1205,7 @@
 
   // fichas con varias animaciones, cada una con una sola taquicardia y sus propios controles
   const FOR = { ado: ['ado_trav', 'ado_trnav', 'ado_ta', 'ado_nv', 'ado_jet', 'ado_anti'], basal: ['basal_trnav', 'basal_travl', 'basal_coumel', 'basal_ta'],
-    pre: ['pre_dual', 'pre_vanode', 'pre_vaap'], twin: ['twin_tsv', 'twin_ap'], bbr: ['bbr_tv', 'bbr_ppi'], tvf: ['tvf_circ', 'tvf_vera'], tvfabl: ['tvfabl_rf'], obl: ['obl_retro', 'obl_ante', 'obl_rev'] };
+    pre: ['pre_dual', 'pre_vanode', 'pre_vaap'], twin: ['twin_tsv', 'twin_ap'], bbr: ['bbr_tv', 'bbr_ppi'], conc: ['conc_gap', 'conc_in', 'conc_out'], tvf: ['tvf_circ', 'tvf_vera'], tvfabl: ['tvfabl_rf'], obl: ['obl_retro', 'obl_ante', 'obl_rev'] };
   for (const k of Object.keys(ANIMS)) {
     const A = ANIMS[k]; if (k.startsWith('ado_')) continue;
     const np = (A.sel ? A.panels(A.def) : A.panels).length; if (np < 2 || FOR[k]) continue;
