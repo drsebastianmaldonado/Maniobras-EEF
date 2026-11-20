@@ -4,7 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Maniobras en el EEF</title>
-<meta name="description" content="Maniobras del polígrafo de electrofisiología para el diagnóstico diferencial de las taquicardias supraventriculares: cómo hacerlas, cómo interpretarlas y algoritmo paso a paso.">
+<meta name="description" content="Maniobras del polígrafo de electrofisiología para el diagnóstico diferencial de las taquicardias (supraventriculares y ventriculares): cómo hacerlas, cómo interpretarlas, algoritmo paso a paso y animaciones.">
+<link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Maniobras EEF">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Maniobras en el EEF">
+<meta property="og:description" content="Diagnóstico diferencial de las taquicardias en el estudio electrofisiológico: maniobras, algoritmo y animaciones.">
+<meta property="og:url" content="https://drsebastianmaldonado.github.io/Maniobras-EEF/">
+<meta property="og:image" content="https://drsebastianmaldonado.github.io/Maniobras-EEF/iconos/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_AR">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#7a3fd0">
 <style>
@@ -176,9 +187,10 @@ figure{margin:0;display:flex;flex-direction:column;gap:6px}
 figcaption{font-size:13px;color:var(--ink2)}
 /* calculadora */
 .calc{padding:16px;display:flex;flex-direction:column;gap:14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.fld{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--ink2)}
-.fld input{font:inherit;font-size:17px;font-weight:600;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:9px 11px;width:100%;min-width:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px 8px}
+.fld{display:flex;flex-direction:column;gap:3px;font-size:13px;font-weight:600;color:var(--ink2);line-height:1.25}
+.fld input{margin-top:auto}
+.fld input{font:inherit;font-size:17px;font-weight:600;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;width:100%;min-width:0;min-height:40px}
 .fld input:focus{border-color:var(--violet);outline:0}
 .fld small{font-weight:400;font-size:11px}
 .res{display:flex;flex-direction:column;gap:8px}
@@ -378,10 +390,10 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <dialog id="sdlg" aria-label="Buscar"><div class="dlg"><div class="dlgh"><input id="sq" type="search" placeholder="Buscar: PPI, Coumel, PJRT, Mahaim, 115…" autocomplete="off" enterkeyhint="search"><button class="btn" id="sX">Cerrar</button></div><div id="sres" class="sres"></div></div></dialog>
 <dialog id="dlg"><div class="dlg"><div class="dlgh"><h3 id="dlgT"></h3><button class="btn" id="dlgX">Cerrar</button></div><div id="dlgB"></div></div></dialog>
 
-<div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
+<div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim.js"></script>
 <script>
-const APPV = 225;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 226;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -2420,7 +2432,7 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
     if (!a) return;
     const h = a.getAttribute('href');
     if (/^https?:/i.test(h) || !/\.(png|jpe?g|webp|gif|svg)$/i.test(h)) return;
-    e.preventDefault(); abrir(h);
+    e.preventDefault(); const ia = a.querySelector('img'); im.alt = (ia && ia.alt) || 'Imagen ampliada'; abrir(h);
   });
 })();
 </script>
