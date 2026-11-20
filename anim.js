@@ -713,7 +713,7 @@
 
 
   // ---------- Grupo 5: taquicardias ventriculares ----------
-  const LPF0 = [312, 334], LPFm = [356, 430], LPFl = [378, 475], LPFb = [398, 515], P1t = [325, 375], P1m = [343, 437], P1b = [362, 500];
+  const LPF0 = [312, 334], LPFm = [346, 432], LPFl = [370, 476], LPFb = [400, 520], P1t = [314, 384], P1m = [328, 442], P1b = [350, 502];
   const sinusDown = (sc, h, hv, opt) => { const o = opt || {}; E(sc, 'His', h, 'H'); W_(sc, 'ante', [[G.node, h - 30], [G.his, h]]); down(sc, h); E(sc, 'VD', h + hv, 'V'); sc.flV.push(h + hv); if (o.ecg) E(sc, 'ECG', h + hv - 5, '', { qrs: o.ecg }); };
 
   // Reentrada rama-rama típica: sube por la rama izquierda y baja por la derecha
@@ -997,7 +997,8 @@
     if (cats.includes('cs') && sc.ap === 'obl') for (const [k, [x, y]] of Object.entries(CSX)) { mk('rect', { x: x - 5, y: y - 4, width: 10, height: 8, fill: '#212121' }, svg); mk('text', { x, y: y + 22, 'font-size': 12, 'text-anchor': 'middle', fill: '#212121' }, svg).textContent = k.slice(1, 2) + '-' + k.slice(2); }
     if (sc.ap === 'obl') { mk('path', { d: `M${OBA[0]},${OBA[1]} L${OBV[0]},${OBV[1]}`, stroke: '#d81b60', 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round', opacity: 0.85 }, svg); lbl(OBA[0] - 6, OBA[1] - 10, 'vía oblicua', '#d81b60', 'end'); }
     if (sc.fasc) { mk('path', { d: `M${P1t[0]},${P1t[1]} L${P1b[0]},${P1b[1]}`, stroke: '#ef6c00', 'stroke-width': 5, 'stroke-dasharray': '7 5', fill: 'none' }, svg);
-      lbl(P1m[0] - 12, P1m[1] + 4, 'P1', '#ef6c00', 'end'); lbl(LPFl[0] + 14, LPFl[1] - 4, 'P2', '#6a3fb5'); lbl(LPFm[0] + 20, LPFm[1] - 20, 'fascículo posterior', '#6d4c41'); }
+      lbl(P1m[0] - 10, P1m[1] + 4, 'P1', '#ef6c00', 'end'); lbl(LPFl[0] + 12, LPFl[1] + 2, 'P2', '#6a3fb5'); lbl(LPFb[0] + 6, LPFb[1] + 30, 'fascículo posterior', '#6d4c41');
+      mk('path', { d: 'M312,334 C330,400 360,470 400,520', stroke: '#6a3fb5', 'stroke-width': 3, fill: 'none', opacity: 0.45 }, svg); }
     if (sc.papil) { mk('path', { d: 'M436,548 C426,520 428,480 446,462 C462,478 466,520 458,548 Z', fill: '#b85a4b', stroke: '#7a2e24', 'stroke-width': 2 }, svg); lbl(446, 604, 'papilar posteromedial', '#5d1f16', 'middle'); }
     if (sc.rf) { const g = mk('g', { opacity: 0 }, svg); g.innerHTML = `<circle cx="${sc.rf[2][0]}" cy="${sc.rf[2][1]}" r="22" fill="#ff7043" fill-opacity=".45" stroke="#d84315" stroke-width="3"/>`; sc._rfg = g; lbl(sc.rf[2][0] - 30, sc.rf[2][1] - 18, 'RF', '#d84315', 'end'); svg.lastChild.setAttribute('opacity', 0); sc._rfl = svg.lastChild; }
     if (sc.twin) { mk('ellipse', { cx: 226, cy: 304, rx: 16, ry: 9, fill: '#f3d36b', stroke: '#9a7300', 'stroke-width': 1.5 }, svg);
