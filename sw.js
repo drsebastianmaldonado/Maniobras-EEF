@@ -1,7 +1,7 @@
 // Permite instalar la app y abrirla sin conexión. Primero la red (siempre lo último publicado); si no hay, la copia.
 // Si cambiás un archivo, subí CACHE_VERSION.
-const CACHE_VERSION = 'mef-v227';
-const ARCHIVOS = ['./', './index.html', './anim.js', './manifest.json', './offline.json', './iconos/icon-192.png', './iconos/icon-512.png', './iconos/apple-touch-icon.png'];
+const CACHE_VERSION = 'mef-v228';
+const ARCHIVOS = ['./', './index.html', './anim.js', './anim-index.js', './manifest.json', './offline.json', './iconos/icon-192.png', './iconos/icon-512.png', './iconos/apple-touch-icon.png'];
 // 'mef-imagenes' guarda las imágenes que el usuario descargó para usar sin conexión: no se borra al actualizar.
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_VERSION).then(c => c.addAll(ARCHIVOS)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE_VERSION && k !== 'mef-imagenes').map(k => caches.delete(k)))).then(() => self.clients.claim())));

@@ -242,6 +242,10 @@ dialog{border:0;padding:0;border-radius:20px;background:var(--bg);color:var(--in
 .offc .btn{flex:none}
 .offbar{height:8px;border-radius:99px;background:var(--seg);margin-top:8px;overflow:hidden}
 .offbar i{display:block;height:100%;width:0;background:var(--violet);transition:width .2s}
+@media (min-width:1100px){
+  body.split .wrap{margin-left:max(24px,calc((100vw - min(680px,48vw) - 760px) / 2));margin-right:0;max-width:min(760px,calc(100vw - min(680px,48vw) - 48px))}
+  body.split #dlg{position:fixed;inset:0 0 0 auto;margin:0;height:100dvh;max-height:100dvh;width:min(680px,48vw);border-radius:0;border-left:1px solid var(--line);box-shadow:-10px 0 30px rgba(0,0,0,.08);z-index:20;overflow:auto}
+}
 dialog::backdrop{background:rgba(0,0,0,.45)}
 .dlg{display:flex;flex-direction:column;gap:12px;padding:16px}
 .dlgh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
@@ -395,9 +399,9 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <dialog id="dlg"><div class="dlg"><div class="dlgh"><h3 id="dlgT"></h3><button class="btn" id="dlgX">Cerrar</button></div><div id="dlgB"></div></div></dialog>
 
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
-<script src="anim.js"></script>
+<script src="anim-index.js"></script>
 <script>
-const APPV = 227;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 228;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -2181,9 +2185,16 @@ function renderAlgo() {
 function bindMl(root) { root.querySelectorAll('.ml').forEach(b => b.onclick = () => openFicha(b.dataset.m)); }
 function openFicha(k) {
   $('#dlgT').textContent = M[k].t; $('#dlgB').innerHTML = fichaHTML(k); if (window.mountAnims) mountAnims($('#dlgB'));
-  const d = $('#dlg'); if (d.showModal) d.showModal(); else d.setAttribute('open', '');
+  const d = $('#dlg');
+  // en pantallas anchas la ficha se abre como panel a la derecha y la lista sigue a la izquierda
+  if (SPLIT.matches && d.show) { const y = scrollY; document.body.classList.add('split'); if (!d.open) d.show(); scrollTo(0, y); }
+  else if (d.showModal) { if (!d.open) d.showModal(); } else d.setAttribute('open', '');
   d.scrollTop = 0;
 }
+const SPLIT = matchMedia('(min-width:1100px)');
+$('#dlg').addEventListener('close', () => document.body.classList.remove('split'));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('split') && !document.querySelector('#sdlg[open],#refpop[open]')) $('#dlg').close(); });
+SPLIT.addEventListener('change', () => { if ($('#dlg').open) $('#dlg').close(); });
 $('#dlgX').onclick = () => $('#dlg').close();
 document.addEventListener('click', e => {
   const g = e.target.closest('[data-goanim]');
