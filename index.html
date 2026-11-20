@@ -199,6 +199,7 @@ dialog{border:0;padding:0;border-radius:20px;background:var(--bg);color:var(--in
 .anchips button span{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--violet);color:#fff;font-size:12px}
 .ficha .anim{scroll-margin-top:150px}#dlgB .ficha .anim{scroll-margin-top:66px}
 .bl.isec{margin:16px 4px 6px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border:1px solid color-mix(in srgb,var(--violet) 35%,var(--line))}.prow2{display:flex;justify-content:center;margin:6px 0 0}
 .hsrch{margin-left:auto;display:flex;align-items:center;gap:6px;appearance:none;border:1px solid color-mix(in srgb,var(--violet) 30%,transparent);background:var(--card);color:var(--ink);font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer;min-height:36px}
 .hsrch svg{width:17px;height:17px}
 #sdlg{align-self:start;margin-top:10px}
@@ -366,7 +367,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script src="anim.js"></script>
 <script>
-const APPV = 223;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 224;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -1628,14 +1629,24 @@ function renderPracList() {
   $('#pracBody').innerHTML = `<div class="card" style="padding:14px 16px"><b>Cómo funciona</b><p class="small" style="margin:4px 0 0">Cada caso empieza con los hallazgos de la taquicardia. Elegí las maniobras que harías, en el orden que quieras, y cuando tengas el diagnóstico, decidilo. Al final ves qué maniobras eran clave y cuáles engañaban. Los casos 4, 5, 6, 8, 9 y 13 usan datos publicados; los demás son didácticos, con valores coherentes con los puntos de corte. Resueltos: ${ok} de ${PCASOS.length}.</p><p class="small" style="margin:4px 0 0;opacity:.6">Versión ${APPV}</p></div>` +
     PCASOS.map((c, i) => { const st = pState[c.id]; return `<button class="card lcard" type="button" data-c="${i}"><span class="lic2" style="--c:${st ? (st.ok ? 'var(--green)' : 'var(--orange)') : 'var(--slate)'}">${st ? (st.ok ? 'Resuelto · ' + st.n + ' maniobras' : 'A revisar') : 'Caso ' + (i + 1)}</span><b>${c.t}</b><span>${c.p}</span></button>`; }).join('');
   $('#pracBody').querySelectorAll('[data-c]').forEach(b => b.onclick = () => startCase(+b.dataset.c));
+  let cur = null; try { cur = JSON.parse(localStorage.getItem('mef_prac_cur') || 'null'); } catch (e) {}
+  const ci = cur ? PCASOS.findIndex(c => c.id === cur.id) : -1;
+  const top = ci >= 0 ? `<div class="card prow"><span>Tenés el <b>caso ${ci + 1}</b> sin terminar${cur.log && cur.log.length ? ` (${cur.log.length} maniobra${cur.log.length > 1 ? 's' : ''} elegida${cur.log.length > 1 ? 's' : ''})` : ''}.</span><button class="btn" type="button" id="pResume">Seguir</button></div>` : '';
+  const bottom = ok || Object.keys(pState).length ? `<div class="prow2"><button class="btn" type="button" id="pReset">Borrar mi progreso</button></div>` : '';
+  $('#pracBody').insertAdjacentHTML('afterbegin', top); $('#pracBody').insertAdjacentHTML('beforeend', bottom);
+  if (ci >= 0) $('#pResume').onclick = () => resumeCase(cur);
+  const rs = $('#pReset'); if (rs) rs.onclick = () => { if (!confirm('¿Borrar el progreso de todos los casos de práctica de este dispositivo?')) return; pState = {}; pSave(); try { localStorage.removeItem('mef_prac_cur'); } catch (e) {} renderPracList(); };
 }
 function presFigs(c) {
   const f = (src, lab, real) => src ? `<figure class="real${real ? '' : ' sim'}"><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${lab}" loading="lazy"></a><figcaption>${lab}. ${real ? 'Registro real, anonimizado' : 'Registro simulado (no es un registro real)'}. Tocá para ampliar.</figcaption></figure>` : '';
   return f(c.ecg, c.ecgt || 'ECG de la taquicardia', c.ecgReal) + f(c.ecg2, c.ecg2t || 'ECG en ritmo sinusal, después de la conversión', c.ecgReal) + f(c.basal, 'Estudio basal', c.basalReal) + f(c.ind, c.indt || 'Inducción', c.indReal) + (c.extra || []).map(x => f(x[0], x[1], x[2])).join('');
 }
 function startCase(i) { pCur = i; pLog = []; pDone = null; pFase = 0; pPrev = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
+// caso en curso: se guarda para retomarlo si se cierra la app a mitad de camino
+const curSave = () => { try { localStorage.setItem('mef_prac_cur', JSON.stringify(pCur === null || pDone !== null ? null : { id: PCASOS[pCur].id, log: pLog, fase: pFase, prev: pPrev })); } catch (e) {} };
+function resumeCase(cur) { const i = PCASOS.findIndex(c => c.id === cur.id); if (i < 0) return; pCur = i; pLog = cur.log || []; pFase = cur.fase || 0; pPrev = cur.prev || null; pDone = null; renderCase(); scrollTo({ top: $('#p-prac').offsetTop - 70 }); }
 function renderCase() {
-  const c = pCase(PCASOS[pCur], pFase);
+  const c = pCase(PCASOS[pCur], pFase); curSave();
   const res = k => c.m[k] || { r: 'No aporta información en este caso.' };
   let h = `<div class="ctrl"><button class="btn" id="pBack">← Casos</button></div>
     <div class="card step" style="--t:var(--teal)"><div class="lt" style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)">Caso ${pCur + 1}${pFase ? ' · Segunda parte' : ''}</div><div class="q">${c.t}</div><div class="help">${c.p}</div>
@@ -1659,7 +1670,7 @@ function renderCase() {
       <div class="ctrl">${c.fase2 && !pFase ? '<button class="btn" id="pFase2" style="background:var(--violet);color:#fff">Continuar: después de la ablación →</button>' : ''}<button class="btn" id="pRetry">Reintentar</button>${pCur < PCASOS.length - 1 ? '<button class="btn" id="pNext">Siguiente caso →</button>' : ''}</div></div>`;
   }
   $('#pracBody').innerHTML = h;
-  $('#pBack').onclick = () => { pCur = null; renderPracList(); };
+  $('#pBack').onclick = () => { pCur = null; renderPracList(); };   // el caso queda guardado para seguirlo
   $('#pracBody').querySelectorAll('.pm').forEach(b => b.onclick = () => {
     const k = b.dataset.k;
     if (k === 'medidas' && !pLog.includes('vop') && !pLog.includes('vopvi')) { b.querySelector('small') || b.insertAdjacentHTML('beforeend', '<small>Primero encarrilá desde el ventrículo.</small>'); return; }
