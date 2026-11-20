@@ -27,7 +27,7 @@
   --green:#30d158;--orange:#ffa733;--red:#ff6259;--violet:#a98bff;--slate:#9fb0d0;--teal:#2fd0b8;--rose:#ff7aa8;
   --seg:#1c1c1e;--shadow:none;color-scheme:dark}
 *{box-sizing:border-box}
-.anim .anp{display:flex;flex-wrap:wrap;gap:12px}.anim .anpanel:only-child{max-width:520px;margin:0 auto}.anim .anpanel{flex:1 1 280px;min-width:0}.anim svg{width:100%;height:auto;display:block;border:1px solid var(--line)}.anim svg.anh{background:#fff;border-radius:12px 12px 0 0;border-bottom:0}.anim svg.antr{background:var(--card);border-radius:0 0 12px 12px}.anim .ant2{font-weight:700;font-size:14px;margin:2px 0 6px}.anim .anc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}.anim .ant{width:100%}.anim .anf{min-height:2.6em;margin:8px 0 0}.anim .anver{margin-top:6px;min-height:3em}.anim .anver.on{border-left:4px solid var(--green);padding:4px 8px;background:var(--blue-soft);border-radius:6px}.anim .anver p{margin:0 0 4px}
+.anim .anp{display:flex;flex-wrap:wrap;gap:12px}.anim .anpanel:only-child{max-width:520px;margin:0 auto}.anim .anpanel{flex:1 1 280px;min-width:0}.anim svg{width:100%;height:auto;display:block;border:1px solid var(--line)}.anim svg.anh{background:#fff;border-radius:12px 12px 0 0;border-bottom:0}.anim svg.antr{background:var(--card);border-radius:0 0 12px 12px}.anim .ant2{font-weight:700;font-size:14px;margin:2px 0 6px}.anim .anhead{position:sticky;top:var(--segH,0px);z-index:4;background:inherit;margin:0 -2px;padding:4px 2px 2px}#dlgB .anim .anhead{top:56px}.anim .anc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}.anim .ant{width:100%}.anim .anf{min-height:2.6em;margin:8px 0 0}.anim .anver{margin-top:6px;min-height:3em}.anim .anver.on{border-left:4px solid var(--green);padding:4px 8px;background:var(--blue-soft);border-radius:6px}.anim .anver p{margin:0 0 4px}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -91,7 +91,7 @@ h2.sec{margin:8px 4px -6px;font-size:13px;font-weight:700;letter-spacing:.07em;t
 .filt{display:flex;flex-wrap:wrap;gap:6px}
 .filt button{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:inherit;font-size:13px;font-weight:700;border-radius:99px;padding:6px 12px;cursor:pointer}
 .filt button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
-details.ref{padding:0;overflow:hidden}
+details.ref{padding:0;overflow:hidden;overflow:clip}
 details.ref>summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:700;font-size:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 details.ref>summary::-webkit-details-marker{display:none}
 details.ref>summary::after{content:"";flex:none;width:9px;height:9px;border-right:2px solid var(--ink2);border-bottom:2px solid var(--ink2);transform:rotate(45deg);margin-top:-4px;transition:transform .2s}
@@ -345,7 +345,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt=""></div></div>
 <script src="anim.js"></script>
 <script>
-const APPV = 219;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 220;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -2192,6 +2192,9 @@ function tab(p) {
   try { localStorage.setItem('mef_tab', p); } catch (e) {}
 }
 document.querySelectorAll('.seg button').forEach(b => b.onclick = () => tab(b.dataset.p));
+// altura de las pestañas fijas: los controles de las animaciones quedan justo debajo
+const segH = () => document.documentElement.style.setProperty('--segH', (document.querySelector('.seg').offsetHeight + 10) + 'px');
+segH(); addEventListener('resize', segH);
 
 $('#refsAll').innerHTML = Object.values(REFS).map(r => `<li>${r[1]}</li>`).join('');
 renderAlgo(); renderFichas(); renderArr(); calc();

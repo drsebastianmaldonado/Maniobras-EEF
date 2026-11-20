@@ -15,7 +15,7 @@
   // Puntos del recorrido (coordenadas del corazón)
   const G = { aSep: [232, 238], node: [268, 262], his: [293, 308], rb1: [288, 380], rb2: [270, 450], rb3: [238, 500], rb4: [200, 545], apex: [180, 562],
               lvA: [430, 410], lvB: [505, 345], apV: [526, 306], apA: [527, 262], la: [470, 200], focus: [140, 140], ra: [170, 180], base: [250, 345], ph: [278, 300], hra: [140, 108], cso: [215, 290], jx: [287, 288], ralat: [92, 238], afA: [92, 272], afV: [178, 512], vtf: [150, 470], sn: [196, 82], cs: [516, 290] };
-  const VB = '15 50 560 625';
+  const VB = '15 50 560 652';
   // Desde el His el frente baja por las dos ramas: la derecha hasta el ápex del VD y la izquierda hasta la pared lateral del VI
   const ramas = (h, HV) => [
     { c: 'ante', pts: [[G.his, h], [G.rb1, h + 12], [G.rb2, h + 22], [G.rb3, h + 30], [G.rb4, h + 38], [G.apex, h + HV]] },
@@ -1030,7 +1030,7 @@
       mk('path', { d: CAT[c], stroke: c === 'apex' ? '#37474f' : '#5d4037', 'stroke-width': 5, fill: 'none', 'stroke-linecap': 'round' }, svg);
       if (c !== 'cs') mk('circle', { cx: G[c][0], cy: G[c][1], r: 8, fill: '#c62828', stroke: '#fff', 'stroke-width': 2 }, svg); });
     if (cats.some(c => c !== 'abl')) mk('text', { x: 18, y: 356, 'font-size': 12, fill: '#37474f' }, svg).textContent = 'VCI';
-    mk('text', { x: 52, y: 672, 'font-size': 14, 'font-weight': 700, fill: '#c62828' }, svg).textContent = !cats.length ? '' : cats.length > 1 ? 'catéteres endocavitarios en ' + cats.map(c => CATN[c]).join(' y ') : 'catéter endocavitario en ' + CATN[cats[0]];
+    mk('text', { x: 20, y: 694, 'font-size': 14, 'font-weight': 700, fill: '#c62828' }, svg).textContent = !cats.length ? '' : cats.length > 1 ? 'catéteres endocavitarios en ' + cats.map(c => CATN[c]).join(' y ') : 'catéter endocavitario en ' + CATN[cats[0]];
     if (sc.nodal) {
       mk('path', { d: 'M266,256 C258,244 246,236 230,234', stroke: '#6a3fb5', 'stroke-width': 4, fill: 'none', 'stroke-dasharray': '6 3', 'stroke-linecap': 'round' }, svg);
       mk('path', { d: 'M228,246 C200,262 208,296 236,288 C250,284 258,276 266,268', stroke: '#ef6c00', 'stroke-width': 4, fill: 'none', 'stroke-dasharray': '6 3', 'stroke-linecap': 'round' }, svg);
@@ -1082,9 +1082,9 @@
     const fases = typeof A.fases === 'function' ? A.fases(scs, sel) : A.fases;
     const dur = A.dur || Math.round(Math.max(...scs.map(s => s.verdictT)) + 650);
     root.innerHTML = `<div class="bl">Animación: ${A.pi != null ? (A.n || A.t) + ' · ' + scs[0].title : A.t}</div>
-      <div class="anc"><button class="btn anplay" type="button">▶ Reproducir</button><button class="btn anre" type="button">↺ Reiniciar</button>
+      <div class="anhead"><div class="anc"><button class="btn anplay" type="button">▶ Reproducir</button><button class="btn anre" type="button">↺ Reiniciar</button>
       <label class="small">Velocidad <select class="anv"><option value="0.12">muy lenta</option><option value="0.25" selected>lenta</option><option value="0.5">normal</option></select></label>${A.sel ? `<label class="small">${A.selL || 'Medir'} <select class="ansel">${A.sel.map(([k, l]) => `<option value="${k}"${k === sel ? ' selected' : ''}>${l}</option>`).join('')}</select></label>` : ''}</div>
-      <input class="ant" type="range" min="0" max="${dur}" value="0" step="10" aria-label="Momento de la animación">
+      <input class="ant" type="range" min="0" max="${dur}" value="0" step="10" aria-label="Momento de la animación"></div>
       <p class="anf small"></p>
       <div class="anp"></div>
       <p class="small" style="margin:4px 0 0;opacity:.7">Animación didáctica: tiempos ilustrativos. Naranja: conducción anterógrada · violeta: retrógrada · rojo: foco y estímulo. Las cámaras se iluminan al activarse.</p>`;
