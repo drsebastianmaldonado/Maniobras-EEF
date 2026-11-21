@@ -60,7 +60,7 @@ Revisamos los flujogramas (`prototipos/flujo/`) figura por figura con el autor.
 - **Figura 0 (punto de partida): cerrada.** La secuencia "descendente" se integró a "Excéntrica". Se mantiene el corte de VA de 70 ms con la aclaración pediátrica en la ficha.
 - **Pregunta pendiente:** "Cardiopatía con posible doble nodo AV" está como opción de la secuencia auricular (es un contexto clínico): ¿se deja ahí o pasa a una pregunta previa?
 - **Ya corregido antes:** las ramas "las A no se aceleran" y "la TSV se corta" son propias de cada recorrido; después de A-A-V, la sobreestimulación auricular corta ahí (sin VA linking → TA; con VA linking → seudo A-A-V: TRNAV atípica, o PJRT con VA largo; con VA ≤ 70 → TRNAV).
-- **Figura 1 (VA ≤ 70 ms), en revisión (v236):** "se cortó sin activar la A" → TRNAV típica (`L_notat_t`); la taquicardia de la unión entró al título de `ucp_t` y a su indeterminado; en `jt2`/`jt2v`, "el último A no conduce por la vía lenta" → JET más probable (`L_jet_p`, Fan 2011).
+- **Figura 1 (VA ≤ 70 ms), en revisión (v236):** "se cortó sin activar la A" → TRNAV típica (`L_notat_t`); la taquicardia de la unión entró al título de `ucp_t` y a su indeterminado; en `jt2`/`jt2v`, "el último A no conduce por la vía lenta" → JET más probable (`L_jet_p`, Fan 2011). v237: en `term_t`, solo el latido fusionado (His refractario) va a vía NF/NV; el 1.er latido totalmente estimulado va a "sin activar la A" → TRNAV típica. Revisar lo mismo en `term` genérico (figuras 2–6).
 - **Siguiente:** cerrar la figura 1, después 2 a 6. Pendiente también: nodos gemelos con "las A no se aceleran" usa la versión del RP largo (revisar).
 
 ## Otros pendientes
