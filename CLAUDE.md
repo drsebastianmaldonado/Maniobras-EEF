@@ -58,10 +58,11 @@ Flujogramas: `node herramientas/pruebas/exportar_arbol.js /tmp/arbol.json` (con 
 ## Dónde quedamos: revisión del algoritmo paso a paso
 Revisamos los flujogramas (`prototipos/flujo/`) figura por figura con el autor.
 - **Figura 0 (punto de partida): cerrada.** La secuencia "descendente" se integró a "Excéntrica". Se mantiene el corte de VA de 70 ms con la aclaración pediátrica en la ficha.
-- **Pregunta pendiente:** "Cardiopatía con posible doble nodo AV" está como opción de la secuencia auricular (es un contexto clínico): ¿se deja ahí o pasa a una pregunta previa?
+- **Decidido:** "Cardiopatía con posible doble nodo AV" queda como tercera opción de la secuencia auricular (Angosto → 1:1 → secuencia).
 - **Ya corregido antes:** las ramas "las A no se aceleran" y "la TSV se corta" son propias de cada recorrido; después de A-A-V, la sobreestimulación auricular corta ahí (sin VA linking → TA; con VA linking → seudo A-A-V: TRNAV atípica, o PJRT con VA largo; con VA ≤ 70 → TRNAV).
 - **Figuras 1, 2 y 3 (concéntrica 1:1: VA ≤ 70, RP corto, RP largo): cerradas (v247).** Cambios: corte con la sobreestimulación (solo el latido fusionado prueba la vía; "no interpretable", "la A se aceleró" con SA−VA y "sin activar la A" siguen hasta un diagnóstico); JET en el diferencial de VA ≤ 70; RP largo: primero encarrilamiento, después EV-HR, después ΔAH; opciones agrupadas ("el ventrículo participa" / "el VD está lejos").
 - **Formato acordado:** las preguntas de "agregá una maniobra" se arman con `MANIOBRAS()` + `MNV` (primero la maniobra, después su resultado; subnodos `padre__maniobra`, sin "ninguna es concluyente" en la elección). Respuestas que llevan al mismo diagnóstico van en una sola opción, con los valores en el subtítulo.
+- **Figura 4, en revisión (v249):** seudo A-A-V excéntrico con VA linking → `L_pseudo_e` (TRAV por vía libre, probablemente decremental); "TRNAV con salida por la extensión izquierda" solo si la A más precoz es posteroseptal izquierda; las vías decrementales pueden estar en cualquier ubicación (más frecuentes posteroseptales derechas).
 - **Siguiente:** figura 4 (excéntrica y nodos AV gemelos), después 5 y 6. Pendiente: nodos gemelos con "las A no se aceleran" usa la versión del RP largo (revisar).
 
 ## Otros pendientes
