@@ -405,7 +405,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 249;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 250;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -1969,7 +1969,7 @@ const N = {
   twin2: { q: 'Sobreestimulación ventricular durante la TSV: ¿qué respuesta obtenés?', help: 'Compará también el QRS de la TSV con los del ritmo auricular y encarrilá desde cada sitio nodal.', man: ['vop', 'twin'], opts: [
     { t: 'A-V (V-A-V), con el QRS de la TSV igual a uno del ritmo auricular', go: 'L_twin' },
     { t: 'A-A-V', go: 'L_at' },
-    { t: 'Las A no se aceleran a la LC de estimulación', go: 'noacc' }] },
+    { t: 'Las A no se aceleran a la LC de estimulación', go: 'noacc_w' }] },
 
   vasep: { q: '¿Cuánto mide el VA septal en la taquicardia?', help: 'Desde el inicio del QRS (o el V más precoz) hasta la A del catéter de His.', man: ['basal'], opts: [
     { t: '≤ 70 ms', s: 'A casi simultánea con el V', go: 'vop_t' },
@@ -2178,6 +2178,14 @@ Object.assign(N, {
     { t: 'El VA del primer retorno varía > 20 ms entre sitios de estimulación auricular', go: 'L_at' },
     { t: 'Un EA precoz adelanta el His inmediato y la TSV sigue', go: 'L_jet' },
     { t: 'Ninguna es concluyente', go: 'L_ucp_ind' }] },
+  noacc_w: { q: 'Las A no se aceleran: la TRAV entre los dos nodos está excluida. ¿Una EV con His refractario termina la TSV sin activar la A?', help: 'El ventrículo no está en el circuito. Quedan la TA y una TRNAV dentro de uno de los nodos, con bloqueo retrógrado por encima del circuito.', man: ['ehr', 'vop', 'twin'], opts: [
+    { t: 'Sí, de forma reproducible', s: 'Excluye la TA: una vía entra al circuito nodal', go: 'L_twin_nv' },
+    { t: 'No', go: 'noacc_w2' }] },
+  noacc_w2: { q: 'Sobreestimulación auricular desde dos o tres sitios (AD alta, SC proximal y SC distal): ¿cómo es el VA del primer latido de retorno?', help: 'Medí el VA del primer retorno después de cada tren y compará los sitios.', man: ['aop'], opts: [
+    { t: 'Varía más de 20 ms entre los sitios', s: 'Sin VA linking', go: 'L_at' },
+    { t: 'Fijo (≤ 20 ms) desde los tres sitios', s: 'VA linking: excluye la TA', go: 'L_twin_avnrt' }] },
+  L_twin_nv: { leaf: true, dx: 'TRNAV con vía nodofascicular o nodoventricular espectadora', sub: 'En uno de los dos nodos', why: ['Las A no siguieron a la estimulación: el ventrículo no está en el circuito (excluye la TRAV entre los nodos).', 'La EV con His refractario que corta la TSV sin activar la A excluye la TA y muestra una vía que entra al circuito nodal.'], next: ['Identificá en cuál de los dos nodos está el circuito (el His que precede al QRS de la TSV) antes de ablacionar: riesgo de BAV.', 'Después, inducí de nuevo con y sin isoproterenol.'], man: ['ehr', 'twin'], refs: ['sriramoju22', 'moore22'] },
+  L_twin_avnrt: { leaf: true, dx: 'TRNAV dentro de uno de los nodos', why: ['Las A no siguieron a la estimulación ventricular: excluye la TRAV entre los nodos.', 'El VA linking a la sobreestimulación auricular excluye la TA.'], next: ['Identificá cuál de los nodos da el QRS de la TSV y buscá doble fisiología en ese nodo.', 'Ablación de la vía lenta de ese nodo, con riesgo de BAV: valorar crioablación.'], man: ['aop', 'twin'], refs: ['moore22', 'knight00'] },
   noacc_s: { q: 'Las A no se aceleran (RP corto, VA > 70 ms): ¿una EV con His refractario termina la TSV sin activar la A?', help: 'El ventrículo no está en el circuito: se excluye la TRAV.', man: ['ehr', 'vop'], opts: [
     { t: 'Sí, de forma reproducible', go: 'L_nvbys_s' },
     { t: 'No', go: 'L_atprob' }] },
