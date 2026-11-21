@@ -128,7 +128,7 @@
 <title>meas_s</title>
 <path fill="#ffffff" stroke="#9aa0b4" stroke-width="1.3" d="M2569,-398C2569,-398 2364,-398 2364,-398 2358,-398 2352,-392 2352,-386 2352,-386 2352,-368 2352,-368 2352,-362 2358,-356 2364,-356 2364,-356 2569,-356 2569,-356 2575,-356 2581,-362 2581,-368 2581,-368 2581,-386 2581,-386 2581,-392 2575,-398 2569,-398"/>
 <text text-anchor="start" x="2365" y="-380.6" font-family="Inter" font-size="13.00">Medí PPI−LC y SA−VA del mismo</text>
-<text text-anchor="start" x="2418.5" y="-366.6" font-family="Inter" font-size="13.00">encarrilamiento</text>
+<text text-anchor="start" x="2365.5" y="-366.6" font-family="Inter" font-size="13.00">encarrilamiento: ¿qué muestran?</text>
 </g>
 <!-- fus_s&#45;&gt;meas_s -->
 <g id="edge10" class="edge">
@@ -256,12 +256,12 @@
 <text text-anchor="start" x="140.5" y="-75.2" font-family="Inter" font-size="11.00" fill="#3c3c44">tres sitios</text>
 </g>
 <!-- meas_s&#45;&gt;L_avrt_s -->
-<g id="edge12" class="edge">
+<g id="edge11" class="edge">
 <title>meas_s&#45;&gt;L_avrt_s</title>
 <path fill="none" stroke="#6c6c74" d="M2444.62,-355.74C2396.25,-310.81 2276.91,-199.1 2180.5,-102 2164.99,-86.38 2164.26,-78.99 2146.5,-66 2136.57,-58.74 2125.12,-52.23 2113.95,-46.68"/>
 <polygon fill="#6c6c74" stroke="#6c6c74" points="2114.79,-44.36 2107.42,-43.52 2112.66,-48.77 2114.79,-44.36"/>
-<text text-anchor="start" x="2308.5" y="-219.2" font-family="Inter" font-size="11.00" fill="#3c3c44">PPI−LC &lt; 115 ms y SA−VA &lt;</text>
-<text text-anchor="start" x="2364.5" y="-207.2" font-family="Inter" font-size="11.00" fill="#3c3c44">85 ms</text>
+<text text-anchor="start" x="2308.5" y="-219.2" font-family="Inter" font-size="11.00" fill="#3c3c44">El ventrículo participa</text>
+<text text-anchor="start" x="2336.5" y="-207.2" font-family="Inter" font-size="11.00" fill="#3c3c44">del circuito</text>
 </g>
 <!-- L_avnrt_a -->
 <g id="node11" class="node">
@@ -271,12 +271,12 @@
 <text text-anchor="start" x="2668.5" y="-17.1" font-family="Inter" font-weight="bold" font-size="13.00">TRNAV atípica</text>
 </g>
 <!-- meas_s&#45;&gt;L_avnrt_a -->
-<g id="edge11" class="edge">
+<g id="edge12" class="edge">
 <title>meas_s&#45;&gt;L_avnrt_a</title>
 <path fill="none" stroke="#6c6c74" d="M2581.28,-374.61C2899.69,-367.89 3780.19,-328.76 3925.5,-102 3934.13,-88.53 3936.63,-77.5 3925.5,-66 3920.48,-60.82 3034.09,-35.12 2781.16,-27.9"/>
 <polygon fill="#6c6c74" stroke="#6c6c74" points="2780.93,-25.44 2773.87,-27.69 2780.79,-30.34 2780.93,-25.44"/>
-<text text-anchor="start" x="3783.5" y="-219.2" font-family="Inter" font-size="11.00" fill="#3c3c44">PPI−LC &gt; 115 ms y SA−VA &gt;</text>
-<text text-anchor="start" x="3839.5" y="-207.2" font-family="Inter" font-size="11.00" fill="#3c3c44">85 ms</text>
+<text text-anchor="start" x="3783.5" y="-219.2" font-family="Inter" font-size="11.00" fill="#3c3c44">El VD está lejos del</text>
+<text text-anchor="start" x="3815" y="-207.2" font-family="Inter" font-size="11.00" fill="#3c3c44">circuito</text>
 </g>
 <!-- bord -->
 <g id="node12" class="node">
