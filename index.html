@@ -405,7 +405,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 239;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 240;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -2215,8 +2215,18 @@ for (const av of ['P_avnrt_t', 'P_avrt_free', 'fus_s']) {
 const RSC_Q = 'La sobreestimulación no se pudo leer: seguí con otra maniobra. ¿Qué resultado obtuviste?';
 const RSC_H = 'Primero repetí la sobreestimulación 10–20 ms por debajo de la LC o con isoproterenol: si ahora se lee, volvé a la pregunta anterior. Si la A se aceleró a la LC antes del corte, el SA de ese tren sirve para el encarrilamiento diferencial (no hay PPI porque no hubo retorno).';
 const RSC_AOP = 'Sobreestimulación auricular desde dos o tres sitios (AD alta, SC proximal y SC distal): ¿cómo es el VA del primer latido de retorno?';
-for (const c of ['s', 'l', 'e']) N['term_' + c] = Object.assign({}, N.term, { opts: N.term.opts.map((o, i) => i === 1 || i === 3 ? Object.assign({}, o, { go: 'rsc_' + c }) : o) });
-N.term_t.opts = N.term_t.opts.map((o, i) => i === 1 || i === 3 ? Object.assign({}, o, { go: 'rsc_t' }) : o);
+for (const c of ['s', 'l', 'e']) N['term_' + c] = Object.assign({}, N.term, { opts: N.term.opts.map((o, i) => i === 1 ? Object.assign({}, o, { s: 'El SA de ese tren permite medir el SA−VA', go: c === 'e' ? 'rsc_e' : 'sava_' + c }) : i === 3 ? Object.assign({}, o, { go: 'rsc_' + c }) : o) });
+N.term_t.opts = N.term_t.opts.map((o, i) => i === 1 ? Object.assign({}, o, { s: 'Con VA ≤ 70 ms el SA−VA no aporta: la TRAV ya está excluida', go: 'rsc_t' }) : i === 3 ? Object.assign({}, o, { go: 'rsc_t' }) : o);
+const SAVA_Q = 'La A se aceleró a la LC antes del corte: medí el SA−VA de ese tren. ¿Cuánto vale?';
+const SAVA_H = 'SA: de la última espiga a la A del His en el último latido acelerado. VA: de la TSV. No hay PPI porque no hubo retorno. Un SA−VA largo excluye una vía septal que participa, pero no separa la TRNAV de la TA.';
+N.sava_s = { q: SAVA_Q, help: SAVA_H, man: ['sava', 'vop'], opts: [
+  { t: 'SA−VA < 85 ms', go: 'L_avrt_s' },
+  { t: 'SA−VA > 85 ms', s: 'Excluye una vía septal participante: falta separar TRNAV atípica de TA', go: 'rsc_s2' },
+  { t: 'En el límite (cerca de 85 ms)', s: 'Agregá otra maniobra', go: 'rsc_s' }] };
+N.sava_l = { q: SAVA_Q, help: SAVA_H, man: ['sava', 'vop'], opts: [
+  { t: 'SA−VA < 85 ms', go: 'L_pjrt_r' },
+  { t: 'SA−VA > 85 ms', s: 'Excluye una vía septal participante: falta separar TRNAV atípica de TA', go: 'rsc_l2' },
+  { t: 'En el límite (cerca de 85 ms)', s: 'Agregá otra maniobra', go: 'rsc_l' }] };
 delete N.term;   // solo era la plantilla: cada recorrido usa su propia versión
 Object.assign(N, {
   rsc_t: { q: RSC_Q, help: RSC_H + ' Con VA ≤ 70 ms la TRAV está excluida: falta separar TRNAV típica de TA septal y de taquicardia de la unión.', man: ['ehr', 'aop', 'eha'], opts: [
@@ -2247,7 +2257,7 @@ Object.assign(N, {
     { t: 'Sobreestimulación auricular desde 2–3 sitios: el VA del primer retorno varía > 20 ms', s: 'Sin VA linking', go: 'L_at_ecc' },
     { t: 'Sobreestimulación auricular desde 2–3 sitios: VA fijo (≤ 20 ms)', s: 'VA linking: excluye la TA', go: 'L_ecc_link' },
     { t: 'Ninguna es concluyente', go: 'L_term_retry' }] },
-  L_pjrt_r: { leaf: true, dx: 'PJRT (diagnóstico más probable)', sub: 'TRAV por vía accesoria oculta, lenta y decremental', why: ['La EV con His refractario modificó la A o cortó la TSV sin A (o el ΔVA ≤ 20 ms): hay una vía que participa del circuito, y eso excluye la TA.', 'La NFRT y la TRNAV atípica con vía espectadora quedan como diferencial poco probable.'], next: ['Mapeá la A más precoz durante la TSV (suele estar en el ostium del SC o la región posteroseptal) y buscá el potencial de la vía.', 'Si algo no cierra, completá el ΔAH (circuito superior).'], man: ['ehr', 'diff', 'aop'], refs: ['ho15', 'veen12'] },
+  L_pjrt_r: { leaf: true, dx: 'PJRT (diagnóstico más probable)', sub: 'TRAV por vía accesoria oculta, lenta y decremental', why: ['La EV con His refractario modificó la A o cortó la TSV sin A, o el SA−VA (< 85 ms) o el ΔVA (≤ 20 ms) son cortos: hay una vía que participa del circuito.', 'La NFRT y la TRNAV atípica con vía espectadora quedan como diferencial poco probable.'], next: ['Mapeá la A más precoz durante la TSV (suele estar en el ostium del SC o la región posteroseptal) y buscá el potencial de la vía.', 'Si algo no cierra, completá el ΔAH (circuito superior).'], man: ['ehr', 'diff', 'aop'], refs: ['ho15', 'veen12'] },
   L_ecc_link: { leaf: true, dx: 'TRAV por vía libre (probable)', sub: 'Rara vez, TRNAV con salida auricular izquierda', why: ['El VA linking a la sobreestimulación auricular muestra que la A depende del V: excluye la TA.', 'Con activación excéntrica, la A sale por una vía AV de pared libre.'], next: ['EV con His refractario desde la base, cerca de la A más precoz, para confirmar la vía.', 'Mapeo de la A más precoz durante la TSV o la estimulación ventricular.'], man: ['aop', 'ehr'], refs: ['knight00', 'veen12', 'maruyama07'] }
 });
 // seudo A-A-V: la aurícula sí está ligada al ventrículo
