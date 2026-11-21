@@ -405,7 +405,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 237;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 238;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -2120,9 +2120,9 @@ const N = {
 
   // ---------- se corta durante la estimulación ventricular
   term: { q: 'La TSV se cortó: ¿qué muestra la zona de transición?', help: 'Revisá latido a latido desde la primera espiga. El latido fusionado es, por definición, His refractario.', man: ['vop', 'ehr'], opts: [
-    { t: 'Se corta con bloqueo VA en un latido fusionado (o en el 1.er latido totalmente estimulado) sin perturbar antes la A', go: 'L_avrt_gen' },
+    { t: 'Se corta con bloqueo VA en un latido fusionado (His refractario) sin perturbar antes la A', go: 'L_avrt_gen' },
     { t: 'La A se aceleró a la LC y después se cortó', s: 'Sirve para el encarrilamiento diferencial: el ΔVA es calculable', go: 'L_term_retry' },
-    { t: 'Se cortó sin activar la A (ráfaga de 3–6 latidos a 200–250 ms)', go: 'L_notat' },
+    { t: 'Se cortó sin activar la A con latidos totalmente estimulados (desde el 1.er latido estimulado, o ráfaga de 3–6 latidos a 200–250 ms)', s: 'Sin His refractario, el estímulo pudo entrar al nodo por el His o bloquearse en una vía: excluye la TA, pero no separa TRAV de TRNAV', go: 'L_notat' },
     { t: 'No es interpretable', go: 'L_term_retry' }] },
 
   // ================= RESULTADOS =================
@@ -2159,7 +2159,7 @@ const N = {
   L_avrt_s: { leaf: true, dx: 'TRAV por vía septal', why: ['Encarrilamiento con fusión, His ortodrómico, PPI−LC y SA−VA cortos, o una EV-HR positiva.'], next: ['Mapeo de la A más precoz durante la TSV o la estimulación ventricular. Cuidado con el riesgo de BAV en las vías anteroseptales y medioseptales.'], man: ['vop', 'ppi', 'sava', 'ehr'], refs: ['michaud01', 'gt06', 'ormaetxe93', 'veen11'] },
   L_avrt_gen: { leaf: true, dx: 'TRAV', why: ['Un latido fusionado es His refractario; si después la TSV se corta con bloqueo VA, la aurícula dependía de la conducción por una vía.'], next: ['Igual conviene confirmarlo con una EV-HR y localizar la vía.'], man: ['ehr', 'vop'], refs: ['veen11', 'veen12'] },
   L_term_retry: { leaf: true, tone: 'gray', dx: 'No interpretable todavía', why: ['La estimulación ventricular invadió la refractariedad anterógrada del nodo.'], next: ['Isoproterenol para acortar la refractariedad nodal y repetir.', 'Si la A se aceleró antes del corte, igual calculá el ΔVA del encarrilamiento diferencial.', 'Ráfagas de 3–6 latidos a 200–250 ms: en ~60 % disocian (excluye TRAV) o cortan sin A (excluye TA).', 'EV con His refractario.'], man: ['vop', 'diff', 'ehr'], refs: ['veen11', 'knight00'] },
-  L_notat: { leaf: true, tone: 'gray', dx: 'TA excluida', why: ['La TSV terminó sin activar la aurícula.'], next: ['Seguí con EV-HR, para-Hisiana o encarrilamiento diferencial para separar TRAV de TRNAV.'], man: ['ehr', 'parahis', 'diff'], refs: ['knight00'] },
+  L_notat: { leaf: true, tone: 'gray', dx: 'TA excluida', why: ['La TSV terminó sin activar la aurícula: un foco auricular no depende del ventrículo y habría seguido.', 'Sin His refractario, el corte no prueba una vía: lo hacen igual una TRAV, una TRNAV o una vía nodofascicular.'], next: ['Seguí con EV-HR, para-Hisiana o encarrilamiento diferencial para separar TRAV de TRNAV.'], man: ['ehr', 'parahis', 'diff'], refs: ['knight00'] },
   L_avnrt_a: { leaf: true, dx: 'TRNAV atípica', why: ['PPI−LC, SA−VA, ΔHA o el encarrilamiento diferencial indican que el VD está lejos del circuito y que A y V se activan en paralelo.'], next: ['Antes de ablacionar en un RP largo, asegurate de que una EV-HR no modifique la A: una vía decremental da valores falsamente largos.', 'Ablación de la vía lenta.'], man: ['ppi', 'sava', 'diff', 'dha'], refs: ['michaud01', 'gt11', 'segal09', 'bennett11'] },
   L_avnrt_vab: { leaf: true, dx: 'TRNAV con bloqueo VA', why: ['La EV-HR no modifica el His (descarta vía nodoventricular o nodofascicular) y la respuesta auricular indica un circuito con la vía lenta.'], next: ['Ablación de la vía lenta.'], man: ['eha', 'aop'], refs: ['veen12', 'padanilam08'] },
   L_nvbys: { leaf: true, dx: 'TRNAV atípica con vía nodofascicular o nodoventricular espectadora', why: ['La aurícula sigue a la LC de la TSV mientras el V se acelera: el ventrículo no forma parte del circuito (no es una TRAV ni una NVRT ortodrómica).', 'La EV con His refractario que la termina sin activar la A excluye la TA y exige una vía que entre al circuito nodal antes de su salida auricular.'], next: ['Ablación en la A más precoz cerca del ostium del SC o en la vía lenta: suele eliminar las dos.', 'Después, inducí de nuevo con y sin isoproterenol.'], man: ['ehr', 'vop'], refs: ['sriramoju22', 'nagashima20', 'ho15'] },
