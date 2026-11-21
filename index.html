@@ -405,7 +405,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 244;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 245;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -2087,11 +2087,8 @@ const N = {
     alt: 'Bloqueo VA durante la TSV, AH de la TSV más corto que en sinusal, o una EV que adelanta el His más que la A: pensá en una vía nodofascicular o nodoventricular (NFRT). Seguí con el ΔAH (circuito superior).',
     opts: [{ t: 'Lo tomo como diagnóstico más probable', go: 'L_pjrt_p' }, { t: 'Sigo sospechando otro mecanismo', s: 'Por el contexto del paciente o un hallazgo que no cierra: te sugiero qué maniobras hacer', go: 'up_l' }] },
   low_l: { q: 'Circuito inferior: encarrilamiento desde el VD. ¿Qué encontrás?', help: 'Primer paso en el RP largo. Estimulá lo más lento posible (10–40 ms por debajo de la LC). En el RP largo usá el corte de 125 ms para el PPI−LC.', man: ['ppi', 'sava', 'dha', 'hisorto', 'diff'], opts: [
-    { t: 'Captura ortodrómica del His', go: 'ehr_l', set: { low: 'av' } },
-    { t: 'PPI−LC < 125 ms, SA−VA < 85 ms o ΔHA < 0', s: 'Los criterios disponibles apuntan a TRAV', go: 'ehr_l', set: { low: 'av' } },
-    { t: 'Diferencial: ΔVA ≤ 20 ms (base − ápex)', s: 'Opcional, si medís el AH: ΔcPPI−LC ≤ 30 ms', go: 'ehr_l', set: { low: 'av' } },
-    { t: 'PPI−LC > 125 ms, SA−VA > 85 ms y ΔHA > 0', s: 'Los criterios disponibles apuntan a TRNAV', go: 'ehr_l_nod', set: { low: 'nod' } },
-    { t: 'Diferencial: ΔVA > 20 ms (base − ápex)', s: 'Opcional, si medís el AH: ΔcPPI−LC > 30 ms', go: 'ehr_l_nod', set: { low: 'nod' } }] },
+    { t: 'El ventrículo participa del circuito', s: 'Captura ortodrómica del His, PPI−LC < 125 ms, SA−VA < 85 ms, ΔHA < 0 o ΔVA ≤ 20 ms (base − ápex)', go: 'ehr_l', set: { low: 'av' } },
+    { t: 'El VD está lejos del circuito', s: 'PPI−LC > 125 ms, SA−VA > 85 ms, ΔHA > 0 o ΔVA > 20 ms (base − ápex)', go: 'ehr_l_nod', set: { low: 'nod' } }] },
   up_l: { q: 'Circuito superior: estimulación auricular. ¿Cuánto vale el ΔAH?', help: 'ΔAH = AH estimulando la aurícula (encarrilamiento, o a la LC de la TSV) − AH de la TSV. Compará también el AH de la TSV con el AH en ritmo sinusal.', man: ['aop'], opts: [
     { t: 'ΔAH < 20 ms', s: 'La aurícula forma parte del circuito', go: 'L_long', set: { up: 'atr' } },
     { t: 'ΔAH > 40 ms, o AH de la TSV < AH en ritmo sinusal', s: 'AH de la TSV = seudointervalo (circuito superior intranodal)', go: 'L_long', set: { up: 'nod' } },
