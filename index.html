@@ -405,7 +405,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 232;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 233;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -2205,8 +2205,15 @@ for (const av of ['P_avnrt_t', 'P_avrt_free', 'fus_s']) {
     opts: [{ t: 'Lo tomo como diagnóstico más probable', go: 'L_at' }, { t: 'Sigo sospechando otro mecanismo', s: 'Por el contexto del paciente o un hallazgo que no cierra: te sugiero qué maniobras hacer', go: 'atc_' + av }] };
   N['atc_' + av] = { q: 'Sobreestimulación auricular desde dos o tres sitios (AD alta, SC proximal y SC distal): ¿cómo es el VA del primer latido de retorno?', help: 'Medí el VA del primer retorno después de cada tren y compará los sitios.', man: ['aop'], opts: [
     { t: 'Varía más de 20 ms entre los sitios', s: 'Sin VA linking', go: 'L_at' },
-    { t: 'Fijo (≤ 20 ms) desde los tres sitios', s: 'VA linking: era un seudo A-A-V; seguí como respuesta A-V', go: av }] };
+    { t: 'Fijo (≤ 20 ms) desde los tres sitios', s: 'VA linking: no cierra con un A-A-V verdadero', go: 'sd_' + av }] };
+  // el VA linking solo es compatible si la respuesta A-A-V fue un seudo A-A-V
+  const SD = { P_avnrt_t: ['P_avnrt_t', 'TRNAV típica'], fus_s: ['fus_s', 'TRAV septal por vía lenta o TRNAV atípica'], P_avrt_free: ['ecc2', 'vía AV de pared libre decremental (rara)'] }[av];
+  N['sd_' + av] = { q: 'VA linking después de una respuesta A-A-V: ¿fue un seudo A-A-V?', help: 'Una respuesta A-A-V verdadera excluye la TRAV y la TRNAV. Revisá el último latido estimulado: en el seudo A-A-V el SA es más largo que la LC de estimulación (la A del último estímulo cae después del V siguiente), o hubo una respuesta 1:2 por doble vía nodal.', man: ['vop', 'aop'], opts: [
+    { t: 'Sí: el SA del último latido supera la LC de estimulación, o hubo respuesta 1:2', s: 'Seudo A-A-V: seguí como respuesta A-V (' + SD[1] + ')', go: SD[0] },
+    { t: 'No: es un A-A-V verdadero, contado desde el último A acelerado', go: 'L_aav_disc' }] };
 }
+N.L_aav_disc = { leaf: true, tone: 'warn', dx: 'Taquicardia auricular probable · resultados discordantes', why: ['Una respuesta A-A-V verdadera excluye la TRAV y la TRNAV: el último A acelerado no conduce al ventrículo.', 'El VA linking a la sobreestimulación auricular apunta a lo contrario, pero puede ser coincidencia en una TA con LC estable, o deberse a que se estimuló desde sitios muy cercanos.'], next: ['Repetí la sobreestimulación ventricular a otra LC y contá desde el último A acelerado.', 'Repetí la sobreestimulación auricular desde sitios alejados entre sí (AD alta, SC proximal y SC distal) o a distintas LC.', 'Mapeo de la A más precoz.'], man: ['vop', 'aop'], refs: ['knight00', 'veen12', 'maruyama07', 'nagashima24'] };
+
 
 
 // ===============================================================================================================
