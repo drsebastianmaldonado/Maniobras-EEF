@@ -1,8 +1,12 @@
 import json, subprocess, textwrap, html
-D = '/tmp/claude-0/-home-user/8932440b-277c-5165-9e50-ac25912bb324/scratchpad/'
-T = json.load(open(D + 'tree.json'))
+# Uso: node herramientas/pruebas/exportar_arbol.js /tmp/arbol.json  (con el servidor local en :8765)
+#      python3 herramientas/flujograma.py /tmp/arbol.json   → prototipos/flujo/*.png y *.svg
+import sys, tempfile
+D = tempfile.gettempdir() + '/'
+T = json.load(open(sys.argv[1] if len(sys.argv) > 1 else D + 'tree.json'))
 T['L_long']['dx'] = 'Combinación de los dos circuitos: V en el circuito + ΔAH < 20 → PJRT · V en el circuito + ΔAH > 40 → NFRT · VD lejos + ΔAH > 40 → TRNAV atípica · ΔAH 20–40 → zona gris · VD lejos + ΔAH < 20 → discordante (probable PJRT)'
-OUT = '/home/user/maniobras-eef/prototipos/flujo/'
+import os.path
+OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'prototipos', 'flujo') + '/'
 import os; os.makedirs(OUT, exist_ok=True)
 
 def wrap(s, w):
