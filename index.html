@@ -405,7 +405,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 250;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 251;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -1983,13 +1983,6 @@ const N = {
     { t: 'Secuencia concéntrica igual a la de los latidos 1:1, VA septal ≤ 70 ms en los conducidos y la misma LC con 1:1 y con 2:1', s: 'Bloqueo infra-His (H sin V) o en el haz común inferior; suele aparecer al inicio y pasar a 1:1', go: 'L_avnrt_21' },
     { t: 'Secuencia excéntrica, o distinta de la retrógrada; el A-A no depende del V', go: 'L_at_bl' },
     { t: 'No es concluyente: hago otra maniobra', go: 'atb2' }] },
-  atb2: { q: '¿Qué resultado obtuviste?', man: ['ado', 'vop', 'aop'], opts: [
-    { t: 'Adenosina: bloqueo AV y la taquicardia auricular sigue', go: 'L_at_bl' },
-    { t: 'Adenosina: termina con una A (bloqueo nodal)', s: 'A favor de TRNAV; algunas TA sensibles a adenosina también terminan', go: 'L_avnrt_21' },
-    { t: 'Sobreestimulación ventricular en un tramo 1:1: respuesta A-A-V', go: 'L_at_bl' },
-    { t: 'Sobreestimulación ventricular en un tramo 1:1: respuesta A-V', go: 'L_avnrt_21' },
-    { t: 'Sobreestimulación auricular: VA linking (VA del retorno igual al de la TSV)', go: 'L_avnrt_21' },
-    { t: 'Sobreestimulación auricular: VA de retorno variable', go: 'L_at_bl' }] },
 
   // ---------- QRS ancho con His antes de cada V
   wh: { q: 'QRS ancho con His antes de cada V: ¿qué relación AV tiene?', man: ['basal', 'bbr'], opts: [
@@ -2039,12 +2032,6 @@ const N = {
   jt: { q: '¿Queda la duda con una taquicardia de la unión (JET)?', help: 'Pensalo en lactantes, en el posoperatorio o si la inducción no depende de un salto a la vía lenta. Ambas dan respuesta A-H a la sobreestimulación ventricular.', man: ['aop', 'eha'], opts: [
     { t: 'No: hay doble vía y la inducción depende del salto', go: 'L_avnrt_t' },
     { t: 'Sí: hago EA con His refractario o sobreestimulación auricular', go: 'jt2' }] },
-  jt2: { q: '¿Qué respuesta obtuviste?', man: ['eha', 'aop'], opts: [
-    { t: 'El EA con His refractario retrasa, adelanta o termina el siguiente His', go: 'L_avnrt_t' },
-    { t: 'Durante la sobreestimulación auricular, el último A conduce por la vía lenta (AH largo, PR > RR)', go: 'L_avnrt_t' },
-    { t: 'Un EA precoz adelanta el His inmediato y la TSV sigue', go: 'L_jet' },
-    { t: 'Durante la sobreestimulación auricular, el último A no conduce por la vía lenta (AH corto)', s: 'A favor, no lo prueba', go: 'L_jet_p' },
-    { t: 'Ninguna es concluyente', go: 'L_jetind' }] },
 
   // ---------- excéntrica
   vop_e: { q: 'Sobreestimulación ventricular: ¿qué respuesta obtenés al cortar?', help: 'Secuencia excéntrica: TRAV por vía libre o TA. Si la A más precoz es posteroseptal izquierda (SC proximal), pensá también en una TRNAV con salida por la extensión izquierda del nodo. Si la A más precoz está en la AD alta, pensá en una TA alta, pero también en una vía anteroseptal o anterior derecha (inserción en la parte superior del anillo tricuspídeo): con pocos catéteres puede parecer descendente. La maniobra lo define.', man: ['vop'], opts: VOP_OPTS('P_avrt_free', 'e') },
@@ -2094,8 +2081,7 @@ const N = {
 
   // ---------- V > A
   vgta: { q: 'TSV con bloqueo VA: ¿una EV con His refractario modifica el siguiente His, o la sobreestimulación del VD muestra signos de vía?', help: 'Diferencial: TRNAV con bloqueo del haz común superior, taquicardia de la unión y vía nodoventricular o nodofascicular (36 % en la serie de Nagashima). Pistas a favor de la vía: una sola TSV inducible, bloqueo VA tipo Wenckebach y HH estable a pesar del bloqueo.', man: ['ehr', 'hisorto', 'ppi'], opts: [
-    { t: 'La EV-HR adelanta o retrasa el His, o termina la TSV', go: 'nv' },
-    { t: 'Sobreestimulación del VD: His ortodrómico, respuesta V-V-A o PPI−LC ≤ 125 ms', go: 'nv' },
+    { t: 'Hay signos de vía', s: 'La EV-HR adelanta o retrasa el His, o termina la TSV; o con la sobreestimulación del VD: His ortodrómico, respuesta V-V-A o PPI−LC ≤ 125 ms', go: 'nv' },
     { t: 'Nada de eso: EV-HR sin efecto, PPI−LC largo, His antidrómico', s: 'A favor de TRNAV o taquicardia de la unión, sobre todo si se inducen varias TSV o el HH se alarga después del bloqueo VA', go: 'jt2v' }] },
   nv: { q: '¿Hay fusión del QRS constante al encarrilar desde el ventrículo?', man: ['vop', 'conc', 'dha'], opts: [
     { t: 'Sí', go: 'L_nvrt' },
@@ -2103,12 +2089,6 @@ const N = {
   noacc: { q: 'Las A no se aceleran: ¿una EV con His refractario termina la TSV sin activar la A?', help: 'Si la ventricular no se vincula a la aurícula pero una EV-HR igual corta la TSV, hay una vía cerca del circuito que no lo integra.', man: ['ehr', 'vop'], opts: [
     { t: 'Sí, de forma reproducible', go: 'L_nvbys' },
     { t: 'No', go: 'L_atprob' }] },
-  jt2v: { q: 'Estudiá el brazo superior: ¿qué respuesta obtuviste?', man: ['eha', 'aop'], opts: [
-    { t: 'El EA con His refractario retrasa, adelanta o termina el siguiente His', go: 'L_avnrt_vab' },
-    { t: 'Durante la sobreestimulación auricular, el último A conduce por la vía lenta (AH largo, PR > RR)', go: 'L_avnrt_vab' },
-    { t: 'Un EA precoz adelanta el His inmediato y la TSV sigue', go: 'L_jet' },
-    { t: 'Durante la sobreestimulación auricular, el último A no conduce por la vía lenta (AH corto)', s: 'A favor, no lo prueba', go: 'L_jet_p' },
-    { t: 'Ninguna es concluyente', go: 'L_jetind' }] },
 
   // ---------- se corta durante la estimulación ventricular
   term: { q: 'La TSV se cortó: ¿qué muestra la zona de transición?', help: 'Revisá latido a latido desde la primera espiga. El latido fusionado es, por definición, His refractario.', man: ['vop', 'ehr'], opts: [
@@ -2274,6 +2254,27 @@ MANIOBRAS('notat_s', NOTAT_M, NOTAT_H, [MNV.ehr('L_avrt_s', 'L_avnrt_a'), MNV.pp
 MANIOBRAS('notat_l', NOTAT_M, NOTAT_H + ' En el RP largo probá varios acoplamientos de la EV.', [MNV.ehr('L_pjrt_r', 'L_avnrt_a'), MNV.ppi('L_pjrt_r', 'L_avnrt_a', 125), MNV.diff('L_pjrt_r', 'L_avnrt_a')], 'L_notat');
 MANIOBRAS('notat_e', NOTAT_M, NOTAT_H + ' Con activación excéntrica lo esperable es una TRAV por vía libre; si la A más precoz es posteroseptal izquierda, considerá una TRNAV con salida por la extensión izquierda.', [MNV.ehr('L_avrt_free', 'L_ecc_ind'), MNV.ppi('L_avrt_free', 'L_ecc_ind', 115, 'Estimulá desde la base, cerca de la A más precoz: desde el ápex del VD una vía libre izquierda puede dar valores largos.')], 'L_notat');
 N.L_s_ind = { leaf: true, tone: 'gray', dx: 'TRAV septal vs TRNAV atípica: indeterminado', why: ['El encarrilamiento quedó en el límite y las maniobras agregadas no fueron concluyentes.'], next: ['Repetí el encarrilamiento desde la base del VD, más cerca de la vía.', 'Mapeo de la A más precoz durante la TSV y la estimulación ventricular: una A precoz fuera del triángulo de Koch o con potencial de vía apoya la TRAV.'], man: ['diff', 'ehr', 'parahis'], refs: ['michaud01', 'veen12'] };
+// figura 5 y brazo superior (taquicardia de la unión): primero la maniobra, después el resultado
+MANIOBRAS('atb2', 'Bloqueo AV no concluyente: ¿qué maniobra hacés?', '', [
+  { k: 'ado', t: 'Adenosina', q: 'Adenosina: ¿qué pasa?', man: ['ado'], opts: [
+    { t: 'Bloqueo AV y la taquicardia auricular sigue', go: 'L_at_bl' },
+    { t: 'Termina con una A (bloqueo nodal)', s: 'A favor de TRNAV; algunas TA sensibles a adenosina también terminan', go: 'L_avnrt_21' }] },
+  { k: 'vop', t: 'Sobreestimulación ventricular (en un tramo 1:1)', q: 'Sobreestimulación ventricular en un tramo 1:1: ¿qué respuesta obtenés al cortar?', man: ['vop'], opts: [
+    { t: 'A-V', go: 'L_avnrt_21' },
+    { t: 'A-A-V', go: 'L_at_bl' }] },
+  { k: 'aop', t: 'Sobreestimulación auricular', q: 'Sobreestimulación auricular: ¿cómo es el VA del primer latido de retorno?', man: ['aop'], opts: [
+    { t: 'VA linking (VA del retorno igual al de la TSV)', go: 'L_avnrt_21' },
+    { t: 'VA de retorno variable', go: 'L_at_bl' }] }], 'L_atb_ind');
+const JT_M = (leafAvnrt) => [
+  { k: 'eha', t: 'Extraestímulo auricular (con His refractario o precoz)', q: 'Extraestímulo auricular: ¿qué pasa con el His?', man: ['eha'], opts: [
+    { t: 'El EA con His refractario retrasa, adelanta o termina el siguiente His', go: leafAvnrt },
+    { t: 'Un EA precoz adelanta el His inmediato y la TSV sigue', go: 'L_jet' }] },
+  { k: 'aop', t: 'Sobreestimulación auricular', q: 'Sobreestimulación auricular: ¿por dónde conduce el último A estimulado?', man: ['aop'], opts: [
+    { t: 'Por la vía lenta (AH largo, PR > RR)', go: leafAvnrt },
+    { t: 'No conduce por la vía lenta (AH corto)', s: 'A favor de taquicardia de la unión, no lo prueba', go: 'L_jet_p' }] }];
+MANIOBRAS('jt2', '¿Qué maniobra hacés?', '', JT_M('L_avnrt_t'), 'L_jetind');
+MANIOBRAS('jt2v', 'Estudiá el brazo superior: ¿qué maniobra hacés?', '', JT_M('L_avnrt_vab'), 'L_jetind');
+N.L_atb_ind = { leaf: true, tone: 'gray', dx: 'TRNAV con bloqueo 2:1 vs TA: indeterminado', why: ['La TSV sigue con bloqueo AV (excluye la TRAV), y la secuencia auricular y las maniobras no separaron la TRNAV de la TA.'], next: ['Mapeo de la A más precoz: en la TRNAV está en el triángulo de Koch o el ostium del SC; fuera de esa región apoya la TA.', 'Repetí la adenosina o la sobreestimulación ventricular cuando la TSV pase a 1:1.'], man: ['ado', 'vop', 'aop'], refs: ['knight00', 'veen12'] };
 // seudo A-A-V: la aurícula sí está ligada al ventrículo
 N.L_pseudo = { leaf: true, dx: 'Seudo A-A-V: TRNAV atípica', sub: 'Con VA largo, considerá también una PJRT', why: ['El VA linking a la sobreestimulación auricular muestra que la A depende del V: no es una TA.', 'La respuesta A-A-V fue un seudo A-A-V: la conducción VA durante la estimulación es tan lenta que la A del último estímulo cae después del V siguiente.', 'Lo típico es la TRNAV atípica; con un VA largo, también la PJRT (vía decremental).'], next: ['Para separar TRNAV atípica de PJRT: EV con His refractario (adelanta, retrasa o termina sin A en la PJRT) y ΔAH (< 20 ms en la PJRT, > 40 ms en la TRNAV atípica).', 'Ablación de la vía lenta (TRNAV atípica) o de la vía en la A más precoz (PJRT).'], man: ['vop', 'aop', 'ehr'], refs: ['veen12', 'ho15', 'maruyama07'] };
 N.L_pseudo_e = { leaf: true, dx: 'Seudo A-A-V: TRAV por vía libre', sub: 'Probablemente por una vía decremental. Si la A más precoz es posteroseptal izquierda, considerá una TRNAV con salida por la extensión izquierda', why: ['El VA linking a la sobreestimulación auricular muestra que la A depende del V: no es una TA.', 'Con activación excéntrica, la A sale por una vía AV fuera de la región posteroseptal derecha. Excepción: con la A más precoz posteroseptal izquierda, una TRNAV con salida por la extensión izquierda da el mismo VA linking.', 'La respuesta A-A-V fue un seudo A-A-V: la conducción VA por una vía decremental es tan lenta durante la estimulación que la A del último estímulo cae después del V siguiente.'], next: ['EV con His refractario desde la base, cerca de la A más precoz, para confirmar la vía.', 'Mapeo de la A más precoz durante la TSV: las vías decrementales son más frecuentes en la región posteroseptal derecha, pero pueden estar en cualquier ubicación (por ejemplo, lateral derecha).'], man: ['vop', 'aop', 'ehr'], refs: ['knight00', 'veen12', 'maruyama07'] };
