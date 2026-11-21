@@ -405,7 +405,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 240;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 241;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -2159,8 +2159,8 @@ const N = {
   L_avrt_s: { leaf: true, dx: 'TRAV por vía septal', why: ['Encarrilamiento con fusión, His ortodrómico, PPI−LC y SA−VA cortos, o una EV-HR positiva.'], next: ['Mapeo de la A más precoz durante la TSV o la estimulación ventricular. Cuidado con el riesgo de BAV en las vías anteroseptales y medioseptales.'], man: ['vop', 'ppi', 'sava', 'ehr'], refs: ['michaud01', 'gt06', 'ormaetxe93', 'veen11'] },
   L_avrt_gen: { leaf: true, dx: 'TRAV', why: ['Un latido fusionado es His refractario; si después la TSV se corta con bloqueo VA, la aurícula dependía de la conducción por una vía.'], next: ['Igual conviene confirmarlo con una EV-HR y localizar la vía.'], man: ['ehr', 'vop'], refs: ['veen11', 'veen12'] },
   L_term_retry: { leaf: true, tone: 'gray', dx: 'Corte con la sobreestimulación: indeterminado', why: ['La sobreestimulación ventricular cortó la TSV antes de poder leer la respuesta (invadió la refractariedad del circuito), y las maniobras siguientes no fueron concluyentes.'], next: ['Isoproterenol para acortar la refractariedad y repetir la sobreestimulación 10–20 ms por debajo de la LC.', 'Ráfagas de 3–6 latidos a 200–250 ms: en ~60 % disocian (excluye TRAV) o cortan sin A (excluye TA).', 'Mapeo de la A más precoz durante la TSV.'], man: ['vop', 'diff', 'ehr', 'aop'], refs: ['veen11', 'knight00'] },
-  L_notat: { leaf: true, tone: 'gray', dx: 'TA excluida', why: ['La TSV terminó sin activar la aurícula: un foco auricular no depende del ventrículo y habría seguido.', 'Sin His refractario, el corte no prueba una vía: lo hacen igual una TRAV, una TRNAV o una vía nodofascicular.'], next: ['Seguí con EV-HR, para-Hisiana o encarrilamiento diferencial para separar TRAV de TRNAV.'], man: ['ehr', 'parahis', 'diff'], refs: ['knight00'] },
-  L_avnrt_a: { leaf: true, dx: 'TRNAV atípica', why: ['PPI−LC, SA−VA, ΔHA o el encarrilamiento diferencial indican que el VD está lejos del circuito y que A y V se activan en paralelo.'], next: ['Antes de ablacionar en un RP largo, asegurate de que una EV-HR no modifique la A: una vía decremental da valores falsamente largos.', 'Ablación de la vía lenta.'], man: ['ppi', 'sava', 'diff', 'dha'], refs: ['michaud01', 'gt11', 'segal09', 'bennett11'] },
+  L_notat: { leaf: true, tone: 'gray', dx: 'TA excluida: TRAV vs TRNAV indeterminado', why: ['La TSV terminó sin activar la aurícula: un foco auricular no depende del ventrículo y habría seguido.', 'Sin His refractario, el corte no prueba una vía: lo hacen igual una TRAV, una TRNAV o una vía nodofascicular.'], next: ['Seguí con EV-HR, para-Hisiana o encarrilamiento diferencial para separar TRAV de TRNAV.'], man: ['ehr', 'parahis', 'diff'], refs: ['knight00'] },
+  L_avnrt_a: { leaf: true, dx: 'TRNAV atípica', why: ['PPI−LC, SA−VA, ΔHA o el encarrilamiento diferencial indican que el VD está lejos del circuito y que A y V se activan en paralelo (o, con la TA ya excluida, la EV con His refractario no modifica la A).'], next: ['Antes de ablacionar en un RP largo, asegurate de que una EV-HR no modifique la A: una vía decremental da valores falsamente largos.', 'Ablación de la vía lenta.'], man: ['ppi', 'sava', 'diff', 'dha'], refs: ['michaud01', 'gt11', 'segal09', 'bennett11'] },
   L_avnrt_vab: { leaf: true, dx: 'TRNAV con bloqueo VA', why: ['La EV-HR no modifica el His (descarta vía nodoventricular o nodofascicular) y la respuesta auricular indica un circuito con la vía lenta.'], next: ['Ablación de la vía lenta.'], man: ['eha', 'aop'], refs: ['veen12', 'padanilam08'] },
   L_nvbys: { leaf: true, dx: 'TRNAV atípica con vía nodofascicular o nodoventricular espectadora', why: ['La aurícula sigue a la LC de la TSV mientras el V se acelera: el ventrículo no forma parte del circuito (no es una TRAV ni una NVRT ortodrómica).', 'La EV con His refractario que la termina sin activar la A excluye la TA y exige una vía que entre al circuito nodal antes de su salida auricular.'], next: ['Ablación en la A más precoz cerca del ostium del SC o en la vía lenta: suele eliminar las dos.', 'Después, inducí de nuevo con y sin isoproterenol.'], man: ['ehr', 'vop'], refs: ['sriramoju22', 'nagashima20', 'ho15'] },
   L_nvrt: { leaf: true, dx: 'Taquicardia ortodrómica por vía nodoventricular', why: ['La EV-HR resetea el His, o el encarrilamiento muestra His ortodrómico, V-V-A o PPI−LC ≤ 125 ms: excluye TRNAV y taquicardia de la unión.', 'La fusión del QRS constante requiere que la colisión ocurra en el miocardio ventricular.'], next: ['La mayoría se resuelve con ablación anatómica de la vía lenta; a veces se registra un potencial de la vía.', 'Mapeo de la inserción ventricular por encarrilamiento: el sitio con PPI−LC más corto y QRS más parecido al de la TSV (incluso fusión oculta).'], man: ['ehr', 'vop'], refs: ['veen12', 'nagashima20'] },
@@ -2215,7 +2215,7 @@ for (const av of ['P_avnrt_t', 'P_avrt_free', 'fus_s']) {
 const RSC_Q = 'La sobreestimulación no se pudo leer: seguí con otra maniobra. ¿Qué resultado obtuviste?';
 const RSC_H = 'Primero repetí la sobreestimulación 10–20 ms por debajo de la LC o con isoproterenol: si ahora se lee, volvé a la pregunta anterior. Si la A se aceleró a la LC antes del corte, el SA de ese tren sirve para el encarrilamiento diferencial (no hay PPI porque no hubo retorno).';
 const RSC_AOP = 'Sobreestimulación auricular desde dos o tres sitios (AD alta, SC proximal y SC distal): ¿cómo es el VA del primer latido de retorno?';
-for (const c of ['s', 'l', 'e']) N['term_' + c] = Object.assign({}, N.term, { opts: N.term.opts.map((o, i) => i === 1 ? Object.assign({}, o, { s: 'El SA de ese tren permite medir el SA−VA', go: c === 'e' ? 'rsc_e' : 'sava_' + c }) : i === 3 ? Object.assign({}, o, { go: 'rsc_' + c }) : o) });
+for (const c of ['s', 'l', 'e']) N['term_' + c] = Object.assign({}, N.term, { opts: N.term.opts.map((o, i) => i === 1 ? Object.assign({}, o, { s: 'El SA de ese tren permite medir el SA−VA', go: c === 'e' ? 'rsc_e' : 'sava_' + c }) : i === 2 ? Object.assign({}, o, { go: 'notat_' + c }) : i === 3 ? Object.assign({}, o, { go: 'rsc_' + c }) : o) });
 N.term_t.opts = N.term_t.opts.map((o, i) => i === 1 ? Object.assign({}, o, { s: 'Con VA ≤ 70 ms el SA−VA no aporta: la TRAV ya está excluida', go: 'rsc_t' }) : i === 3 ? Object.assign({}, o, { go: 'rsc_t' }) : o);
 const SAVA_Q = 'La A se aceleró a la LC antes del corte: medí el SA−VA de ese tren. ¿Cuánto vale?';
 const SAVA_H = 'SA: de la última espiga a la A del His en el último latido acelerado. VA: de la TSV. No hay PPI porque no hubo retorno. Un SA−VA largo excluye una vía septal que participa, pero no separa la TRNAV de la TA.';
@@ -2259,6 +2259,32 @@ Object.assign(N, {
     { t: 'Ninguna es concluyente', go: 'L_term_retry' }] },
   L_pjrt_r: { leaf: true, dx: 'PJRT (diagnóstico más probable)', sub: 'TRAV por vía accesoria oculta, lenta y decremental', why: ['La EV con His refractario modificó la A o cortó la TSV sin A, o el SA−VA (< 85 ms) o el ΔVA (≤ 20 ms) son cortos: hay una vía que participa del circuito.', 'La NFRT y la TRNAV atípica con vía espectadora quedan como diferencial poco probable.'], next: ['Mapeá la A más precoz durante la TSV (suele estar en el ostium del SC o la región posteroseptal) y buscá el potencial de la vía.', 'Si algo no cierra, completá el ΔAH (circuito superior).'], man: ['ehr', 'diff', 'aop'], refs: ['ho15', 'veen12'] },
   L_ecc_link: { leaf: true, dx: 'TRAV por vía libre (probable)', sub: 'Rara vez, TRNAV con salida auricular izquierda', why: ['El VA linking a la sobreestimulación auricular muestra que la A depende del V: excluye la TA.', 'Con activación excéntrica, la A sale por una vía AV de pared libre.'], next: ['EV con His refractario desde la base, cerca de la A más precoz, para confirmar la vía.', 'Mapeo de la A más precoz durante la TSV o la estimulación ventricular.'], man: ['aop', 'ehr'], refs: ['knight00', 'veen12', 'maruyama07'] }
+});
+// la TSV se cortó sin activar la A (TA excluida): falta separar TRAV de TRNAV
+const NOTAT_Q = 'TA excluida: falta separar TRAV de TRNAV. ¿Qué muestra la maniobra siguiente?';
+const NOTAT_H = 'Para el encarrilamiento y el encarrilamiento diferencial, reinducí la TSV. La EV con His refractario es la que más pesa.';
+Object.assign(N, {
+  notat_s: { q: NOTAT_Q, help: NOTAT_H, man: ['ehr', 'ppi', 'sava', 'diff', 'parahis'], opts: [
+    { t: 'EV con His refractario: adelanta o retrasa la A (misma secuencia), o termina la TSV sin A', go: 'L_avrt_s' },
+    { t: 'EV con His refractario: no modifica la A, con el V local adelantado > 60 ms', s: 'Excluye una vía participante', go: 'L_avnrt_a' },
+    { t: 'Encarrilamiento desde el VD: PPI−LC < 115 ms y SA−VA < 85 ms', go: 'L_avrt_s' },
+    { t: 'Encarrilamiento desde el VD: PPI−LC > 115 ms y SA−VA > 85 ms', go: 'L_avnrt_a' },
+    { t: 'Encarrilamiento diferencial: ΔVA ≤ 20 ms', s: 'Base − ápex', go: 'L_avrt_s' },
+    { t: 'Encarrilamiento diferencial: ΔVA > 20 ms', s: 'Base − ápex', go: 'L_avnrt_a' },
+    { t: 'Ninguna es concluyente', go: 'L_notat' }] },
+  notat_l: { q: NOTAT_Q, help: NOTAT_H + ' En el RP largo usá el corte de 125 ms para el PPI−LC y probá varios acoplamientos de la EV.', man: ['ehr', 'ppi', 'sava', 'diff'], opts: [
+    { t: 'EV con His refractario: adelanta o retrasa la A (misma secuencia), o termina la TSV sin A', go: 'L_pjrt_r' },
+    { t: 'EV con His refractario: no modifica la A, con el V local adelantado > 60 ms', s: 'Excluye una vía decremental participante', go: 'L_avnrt_a' },
+    { t: 'Encarrilamiento desde el VD: PPI−LC < 125 ms y SA−VA < 85 ms', go: 'L_pjrt_r' },
+    { t: 'Encarrilamiento desde el VD: PPI−LC > 125 ms y SA−VA > 85 ms', go: 'L_avnrt_a' },
+    { t: 'Encarrilamiento diferencial: ΔVA ≤ 20 ms', s: 'Base − ápex', go: 'L_pjrt_r' },
+    { t: 'Encarrilamiento diferencial: ΔVA > 20 ms', s: 'Base − ápex', go: 'L_avnrt_a' },
+    { t: 'Ninguna es concluyente', go: 'L_notat' }] },
+  notat_e: { q: NOTAT_Q, help: NOTAT_H + ' Con activación excéntrica lo esperable es una TRAV por vía libre; la TRNAV con salida auricular izquierda es rara. Estimulá desde la base, cerca de la A más precoz.', man: ['ehr', 'ppi', 'sava'], opts: [
+    { t: 'EV con His refractario: adelanta o retrasa la A (misma secuencia), o termina la TSV sin A', go: 'L_avrt_free' },
+    { t: 'Encarrilamiento cerca de la A más precoz: PPI−LC < 115 ms y SA−VA < 85 ms', go: 'L_avrt_free' },
+    { t: 'La EV con His refractario no modifica la A, o el PPI−LC y el SA−VA son largos', s: 'Desde el ápex del VD, una vía libre izquierda puede no alcanzarse', go: 'L_ecc_ind' },
+    { t: 'Ninguna es concluyente', go: 'L_notat' }] }
 });
 // seudo A-A-V: la aurícula sí está ligada al ventrículo
 N.L_pseudo = { leaf: true, dx: 'Seudo A-A-V: TRNAV atípica', sub: 'Con VA largo, considerá también una PJRT', why: ['El VA linking a la sobreestimulación auricular muestra que la A depende del V: no es una TA.', 'La respuesta A-A-V fue un seudo A-A-V: la conducción VA durante la estimulación es tan lenta que la A del último estímulo cae después del V siguiente.', 'Lo típico es la TRNAV atípica; con un VA largo, también la PJRT (vía decremental).'], next: ['Para separar TRNAV atípica de PJRT: EV con His refractario (adelanta, retrasa o termina sin A en la PJRT) y ΔAH (< 20 ms en la PJRT, > 40 ms en la TRNAV atípica).', 'Ablación de la vía lenta (TRNAV atípica) o de la vía en la A más precoz (PJRT).'], man: ['vop', 'aop', 'ehr'], refs: ['veen12', 'ho15', 'maruyama07'] };
