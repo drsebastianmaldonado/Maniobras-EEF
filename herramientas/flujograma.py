@@ -23,6 +23,9 @@ FIGS = [
  ('5_no_1a1', 'Relación AV distinta de 1:1', 'atb', ['atb', 'atb2', 'vgta', 'nv', 'jt2v', 'df1']),
  ('6_qrs_ancho', 'QRS ancho', 'wh', ['wh', 'bbr1', 'P_bbr', 'bbr2', 'pw1', 'pw2', 'pw3', 'pw4', 'vtq']),
 ]
+# subpreguntas "maniobra → resultado" (id padre__maniobra): van en la figura del padre
+for f, title, root, ids in FIGS:
+    ids += [k for k in T if '__' in k and k.split('__')[0] in ids and k not in ids]
 HOME = {}
 for f, title, root, ids in FIGS:
     for i in ids: HOME.setdefault(i, f)
