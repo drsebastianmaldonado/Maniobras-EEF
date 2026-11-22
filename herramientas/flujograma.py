@@ -21,7 +21,7 @@ FIGS = [
  ('3_rp_largo', 'RP largo', 'vop_l', ['vop_l', 'low_l', 'ehr_l', 'ehr_l_nod', 'P_pjrt', 'up_l', 'noacc', 'term_l', 'sava_l', 'rsc_l', 'rsc_l2', 'notat_l']),
  ('4_excentrica', 'Activación excéntrica y nodos AV gemelos', 'vop_e', ['vop_e', 'P_avrt_free', 'ecc2', 'P_at_P_avrt_free', 'atc_P_avrt_free', 'noacc_e', 'twin1', 'twin2', 'noacc_w', 'noacc_w2', 'term_e', 'rsc_e', 'notat_e']),
  ('5_no_1a1', 'Relación AV distinta de 1:1', 'atb', ['atb', 'atb2', 'vgta', 'nv', 'jt2v', 'df1']),
- ('6_qrs_ancho', 'QRS ancho', 'wh', ['wh', 'bbr1', 'P_bbr', 'bbr2', 'pw1', 'pw2', 'pw3', 'pw4', 'vtq']),
+ ('6_qrs_ancho', 'QRS ancho', 'wh', ['wh', 'wh_v', 'bbr1', 'P_bbr', 'bbr2', 'pw1', 'pw2', 'pw3', 'pw4', 'vtq']),
 ]
 # subpreguntas "maniobra → resultado" (id padre__maniobra): van en la figura del padre
 for f, title, root, ids in FIGS:

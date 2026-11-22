@@ -405,7 +405,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 256;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 257;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -1948,7 +1948,7 @@ const VOP_OPTS = (onAV, ctx) => [
 const N = {
   start: { q: '¿Cómo es el QRS de la taquicardia?', help: 'Mirá el HV: si el His precede al QRS con HV igual o mayor que en sinusal, la conducción es por el sistema normal (angosto o con aberrancia).', man: ['pre', 'basal'], opts: [
     { t: 'Angosto', go: 'av' },
-    { t: 'Ancho con His antes de cada V', s: 'HV igual o mayor que en sinusal: aberrancia o reentrada rama-rama', go: 'wh' },
+    { t: 'Ancho con HV normal', s: 'His antes de cada V, con HV igual o mayor que en sinusal: aberrancia, bloqueo de rama de base o reentrada rama-rama', go: 'wh' },
     { t: 'Ancho con HV corto o negativo', s: 'His después del inicio del QRS: preexcitación o TV', go: 'pw1' }] },
   av: { q: '¿Qué relación AV tiene la taquicardia?', help: 'Contá A y V en el His y en el SC durante varios ciclos. Si todavía no la indujiste, empezá por el estudio basal.', man: ['pre', 'basal', 'ado'], opts: [
     { t: '1:1', s: 'Una A por cada V', go: 'seq' },
@@ -1987,11 +1987,14 @@ const N = {
     { t: 'No es concluyente: hago otra maniobra', go: 'atb2' }] },
 
   // ---------- QRS ancho con His antes de cada V
-  wh: { q: 'QRS ancho con His antes de cada V: ¿qué relación AV tiene?', help: 'La reentrada rama-rama puede tener conducción VA 1:1: si es un BRI típico, con HV igual o mayor que en sinusal y HV prolongado de base, pensala aunque la relación sea 1:1.', man: ['basal', 'bbr'], opts: [
+  wh: { q: 'QRS ancho con HV normal: ¿qué relación AV tiene?', help: 'La reentrada rama-rama puede tener conducción VA 1:1: si es un BRI típico, con HV igual o mayor que en sinusal y HV prolongado de base, pensala aunque la relación sea 1:1.', man: ['basal', 'bbr'], opts: [
     { t: '1:1, con una A antes de cada His', s: 'Lo más probable es una TSV con aberrancia', go: 'av' },
     { t: '1:1 con BRI típico y HV igual o mayor que en sinusal', s: 'Sobre todo con HV prolongado de base o trastorno de conducción: posible reentrada rama-rama con conducción VA 1:1', go: 'bbr1' },
     { t: 'Más A que V', s: 'TSV con aberrancia y bloqueo AV', go: 'av' },
-    { t: 'Más V que A', s: 'Disociación AV: TV con His en el circuito o TV miocárdica', go: 'bbr1' }] },
+    { t: 'Más V que A', s: 'Disociación AV o bloqueo VA', go: 'wh_v' }] },
+  wh_v: { q: 'Más V que A con HV normal: ¿el QRS de la taquicardia es igual al sinusal?', help: 'Una taquicardia de la unión, una TRNAV con bloqueo VA o una vía nodoventricular, con bloqueo de rama de base, dan QRS ancho disociado sin ser una TV.', man: ['basal', 'bbr'], opts: [
+    { t: 'Igual al sinusal', s: 'Bloqueo de rama de base: seguí como TSV con más V que A', go: 'vgta' },
+    { t: 'Distinto del sinusal', s: 'TV con His en el circuito (rama-rama) o TV miocárdica con His pasivo', go: 'bbr1' }] },
   bbr1: { q: 'Durante la TV, ¿los cambios de los HH preceden y predicen los de los VV, con HV igual o mayor que en sinusal?', help: 'Si el VV cambia primero y el His lo sigue, el His se activa en forma pasiva. Ojo con el His pasivo de VH largo, que parece preceder al V siguiente: buscá la disociación VH intermitente.', man: ['bbr'], opts: [
     { t: 'Sí', go: 'P_bbr' },
     { t: 'No: el VV cambia primero, o el HV es claramente más corto', go: 'L_vtmyo' }] },
