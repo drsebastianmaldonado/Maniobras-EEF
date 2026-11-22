@@ -14,7 +14,7 @@
                'M300,300 C312,420 312,530 302,638 C385,642 470,595 516,512 C556,440 566,350 540,294 Z'];
   // Puntos del recorrido (coordenadas del corazón)
   const G = { aSep: [232, 238], node: [268, 262], his: [293, 308], rb1: [288, 380], rb2: [270, 450], rb3: [238, 500], rb4: [200, 545], apex: [180, 562],
-              lvA: [430, 410], lvB: [505, 345], apV: [526, 306], apA: [527, 262], la: [470, 200], focus: [140, 140], ra: [170, 180], base: [250, 345], ph: [278, 300], hra: [140, 108], cso: [215, 290], jx: [287, 288], ralat: [92, 238], afA: [92, 272], afV: [178, 512], vtf: [150, 470], sn: [196, 82], cs: [516, 290] };
+              lvA: [430, 410], lvB: [505, 345], apV: [526, 306], apA: [527, 262], la: [470, 200], focus: [500, 112], ra: [170, 180], base: [250, 345], ph: [278, 300], hra: [140, 108], cso: [215, 290], jx: [287, 288], ralat: [92, 238], afA: [92, 272], afV: [178, 512], vtf: [150, 470], sn: [196, 82], cs: [516, 290] };
   const VB = '15 50 560 652';
   // Desde el His el frente baja por las dos ramas: la derecha hasta el ápex del VD y la izquierda hasta la pared lateral del VI
   const ramas = (h, HV) => [
@@ -56,7 +56,7 @@
     const LC = 340, AH = 120, HV = 45, ev = [], wv = [], flA = [], flV = [];
     const focusBeat = (a, stop) => {
       ev.push({ ch: 'AD', t: a, l: 'A' }); flA.push(a);
-      wv.push({ c: 'focus', pts: [[G.focus, a], [[195, 195], a + 20], [G.aSep, a + 35]] });
+      wv.push({ c: 'focus', pts: [[G.focus, a], [G.la, a + 12], [[380, 215], a + 26], [G.aSep, a + 35]] });
       const h = a + AH; ev.push({ ch: 'His', t: h, l: 'H' });
       const pts = [[G.aSep, a + 35], [G.node, a + 60], [G.his, h]];
       wv.push({ c: 'ante', pts }); if (!stop) wv.push(...ramas(h, HV));
@@ -341,7 +341,7 @@
   // ---------- Grupo 3: estimulación auricular y fármacos ----------
   const paceA = (sc, site, s, ch) => { E(sc, ch || 'AD', s, 'E', { stim: true }); sc.stims.push({ t: s, pt: G[site] }); };
   // TA focal: el foco dispara, la A conduce por el nodo (AH) y el His a los ventrículos
-  const taBeat = (sc, f, ah, block) => { E(sc, 'AD', f, 'A'); W_(sc, 'focus', [[G.focus, f - 15], [[195, 195], f + 10], [G.aSep, f + 25]]);
+  const taBeat = (sc, f, ah, block) => { E(sc, 'AD', f, 'A'); W_(sc, 'focus', [[G.focus, f - 15], [G.la, f - 3], [[380, 215], f + 14], [G.aSep, f + 25]]);
     if (block) { W_(sc, 'ante', [[G.aSep, f + 25], [G.node, f + 25 + block]], f + 25 + block - 5); return null; }
     const h = f + ah; W_(sc, 'ante', [[G.aSep, f + 25], [G.node, f + 55], [G.his, h]]); E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h); return h; };
 
@@ -1111,7 +1111,7 @@
     if (sc.focus) {
       const FP = sc.focusPt || G.focus, f = mk('g', { transform: `translate(${FP[0]},${FP[1]})` }, svg);
       f.innerHTML = '<path d="M0,-15 L4.5,-4.5 L15,-4.5 L7,2.5 L10,14 L0,7 L-10,14 L-7,2.5 L-15,-4.5 L-4.5,-4.5 Z" fill="#fdd835" stroke="#c62828" stroke-width="2"/>';
-      lbl(FP[0] + 20, FP[1] + 5, 'foco', '#c62828');
+      if (FP === G.focus) { lbl(FP[0] - 20, FP[1] + 5, 'foco (VPSI)', '#c62828', 'end'); } else lbl(FP[0] + 20, FP[1] + 5, 'foco', '#c62828');
     }
     if (cats.includes('base')) { if (sc.ap === 'pjrt') lbl(G.base[0] + 14, G.base[1] - 8, 'base', '#5d4037'); else lbl(G.base[0] - 12, G.base[1] + 4, 'base', '#5d4037', 'end'); }
     if (cats.includes('cs') && sc.ap === 'obl') for (const [k, [x, y]] of Object.entries(CSX)) { mk('rect', { x: x - 5, y: y - 4, width: 10, height: 8, fill: '#212121' }, svg); mk('text', { x, y: y + 22, 'font-size': 12, 'text-anchor': 'middle', fill: '#212121' }, svg).textContent = k.slice(1, 2) + '-' + k.slice(2); }
