@@ -88,6 +88,7 @@ if (PER_STIM) STIMS.forEach((s, i) => { const nx = STIMS[i + 1] ? STIMS[i + 1].t
 else runs.forEach((r, i) => { const last = r[r.length - 1].t, nx = runs[i + 1] ? runs[i + 1][0].t - 60 : Infinity, end = Math.min(nx, last + 560);
   if (r.length === 1) WIN.push([last - 10, last + 220, end, 'Extraestímulo', 'Latido siguiente']);
   else WIN.push([last - 10, last + 220, end, 'Último latido estimulado', '1.er latido de retorno']); });
+if (!WIN.length && sc.bbbL) { const h0 = sc.bbbL[0]; WIN.push([h0 - 60, h0 + 110, h0 + 430, 'Bloqueo de rama izquierda', 'El VA se alarga']); }
 if (!WIN.length && sc.ado) WIN.push([sc.ado[0] + 150, sc.ado[0] + 450, Math.min(DUR, sc.ado[1] + 250), 'Efecto de la adenosina', 'Cómo termina o sigue']);
 if (!WIN.length && sc.stimEnd) WIN.push([sc.stimEnd - 300, sc.stimEnd, sc.stimEnd + 350, 'Momento clave', 'Qué pasa después']);
 const inWin = t => WIN.find(w => t >= w[0] && t <= w[2]);
@@ -106,16 +107,17 @@ comp.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), .6, .5, .3)); comp
 
 const N_ON = 8;
 const arrF = () => ({ value: new Float32Array(N_ON).fill(-1e5) }), arrV = () => ({ value: Array.from({ length: N_ON }, () => V(0, 0, 0)) });
-const U = { T: { value: 0 }, onV: arrF(), aT: arrF(), aO: arrV(), vT: arrF(), vO: arrV() };
+const U = { T: { value: 0 }, onV: arrF(), onVR: arrF(), aT: arrF(), aO: arrV(), vT: arrF(), vO: arrV() };
 const pulse = `float frontF(float x){ float d = (x-12.)/11.; return exp(-d*d); } float wakeF(float x){ return x < 0. ? 0. : exp(-x/170.); }`;
 const wallMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, uniforms: U,
-  vertexShader: `attribute float tV; attribute float reg; varying vec3 vN; varying vec3 vV; varying vec3 vP; varying float vtV; varying float vReg;
-    void main(){ vec4 mv = modelViewMatrix*vec4(position,1.); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); vP = position; vtV = tV; vReg = reg; gl_Position = projectionMatrix*mv; }`,
-  fragmentShader: `uniform float T; uniform float onV[${N_ON}]; uniform float aT[${N_ON}]; uniform vec3 aO[${N_ON}]; uniform float vT[${N_ON}]; uniform vec3 vO[${N_ON}];
-    varying vec3 vN; varying vec3 vV; varying vec3 vP; varying float vtV; varying float vReg; ${pulse}
+  vertexShader: `attribute float tV; attribute float tVr; attribute float reg; varying vec3 vN; varying vec3 vV; varying vec3 vP; varying float vtV; varying float vtVr; varying float vReg;
+    void main(){ vec4 mv = modelViewMatrix*vec4(position,1.); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); vP = position; vtV = tV; vtVr = tVr; vReg = reg; gl_Position = projectionMatrix*mv; }`,
+  fragmentShader: `uniform float T; uniform float onV[${N_ON}]; uniform float onVR[${N_ON}]; uniform float aT[${N_ON}]; uniform vec3 aO[${N_ON}]; uniform float vT[${N_ON}]; uniform vec3 vO[${N_ON}];
+    varying vec3 vN; varying vec3 vV; varying vec3 vP; varying float vtV; varying float vtVr; varying float vReg; ${pulse}
     void main(){ float f = 1.-abs(dot(normalize(vN),normalize(vV))); f = pow(f,2.); float gF = 0., gW = 0.;
       if (vReg > .5) {
         for(int i=0;i<${N_ON};i++){ float x = T - onV[i] - vtV; gF = max(gF, frontF(x)); gW = max(gW, wakeF(x)); }
+        for(int i=0;i<${N_ON};i++){ float x = T - onVR[i] - vtVr; gF = max(gF, frontF(x)); gW = max(gW, wakeF(x)); }
         for(int i=0;i<${N_ON};i++){ float x = T - vT[i] - distance(vP, vO[i])*40.; gF = max(gF, frontF(x)); gW = max(gW, wakeF(x)); }
       } else { for(int i=0;i<${N_ON};i++){ float x = T - aT[i] - distance(vP, aO[i])*22.; gF = max(gF, frontF(x)); gW = max(gW, wakeF(x)); } }
       vec3 base = mix(vec3(.42,.30,.95), vec3(.75,.32,.75), .35);
@@ -126,13 +128,14 @@ const xr = k => new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
   fragmentShader: `uniform float k; varying vec3 vN; varying vec3 vV; void main(){ float f = 1.-abs(dot(normalize(vN),normalize(vV))); f = pow(f,2.2); gl_FragColor = vec4(vec3(.48,.52,1.)*(f*k+.003),1.); }` });
 const vesselMat = xr(.11), valveMat = xr(.05);
 const condMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: U,
-  vertexShader: `attribute float tV; attribute float w; varying float vtV; varying float vw; void main(){ vtV=tV; vw=w; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
-  fragmentShader: `uniform float T; uniform float onV[${N_ON}]; varying float vtV; varying float vw; ${pulse}
+  vertexShader: `attribute float tV; attribute float tVr; attribute float w; varying float vtV; varying float vtVr; varying float vw; void main(){ vtV=tV; vtVr=tVr; vw=w; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+  fragmentShader: `uniform float T; uniform float onV[${N_ON}]; uniform float onVR[${N_ON}]; varying float vtV; varying float vtVr; varying float vw; ${pulse}
     void main(){ float gF = 0., gW = 0.; for(int i=0;i<${N_ON};i++){ float x = T - onV[i] - vtV; gF = max(gF, frontF(x)); gW = max(gW, wakeF(x)); }
+      for(int i=0;i<${N_ON};i++){ float x = T - onVR[i] - vtVr; gF = max(gF, frontF(x)); gW = max(gW, wakeF(x)); }
       gl_FragColor = vec4(vec3(1.,.62,.18)*(.16*vw + gF*(.5+.6*vw*vw) + gW*.12), 1.); }` });
 
 // ---------- modelo y correspondencia del esquema 2D de la app con el corazón 3D
-let ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
+let BBBL = [], LBX = null, ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
 const map2 = p => V(M2[0][0] * p[0] + M2[0][1] * p[1] + M2[0][2], M2[1][0] * p[0] + M2[1][1] * p[1] + M2[1][2], M2[2][0] * p[0] + M2[2][1] * p[1] + M2[2][2]);
 function fit(pairs) {   // mínimos cuadrados: [x, y, 1] → X, Y, Z
   const A3 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], b = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
@@ -168,26 +171,26 @@ function build(parts) {
   M2 = fit([[G.node, AVN], [G.his, HIS], [G.apex, TIP], [G.hra, SAN], [G.cso, csOs], [G.cs, csD], [G.la, LAc], [G.ra, RAc], [G.lvA, LVlat], [G.base, RVb], [G.ralat, raL], [G.apA, csD.clone().add(ax.clone().multiplyScalar(.2))]]);
   // sistema de conducción con tiempos desde el His
   const segs = [], curve = (arr, k = 40) => new THREE.CatmullRomCurve3(arr).getSpacedPoints(k), vHis = 1 / 12, vPk = 1 / 9;
-  const addSeg = (arr, t0, w, spd) => { let t = t0; const ts = [t]; for (let i = 1; i < arr.length; i++) { t += arr[i].distanceTo(arr[i - 1]) / spd; ts.push(t); } segs.push({ pts: arr, ts, w }); return ts; };
+  const addSeg = (arr, t0, w, spd, br = 0) => { let t = t0; const ts = [t]; for (let i = 1; i < arr.length; i++) { t += arr[i].distanceTo(arr[i - 1]) / spd; ts.push(t); } segs.push({ pts: arr, ts, w, br }); return ts; };
   addSeg(curve([AVN, AVN.clone().lerp(HIS, .5).add(ax.clone().multiplyScalar(.05)), HIS], 20), -15, 1, vHis);
   const rbPts = curve([HIS, sept(.25, -1.15, .05), sept(.55, -1.2, -.15), sept(.85, -1.1, -.35), near(sept(1.0, -1.6, -.6))], 60), rb = addSeg(rbPts, 0, 1, vHis);
   const lbA = curve([HIS, sept(.12, 1.1, .3), sept(.4, 1.25, .55), near(sept(.7, 2.6, .9))], 50), lbP = curve([HIS, sept(.12, 1.1, -.1), sept(.45, 1.25, -.5), near(sept(.75, 2.6, -1.0))], 50);
-  const tA_ = addSeg(lbA, 0, .9, vHis), tP_ = addSeg(lbP, 0, .9, vHis);
-  const trunk = [...rbPts.map((p, i) => ({ p, t: rb[i] })), ...lbA.map((p, i) => ({ p, t: tA_[i] })), ...lbP.map((p, i) => ({ p, t: tP_[i] }))].filter(o => o.t > 6);
+  const tA_ = addSeg(lbA, 0, .9, vHis, 1), tP_ = addSeg(lbP, 0, .9, vHis, 1); LBX = lbA[5];
+  const trunk = [...rbPts.map((p, i) => ({ p, t: rb[i], br: 0 })), ...lbA.map((p, i) => ({ p, t: tA_[i], br: 1 })), ...lbP.map((p, i) => ({ p, t: tP_[i], br: 1 }))].filter(o => o.t > 6);
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647, vent = samp.filter(p => h(p) < -.35);
-  const branch = (p0, t0, q_, w, depth) => { const arr = [p0]; for (let k = 1; k <= 7; k++) { const m = p0.clone().lerp(q_, k / 7).add(V(rnd() - .5, rnd() - .5, rnd() - .5).multiplyScalar(.12)); arr.push(k === 7 ? q_ : near(m).clone().lerp(m, .35)); }
-    const sm = curve(arr, 18), ts = addSeg(sm, t0, w, vPk);
-    if (depth < 2) for (let j = 0; j < 2; j++) { const i = 6 + Math.floor(rnd() * 10), tg = vent[Math.floor(rnd() * vent.length)]; if (tg.distanceTo(sm[i]) < 1.4) branch(sm[i], ts[i], tg, w * .6, depth + 1); } };
-  for (let k = 0; k < 70; k++) { const o = trunk[Math.floor(rnd() * trunk.length)]; let q_ = null; for (let tr = 0; tr < 30; tr++) { const c = vent[Math.floor(rnd() * vent.length)]; if (c.distanceTo(o.p) < 1.6 && c.distanceTo(o.p) > .5) { q_ = c; break; } } if (q_) branch(o.p, o.t, q_, .55, 0); }
-  const tV = new Float32Array(n), reg = new Float32Array(n), segPts = []; for (const s of segs) s.pts.forEach((p, i) => { if (i % 3 === 0) segPts.push({ p, t: s.ts[i] }); });
-  for (let i = 0; i < n; i++) { const p = pts[i]; reg[i] = h(p) < -.12 ? 1 : 0; let bt = 1e9; for (const o of segPts) { const t = o.t + p.distanceTo(o.p) * 30; if (t < bt) bt = t; } tV[i] = bt; }
-  wg.setAttribute('tV', new THREE.BufferAttribute(tV, 1)); wg.setAttribute('reg', new THREE.BufferAttribute(reg, 1));
-  const pos = [], aV = [], aW = []; for (const s of segs) for (let i = 1; i < s.pts.length; i++) for (const j of [i - 1, i]) { const p = s.pts[j]; pos.push(p.x, p.y, p.z); aV.push(s.ts[j]); aW.push(s.w); }
-  const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); lg.setAttribute('tV', new THREE.Float32BufferAttribute(aV, 1)); lg.setAttribute('w', new THREE.Float32BufferAttribute(aW, 1));
+  const branch = (p0, t0, q_, w, depth, br) => { const arr = [p0]; for (let k = 1; k <= 7; k++) { const m = p0.clone().lerp(q_, k / 7).add(V(rnd() - .5, rnd() - .5, rnd() - .5).multiplyScalar(.12)); arr.push(k === 7 ? q_ : near(m).clone().lerp(m, .35)); }
+    const sm = curve(arr, 18), ts = addSeg(sm, t0, w, vPk, br);
+    if (depth < 2) for (let j = 0; j < 2; j++) { const i = 6 + Math.floor(rnd() * 10), tg = vent[Math.floor(rnd() * vent.length)]; if (tg.distanceTo(sm[i]) < 1.4) branch(sm[i], ts[i], tg, w * .6, depth + 1, br); } };
+  for (let k = 0; k < 70; k++) { const o = trunk[Math.floor(rnd() * trunk.length)]; let q_ = null; for (let tr = 0; tr < 30; tr++) { const c = vent[Math.floor(rnd() * vent.length)]; if (c.distanceTo(o.p) < 1.6 && c.distanceTo(o.p) > .5) { q_ = c; break; } } if (q_) branch(o.p, o.t, q_, .55, 0, o.br); }
+  const tV = new Float32Array(n), tVr = new Float32Array(n), reg = new Float32Array(n), segPts = []; for (const s of segs) s.pts.forEach((p, i) => { if (i % 3 === 0) segPts.push({ p, t: s.ts[i], br: s.br }); });
+  for (let i = 0; i < n; i++) { const p = pts[i]; reg[i] = h(p) < -.12 ? 1 : 0; let bt = 1e9, br_ = 1e9; for (const o of segPts) { const t = o.t + p.distanceTo(o.p) * 30; if (t < bt) bt = t; if (!o.br && t + p.distanceTo(o.p) * 15 < br_) br_ = t + p.distanceTo(o.p) * 15; } tV[i] = bt; tVr[i] = br_; }
+  wg.setAttribute('tV', new THREE.BufferAttribute(tV, 1)); wg.setAttribute('tVr', new THREE.BufferAttribute(tVr, 1)); wg.setAttribute('reg', new THREE.BufferAttribute(reg, 1));
+  const pos = [], aV = [], aVr = [], aW = []; for (const s of segs) for (let i = 1; i < s.pts.length; i++) for (const j of [i - 1, i]) { const p = s.pts[j]; pos.push(p.x, p.y, p.z); aV.push(s.ts[j]); aVr.push(s.br ? 1e6 : s.ts[j]); aW.push(s.w); }
+  const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); lg.setAttribute('tV', new THREE.Float32BufferAttribute(aV, 1)); lg.setAttribute('tVr', new THREE.Float32BufferAttribute(aVr, 1)); lg.setAttribute('w', new THREE.Float32BufferAttribute(aW, 1));
   heart.add(new THREE.LineSegments(lg, condMat));
   for (const s of segs.slice(0, 4)) { const tg = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(s.pts), 80, .022, 6), c = tg.attributes.position.count, t2 = new Float32Array(c), w2 = new Float32Array(c).fill(1.3);
     for (let i = 0; i < c; i++) { const p = V(tg.attributes.position.getX(i), tg.attributes.position.getY(i), tg.attributes.position.getZ(i)); let bi = 0, bd = 1e9; s.pts.forEach((q_, k) => { const d = q_.distanceToSquared(p); if (d < bd) { bd = d; bi = k; } }); t2[i] = s.ts[bi]; }
-    tg.setAttribute('tV', new THREE.BufferAttribute(t2, 1)); tg.setAttribute('w', new THREE.BufferAttribute(w2, 1)); heart.add(new THREE.Mesh(tg, condMat)); }
+    tg.setAttribute('tV', new THREE.BufferAttribute(t2, 1)); tg.setAttribute('tVr', new THREE.BufferAttribute(s.br ? new Float32Array(c).fill(1e6) : t2, 1)); tg.setAttribute('w', new THREE.BufferAttribute(w2, 1)); heart.add(new THREE.Mesh(tg, condMat)); }
   // nodo AV, catéteres de los canales del trazado
   const glow = (p, c, s) => { const m = new THREE.Mesh(new THREE.SphereGeometry(s, 16, 12), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: .8, blending: THREE.AdditiveBlending, depthWrite: false })); m.position.copy(p); heart.add(m); return m; };
   glow(AVN, 0xffa040, .06);
@@ -217,12 +220,17 @@ function build(parts) {
     const hh = His.find(x => t - x >= 15 && t - x <= 80); if (hh != null) { ON.h.push(hh); continue; }
     const p = ptAt(t, y => y > 300); ON.v.push({ t: t - 10, P: p ? map2(p) : TIP }); }
   for (const x of His) if (!ON.h.includes(x)) ON.h.push(x);
+  const BBB = sc.bbbL || []; ON.hr = ON.h.filter(x => BBB.includes(x)); ON.h = ON.h.filter(x => !BBB.includes(x));
+  BBB.forEach(h_ => COLS.push({ t: h_ + 8, P: LBX, dur: 520, big: 1 }));
+  BBBL = BBB.map(h_ => [h_ + 8, h_ + 528]);
   LAB = [['AD', RAc.clone().add(sn.clone().multiplyScalar(-.6))], ['AI', LAc.clone().add(ax.clone().multiplyScalar(.6)).add(sn.clone().multiplyScalar(.6)).add(V(0, 0, -.3))], ['VD', sept(.35, -3.2, .5)], ['VI', sept(.5, 3.2, 0)], ['nodo AV', AVN.clone().add(V(.05, -.2, .1))], ['His', HIS.clone().add(V(.1, .25, .2))], ...(AP3 ? [[AP3.n, AP3.p.clone().add(V(.25, .25, .25)), 'ap']] : []), ...(FOC3 ? [[sc.focusPt ? 'foco' : 'foco (VPSI)', FOC3.clone().add(V(.2, .25, 0)), 'cat']] : [])]
     .map(([t, p, c]) => { const d = document.createElement('div'); d.className = 'lab ' + (c || ''); d.textContent = t; $('labs').appendChild(d); return { d, p }; });
+  if (BBBL.length) { const d = document.createElement('div'); d.className = 'lab cat'; d.textContent = 'bloqueo de la rama izquierda'; $('labs').appendChild(d); LAB.push({ d, p: LBX.clone().add(V(.35, -.25, .2)), when: BBBL }); }
 }
 function setOn(T) {
   const last = (arr, f) => arr.filter(x => f(x) <= T).slice(-N_ON);
   U.onV.value.fill(-1e5); last(ON.h, x => x).forEach((x, i) => U.onV.value[i] = x);
+  U.onVR.value.fill(-1e5); last(ON.hr, x => x).forEach((x, i) => U.onVR.value[i] = x);
   U.aT.value.fill(-1e5); last(ON.a, x => x.t).forEach((x, i) => { U.aT.value[i] = x.t; U.aO.value[i].copy(x.P); });
   U.vT.value.fill(-1e5); last(ON.v, x => x.t).forEach((x, i) => { U.vT.value[i] = x.t; U.vO.value[i].copy(x.P); });
 }
@@ -248,7 +256,7 @@ function drawWaves(T) {
     const arr = tr.geometry.attributes.position.array; let m = 0; for (let j = 0; j <= k && m < 62; j++, m++) { arr[m * 3] = P[j].P.x; arr[m * 3 + 1] = P[j].P.y; arr[m * 3 + 2] = P[j].P.z; }
     arr[m * 3] = pos.x; arr[m * 3 + 1] = pos.y; arr[m * 3 + 2] = pos.z; m++; tr.geometry.setDrawRange(0, m); tr.geometry.attributes.position.needsUpdate = true; tr.material.color = col; tr.material.opacity = (w.hi ? .95 : .6) * fade; tr.visible = true; }
   for (let i = n; i < pool.length; i++) { pool[i].visible = false; trails[i].visible = false; }
-  for (const c of COLS) if (T >= c.t && T < c.t + 220) { const x = getX(nx++); x.visible = true; x.position.copy(c.P); }
+  for (const c of COLS) if (T >= c.t && T < c.t + (c.dur || 220)) { const x = getX(nx++); x.visible = true; x.position.copy(c.P); x.scale.setScalar(c.big ? .45 : .22); }
   for (let i = nx; i < xs.length; i++) xs[i].visible = false;
   const st = ST3.find(s => T >= s.t && T < s.t + 110); ring.visible = !!st;
   if (st) { const f = (T - st.t) / 110; ring.position.copy(st.P); ring.scale.setScalar((lastStims.has(st.t) ? 1.25 : .8) * (1 + f * 1.4) * (dist / 13)); ring.material.opacity = 1 - f; ring.lookAt(cam.position); }
@@ -317,12 +325,12 @@ function frame(T) {
   const w = inWin(T); badge.className = 'badge' + (w ? ' on' : ''); if (w) { const second = T >= w[1]; badge.textContent = (second ? w[4] : w[3]) + ' · cámara lenta'; badge.style.color = second ? '#3ddc84' : '#ff8a8a'; }
 }
 function render(T) {
-  if (auto) { const wi = WIN.findIndex(w => T >= w[0] - 120 && T <= w[2] + 60); if (wi >= 0 && FOCUS[wi]) { tTgt.copy(FOCUS[wi]).add(heart.position); tDist = 8; tYaw = -.25; tPitch = .1; } else { tTgt.set(0, 0, 0); tDist = 13; tYaw = .15 + .25 * Math.sin(T / 2200); tPitch = .05; } }
+  if (auto) { const wi = WIN.findIndex(w => T >= w[0] - 120 && T <= w[2] + 60); if (wi >= 0 && FOCUS[wi]) { tTgt.copy(FOCUS[wi]).add(heart.position); tDist = 8; const d = FOCUS[wi].clone().setY(0); if (d.length() > .3) { d.normalize(); tYaw = Math.atan2(d.x, d.z); if (Math.cos(tYaw) < -.2) tYaw = Math.sign(tYaw) * 1.7; } else tYaw = -.25; tPitch = .1; } else { tTgt.set(0, 0, 0); tDist = 13; tYaw = .15 + .25 * Math.sin(T / 2200); tPitch = .05; } }
   yaw += (tYaw - yaw) * .05; pitch += (tPitch - pitch) * .05; dist += (tDist - dist) * .05; tgt.lerp(tTgt, .05);
   cam.position.set(tgt.x + dist * Math.sin(yaw) * Math.cos(pitch), tgt.y + dist * Math.sin(pitch), tgt.z + dist * Math.cos(yaw) * Math.cos(pitch)); cam.lookAt(tgt);
   const w = stage.clientWidth, h = stage.clientHeight; if (cv.width !== Math.round(w * R.getPixelRatio())) { R.setSize(w, h, false); comp.setSize(w, h); cam.aspect = w / h; cam.updateProjectionMatrix(); }
   comp.render();
-  for (const l of LAB) { const p = l.p.clone().add(heart.position).project(cam); l.d.style.left = ((p.x + 1) / 2 * w) + 'px'; l.d.style.top = ((1 - p.y) / 2 * h) + 'px'; l.d.style.opacity = p.z < 1 ? 1 : 0; }
+  for (const l of LAB) { const p = l.p.clone().add(heart.position).project(cam); l.d.style.left = ((p.x + 1) / 2 * w) + 'px'; l.d.style.top = ((1 - p.y) / 2 * h) + 'px'; l.d.style.opacity = p.z < 1 && (!l.when || l.when.some(([a, b]) => T >= a && T < b)) ? 1 : 0; }
 }
 let T = 0, play = false, last = 0;
 const btn = $('play'), vel = $('vel');

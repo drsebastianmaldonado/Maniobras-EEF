@@ -535,7 +535,7 @@
     const h = a + 185; W_(sc, 'ante', [[G.aSep, a + 40], [G.node, a + 70], [G.his, h]]); E(sc, 'His', h, 'H');
     const [r, l] = ramas(h, HVT); W_(sc, 'ante', r.pts);
     let lv = h + HVT;
-    if (bri) { W_(sc, 'ante', l.pts, h + 6); W_(sc, 'ante', [[G.rb2, h + 22], [[330, 430], h + 50], [[390, 425], h + 68], [G.lvA, lv = h + 85]]); E(sc, 'VD', h + HVT, 'V', { pre: 1 }); }
+    if (bri) { (sc.bbbL = sc.bbbL || []).push(h); W_(sc, 'ante', l.pts, h + 6); W_(sc, 'ante', [[G.rb2, h + 22], [[330, 430], h + 50], [[390, 425], h + 68], [G.lvA, lv = h + 85]]); E(sc, 'VD', h + HVT, 'V', { pre: 1 }); }
     else { W_(sc, 'ante', l.pts); E(sc, 'VD', h + HVT, 'V'); }
     sc.flV.push(h + HVT);
     W_(sc, 'retro', [[G.lvA, lv], [G.lvB, lv + 40], [G.apV, lv + 95], [G.apA, lv + 110]]);
