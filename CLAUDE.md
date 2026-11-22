@@ -68,5 +68,5 @@ Revisamos los flujogramas (`prototipos/flujo/`) figura por figura con el autor.
 - **Algoritmo completo revisado (figuras 0 a 6).** Siguiente: elegir el estilo de animación o los ítems abiertos del issue #1.
 
 ## Otros pendientes
-- Elegir estilo de animación: prototipos `prototipos/vop-3d.html` y `prototipos/vop-25d.html`.
+- **Animación 3D anatómica (aprobada por el autor):** `prototipos/vop-3d-anat.html` (sobreestimulación ventricular en la TRNAV típica, v3). Estilo rayos X (shader fresnel aditivo + bloom de three.js r160, addons en `prototipos/lib/jsm/`), corazón de BodyParts3D (`prototipos/modelos/corazon.glb`, CC BY-SA 2.1 JP, atribución en `modelos/LEEME.txt` y en la página), sistema de conducción y Purkinje generados sobre el modelo, frente de activación por vértice, circuito de la TRNAV agrandado en el triángulo de Koch, trazado y diagrama de escalera sincronizados. Siguiente: pasar el mismo estilo a otras maniobras e integrarlo a la app (los prototipos `vop-3d.html` y `vop-25d.html` quedan descartados).
 - Issue #1: casi todo revisado (17 casos, bibliografía, cortes pediátricos, esquemas). Quedan abiertos: Kim 1987 (atropina en el doble disparo, sin el original), DOI de Nogami 2010 (necesita el PDF), trazados nuevos del autor y un caso de TA izquierda con el ECG de TAE de la vena pulmonar superior izquierda.
