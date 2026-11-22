@@ -13,7 +13,7 @@ h1{font-size:18px;margin:4px 0 0}.sub{color:var(--ink2);font-size:13px;margin:0}
 .stage{position:relative;width:100%;aspect-ratio:1/1;max-height:64dvh;border-radius:18px;overflow:hidden;background:#000;touch-action:none}
 canvas.gl{width:100%;height:100%;display:block}
 .lab{position:absolute;transform:translate(-50%,-50%);font-size:12px;font-weight:700;color:#d9d4ff;text-shadow:0 1px 3px #000,0 0 6px #000;pointer-events:none;white-space:nowrap;transition:opacity .3s}
-.lab.cat{color:#ff9a9a}.lab.cs{color:#ffd27a}
+.lab.cat{color:#ff9a9a}.lab.sp{color:#ffb15c;font-size:11px}.lab.fp{color:#cfa2ff;font-size:11px}.lab.cs{color:#ffd27a}
 .hint{position:absolute;right:10px;bottom:8px;font-size:11px;color:var(--ink2)}
 .load{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink2);font-size:13px}
 .ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -68,26 +68,37 @@ S.forEach(s => { onP.push(s); E('VD', s, 'E', { stim: 1 }); E('His', s + 55, 'H'
 const lastA = S[S.length - 1] + 110; ev.find(e => e.ch === 'AD' && e.t === lastA).tag = 'última A acelerada';
 [lastA + 270, lastA + 610, lastA + 950].forEach(beat);
 const verdictT = lastA + 270 + HV;
-const FASES = [[0, 'TRNAV típica (LC 340 ms): el frente baja por la vía lenta y el His, y sube por la vía rápida; A y V se activan casi juntos.'],
+// frentes dentro del circuito: {k: recorrido, t0, t1, c: color, cut: hasta dónde llega si choca}
+const COM = [];
+const C_ = (k, t0, t1, c, cut) => COM.push({ k, t0, t1, c, cut });
+const Hs = [100, 440, 780, lastA + 270, lastA + 610, lastA + 950];
+Hs.forEach((h, i) => { C_('his', h - 15, h, 'o'); C_('fp', h - 15, h + 20, 'v'); C_('al', h + 20, h + 85, 'v');
+  const nx = Hs[i + 1]; if (nx && nx - h < 400) C_('sp', h + 85, nx - 15, 'o'); });
+C_('sp', -155, 85, 'o');
+C_('sp', 865, 1105, 'o', 1090);   // choca con el frente retrógrado del primer estímulo
+S.forEach((s, i) => { C_('hisUp', s + 45, s + 60, 'v'); C_('fp', s + 60, s + 75, 'v'); C_('al', s + 75, s + 140, 'v');
+  if (i < S.length - 1) C_('sp', s + 140, s + 380, 'o', s + 355); else C_('sp', s + 140, s + 365, 'o'); });
+const FASES = [[0, 'TRNAV típica (LC 340 ms), vista del triángulo de Koch: el frente baja por la <b style="color:#ffb15c">vía lenta</b>, gira en el nodo AV y sube por la <b style="color:#cfa2ff">vía rápida</b>; a la vez baja por el His. A y V se activan casi juntos.'],
   [1000, 'Estimulación del ápex del VD a 300 ms (E): el ventrículo se activa desde la punta del catéter y el frente sube por las ramas y el nodo hasta la aurícula: las A se aceleran.'],
-  [2650, 'Se corta la estimulación. Mirá qué sigue a la <b>última A acelerada</b>.'], [3300, 'La taquicardia retoma su ciclo.']];
+  [1080, 'El frente retrógrado del estímulo sube por el His y la vía rápida y choca (✕) con el que bajaba por la vía lenta.'], [1400, 'Estimulación del ápex del VD a 300 ms: cada estímulo sube por la vía rápida, acelera la aurícula y choca con el frente de la vía lenta.'], [2650, 'Se corta la estimulación: la <b>última A acelerada</b> baja por la vía lenta sin chocar con nada y reinicia la reentrada.'], [3300, 'La taquicardia retoma su ciclo.']];
 
 // ---------- materiales
-const pulse = `float pulse(float x){ return x < 0. ? 0. : (x < 18. ? x/18. : exp(-(x-18.)/70.)); }`;
+const pulse = `float frontF(float x){ float d = (x-12.)/11.; return exp(-d*d); } float wakeF(float x){ return x < 0. ? 0. : exp(-x/170.); }`;
 const N_ON = 8;
 const onU = arr => ({ value: new Float32Array(N_ON).fill(-1e5) });
 const U = { T: { value: 0 }, onV: onU(), onP: onU(), onA: onU() };
 function setOn(u, arr, T) { const a = arr.filter(t => t <= T).slice(-N_ON); u.value.fill(-1e5); a.forEach((t, i) => u.value[i] = t); }
-const loopOn = (name, attr) => `for(int i=0;i<${N_ON};i++){ g = max(g, pulse(T - ${name}[i] - ${attr})); }`;
+const loopOn = (name, attr) => `for(int i=0;i<${N_ON};i++){ float x = T - ${name}[i] - ${attr}; gF = max(gF, frontF(x)); gW = max(gW, wakeF(x)); }`;
 const wallMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, uniforms: U,
   vertexShader: `attribute float tV; attribute float tP; attribute float tA; attribute float reg; varying vec3 vN; varying vec3 vV; varying float vtV; varying float vtP; varying float vtA; varying float vReg;
     void main(){ vec4 mv = modelViewMatrix*vec4(position,1.); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); vtV=tV; vtP=tP; vtA=tA; vReg=reg; gl_Position = projectionMatrix*mv; }`,
   fragmentShader: `uniform float T; uniform float onV[${N_ON}]; uniform float onP[${N_ON}]; uniform float onA[${N_ON}]; varying vec3 vN; varying vec3 vV; varying float vtV; varying float vtP; varying float vtA; varying float vReg; ${pulse}
-    void main(){ float f = 1.-abs(dot(normalize(vN),normalize(vV))); f = pow(f,2.); float g = 0.;
+    void main(){ float f = 1.-abs(dot(normalize(vN),normalize(vV))); f = pow(f,2.); float gF = 0., gW = 0.;
       if (vReg > .5) { ${loopOn('onV', 'vtV')} ${loopOn('onP', 'vtP')} } else { ${loopOn('onA', 'vtA')} }
       vec3 base = mix(vec3(.42,.30,.95), vec3(.75,.32,.75), .35);
-      vec3 act = vReg > .5 ? vec3(1.,.42,.25) : vec3(.95,.45,1.);
-      gl_FragColor = vec4(base*(f*.10+.003) + act*g*(vReg > .5 ? (.011+f*.05) : (.012+f*.06)), 1.); }` });
+      vec3 fc = vReg > .5 ? vec3(1.,.78,.42) : vec3(1.,.62,1.);
+      vec3 wc = vReg > .5 ? vec3(1.,.34,.18) : vec3(.75,.38,1.);
+      gl_FragColor = vec4(base*(f*.10+.003) + fc*gF*(vReg > .5 ? (.03+f*.13) : (.012+f*.07)) + wc*gW*(.004+f*.02), 1.); }` });
 const vesselMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, uniforms: { k: { value: .11 } },
   vertexShader: `varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix*vec4(position,1.); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }`,
   fragmentShader: `uniform float k; varying vec3 vN; varying vec3 vV; void main(){ float f = 1.-abs(dot(normalize(vN),normalize(vV))); f = pow(f,2.2); gl_FragColor = vec4(vec3(.48,.52,1.)*(f*k+.003),1.); }` });
@@ -96,10 +107,10 @@ const valveMat = vesselMat.clone(); valveMat.uniforms = { k: { value: .05 } };
 const condMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: U,
   vertexShader: `attribute float tV; attribute float tP; attribute float w; varying float vtV; varying float vtP; varying float vw; void main(){ vtV=tV; vtP=tP; vw=w; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
   fragmentShader: `uniform float T; uniform float onV[${N_ON}]; uniform float onP[${N_ON}]; varying float vtV; varying float vtP; varying float vw; ${pulse}
-    void main(){ float g = 0.; ${loopOn('onV', 'vtV')} ${loopOn('onP', 'vtP')} gl_FragColor = vec4(vec3(1.,.62,.18)*(.16*vw + g*(.22+.45*vw*vw)), 1.); }` });
+    void main(){ float gF = 0., gW = 0.; ${loopOn('onV', 'vtV')} ${loopOn('onP', 'vtP')} gl_FragColor = vec4(vec3(1.,.62,.18)*(.16*vw + gF*(.5+.6*vw*vw) + gW*.12), 1.); }` });
 
 // ---------- carga del modelo y construcción
-let ready = false, LAB = [], TIP = null, stimRing, AVN, HIS, SAN;
+let ready = false, LAB = [], TIP = null, stimRing, AVN, HIS, SAN, KOCH = null; const CIR = {};
 new GLTFLoader().load('./modelos/corazon.glb', g => {
   const parts = {}; g.scene.traverse(o => { if (o.isMesh) parts[o.name] = o; });
   for (const [n, o] of Object.entries(parts)) {
@@ -190,17 +201,43 @@ function build(parts) {
   // nodos
   const glow = (p, c, s) => { const m = new THREE.Mesh(new THREE.SphereGeometry(s, 16, 12), new THREE.MeshBasicMaterial({ color: c, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); m.position.copy(p); heart.add(m); return m; };
   window.__nodes = { av: glow(AVN, 0xffa040, .07), sa: glow(SAN, 0xffa040, .06) };
+  // circuito de la TRNAV en el triángulo de Koch: vía lenta (posterior, junto al ostium del SC) y vía rápida (anterior, hacia el His)
+  // circuito agrandado (esquemático) en el plano de la cara septal de la AD: e1 del ostium del SC hacia el His, e2 hacia la aurícula
+  const e2 = ax.clone(), e1 = HIS.clone().sub(csOs); e1.sub(e2.clone().multiplyScalar(e1.dot(e2))).normalize();
+  const at = (a, b) => AVN.clone().add(e1.clone().multiplyScalar(a)).add(e2.clone().multiplyScalar(b)).add(sn.clone().multiplyScalar(-.06));
+  const SPin = at(-.6, .22), FPex = at(.12, .62);
+  CIR.sp = curve([SPin, at(-.45, .02), at(-.2, -.06), AVN], 40);
+  CIR.fp = curve([AVN, at(.14, .2), at(.18, .42), FPex], 30);
+  CIR.al = curve([FPex, at(-.05, .78), at(-.42, .62), SPin], 34);
+  KOCH = { dir: sn.clone().negate().add(e2.clone().multiplyScalar(.15)).normalize(), e1, e2, c: at(-.12, .3) };
+  CIR.his = his; CIR.hisUp = [...his].reverse();
+  const cm = (c, o) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: o, blending: THREE.AdditiveBlending, depthWrite: false });
+  heart.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(CIR.sp), 60, .03, 8), cm(0xff9a3c, .35)));
+  heart.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(CIR.fp), 40, .03, 8), cm(0xc58cff, .45)));
+  heart.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(CIR.al), 40, .018, 6), cm(0x9b7bff, .18)));
+  CIR.labs = [['vía lenta', at(-.38, -.2), 'sp'], ['vía rápida', at(.42, .38), 'fp']];
+  CIR.SPin = SPin;
   // etiquetas
   const out = (p, k) => p.clone().add(p.clone().sub(V(0, 0, 0)).setY(0).normalize().multiplyScalar(k));
-  LAB = [['AD', out(V(-1.5, .9, .2), .2)], ['AI', V(.9, .9, -1.4)], ['VD', sept(.35, -3.2, .5)], ['VI', sept(.5, 3.2, 0)], ['nodo AV', AVN.clone().add(V(-.35, 0, .2))], ['His', HIS.clone().add(V(.1, .25, .2))], ['catéter', TIP.clone().add(V(-.3, -.35, .3)), 'cat']]
+  LAB = [['AD', out(V(-1.5, .9, .2), .2)], ['AI', V(.9, .9, -1.4)], ['VD', sept(.35, -3.2, .5)], ['VI', sept(.5, 3.2, 0)], ['nodo AV', AVN.clone().add(V(.05, -.2, .1))], ['His', HIS.clone().add(V(.1, .25, .2))], ['catéter', TIP.clone().add(V(-.3, -.35, .3)), 'cat'], ...CIR.labs]
     .map(([t, p, c]) => { const d = document.createElement('div'); d.className = 'lab ' + (c || ''); d.textContent = t; document.getElementById('labs').appendChild(d); return { d, p }; });
   heart.position.y = -.25;
+  const ky = Math.atan2(KOCH.dir.x, KOCH.dir.z), kp = Math.asin(KOCH.dir.y); for (const s of SHOTS) if (s[4] === 1) { s[1] = ky; s[2] = kp; s[3] = 4.2; } yaw = tYaw = ky; pitch = tPitch = kp; dist = tDist = 4.2;
   window.__dbg = { B, apex, ax, sn, AVN, HIS, TIP, SAN };
 }
 
+// ---------- frentes como luces con estela
+const glowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); const r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(.3, 'rgba(255,255,255,.75)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+const xTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); g.strokeStyle = '#fff'; g.lineWidth = 9; g.lineCap = 'round'; g.beginPath(); g.moveTo(14, 14); g.lineTo(50, 50); g.moveTo(50, 14); g.lineTo(14, 50); g.stroke(); return new THREE.CanvasTexture(c); })();
+const pool = [], trails = [], xs = [];
+const getSprite = i => { if (!pool[i]) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, blending: THREE.AdditiveBlending, depthTest: false, transparent: true })); s.scale.set(.32, .32, 1); heart.add(s); pool[i] = s; } return pool[i]; };
+const getTrail = i => { if (!trails[i]) { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(32 * 3), 3)); const l = new THREE.Line(g, new THREE.LineBasicMaterial({ transparent: true, blending: THREE.AdditiveBlending, depthTest: false })); heart.add(l); trails[i] = l; } return trails[i]; };
+const getX = i => { if (!xs[i]) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: xTex, color: 0xff5050, depthTest: false, transparent: true })); s.scale.set(.2, .2, 1); heart.add(s); xs[i] = s; } return xs[i]; };
+
 // ---------- cámara
-let yaw = .15, pitch = .05, dist = 13.5, auto = true, tYaw = yaw, tPitch = pitch, tDist = dist;
-const SHOTS = [[0, .15, .05, 13.5], [900, .15, .05, 13.5], [1300, -.55, .1, 11.5], [2600, -.75, .12, 11.5], [2900, .25, .02, 12.5], [3800, .55, .02, 13.5]];
+let yaw = -.9, pitch = .15, dist = 6, foc = 1, auto = true, tYaw = yaw, tPitch = pitch, tDist = dist, tFoc = foc;
+const SHOTS = [[0, -.9, .15, 6, 1], [850, -.9, .15, 6, 1], [1250, .1, .05, 13, 0], [2500, -.35, .08, 12, 0], [2700, -.9, .15, 6, 1], [3350, -.9, .15, 6, 1], [3800, .15, .05, 13, 0]];
 let drag = null, pinch = 0;
 stage.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; stage.setPointerCapture(e.pointerId); });
 stage.addEventListener('pointermove', e => { if (!drag || pinch) return; tYaw += (e.clientX - drag.x) * .008; tPitch = Math.max(-1.2, Math.min(1.2, tPitch + (e.clientY - drag.y) * .006)); drag = { x: e.clientX, y: e.clientY }; setAuto(false); });
@@ -213,7 +250,7 @@ const camBtn = document.getElementById('cam');
 function setAuto(on) { auto = on; camBtn.textContent = 'Cámara automática: ' + (on ? 'sí' : 'no'); }
 camBtn.onclick = () => setAuto(!auto);
 const ease = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
-function shot(T) { let i = 0; while (i < SHOTS.length - 2 && T >= SHOTS[i + 1][0]) i++; const [a0, y0, q0, d0] = SHOTS[i], [a1, y1, q1, d1] = SHOTS[i + 1]; const f = ease(Math.max(0, Math.min(1, (T - a0) / Math.max(1, a1 - a0)))); return [y0 + (y1 - y0) * f, q0 + (q1 - q0) * f, d0 + (d1 - d0) * f]; }
+function shot(T) { let i = 0; while (i < SHOTS.length - 2 && T >= SHOTS[i + 1][0]) i++; const [a0, y0, q0, d0, f0] = SHOTS[i], [a1, y1, q1, d1, f1] = SHOTS[i + 1]; const f = ease(Math.max(0, Math.min(1, (T - a0) / Math.max(1, a1 - a0)))); return [y0 + (y1 - y0) * f, q0 + (q1 - q0) * f, d0 + (d1 - d0) * f, f0 + (f1 - f0) * f]; }
 
 // ---------- trazado
 const tc = document.getElementById('tr'), tx = tc.getContext('2d');
@@ -240,15 +277,25 @@ function frame(T) {
   if (ready) {
     const st = S.find(s => T >= s && T < s + 110); stimRing.visible = !!st;
     if (st) { const f = (T - st) / 110; stimRing.position.copy(TIP); stimRing.scale.setScalar(1 + f * 2.2); stimRing.material.opacity = 1 - f; stimRing.lookAt(cam.position); }
+    let nc = 0, nx = 0;
+    for (const c of COM) { const end = c.cut || c.t1; if (T < c.t0 || T > end + 140) continue; const path = CIR[c.k], L = path.length - 1;
+      const fr = Math.max(0, Math.min(1, (Math.min(T, end) - c.t0) / Math.max(1, c.t1 - c.t0))), idx = fr * L, i0 = Math.floor(idx), pos = path[i0].clone().lerp(path[Math.min(L, i0 + 1)], idx - i0);
+      const fade = T > end ? 1 - (T - end) / 140 : 1, col = new THREE.Color(c.c === 'o' ? 0xffb050 : 0xc890ff), sp = getSprite(nc), tr = getTrail(nc); nc++;
+      sp.visible = true; sp.position.copy(pos); sp.material.color = col; sp.material.opacity = fade;
+      const arr = tr.geometry.attributes.position.array; let k = 0; for (let j = Math.max(0, i0 - 10); j <= i0 && k < 30; j++, k++) { const p = path[j]; arr[k * 3] = p.x; arr[k * 3 + 1] = p.y; arr[k * 3 + 2] = p.z; }
+      arr[k * 3] = pos.x; arr[k * 3 + 1] = pos.y; arr[k * 3 + 2] = pos.z; k++; tr.geometry.setDrawRange(0, k); tr.geometry.attributes.position.needsUpdate = true; tr.material.color = col; tr.material.opacity = .8 * fade; tr.visible = true;
+      if (c.cut && T >= c.cut && T < c.cut + 220) { const x = getX(nx++); x.visible = true; x.position.copy(pos); } }
+    for (let i = nc; i < pool.length; i++) { pool[i].visible = false; trails[i].visible = false; }
+    for (let i = nx; i < xs.length; i++) xs[i].visible = false;
     const nv = window.__nodes; const a = lit(onH, T, 140), b = lit(onP.map(s => s + 40), T, 160); nv.av.material.opacity = .35 + .65 * Math.max(a, b); nv.sa.material.opacity = .3;
   }
   let t = ''; for (const [ti, tt] of FASES) if (T >= ti) t = tt; fase.innerHTML = t;
   ver.classList.toggle('on', T >= verdictT); rng.value = T; drawTrace(T);
 }
 function render() {
-  if (auto) { const [y, p, d] = shot(T); tYaw = y; tPitch = p; tDist = d; }
-  yaw += (tYaw - yaw) * .06; pitch += (tPitch - pitch) * .06; dist += (tDist - dist) * .06;
-  cam.position.set(dist * Math.sin(yaw) * Math.cos(pitch), dist * Math.sin(pitch), dist * Math.cos(yaw) * Math.cos(pitch)); cam.lookAt(0, 0, 0);
+  if (auto) { const [y, p, d, fo] = shot(T); tYaw = y; tPitch = p; tDist = d; tFoc = fo; }
+  yaw += (tYaw - yaw) * .06; pitch += (tPitch - pitch) * .06; dist += (tDist - dist) * .06; foc += (tFoc - foc) * .06;
+  const tg = KOCH ? KOCH.c.clone().add(heart.position).multiplyScalar(foc) : V(0, 0, 0); cam.position.set(tg.x + dist * Math.sin(yaw) * Math.cos(pitch), tg.y + dist * Math.sin(pitch), tg.z + dist * Math.cos(yaw) * Math.cos(pitch)); cam.lookAt(tg);
   const w = stage.clientWidth, h = stage.clientHeight; if (cv.width !== Math.round(w * R.getPixelRatio())) { R.setSize(w, h, false); comp.setSize(w, h); cam.aspect = w / h; cam.updateProjectionMatrix(); }
   comp.render();
   for (const l of LAB) { const p = l.p.clone().add(heart.position).project(cam); l.d.style.left = ((p.x + 1) / 2 * w) + 'px'; l.d.style.top = ((1 - p.y) / 2 * h) + 'px'; l.d.style.opacity = p.z < 1 ? 1 : 0; }
@@ -260,7 +307,7 @@ btn.onclick = () => { play = !play; if (play && T >= 3800) T = 0; btn.textConten
 document.getElementById('re').onclick = () => { T = 0; setAuto(true); };
 rng.oninput = () => { T = +rng.value; };
 window.__setT = x => { T = x; }; window.__ready = () => ready;
-window.__cam = (y, p, d) => { setAuto(false); yaw = tYaw = y; pitch = tPitch = p; dist = tDist = d; };
+window.__cam = (y, p, d, f = 0) => { setAuto(false); yaw = tYaw = y; pitch = tPitch = p; dist = tDist = d; foc = tFoc = f; };
 requestAnimationFrame(t => { last = t; loop(t); });
 </script>
 </body>
