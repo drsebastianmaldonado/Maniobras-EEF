@@ -583,12 +583,12 @@
     // con un extraestímulo precoz la rápida está refractaria y se bloquea al entrar: la lenta sigue hasta el His
     const SLOW = 240;
     const beat = (s, ah, viaSlow, mk) => { paceA(sc, 'hra', s); const a = s + 10; E(sc, 'AD', a, 'A'); const h = a + ah;
-      if (viaSlow) { slow(a, ah); W_(sc, 'ante', [[G.hra, a - 10], [G.ra, a + 10], [[232, 234], a + 30], [[252, 246], a + 45]], a + 30); }
+      if (viaSlow) { slow(a, ah); W_(sc, 'ante', [[G.hra, a - 10], [G.ra, a + 10], [[232, 234], a + 30], [[252, 246], a + 45], [G.node, a + 60]], a + 45); }
       else { fast(a, ah); W_(sc, 'ante', [[G.hra, a - 10], [G.ra, a + 10], [[226, 248], a + 30], [[206, 268], a + 90], [[220, 292], a + 140], [[250, 284], a + SLOW - 60], [G.node, a + SLOW - 30]], a + SLOW - 70); }
       E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h); return { a, h }; };
     const P = [[400, 130], [320, 150], [280, 240]], R = [];
     let t = 200;
-    P.forEach(([c, ah], i) => { beat(t, 100); const x = beat(t + c, ah, ah > 200); R.push(Object.assign({ c }, x)); brk(sc, 'His', x.a, x.h, 'A2H2 ' + ah, { hot: i === 2, up: 1 }); t += 1300; });
+    P.forEach(([c, ah], i) => { beat(t, 100); sc.ev.find(e => e.stim && e.t === t).l = 'S1'; const x = beat(t + c, ah, ah > 200); const s2 = sc.ev.find(e => e.stim && e.t === t + c); s2.l = 'S2'; s2.s2 = c; brk(sc, 'AD', t, t + c, 'S1-S2 ' + c, { hot: i === 2 }); R.push(Object.assign({ c }, x)); brk(sc, 'His', x.a, x.h, 'A2H2 ' + ah, { hot: i === 2, up: 1 }); t += 1300; });
     sc.m.R = R;
     Object.assign(sc, { stimEnd: 0, verdictT: R[2].h + 30, verdict: 'Al acortar el acoplamiento 40 ms el A2H2 <b>salta 90 ms</b> (150 → 240): la vía rápida quedó refractaria y conduce la lenta → <b>doble fisiología nodal</b> (salto ≥ 50 ms).',
       why: 'En cada latido el frente entra a las dos vías. Mientras la rápida conduce, llega primero al nodo y el frente de la lenta se bloquea al final, porque encuentra el nodo refractario. Con un extraestímulo más precoz la rápida está refractaria y se bloquea al entrar: la lenta sigue hasta el His. A favor de TRNAV (VPP 86 %), pero solo muestra el sustrato: puede ser espectador.' });
@@ -1224,7 +1224,7 @@
           if (e.t > T || e.t < tStart) continue;
           const ln = LANES.find(l => l[0] === e.ch); if (!ln) continue;
           const y = ln[2], x = xOf(e.t);
-          if (e.stim) { ds += `M${x} ${y - 16} L${x} ${y + 12} `; lh += `<text x="${x}" y="${y - 18}" style="fill:var(--red)">E</text>`; continue; }
+          if (e.stim) { ds += `M${x} ${y - 16} L${x} ${y + 12} `; lh += `<text x="${x}" y="${y - 18}" style="fill:var(--red)${e.l === 'S2' ? ';font-weight:700' : ''}">${e.l && e.l !== 'E' ? e.l : 'E'}</text>`; continue; }
           if (e.l === 'P') { dp += spike(x, y, false); lh += `<text x="${x}" y="${y + 20}" style="fill:#d81b60">P</text>`; continue; }
           if (e.qrs === 'm') { d += `M${x - 1} ${y} L${x + 2} ${y + 9} L${x + 6} ${y - 12} L${x + 9} ${y + 4} L${x + 11} ${y} `; continue; }
           if (e.qrs) { d += e.qrs === 'w' ? `M${x - 1} ${y} L${x + 5} ${y - 12} L${x + 13} ${y - 11} L${x + 19} ${y + 6} L${x + 24} ${y} ` : `M${x - 1} ${y} L${x + 2} ${y - 13} L${x + 5} ${y + 6} L${x + 8} ${y} `; continue; }

@@ -84,7 +84,9 @@ const STIMS = (sc.stims && sc.stims.length ? sc.stims.map(s => ({ t: s.t, pt: s.
 const runs = []; for (const s of STIMS) { const r = runs[runs.length - 1]; if (r && s.t - r[r.length - 1].t < 700) r.push(s); else runs.push([s]); }
 const WIN = [];   // ventanas críticas: [t0, tSplit, t1, rótulo1, rótulo2]
 const PER_STIM = /^(parahis|vai|pre_|twin_ap)/.test(AID);   // estimulación en ritmo sinusal: cada estímulo es un punto clave
-if (PER_STIM) STIMS.forEach((s, i) => { const nx = STIMS[i + 1] ? STIMS[i + 1].t - 20 : Infinity; WIN.push([s.t - 10, s.t + 110, Math.min(nx, s.t + 320), 'Estímulo', 'Respuesta']); });
+if (PER_STIM) STIMS.forEach((s, i) => { const nx = STIMS[i + 1] ? STIMS[i + 1].t - 20 : Infinity, e = sc.ev.find(x => x.stim && x.t === s.t) || {};
+  const l1 = e.l === 'S2' ? `Extraestímulo S2 (se adelanta: S1-S2 ${e.s2} ms)` : e.l === 'S1' ? 'Estímulo de base S1' : 'Estímulo';
+  WIN.push([s.t - 10, s.t + 110, Math.min(nx, s.t + 320), l1, e.l === 'S2' ? 'Respuesta al S2' : 'Respuesta']); });
 else runs.forEach((r, i) => { const last = r[r.length - 1].t, nx = runs[i + 1] ? runs[i + 1][0].t - 60 : Infinity, end = Math.min(nx, last + 560);
   if (r.length === 1) WIN.push([last - 10, last + 220, end, 'Extraestímulo', 'Latido siguiente']);
   else WIN.push([last - 10, last + 220, end, 'Último latido estimulado', '1.er latido de retorno']); });
@@ -135,7 +137,7 @@ const condMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
       gl_FragColor = vec4(vec3(1.,.62,.18)*(.16*vw + gF*(.5+.6*vw*vw) + gW*.12), 1.); }` });
 
 // ---------- modelo y correspondencia del esquema 2D de la app con el corazón 3D
-let NODAL = null, BBBL = [], LBX = null, ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
+let KOCH = null, NODAL = null, BBBL = [], LBX = null, ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
 const map2 = p => V(M2[0][0] * p[0] + M2[0][1] * p[1] + M2[0][2], M2[1][0] * p[0] + M2[1][1] * p[1] + M2[1][2], M2[2][0] * p[0] + M2[2][1] * p[1] + M2[2][2]);
 function fit(pairs) {   // mínimos cuadrados: [x, y, 1] → X, Y, Z
   const A3 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], b = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
@@ -211,10 +213,14 @@ function build(parts) {
     [[312, 334], lbA[8]], [[360, 365], lbA[20]], [[405, 392], lbA[35]], [G.lvA, lbA[50]]].map(([a, b]) => [key(a), b]));
   const APP = new Set([G.apV, G.apA, G.aSep, [231, 262], [237, 318], [232, 268], [236, 312], [250, 362], [264, 272], [240, 356], [212, 288], [92, 272], [178, 512], G.afA, G.afV, G.jx, G.cso].map(key));
   // región del triángulo de Koch agrandada (como en la animación de la TRNAV): las vías lenta y rápida se leen mejor
-  const N0 = map2(G.node), KZ = sc.nodal ? 2.6 : 1;
-  const mapK = p => { const d = Math.hypot(p[0] - G.node[0], p[1] - G.node[1]); if (KZ === 1 || d > 75 || p[1] > 300) return map2(p); return AVN.clone().add(map2(p).sub(N0).multiplyScalar(KZ)); };
+  const N0 = map2(G.node), KZ = sc.nodal ? 4.2 : 1;
+  // en la cara septal de la AD: e1 del ostium del SC hacia el His, e2 hacia la aurícula (arriba en el esquema 2D)
+  const e2k = ax.clone(), e1k = HIS.clone().sub(csOs); e1k.sub(e2k.clone().multiplyScalar(e1k.dot(e2k))).normalize();
+  const mapK = p => { const d = Math.hypot(p[0] - G.node[0], p[1] - G.node[1]); if (KZ === 1 || d > 75 || p[1] > 300) return map2(p);
+    const dx = p[0] - G.node[0], dy = p[1] - G.node[1]; return AVN.clone().add(e1k.clone().multiplyScalar(dx * .02)).add(e2k.clone().multiplyScalar(-dy * .02)).add(sn.clone().multiplyScalar(-.08)); };
   if (sc.nodal) { const tube = (pts, col, r) => { const c = new THREE.CatmullRomCurve3(pts.map(mapK)); heart.add(new THREE.Mesh(new THREE.TubeGeometry(c, 50, r, 8), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: .4, blending: THREE.AdditiveBlending, depthWrite: false }))); return c; };
-    const cf = tube([[232, 234], [252, 246], G.node], 0xc58cff, .035), cs_ = tube([[226, 248], [206, 268], [220, 292], [250, 284], G.node], 0xff9a3c, .035);
+    const cf = tube([[232, 234], [252, 246], G.node], 0xc58cff, .06), cs_ = tube([[226, 248], [206, 268], [220, 292], [250, 284], G.node], 0xff9a3c, .06);
+    KOCH = { c: mapK([235, 262]), dir: sn.clone().negate().add(ax.clone().multiplyScalar(.2)).normalize() };
     NODAL = [['vía rápida', cf.getPoint(.4).add(V(0, .25, .1))], ['vía lenta', cs_.getPoint(.45).add(V(0, -.25, .1))]]; }
   WV3 = sc.wv.map((w, i) => ({ c: w.c, hi: HIW[i], pts: w.pts.map(([p, t]) => { const a = ANC.get(key(p)); return { P: a ? a.clone() : mapK(p), t, y: p[1], anc: !!a || APP.has(key(p)) }; }) }));
   COLS = (sc.cols || []).map(c => ({ t: c.t, P: mapK(c.pt) }));
@@ -297,10 +303,13 @@ function drawTrace(T) {
   for (const [, lab, y] of LY) { tx.fillStyle = '#9aa0b4'; tx.fillText(lab, 6, y + 4); tx.strokeStyle = '#262b3c'; tx.lineWidth = 1; tx.beginPath(); tx.moveTo(X0, y); tx.lineTo(Math.min(X1, X(T)), y); tx.stroke(); }
   tx.textAlign = 'center';
   for (const e of sc.ev) { if (e.t > T || e.t < t0) continue; const L_ = LY.find(l => l[0] === e.ch); if (!L_) continue; const y = L_[2], x = X(e.t);
-    if (e.stim) { const big = lastStims.has(e.t); tx.strokeStyle = '#ff4d4d'; tx.lineWidth = big ? 3 : 2; tx.beginPath(); tx.moveTo(x, y - 15); tx.lineTo(x, y + 11); tx.stroke(); tx.fillStyle = '#ff4d4d'; tx.fillText('E', x, y - 18); if (big) { tx.font = 'bold 11px sans-serif'; tx.fillStyle = '#ff7a7a'; tx.fillText('último', x, y + 24); tx.font = '12px sans-serif'; } continue; }
+    if (e.stim) { const big = lastStims.has(e.t); tx.strokeStyle = '#ff4d4d'; tx.lineWidth = big ? 3 : 2; tx.beginPath(); tx.moveTo(x, y - 15); tx.lineTo(x, y + 11); tx.stroke(); tx.fillStyle = '#ff4d4d'; if (e.l === 'S2') tx.font = 'bold 12px sans-serif'; tx.fillText(e.l && e.l !== 'E' ? e.l : 'E', x, y - 18); tx.font = '12px sans-serif'; if (big) { tx.font = 'bold 11px sans-serif'; tx.fillStyle = '#ff7a7a'; tx.fillText('último', x, y + 24); tx.font = '12px sans-serif'; } continue; }
     const hot = !!e.tag, hh = e.l === 'V' ? 12 : 9, inv = e.inv ? -1 : 1; tx.strokeStyle = hot ? '#4c9dff' : '#eef0f7'; tx.lineWidth = hot ? 2.4 : 1.4;
     tx.beginPath(); tx.moveTo(x - 2, y); tx.lineTo(x, y - hh * inv); tx.lineTo(x + 2, y + hh * .7 * inv); tx.lineTo(x + 4, y); tx.stroke(); tx.fillStyle = '#9aa0b4'; tx.fillText(e.l, x, y - hh - 4);
     if (hot) { tx.fillStyle = '#4c9dff'; tx.font = 'bold 11px sans-serif'; tx.fillText(e.tag, x, y + 24); tx.font = '12px sans-serif'; } }
+  for (const it of sc.ints || []) { if (T < it.t1 || it.t1 < t0) continue; const L_ = LY.find(l => l[0] === it.ch); if (!L_) continue; const y = L_[2] + 17, x0 = X(it.t0), x1 = X(it.t1);
+    tx.strokeStyle = it.hot ? '#4c9dff' : '#9aa0b4'; tx.lineWidth = it.hot ? 2 : 1.2; tx.beginPath(); tx.moveTo(x0, y - 4); tx.lineTo(x0, y); tx.lineTo(x1, y); tx.lineTo(x1, y - 4); tx.stroke();
+    tx.fillStyle = it.hot ? '#4c9dff' : '#9aa0b4'; tx.font = (it.hot ? 'bold ' : '') + '11px sans-serif'; tx.fillText(it.l, (x0 + x1) / 2, y + 12); tx.font = '12px sans-serif'; }
   tx.strokeStyle = '#4c9dff'; tx.lineWidth = 1; tx.beginPath(); tx.moveTo(X(T), 6); tx.lineTo(X(T), h - 6); tx.stroke();
 }
 // ---------- diagrama de escalera: la altura del frente en el esquema (aurícula → unión AV → His → ventrículo) en función del tiempo
@@ -322,7 +331,7 @@ function drawLadder(T) {
     lx.stroke(); lx.shadowBlur = 0; });
   for (const c of sc.cols || []) if (T >= c.t) { const x = X(c.t), y = ladY(c.pt[1]); lx.strokeStyle = '#ff5050'; lx.lineWidth = 2.2; lx.beginPath(); lx.moveTo(x - 5, y - 5); lx.lineTo(x + 5, y + 5); lx.moveTo(x + 5, y - 5); lx.lineTo(x - 5, y + 5); lx.stroke(); }
   lx.textAlign = 'center'; lx.font = 'bold 11px sans-serif';
-  for (const e of sc.ev.filter(e => e.stim && e.t <= T)) { const x = X(e.t), y = STY[e.ch] != null ? STY[e.ch] : LY_.V; lx.strokeStyle = '#ff4d4d'; lx.lineWidth = lastStims.has(e.t) ? 3 : 2; lx.beginPath(); lx.moveTo(x, y + 8); lx.lineTo(x, y - 8); lx.stroke(); }
+  for (const e of sc.ev.filter(e => e.stim && e.t <= T)) { const x = X(e.t), y = STY[e.ch] != null ? STY[e.ch] : LY_.V; lx.strokeStyle = '#ff4d4d'; lx.lineWidth = lastStims.has(e.t) || e.l === 'S2' ? 3 : 2; lx.beginPath(); lx.moveTo(x, y + 8); lx.lineTo(x, y - 8); lx.stroke(); if (e.l && e.l !== 'E') { lx.fillStyle = '#ff6b6b'; lx.textAlign = 'center'; lx.fillText(e.l, x, y - 11 < 10 ? y + 20 : y - 11); } }
   for (const W_ of WIN) { if (WIN.length > 2 && !(T >= W_[0] && T <= W_[2])) continue; if (T >= W_[0]) { lx.fillStyle = '#ff8a8a'; lx.textAlign = 'right'; lx.fillText(W_[3].toLowerCase(), Math.max(X(W_[0]) - 4, X0 + 130), 11); } if (T >= W_[1]) { lx.fillStyle = '#3ddc84'; lx.textAlign = 'left'; lx.fillText(W_[4].toLowerCase(), Math.min(X(W_[1]) + 4, X1 - 120), 11); } }
   lx.restore(); lx.strokeStyle = '#4c9dff'; lx.lineWidth = 1; lx.beginPath(); lx.moveTo(X(T), 6); lx.lineTo(X(T), h - 4); lx.stroke();
 }
@@ -337,7 +346,8 @@ function frame(T) {
   const w = inWin(T); badge.className = 'badge' + (w ? ' on' : ''); if (w) { const second = T >= w[1]; badge.textContent = (second ? w[4] : w[3]) + ' · cámara lenta'; badge.style.color = second ? '#3ddc84' : '#ff8a8a'; }
 }
 function render(T) {
-  if (auto) { const wi = WIN.findIndex(w => T >= w[0] - 120 && T <= w[2] + 60); if (wi >= 0 && FOCUS[wi]) { tTgt.copy(FOCUS[wi]).add(heart.position); tDist = 8; const d = FOCUS[wi].clone().setY(0); if (d.length() > .3) { d.normalize(); tYaw = Math.atan2(d.x, d.z); if (Math.cos(tYaw) < -.2) tYaw = Math.sign(tYaw) * 1.7; } else tYaw = -.25; tPitch = .1; } else { tTgt.set(0, 0, 0); tDist = 13; tYaw = .15 + .25 * Math.sin(T / 2200); tPitch = .05; } }
+  if (auto) { const wi = WIN.findIndex(w => T >= w[0] - 120 && T <= w[2] + 60); if (wi >= 0 && KOCH) { tTgt.copy(KOCH.c).add(heart.position); tDist = 4.6; tYaw = Math.atan2(KOCH.dir.x, KOCH.dir.z); tPitch = Math.asin(KOCH.dir.y); }
+    else if (wi >= 0 && FOCUS[wi]) { tTgt.copy(FOCUS[wi]).add(heart.position); tDist = 8; const d = FOCUS[wi].clone().setY(0); if (d.length() > .3) { d.normalize(); tYaw = Math.atan2(d.x, d.z); if (Math.cos(tYaw) < -.2) tYaw = Math.sign(tYaw) * 1.7; } else tYaw = -.25; tPitch = .1; } else { tTgt.set(0, 0, 0); tDist = 13; tYaw = .15 + .25 * Math.sin(T / 2200); tPitch = .05; } }
   yaw += (tYaw - yaw) * .05; pitch += (tPitch - pitch) * .05; dist += (tDist - dist) * .05; tgt.lerp(tTgt, .05);
   cam.position.set(tgt.x + dist * Math.sin(yaw) * Math.cos(pitch), tgt.y + dist * Math.sin(pitch), tgt.z + dist * Math.cos(yaw) * Math.cos(pitch)); cam.lookAt(tgt);
   const w = stage.clientWidth, h = stage.clientHeight; if (cv.width !== Math.round(w * R.getPixelRatio())) { R.setSize(w, h, false); comp.setSize(w, h); cam.aspect = w / h; cam.updateProjectionMatrix(); }
