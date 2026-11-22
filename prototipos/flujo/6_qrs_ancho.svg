@@ -249,11 +249,11 @@
 <!-- vtq&#45;&gt;L_tvf -->
 <g id="edge21" class="edge">
 <title>vtq&#45;&gt;L_tvf</title>
-<path fill="none" stroke="#6c6c74" d="M1690.95,-413.89C1600.54,-403.38 1489.88,-388.54 1471,-377 1437.02,-356.22 1412.82,-316.2 1399.15,-288.23"/>
-<polygon fill="#6c6c74" stroke="#6c6c74" points="1401.28,-287.01 1396.06,-281.75 1396.86,-289.12 1401.28,-287.01"/>
-<text text-anchor="start" x="1483" y="-356.2" font-family="Inter" font-size="11.00" fill="#3c3c44">BRD con eje superior o</text>
-<text text-anchor="start" x="1471" y="-344.2" font-family="Inter" font-size="11.00" fill="#3c3c44">derecho, QRS relativamente</text>
-<text text-anchor="start" x="1523" y="-332.2" font-family="Inter" font-size="11.00" fill="#3c3c44">angosto</text>
+<path fill="none" stroke="#6c6c74" d="M1690.95,-416.21C1616.12,-407.99 1528.47,-395.01 1495,-377 1456.15,-356.09 1423.93,-315.84 1404.83,-287.86"/>
+<polygon fill="#6c6c74" stroke="#6c6c74" points="1406.66,-286.18 1400.73,-281.73 1402.59,-288.91 1406.66,-286.18"/>
+<text text-anchor="start" x="1495" y="-356.2" font-family="Inter" font-size="11.00" fill="#3c3c44">BRD con eje superior o</text>
+<text text-anchor="start" x="1523" y="-344.2" font-family="Inter" font-size="11.00" fill="#3c3c44">inferior, QRS</text>
+<text text-anchor="start" x="1497.5" y="-332.2" font-family="Inter" font-size="11.00" fill="#3c3c44">relativamente angosto</text>
 </g>
 <!-- L_pm -->
 <g id="node20" class="node">
