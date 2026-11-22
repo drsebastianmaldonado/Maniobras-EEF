@@ -47,7 +47,8 @@ Flujogramas: `node herramientas/pruebas/exportar_arbol.js /tmp/arbol.json` (con 
 - `anim.js`: animaciones (65; corazón esquemático + trazado). `anim-index.js`: índice liviano que se carga al inicio; `anim.js` se carga al abrir una animación.
 - `sw.js`: caché de la app; `mef-imagenes` guarda las imágenes descargadas para usar sin conexión (no se borra al actualizar).
 - `localizar/via-accesoria.html`: localizador de vía accesoria (página aparte).
-- `prototipos/`: prototipos de animación 3D y 2,5D (sin decidir) y los flujogramas.
+- `3d/`: animaciones 3D anatómicas (three.js r160 + modelo BodyParts3D). Para una maniobra nueva: copiar `3d/vop.html` y agregar `a3d: [url, título, aviso]` a la ficha.
+- `prototipos/`: prototipos viejos de animación (descartados) y los flujogramas.
 - `herramientas/simulador/`: registros simulados (`figs/sim/`, siempre con la leyenda "REGISTRO SIMULADO"; canales de distal a proximal).
 
 ## Convenciones clínicas y de texto
@@ -68,5 +69,5 @@ Revisamos los flujogramas (`prototipos/flujo/`) figura por figura con el autor.
 - **Algoritmo completo revisado (figuras 0 a 6).** Siguiente: elegir el estilo de animación o los ítems abiertos del issue #1.
 
 ## Otros pendientes
-- **Animación 3D anatómica (aprobada por el autor):** `prototipos/vop-3d-anat.html` (sobreestimulación ventricular en la TRNAV típica, v3). Estilo rayos X (shader fresnel aditivo + bloom de three.js r160, addons en `prototipos/lib/jsm/`), corazón de BodyParts3D (`prototipos/modelos/corazon.glb`, CC BY-SA 2.1 JP, atribución en `modelos/LEEME.txt` y en la página), sistema de conducción y Purkinje generados sobre el modelo, frente de activación por vértice, circuito de la TRNAV agrandado en el triángulo de Koch, trazado y diagrama de escalera sincronizados. Siguiente: pasar el mismo estilo a otras maniobras e integrarlo a la app (los prototipos `vop-3d.html` y `vop-25d.html` quedan descartados).
+- **Animación 3D anatómica (aprobada por el autor, integrada en v258):** `3d/vop.html` (enlazada desde la ficha de sobreestimulación ventricular con el campo `a3d` de `M.vop`; tiene "← Volver a la app" y aviso si no hay WebGL 2; `prototipos/vop-3d-anat.html` redirige ahí) (sobreestimulación ventricular en la TRNAV típica, v3). Estilo rayos X (shader fresnel aditivo + bloom de three.js r160, addons en `3d/lib/jsm/`), corazón de BodyParts3D (`3d/modelos/corazon.glb`, CC BY-SA 2.1 JP, atribución en `modelos/LEEME.txt` y en la página), sistema de conducción y Purkinje generados sobre el modelo, frente de activación por vértice, circuito de la TRNAV agrandado en el triángulo de Koch, trazado y diagrama de escalera sincronizados. Siguiente: pasar el mismo estilo a otras maniobras e integrarlo a la app (los prototipos `vop-3d.html` y `vop-25d.html` quedan descartados).
 - Issue #1: casi todo revisado (17 casos, bibliografía, cortes pediátricos, esquemas). Quedan abiertos: Kim 1987 (atropina en el doble disparo, sin el original), DOI de Nogami 2010 (necesita el PDF), trazados nuevos del autor y un caso de TA izquierda con el ECG de TAE de la vena pulmonar superior izquierda.
