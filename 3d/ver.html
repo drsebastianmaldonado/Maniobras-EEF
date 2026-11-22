@@ -217,11 +217,11 @@ function build(parts) {
   // en la cara septal de la AD: e1 del ostium del SC hacia el His, e2 hacia la aurícula (arriba en el esquema 2D)
   const e2k = ax.clone(), e1k = HIS.clone().sub(csOs); e1k.sub(e2k.clone().multiplyScalar(e1k.dot(e2k))).normalize();
   const mapK = p => { const d = Math.hypot(p[0] - G.node[0], p[1] - G.node[1]); if (KZ === 1 || d > 75 || p[1] > 300) return map2(p);
-    const dx = p[0] - G.node[0], dy = p[1] - G.node[1]; return AVN.clone().add(e1k.clone().multiplyScalar(dx * .02)).add(e2k.clone().multiplyScalar(-dy * .02)).add(sn.clone().multiplyScalar(-.08)); };
+    const dx = p[0] - G.node[0], dy = p[1] - G.node[1]; return AVN.clone().add(e1k.clone().multiplyScalar(dx * .009)).add(e2k.clone().multiplyScalar(-dy * (dy < 0 ? .012 : .006))).add(sn.clone().multiplyScalar(-.05)); };
   if (sc.nodal) { const tube = (pts, col, r) => { const c = new THREE.CatmullRomCurve3(pts.map(mapK)); heart.add(new THREE.Mesh(new THREE.TubeGeometry(c, 50, r, 8), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: .4, blending: THREE.AdditiveBlending, depthWrite: false }))); return c; };
-    const cf = tube([[232, 234], [252, 246], G.node], 0xc58cff, .06), cs_ = tube([[226, 248], [206, 268], [220, 292], [250, 284], G.node], 0xff9a3c, .06);
+    const cf = tube([[232, 234], [252, 246], G.node], 0xc58cff, .022), cs_ = tube([[226, 248], [206, 268], [220, 292], [250, 284], G.node], 0xff9a3c, .022);
     KOCH = { c: mapK([235, 262]), dir: sn.clone().negate().add(ax.clone().multiplyScalar(.2)).normalize() };
-    NODAL = [['vía rápida', cf.getPoint(.4).add(V(0, .25, .1))], ['vía lenta', cs_.getPoint(.45).add(V(0, -.25, .1))]]; }
+    NODAL = [['vía rápida', cf.getPoint(.4).add(e2k.clone().multiplyScalar(.18))], ['vía lenta', cs_.getPoint(.45).add(e2k.clone().multiplyScalar(-.18))]]; }
   WV3 = sc.wv.map((w, i) => ({ c: w.c, hi: HIW[i], pts: w.pts.map(([p, t]) => { const a = ANC.get(key(p)); return { P: a ? a.clone() : mapK(p), t, y: p[1], anc: !!a || APP.has(key(p)) }; }) }));
   COLS = (sc.cols || []).map(c => ({ t: c.t, P: mapK(c.pt) }));
   ST3 = STIMS.map(s => ({ t: s.t, P: map2(s.pt) }));
@@ -270,7 +270,7 @@ function drawWaves(T) {
     // dentro del miocardio ventricular el frente ya se ve en la pared: no se dibuja el punto para no duplicarlo
     const myo = q_ => !q_.anc && q_.y >= 330; if (myo(P[k]) || myo(P[k + 1])) continue;
     const s = getSprite(n), tr = getTrail(n); n++;
-    s.visible = true; s.position.copy(pos); s.material.color = col; s.material.opacity = fade; s.scale.setScalar(w.hi ? .55 : .3);
+    s.visible = true; s.position.copy(pos); s.material.color = col; s.material.opacity = fade; s.scale.setScalar((w.hi ? .55 : .3) * Math.max(.4, Math.min(1, dist / 10)));
     const arr = tr.geometry.attributes.position.array; let m = 0, j0 = k; while (j0 > 0 && !myo(P[j0 - 1])) j0--; for (let j = j0; j <= k && m < 62; j++, m++) { arr[m * 3] = P[j].P.x; arr[m * 3 + 1] = P[j].P.y; arr[m * 3 + 2] = P[j].P.z; }
     arr[m * 3] = pos.x; arr[m * 3 + 1] = pos.y; arr[m * 3 + 2] = pos.z; m++; tr.geometry.setDrawRange(0, m); tr.geometry.attributes.position.needsUpdate = true; tr.material.color = col; tr.material.opacity = (w.hi ? .95 : .6) * fade; tr.visible = true; }
   for (let i = n; i < pool.length; i++) { pool[i].visible = false; trails[i].visible = false; }
@@ -346,7 +346,7 @@ function frame(T) {
   const w = inWin(T); badge.className = 'badge' + (w ? ' on' : ''); if (w) { const second = T >= w[1]; badge.textContent = (second ? w[4] : w[3]) + ' · cámara lenta'; badge.style.color = second ? '#3ddc84' : '#ff8a8a'; }
 }
 function render(T) {
-  if (auto) { const wi = WIN.findIndex(w => T >= w[0] - 120 && T <= w[2] + 60); if (wi >= 0 && KOCH) { tTgt.copy(KOCH.c).add(heart.position); tDist = 4.6; tYaw = Math.atan2(KOCH.dir.x, KOCH.dir.z); tPitch = Math.asin(KOCH.dir.y); }
+  if (auto) { const wi = WIN.findIndex(w => T >= w[0] - 120 && T <= w[2] + 60); if (wi >= 0 && KOCH) { tTgt.copy(KOCH.c).add(heart.position); tDist = 3.6; tYaw = Math.atan2(KOCH.dir.x, KOCH.dir.z); tPitch = Math.asin(KOCH.dir.y); }
     else if (wi >= 0 && FOCUS[wi]) { tTgt.copy(FOCUS[wi]).add(heart.position); tDist = 8; const d = FOCUS[wi].clone().setY(0); if (d.length() > .3) { d.normalize(); tYaw = Math.atan2(d.x, d.z); if (Math.cos(tYaw) < -.2) tYaw = Math.sign(tYaw) * 1.7; } else tYaw = -.25; tPitch = .1; } else { tTgt.set(0, 0, 0); tDist = 13; tYaw = .15 + .25 * Math.sin(T / 2200); tPitch = .05; } }
   yaw += (tYaw - yaw) * .05; pitch += (tPitch - pitch) * .05; dist += (tDist - dist) * .05; tgt.lerp(tTgt, .05);
   cam.position.set(tgt.x + dist * Math.sin(yaw) * Math.cos(pitch), tgt.y + dist * Math.sin(pitch), tgt.z + dist * Math.cos(yaw) * Math.cos(pitch)); cam.lookAt(tgt);
