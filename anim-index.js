@@ -6,6 +6,6 @@ window.animLabel = k => window.ANIM_LABEL[k] || k;
 // anim.js se carga la primera vez que hay que mostrar una animación y reemplaza esta función por la real
 (function () {
   let carga = null;
-  const cargar = () => carga || (carga = new Promise((ok, mal) => { const s = document.createElement('script'); s.src = 'anim.js'; s.onload = ok; s.onerror = () => { carga = null; mal(); }; document.head.appendChild(s); }));
+  const cargar = () => carga || (carga = new Promise((ok, mal) => { const s = document.createElement('script'); s.src = 'anim.js?v=' + (typeof APPV !== 'undefined' ? APPV : Date.now()); s.onload = ok; s.onerror = () => { carga = null; mal(); }; document.head.appendChild(s); }));
   window.mountAnims = r => { if (!r || !r.querySelector('.anim[data-anim]')) return; cargar().then(() => window.mountAnims(r)).catch(() => {}); };
 })();
