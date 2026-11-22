@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Prototipo 3D anatómico · Sobreestimulación ventricular</title>
+<style>
+:root{--bg:#000;--card:#10121a;--ink:#eef0f7;--ink2:#9aa0b4;--line:#262b3c;--blue:#4c9dff;--orange:#ffb347;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:#000;color:var(--ink);font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100dvh}
+.wrap{max-width:900px;margin:0 auto;padding:12px 14px 30px;display:flex;flex-direction:column;gap:10px}
+h1{font-size:18px;margin:4px 0 0}.sub{color:var(--ink2);font-size:13px;margin:0}
+.stage{position:relative;width:100%;aspect-ratio:1/1;max-height:64dvh;border-radius:18px;overflow:hidden;background:#000;touch-action:none}
+canvas.gl{width:100%;height:100%;display:block}
+.lab{position:absolute;transform:translate(-50%,-50%);font-size:12px;font-weight:700;color:#d9d4ff;text-shadow:0 1px 3px #000,0 0 6px #000;pointer-events:none;white-space:nowrap;transition:opacity .3s}
+.lab.cat{color:#ff9a9a}.lab.cs{color:#ffd27a}
+.hint{position:absolute;right:10px;bottom:8px;font-size:11px;color:var(--ink2)}
+.load{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink2);font-size:13px}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,select{font:inherit;font-weight:700;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;min-height:38px;cursor:pointer}
+button.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+input[type=range]{width:100%;accent-color:var(--blue);height:30px}
+.fase{min-height:3em;margin:0}
+canvas.tr{width:100%;height:150px;display:block;background:var(--card);border-radius:14px}
+.ver{border-left:4px solid #3ddc84;background:#11231a;padding:8px 10px;border-radius:8px;display:none}.ver.on{display:block}
+.note{color:var(--ink2);font-size:12px}
+</style>
+<script type="importmap">{"imports":{"three":"./lib/three.module.min.js"}}</script>
+</head>
+<body>
+<div class="wrap">
+  <h1>Sobreestimulación ventricular en la TRNAV típica</h1>
+  <p class="sub">Arrastrá para girar · pellizcá o usá la rueda para acercar. Naranja: sistema de conducción y frente anterógrado · rojo: estímulo.</p>
+  <div class="stage" id="stage"><canvas class="gl" id="gl"></canvas><div id="labs"></div><div class="load" id="load">Cargando el modelo…</div><div class="hint">girá con el dedo</div></div>
+  <div class="ctl"><button class="pri" id="play">▶ Reproducir</button><button id="re">↺ Reiniciar</button>
+    <label>Velocidad <select id="vel"><option value="0.12">muy lenta</option><option value="0.25" selected>lenta</option><option value="0.5">normal</option></select></label>
+    <button id="cam">Cámara automática: sí</button></div>
+  <input type="range" id="t" min="0" max="3800" value="0" step="10" aria-label="Momento">
+  <p class="fase" id="fase"></p>
+  <canvas class="tr" id="tr"></canvas>
+  <div class="ver" id="ver"><b>Después de la última A acelerada viene un V: respuesta A-V.</b> Excluye la TA. La última A estimulada bajó por la vía lenta y reinició la TRNAV.</div>
+  <p class="note">Prototipo. Corazón: BodyParts3D, © The Database Center for Life Science, CC BY-SA 2.1 Japan (modificado: recortado y simplificado). Sistema de conducción y tiempos esquemáticos e ilustrativos.</p>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from './lib/jsm/loaders/GLTFLoader.js';
+import { EffectComposer } from './lib/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from './lib/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from './lib/jsm/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from './lib/jsm/postprocessing/OutputPass.js';
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+const stage = document.getElementById('stage'), cv = document.getElementById('gl');
+const R = new THREE.WebGLRenderer({ canvas: cv, antialias: true }); R.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x000000);
+const cam = new THREE.PerspectiveCamera(30, 1, .1, 100);
+const heart = new THREE.Group(); scene.add(heart);
+const comp = new EffectComposer(R); comp.addPass(new RenderPass(scene, cam));
+const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), .6, .5, .3); comp.addPass(bloom); comp.addPass(new OutputPass());
+
+// ---------- escenario (ms): TRNAV típica LC 340; estimulación del ápex del VD a 300 ms
+const HV = 40, HA = 40;
+const onV = [], onP = [], onA = [], onH = [], ev = [];   // inicios de activación: V anterógrado (His), V estimulado, A retrógrada, His
+const E = (ch, t, l, x) => ev.push(Object.assign({ ch, t, l }, x || {}));
+const beat = h => { onH.push(h); onV.push(h); onA.push(h + HA - 20); E('His', h, 'H'); E('VD', h + HV, 'V'); E('AD', h + HA, 'A'); };
+[100, 440, 780].forEach(beat);
+const S = [1050, 1350, 1650, 1950, 2250, 2550];
+S.forEach(s => { onP.push(s); E('VD', s, 'E', { stim: 1 }); E('His', s + 55, 'H'); onA.push(s + 75); E('AD', s + 110, 'A'); });
+const lastA = S[S.length - 1] + 110; ev.find(e => e.ch === 'AD' && e.t === lastA).tag = 'última A acelerada';
+[lastA + 270, lastA + 610, lastA + 950].forEach(beat);
+const verdictT = lastA + 270 + HV;
+const FASES = [[0, 'TRNAV típica (LC 340 ms): el frente baja por la vía lenta y el His, y sube por la vía rápida; A y V se activan casi juntos.'],
+  [1000, 'Estimulación del ápex del VD a 300 ms (E): el ventrículo se activa desde la punta del catéter y el frente sube por las ramas y el nodo hasta la aurícula: las A se aceleran.'],
+  [2650, 'Se corta la estimulación. Mirá qué sigue a la <b>última A acelerada</b>.'], [3300, 'La taquicardia retoma su ciclo.']];
+
+// ---------- materiales
+const pulse = `float pulse(float x){ return x < 0. ? 0. : (x < 18. ? x/18. : exp(-(x-18.)/70.)); }`;
+const N_ON = 8;
+const onU = arr => ({ value: new Float32Array(N_ON).fill(-1e5) });
+const U = { T: { value: 0 }, onV: onU(), onP: onU(), onA: onU() };
+function setOn(u, arr, T) { const a = arr.filter(t => t <= T).slice(-N_ON); u.value.fill(-1e5); a.forEach((t, i) => u.value[i] = t); }
+const loopOn = (name, attr) => `for(int i=0;i<${N_ON};i++){ g = max(g, pulse(T - ${name}[i] - ${attr})); }`;
+const wallMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, uniforms: U,
+  vertexShader: `attribute float tV; attribute float tP; attribute float tA; attribute float reg; varying vec3 vN; varying vec3 vV; varying float vtV; varying float vtP; varying float vtA; varying float vReg;
+    void main(){ vec4 mv = modelViewMatrix*vec4(position,1.); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); vtV=tV; vtP=tP; vtA=tA; vReg=reg; gl_Position = projectionMatrix*mv; }`,
+  fragmentShader: `uniform float T; uniform float onV[${N_ON}]; uniform float onP[${N_ON}]; uniform float onA[${N_ON}]; varying vec3 vN; varying vec3 vV; varying float vtV; varying float vtP; varying float vtA; varying float vReg; ${pulse}
+    void main(){ float f = 1.-abs(dot(normalize(vN),normalize(vV))); f = pow(f,2.); float g = 0.;
+      if (vReg > .5) { ${loopOn('onV', 'vtV')} ${loopOn('onP', 'vtP')} } else { ${loopOn('onA', 'vtA')} }
+      vec3 base = mix(vec3(.42,.30,.95), vec3(.75,.32,.75), .35);
+      vec3 act = vReg > .5 ? vec3(1.,.42,.25) : vec3(.95,.45,1.);
+      gl_FragColor = vec4(base*(f*.10+.003) + act*g*(vReg > .5 ? (.011+f*.05) : (.012+f*.06)), 1.); }` });
+const vesselMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, uniforms: { k: { value: .11 } },
+  vertexShader: `varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix*vec4(position,1.); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }`,
+  fragmentShader: `uniform float k; varying vec3 vN; varying vec3 vV; void main(){ float f = 1.-abs(dot(normalize(vN),normalize(vV))); f = pow(f,2.2); gl_FragColor = vec4(vec3(.48,.52,1.)*(f*k+.003),1.); }` });
+const valveMat = vesselMat.clone(); valveMat.uniforms = { k: { value: .05 } };
+// líneas del sistema de conducción: brillo base + pulso cuando pasa el frente
+const condMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: U,
+  vertexShader: `attribute float tV; attribute float tP; attribute float w; varying float vtV; varying float vtP; varying float vw; void main(){ vtV=tV; vtP=tP; vw=w; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+  fragmentShader: `uniform float T; uniform float onV[${N_ON}]; uniform float onP[${N_ON}]; varying float vtV; varying float vtP; varying float vw; ${pulse}
+    void main(){ float g = 0.; ${loopOn('onV', 'vtV')} ${loopOn('onP', 'vtP')} gl_FragColor = vec4(vec3(1.,.62,.18)*(.16*vw + g*(.22+.45*vw*vw)), 1.); }` });
+
+// ---------- carga del modelo y construcción
+let ready = false, LAB = [], TIP = null, stimRing, AVN, HIS, SAN;
+new GLTFLoader().load('./modelos/corazon.glb', g => {
+  const parts = {}; g.scene.traverse(o => { if (o.isMesh) parts[o.name] = o; });
+  for (const [n, o] of Object.entries(parts)) {
+    if (n === 'pa' || n === 'pv') continue;
+    o.geometry.computeVertexNormals();
+    const m = new THREE.Mesh(o.geometry, n === 'wall' ? wallMat : /^(tv|mv|pvv)$/.test(n) ? valveMat : vesselMat); m.name = n; heart.add(m);
+  }
+  build(parts); ready = true; document.getElementById('load').remove();
+});
+
+function centroid(geo) { const p = geo.attributes.position, c = V(0, 0, 0); for (let i = 0; i < p.count; i++) c.add(V(p.getX(i), p.getY(i), p.getZ(i))); return c.multiplyScalar(1 / p.count); }
+function build(parts) {
+  const wg = parts.wall.geometry, P = wg.attributes.position, n = P.count;
+  const pts = []; for (let i = 0; i < n; i++) pts.push(V(P.getX(i), P.getY(i), P.getZ(i)));
+  const tvC = centroid(parts.tv.geometry), mvC = centroid(parts.mv.geometry);
+  const B = tvC.clone().add(mvC).multiplyScalar(.5);
+  const d0 = V(.45, -.75, .45).normalize(); let apex = pts[0], best = -1e9;
+  for (const p of pts) { const s = p.clone().sub(B).dot(d0); if (s > best) { best = s; apex = p; } }
+  const ax = B.clone().sub(apex).normalize();                       // del ápex a la base
+  const sn = mvC.clone().sub(tvC); sn.sub(ax.clone().multiplyScalar(sn.dot(ax))).normalize();   // normal septal, hacia el VI
+  const L = B.distanceTo(apex);
+  const h = p => p.clone().sub(B).dot(ax);                          // altura sobre el plano AV
+  // puntos del septum: t 0 (base) → 1 (ápex), lado −1 VD / +1 VI, lat desplaza en el plano septal
+  const up = new THREE.Vector3().crossVectors(sn, ax).normalize();
+  const sept = (t, side, lat = 0) => B.clone().add(ax.clone().multiplyScalar(-L * t * .9)).add(sn.clone().multiplyScalar(side * .16)).add(up.clone().multiplyScalar(lat));
+  // muestreo de la pared para acercar puntos a la superficie
+  const samp = pts.filter((_, i) => i % 3 === 0);
+  const near = q => { let b = samp[0], bd = 1e9; for (const p of samp) { const d = p.distanceToSquared(q); if (d < bd) { bd = d; b = p; } } return b; };
+  // hitos
+  const cs = parts.cs.geometry.attributes.position; let csOs = null; for (let i = 0; i < cs.count; i++) { const p = V(cs.getX(i), cs.getY(i), cs.getZ(i)); if (!csOs || p.x < csOs.x) csOs = p; }
+  AVN = csOs.clone().lerp(tvC, .45).add(ax.clone().multiplyScalar(.12));
+  HIS = sept(.02, -.25, .35);
+  const svc = parts.svc.geometry.attributes.position; let svcLow = null; for (let i = 0; i < svc.count; i++) { const p = V(svc.getX(i), svc.getY(i), svc.getZ(i)); if (!svcLow || p.y < svcLow.y) svcLow = p; }
+  SAN = near(svcLow.clone().add(V(0, -.15, .25)));
+
+  // ---- sistema de conducción (curvas) con tiempos: tV desde el His (anterógrado) y tP desde la punta del catéter (retrógrado)
+  const segs = [];   // {pts:[V], tV0, w}
+  const curve = (arr, n = 40) => new THREE.CatmullRomCurve3(arr).getSpacedPoints(n);
+  const vHis = 1 / 12, vPk = 1 / 9;   // unidades por ms
+  const addSeg = (arr, tV0, w, spd) => { let t = tV0; const ts = [t]; for (let i = 1; i < arr.length; i++) { t += arr[i].distanceTo(arr[i - 1]) / spd; ts.push(t); } segs.push({ pts: arr, ts, w }); return ts; };
+  const his = curve([AVN, AVN.clone().lerp(HIS, .5).add(ax.clone().multiplyScalar(.05)), HIS], 20);
+  addSeg(his, -15, 1, vHis);
+  const rbPts = curve([HIS, sept(.25, -1.15, .05), sept(.55, -1.2, -.15), sept(.85, -1.1, -.35), near(sept(1.0, -1.6, -.6))], 60);
+  const rb = addSeg(rbPts, 0, 1, vHis);
+  const lbA = curve([HIS, sept(.12, 1.1, .3), sept(.4, 1.25, .55), near(sept(.7, 2.6, .9))], 50);
+  const lbP = curve([HIS, sept(.12, 1.1, -.1), sept(.45, 1.25, -.5), near(sept(.75, 2.6, -1.0))], 50);
+  const tA_ = addSeg(lbA, 0, .9, vHis), tP_ = addSeg(lbP, 0, .9, vHis);
+  const trunk = [...rbPts.map((p, i) => ({ p, t: rb[i] })), ...lbA.map((p, i) => ({ p, t: tA_[i] })), ...lbP.map((p, i) => ({ p, t: tP_[i] }))].filter(o => o.t > 6);
+  // red de Purkinje: ramas que salen de los fascículos y se pegan a la pared ventricular
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const vent = samp.filter(p => h(p) < -.35);
+  const branch = (p0, t0, q, w, depth) => {
+    const arr = [p0]; for (let k = 1; k <= 7; k++) { const f = k / 7; const m = p0.clone().lerp(q, f).add(V(rnd() - .5, rnd() - .5, rnd() - .5).multiplyScalar(.12)); arr.push(k === 7 ? q : near(m).clone().lerp(m, .35)); }
+    const sm = curve(arr, 18), ts = addSeg(sm, t0, w, vPk);
+    if (depth < 2) for (let j = 0; j < 2; j++) { const i = 6 + Math.floor(rnd() * 10); const tgt = vent[Math.floor(rnd() * vent.length)]; if (tgt.distanceTo(sm[i]) < 1.4) branch(sm[i], ts[i], tgt, w * .6, depth + 1); }
+  };
+  for (let k = 0; k < 70; k++) { const o = trunk[Math.floor(rnd() * trunk.length)]; let q = null; for (let tries = 0; tries < 30; tries++) { const c = vent[Math.floor(rnd() * vent.length)]; if (c.distanceTo(o.p) < 1.6 && c.distanceTo(o.p) > .5) { q = c; break; } } if (q) branch(o.p, o.t, q, .55, 0); }
+
+  // ---- catéter: vena cava inferior → AD → válvula tricúspide → ápex del VD
+  TIP = near(sept(.95, -1.5, -.45));
+  const ivcTop = centroid(parts.ivc.geometry);
+  const cath = new THREE.CatmullRomCurve3([ivcTop.clone().add(V(0, -1.2, 0)), ivcTop, ivcTop.clone().lerp(tvC, .5).add(V(0, .25, .2)), tvC, tvC.clone().lerp(TIP, .5).add(V(0, 0, .25)), TIP]);
+  heart.add(new THREE.Mesh(new THREE.TubeGeometry(cath, 80, .035, 8), new THREE.MeshBasicMaterial({ color: 0x5c6475, transparent: true, opacity: .8 })));
+  const tipM = new THREE.Mesh(new THREE.SphereGeometry(.06, 16, 12), new THREE.MeshBasicMaterial({ color: 0xff3b3b })); tipM.position.copy(TIP); heart.add(tipM);
+  stimRing = new THREE.Mesh(new THREE.RingGeometry(.12, .2, 32), new THREE.MeshBasicMaterial({ color: 0xff4d4d, transparent: true, depthTest: false, side: THREE.DoubleSide })); heart.add(stimRing);
+
+  // ---- tiempos de la pared: ventrículo (desde el His por Purkinje, o desde el catéter) y aurícula (desde el nodo)
+  const tV = new Float32Array(n), tP = new Float32Array(n), tA = new Float32Array(n), reg = new Float32Array(n);
+  const segPts = []; for (const s of segs) s.pts.forEach((p, i) => { if (i % 3 === 0) segPts.push({ p, t: s.ts[i] }); });
+  for (let i = 0; i < n; i++) {
+    const p = pts[i], hh = h(p); reg[i] = hh < -.12 ? 1 : 0;
+    let bt = 1e9; for (const o of segPts) { const t = o.t + p.distanceTo(o.p) / (1 / 30); if (t < bt) bt = t; } tV[i] = bt;
+    tP[i] = p.distanceTo(TIP) / (1 / 40);
+    tA[i] = p.distanceTo(AVN) / (1 / 22);
+  }
+  wg.setAttribute('tV', new THREE.BufferAttribute(tV, 1)); wg.setAttribute('tP', new THREE.BufferAttribute(tP, 1)); wg.setAttribute('tA', new THREE.BufferAttribute(tA, 1)); wg.setAttribute('reg', new THREE.BufferAttribute(reg, 1));
+  // líneas de conducción con tiempos retrógrados desde el catéter
+  const pos = [], aV = [], aP = [], aW = [];
+  for (const s of segs) for (let i = 1; i < s.pts.length; i++) for (const j of [i - 1, i]) { const p = s.pts[j]; pos.push(p.x, p.y, p.z); aV.push(s.ts[j]); aP.push(30 + p.distanceTo(TIP) / (1 / 16)); aW.push(s.w); }
+  const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); lg.setAttribute('tV', new THREE.Float32BufferAttribute(aV, 1)); lg.setAttribute('tP', new THREE.Float32BufferAttribute(aP, 1)); lg.setAttribute('w', new THREE.Float32BufferAttribute(aW, 1));
+  heart.add(new THREE.LineSegments(lg, condMat));
+  // tubos finos para el His y las ramas (más visibles que una línea)
+  const tubeMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: U,
+    vertexShader: condMat.vertexShader, fragmentShader: condMat.fragmentShader });
+  for (const s of segs.slice(0, 4)) { const tg = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(s.pts), 80, .022, 6); const cnt = tg.attributes.position.count, tv2 = new Float32Array(cnt), tp2 = new Float32Array(cnt), w2 = new Float32Array(cnt).fill(1.3);
+    for (let i = 0; i < cnt; i++) { const p = V(tg.attributes.position.getX(i), tg.attributes.position.getY(i), tg.attributes.position.getZ(i)); let bi = 0, bd = 1e9; s.pts.forEach((q, k) => { const d = q.distanceToSquared(p); if (d < bd) { bd = d; bi = k; } }); tv2[i] = s.ts[bi]; tp2[i] = 30 + s.pts[bi].distanceTo(TIP) / (1 / 16); }
+    tg.setAttribute('tV', new THREE.BufferAttribute(tv2, 1)); tg.setAttribute('tP', new THREE.BufferAttribute(tp2, 1)); tg.setAttribute('w', new THREE.BufferAttribute(w2, 1)); heart.add(new THREE.Mesh(tg, tubeMat)); }
+  // nodos
+  const glow = (p, c, s) => { const m = new THREE.Mesh(new THREE.SphereGeometry(s, 16, 12), new THREE.MeshBasicMaterial({ color: c, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); m.position.copy(p); heart.add(m); return m; };
+  window.__nodes = { av: glow(AVN, 0xffa040, .07), sa: glow(SAN, 0xffa040, .06) };
+  // etiquetas
+  const out = (p, k) => p.clone().add(p.clone().sub(V(0, 0, 0)).setY(0).normalize().multiplyScalar(k));
+  LAB = [['AD', out(V(-1.5, .9, .2), .2)], ['AI', V(.9, .9, -1.4)], ['VD', sept(.35, -3.2, .5)], ['VI', sept(.5, 3.2, 0)], ['nodo AV', AVN.clone().add(V(-.35, 0, .2))], ['His', HIS.clone().add(V(.1, .25, .2))], ['catéter', TIP.clone().add(V(-.3, -.35, .3)), 'cat']]
+    .map(([t, p, c]) => { const d = document.createElement('div'); d.className = 'lab ' + (c || ''); d.textContent = t; document.getElementById('labs').appendChild(d); return { d, p }; });
+  heart.position.y = -.25;
+  window.__dbg = { B, apex, ax, sn, AVN, HIS, TIP, SAN };
+}
+
+// ---------- cámara
+let yaw = .15, pitch = .05, dist = 13.5, auto = true, tYaw = yaw, tPitch = pitch, tDist = dist;
+const SHOTS = [[0, .15, .05, 13.5], [900, .15, .05, 13.5], [1300, -.55, .1, 11.5], [2600, -.75, .12, 11.5], [2900, .25, .02, 12.5], [3800, .55, .02, 13.5]];
+let drag = null, pinch = 0;
+stage.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; stage.setPointerCapture(e.pointerId); });
+stage.addEventListener('pointermove', e => { if (!drag || pinch) return; tYaw += (e.clientX - drag.x) * .008; tPitch = Math.max(-1.2, Math.min(1.2, tPitch + (e.clientY - drag.y) * .006)); drag = { x: e.clientX, y: e.clientY }; setAuto(false); });
+stage.addEventListener('pointerup', () => drag = null);
+stage.addEventListener('wheel', e => { e.preventDefault(); tDist = Math.max(6, Math.min(20, tDist * (1 + e.deltaY * .001))); setAuto(false); }, { passive: false });
+let p0 = 0; stage.addEventListener('touchstart', e => { if (e.touches.length === 2) { pinch = 1; p0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); } }, { passive: true });
+stage.addEventListener('touchmove', e => { if (e.touches.length === 2) { const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); tDist = Math.max(6, Math.min(20, tDist * p0 / d)); p0 = d; setAuto(false); } }, { passive: true });
+stage.addEventListener('touchend', e => { if (e.touches.length < 2) pinch = 0; });
+const camBtn = document.getElementById('cam');
+function setAuto(on) { auto = on; camBtn.textContent = 'Cámara automática: ' + (on ? 'sí' : 'no'); }
+camBtn.onclick = () => setAuto(!auto);
+const ease = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+function shot(T) { let i = 0; while (i < SHOTS.length - 2 && T >= SHOTS[i + 1][0]) i++; const [a0, y0, q0, d0] = SHOTS[i], [a1, y1, q1, d1] = SHOTS[i + 1]; const f = ease(Math.max(0, Math.min(1, (T - a0) / Math.max(1, a1 - a0)))); return [y0 + (y1 - y0) * f, q0 + (q1 - q0) * f, d0 + (d1 - d0) * f]; }
+
+// ---------- trazado
+const tc = document.getElementById('tr'), tx = tc.getContext('2d');
+const LANES = [['AD', 'AD alta', 40], ['His', 'His', 85], ['VD', 'VD', 128]];
+function drawTrace(T) {
+  const w = tc.clientWidth, h = tc.clientHeight; if (tc.width !== w * 2) { tc.width = w * 2; tc.height = h * 2; } tx.setTransform(2, 0, 0, 2, 0, 0); tx.clearRect(0, 0, w, h);
+  const X0 = 58, X1 = w - 10, WIN = 1500, t0 = Math.max(0, T - WIN * .85), k = (X1 - X0) / WIN, X = t => X0 + (t - t0) * k;
+  tx.font = '12px sans-serif'; tx.textAlign = 'left';
+  for (const [, lab, y] of LANES) { tx.fillStyle = '#9aa0b4'; tx.fillText(lab, 6, y + 4); tx.strokeStyle = '#262b3c'; tx.lineWidth = 1; tx.beginPath(); tx.moveTo(X0, y); tx.lineTo(Math.min(X1, X(T)), y); tx.stroke(); }
+  tx.textAlign = 'center';
+  for (const e of ev) { if (e.t > T || e.t < t0) continue; const y = LANES.find(l => l[0] === e.ch)[2], x = X(e.t);
+    if (e.stim) { tx.strokeStyle = '#ff4d4d'; tx.lineWidth = 2; tx.beginPath(); tx.moveTo(x, y - 16); tx.lineTo(x, y + 12); tx.stroke(); tx.fillStyle = '#ff4d4d'; tx.fillText('E', x, y - 19); continue; }
+    const hot = e.tag && T > lastA, hh = e.l === 'V' ? 13 : 10; tx.strokeStyle = hot ? '#4c9dff' : '#eef0f7'; tx.lineWidth = hot ? 2.4 : 1.4;
+    tx.beginPath(); tx.moveTo(x - 2, y); tx.lineTo(x, y - hh); tx.lineTo(x + 2, y + hh * .7); tx.lineTo(x + 4, y); tx.stroke(); tx.fillStyle = '#9aa0b4'; tx.fillText(e.l, x, y - hh - 4);
+    if (hot) { tx.fillStyle = '#4c9dff'; tx.font = 'bold 12px sans-serif'; tx.fillText(e.tag, x, y - 30); tx.font = '12px sans-serif'; } }
+  tx.strokeStyle = '#4c9dff'; tx.lineWidth = 1; tx.beginPath(); tx.moveTo(X(T), 6); tx.lineTo(X(T), h - 6); tx.stroke();
+}
+
+// ---------- cuadro
+const rng = document.getElementById('t'), fase = document.getElementById('fase'), ver = document.getElementById('ver');
+const lit = (arr, T, d) => arr.reduce((m, x) => Math.max(m, T >= x && T < x + d ? 1 - (T - x) / d : 0), 0);
+function frame(T) {
+  U.T.value = T; setOn(U.onV, onV, T); setOn(U.onP, onP, T); setOn(U.onA, onA, T);
+  if (ready) {
+    const st = S.find(s => T >= s && T < s + 110); stimRing.visible = !!st;
+    if (st) { const f = (T - st) / 110; stimRing.position.copy(TIP); stimRing.scale.setScalar(1 + f * 2.2); stimRing.material.opacity = 1 - f; stimRing.lookAt(cam.position); }
+    const nv = window.__nodes; const a = lit(onH, T, 140), b = lit(onP.map(s => s + 40), T, 160); nv.av.material.opacity = .35 + .65 * Math.max(a, b); nv.sa.material.opacity = .3;
+  }
+  let t = ''; for (const [ti, tt] of FASES) if (T >= ti) t = tt; fase.innerHTML = t;
+  ver.classList.toggle('on', T >= verdictT); rng.value = T; drawTrace(T);
+}
+function render() {
+  if (auto) { const [y, p, d] = shot(T); tYaw = y; tPitch = p; tDist = d; }
+  yaw += (tYaw - yaw) * .06; pitch += (tPitch - pitch) * .06; dist += (tDist - dist) * .06;
+  cam.position.set(dist * Math.sin(yaw) * Math.cos(pitch), dist * Math.sin(pitch), dist * Math.cos(yaw) * Math.cos(pitch)); cam.lookAt(0, 0, 0);
+  const w = stage.clientWidth, h = stage.clientHeight; if (cv.width !== Math.round(w * R.getPixelRatio())) { R.setSize(w, h, false); comp.setSize(w, h); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+  comp.render();
+  for (const l of LAB) { const p = l.p.clone().add(heart.position).project(cam); l.d.style.left = ((p.x + 1) / 2 * w) + 'px'; l.d.style.top = ((1 - p.y) / 2 * h) + 'px'; l.d.style.opacity = p.z < 1 ? 1 : 0; }
+}
+let T = 0, play = false, last = 0;
+const btn = document.getElementById('play'), vel = document.getElementById('vel');
+function loop(now) { const dt = Math.min(100, now - last); last = now; if (play) { T += dt * +vel.value; if (T >= 3800) { T = 3800; play = false; btn.textContent = '▶ Reproducir'; } } frame(T); render(); requestAnimationFrame(loop); }
+btn.onclick = () => { play = !play; if (play && T >= 3800) T = 0; btn.textContent = play ? '❚❚ Pausa' : '▶ Reproducir'; };
+document.getElementById('re').onclick = () => { T = 0; setAuto(true); };
+rng.oninput = () => { T = +rng.value; };
+window.__setT = x => { T = x; }; window.__ready = () => ready;
+window.__cam = (y, p, d) => { setAuto(false); yaw = tYaw = y; pitch = tPitch = p; dist = tDist = d; };
+requestAnimationFrame(t => { last = t; loop(t); });
+</script>
+</body>
+</html>

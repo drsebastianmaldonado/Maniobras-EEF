@@ -1,0 +1,5 @@
+corazon.glb: derivado de BodyParts3D (FMA7274 pared del corazón, válvulas, aorta, venas cavas, seno coronario).
+"BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan".
+Mitsuhashi N, et al. BodyParts3D: 3D structure database for anatomical concepts. Nucleic Acids Res 2009;37:D782-5.
+Modificado: recortado, simplificado (decimado) y reorientado. Se distribuye con la misma licencia (CC BY-SA 2.1 JP).
+Fuente usada: https://github.com/Kevin-Mattheus-Moerman/BodyParts3D (versión 3.0 / 20110915).
