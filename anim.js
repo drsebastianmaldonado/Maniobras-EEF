@@ -1138,7 +1138,7 @@
     const dur = A.dur || Math.round(Math.max(...scs.map(s => s.verdictT)) + 650);
     root.innerHTML = `<div class="bl">Animación: ${A.pi != null ? (A.n || A.t) + ' · ' + scs[0].title : A.t}</div>
       <div class="anhead"><div class="anc"><button class="btn anplay" type="button">▶ Reproducir</button><button class="btn anre" type="button">↺ Reiniciar</button>
-      <label class="small">Velocidad <select class="anv"><option value="0.12">muy lenta</option><option value="0.25" selected>lenta</option><option value="0.5">normal</option></select></label>${A.sel ? `<label class="small">${A.selL || 'Medir'} <select class="ansel">${A.sel.map(([k, l]) => `<option value="${k}"${k === sel ? ' selected' : ''}>${l}</option>`).join('')}</select></label>` : ''}</div>
+      ${(() => { try { const s0 = scs[0]; return s0 && !s0.vb ? `<a class="btn an3d" href="3d/ver.html?a=${root.dataset.anim}" style="text-decoration:none">◆ Ver en 3D</a>` : ''; } catch (e) { return ''; } })()}<label class="small">Velocidad <select class="anv"><option value="0.12">muy lenta</option><option value="0.25" selected>lenta</option><option value="0.5">normal</option></select></label>${A.sel ? `<label class="small">${A.selL || 'Medir'} <select class="ansel">${A.sel.map(([k, l]) => `<option value="${k}"${k === sel ? ' selected' : ''}>${l}</option>`).join('')}</select></label>` : ''}</div>
       <input class="ant" type="range" min="0" max="${dur}" value="0" step="10" aria-label="Momento de la animación"></div>
       <p class="anf small"></p>
       <div class="anp"></div>
@@ -1273,6 +1273,7 @@
     return A.t.includes(': ') ? A.t.split(': ').slice(1).join(': ').replace(/^./, c => c.toUpperCase()) : A.t; };
   FOR.ehr.push('ehr_pjrt'); FOR.pjrt = ['pjrt_circ', 'ehr_pjrt'];   // la PJRT también se muestra en su tarjeta de Arritmias
   window.ANIM_IDS = Object.keys(ANIMS);
+  window.ANIM_DATA = { ANIMS, G, LANES0, FOR };   // para el visor 3D (3d/ver.html)
   window.ANIM_FOR = FOR;
   window.mountAnims = r => r.querySelectorAll('.anim[data-anim]').forEach(mount);
 })();
