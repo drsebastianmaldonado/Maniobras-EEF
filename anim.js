@@ -579,14 +579,19 @@
     const sc = newSc({ title: 'Extraestímulos auriculares: salto del AH', nodal: true, cats: ['hra'] });
     const fast = (a, ah) => { W_(sc, 'ante', [[G.hra, a - 10], [G.ra, a + 10], [[232, 234], a + 30], [[252, 246], a + 50], [G.node, a + ah - 30], [G.his, a + ah]]); };
     const slow = (a, ah) => { W_(sc, 'ante', [[G.hra, a - 10], [G.ra, a + 10], [[226, 248], a + 30], [[206, 268], a + 90], [[220, 292], a + 140], [[250, 284], a + ah - 60], [G.node, a + ah - 30], [G.his, a + ah]]); };
-    const beat = (s, ah, viaSlow, mk) => { paceA(sc, 'hra', s); const a = s + 10; E(sc, 'AD', a, 'A'); (viaSlow ? slow : fast)(a, ah); const h = a + ah; E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h);
-      if (viaSlow) W_(sc, 'ante', [[G.ra, a + 10], [[232, 234], a + 30], [[252, 246], a + 45]], a + 40); return { a, h }; };
+    // el frente entra a las dos vías: si la rápida conduce, llega primero al nodo y el que viene por la lenta se bloquea al final (nodo refractario);
+    // con un extraestímulo precoz la rápida está refractaria y se bloquea al entrar: la lenta sigue hasta el His
+    const SLOW = 240;
+    const beat = (s, ah, viaSlow, mk) => { paceA(sc, 'hra', s); const a = s + 10; E(sc, 'AD', a, 'A'); const h = a + ah;
+      if (viaSlow) { slow(a, ah); W_(sc, 'ante', [[G.hra, a - 10], [G.ra, a + 10], [[232, 234], a + 30], [[252, 246], a + 45]], a + 30); }
+      else { fast(a, ah); W_(sc, 'ante', [[G.hra, a - 10], [G.ra, a + 10], [[226, 248], a + 30], [[206, 268], a + 90], [[220, 292], a + 140], [[250, 284], a + SLOW - 60], [G.node, a + SLOW - 30]], a + SLOW - 70); }
+      E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h); return { a, h }; };
     const P = [[400, 130], [320, 150], [280, 240]], R = [];
     let t = 200;
     P.forEach(([c, ah], i) => { beat(t, 100); const x = beat(t + c, ah, ah > 200); R.push(Object.assign({ c }, x)); brk(sc, 'His', x.a, x.h, 'A2H2 ' + ah, { hot: i === 2, up: 1 }); t += 1300; });
     sc.m.R = R;
     Object.assign(sc, { stimEnd: 0, verdictT: R[2].h + 30, verdict: 'Al acortar el acoplamiento 40 ms el A2H2 <b>salta 90 ms</b> (150 → 240): la vía rápida quedó refractaria y conduce la lenta → <b>doble fisiología nodal</b> (salto ≥ 50 ms).',
-      why: 'A favor de TRNAV (VPP 86 %), pero solo muestra el sustrato: puede ser espectador.' });
+      why: 'En cada latido el frente entra a las dos vías. Mientras la rápida conduce, llega primero al nodo y el frente de la lenta se bloquea al final, porque encuentra el nodo refractario. Con un extraestímulo más precoz la rápida está refractaria y se bloquea al entrar: la lenta sigue hasta el His. A favor de TRNAV (VPP 86 %), pero solo muestra el sustrato: puede ser espectador.' });
     return sc;
   }
 
@@ -973,7 +978,7 @@
     basal_coumel: { t: 'Observaciones: efecto Coumel (BRI funcional)', lanes: [['CSd', 'SC dist'], ['CSp', 'SC prox'], ['His', 'His'], ['VD', 'VD']], panels: [() => basalSc('coumel')], win: 2400,
       fases: s => [[0, 'TRAV por una vía lateral izquierda con QRS angosto. Medí el VA y la LC.'], [s[0].m.bri - 60, 'Aparece <b>BRI funcional</b>: el frente ya no baja por la rama izquierda y el QRS se ensancha.'], [s[0].m.bri + 700, 'Compará el VA y la LC con y sin BRI.']] },
     pre_dual: { t: 'Estudio basal: doble fisiología nodal', panels: [dualSc], win: 1400, gap: 50,
-      fases: s => { const R = s[0].m.R; return [[0, 'Ritmo sinusal. Se estimula la AD alta: un latido de base (S1) y un extraestímulo (S2), cada vez más precoz.'], [R[0].a - 5, 'Acoplamiento 400 ms: el S2 baja por la vía rápida.'], [R[1].a - 5, '320 ms: sigue por la rápida y el AH se alarga un poco.'], [R[2].a - 5, '280 ms: la vía rápida está refractaria y el S2 baja por la <b>vía lenta</b>.']]; } },
+      fases: s => { const R = s[0].m.R; return [[0, 'Ritmo sinusal. Se estimula la AD alta: un latido de base (S1) y un extraestímulo (S2), cada vez más precoz.'], [R[0].a - 5, 'Acoplamiento 400 ms: el S2 entra a las <b>dos vías</b>. La rápida llega primero al His; el frente de la lenta se bloquea al final (✕) porque encuentra el nodo refractario.'], [R[1].a - 5, '320 ms: sigue conduciendo la rápida (el AH se alarga un poco) y la lenta vuelve a bloquearse al final.'], [R[2].a - 5, '280 ms: la <b>vía rápida está refractaria</b> y se bloquea al entrar (✕); el frente de la <b>vía lenta</b> sigue hasta el His: salto del AH.']]; } },
     pre_vanode: { t: 'Estudio basal: conducción VA por el nodo', lanes: [['CSd', 'SC dist'], ['CSp', 'SC prox'], ['His', 'His'], ['VD', 'VD']], panels: [() => vaPaceSc('node')], win: 2600,
       fases: s => [[0, 'Se estimula el VD con LC cada vez más cortas (600, 450, 350 y 300 ms).'], [1300, 'Mirá cómo cambia el VA y dónde aparece primero la A.']] },
     pre_vaap: { t: 'Estudio basal: conducción VA por una vía accesoria', lanes: [['CSd', 'SC dist'], ['CSp', 'SC prox'], ['His', 'His'], ['VD', 'VD']], panels: [() => vaPaceSc('ap')], win: 2600,
