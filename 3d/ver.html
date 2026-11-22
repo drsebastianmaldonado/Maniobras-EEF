@@ -206,7 +206,11 @@ function build(parts) {
   // foco auricular (taquicardia auricular: vena pulmonar superior izquierda)
   if (sc.focus) { const FP = map2(sc.focusPt || G.focus); FOC3 = FP; const m = new THREE.Mesh(new THREE.SphereGeometry(.09, 16, 12), new THREE.MeshBasicMaterial({ color: 0xff4a4a, transparent: true, opacity: .95, blending: THREE.AdditiveBlending, depthWrite: false })); m.position.copy(FP); heart.add(m); FOCM = m; }
   // frentes del escenario en 3D
-  WV3 = sc.wv.map((w, i) => ({ c: w.c, hi: HIW[i], pts: w.pts.map(([p, t]) => ({ P: map2(p), t, y: p[1] })) }));
+  // los puntos del sistema de conducción del esquema van exactamente sobre el His y las ramas del modelo
+  const key = p => p[0] + ',' + p[1], ANC = new Map([[G.node, AVN], [G.his, HIS], [G.rb1, rbPts[12]], [G.rb2, rbPts[27]], [G.rb3, rbPts[40]], [G.rb4, rbPts[50]], [G.apex, rbPts[60]],
+    [[312, 334], lbA[8]], [[360, 365], lbA[20]], [[405, 392], lbA[35]], [G.lvA, lbA[50]]].map(([a, b]) => [key(a), b]));
+  const APP = new Set([G.apV, G.apA, G.aSep, [231, 262], [237, 318], [232, 268], [236, 312], [250, 362], [264, 272], [240, 356], [212, 288], [92, 272], [178, 512], G.afA, G.afV, G.jx, G.cso].map(key));
+  WV3 = sc.wv.map((w, i) => ({ c: w.c, hi: HIW[i], pts: w.pts.map(([p, t]) => { const a = ANC.get(key(p)); return { P: a ? a.clone() : map2(p), t, y: p[1], anc: !!a || APP.has(key(p)) }; }) }));
   COLS = (sc.cols || []).map(c => ({ t: c.t, P: map2(c.pt) }));
   ST3 = STIMS.map(s => ({ t: s.t, P: map2(s.pt) }));
   FOCUS = WIN.map(w => { const c = V(0, 0, 0); let k = 0; WV3.forEach(x => { if (!x.hi) return; const t0 = x.pts[0].t; if (t0 >= w[0] && t0 <= w[2]) x.pts.forEach(p => { c.add(p.P); k++; }); }); return k ? c.multiplyScalar(1 / k) : V(0, 0, 0); });
@@ -251,9 +255,11 @@ function drawWaves(T) {
     let k = 0; while (k < P.length - 2 && T > P[k + 1].t) k++;
     const f = Math.max(0, Math.min(1, (Math.min(T, t1) - P[k].t) / Math.max(1, P[k + 1].t - P[k].t))), pos = P[k].P.clone().lerp(P[k + 1].P, f);
     const fade = T > t1 ? 1 - (T - t1) / 140 : 1, col = new THREE.Color(WCOL[w.c] || 0xffb050); if (w.hi) col.lerp(new THREE.Color(0xffffff), .25);
+    // dentro del miocardio ventricular el frente ya se ve en la pared: no se dibuja el punto para no duplicarlo
+    const myo = q_ => !q_.anc && q_.y >= 330; if (myo(P[k]) || myo(P[k + 1])) continue;
     const s = getSprite(n), tr = getTrail(n); n++;
     s.visible = true; s.position.copy(pos); s.material.color = col; s.material.opacity = fade; s.scale.setScalar(w.hi ? .55 : .3);
-    const arr = tr.geometry.attributes.position.array; let m = 0; for (let j = 0; j <= k && m < 62; j++, m++) { arr[m * 3] = P[j].P.x; arr[m * 3 + 1] = P[j].P.y; arr[m * 3 + 2] = P[j].P.z; }
+    const arr = tr.geometry.attributes.position.array; let m = 0, j0 = k; while (j0 > 0 && !myo(P[j0 - 1])) j0--; for (let j = j0; j <= k && m < 62; j++, m++) { arr[m * 3] = P[j].P.x; arr[m * 3 + 1] = P[j].P.y; arr[m * 3 + 2] = P[j].P.z; }
     arr[m * 3] = pos.x; arr[m * 3 + 1] = pos.y; arr[m * 3 + 2] = pos.z; m++; tr.geometry.setDrawRange(0, m); tr.geometry.attributes.position.needsUpdate = true; tr.material.color = col; tr.material.opacity = (w.hi ? .95 : .6) * fade; tr.visible = true; }
   for (let i = n; i < pool.length; i++) { pool[i].visible = false; trails[i].visible = false; }
   for (const c of COLS) if (T >= c.t && T < c.t + (c.dur || 220)) { const x = getX(nx++); x.visible = true; x.position.copy(c.P); x.scale.setScalar(c.big ? .45 : .22); }
