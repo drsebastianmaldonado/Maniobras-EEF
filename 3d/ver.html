@@ -217,7 +217,7 @@ function build(parts) {
   // frentes del escenario en 3D
   // los puntos del sistema de conducción del esquema van exactamente sobre el His y las ramas del modelo
   const key = p => p[0] + ',' + p[1], ANC = new Map([[G.node, AVN], [G.his, HIS], [G.rb1, rbPts[12]], [G.rb2, rbPts[27]], [G.rb3, rbPts[40]], [G.rb4, rbPts[50]], [G.apex, rbPts[60]],
-    [[312, 334], lbA[8]], [[360, 365], lbA[20]], [[405, 392], lbA[35]], [G.lvA, lbA[50]]].map(([a, b]) => [key(a), b]));
+    [[312, 334], lbA[8]], [[360, 365], lbA[20]], [[405, 392], lbA[35]], [G.lvA, lbA[50]], [[346, 432], lbP[22]], [[370, 476], lbP[32]], [[400, 520], lbP[44]]].map(([a, b]) => [key(a), b]));
   const APP = new Set([[226, 304], [276, 376], [282, 380], G.apV, G.apA, G.aSep, [231, 262], [237, 318], [232, 268], [236, 312], [250, 362], [264, 272], [240, 356], [212, 288], [92, 272], [178, 512], G.afA, G.afV, G.jx, G.cso].map(key));
   // región del triángulo de Koch agrandada (como en la animación de la TRNAV): las vías lenta y rápida se leen mejor
   const N0 = map2(G.node), KZ = sc.nodal ? 4.2 : 1;
@@ -247,9 +247,10 @@ function build(parts) {
     const hh = His.find(x => t - x >= 15 && t - x <= 80); if (hh != null) { ON.h.push(hh); continue; }
     const p = ptAt(t, y => y > 300); ON.v.push({ t: t - 10, P: p ? map2(p) : TIP }); }
   for (const x of His) if (!ON.h.includes(x)) ON.h.push(x);
-  const BBB = sc.bbbL || []; ON.hr = ON.h.filter(x => BBB.includes(x)); ON.h = ON.h.filter(x => !BBB.includes(x));
-  BBB.forEach(h_ => COLS.push({ t: h_ + 8, P: LBX, dur: 520, big: 1 }));
-  BBBL = BBB.map(h_ => [h_ + 8, h_ + 528]);
+  // rama izquierda que no conduce hacia abajo: BRI funcional (Coumel) o rama-rama (la izquierda es el brazo retrógrado)
+  const BBB = sc.bbbL || (sc.bbr ? ON.h.slice() : []); ON.hr = ON.h.filter(x => BBB.includes(x)); ON.h = ON.h.filter(x => !BBB.includes(x));
+  (sc.bbbL || []).forEach(h_ => COLS.push({ t: h_ + 8, P: LBX, dur: 520, big: 1 }));
+  BBBL = (sc.bbbL || []).map(h_ => [h_ + 8, h_ + 528]);
   LAB = [['AD', RAc.clone().add(sn.clone().multiplyScalar(-.6))], ['AI', LAc.clone().add(ax.clone().multiplyScalar(.6)).add(sn.clone().multiplyScalar(.6)).add(V(0, 0, -.3))], ['VD', sept(.35, -3.2, .5)], ['VI', sept(.5, 3.2, 0)], [sc.twin ? 'nodo anterior' : 'nodo AV', AVN.clone().add(sc.twin ? V(-.55, .22, .1) : V(.05, -.2, .1))], ['His', HIS.clone().add(V(.1, .25, .2))], ...(AP3 ? [[AP3.n, AP3.p.clone().add(V(.25, .25, .25)), 'ap']] : []), ...(FOC3 ? [[sc.focusPt ? 'foco' : 'foco (VPSI)', FOC3.clone().add(V(.2, .25, 0)), 'cat']] : []), ...(NODAL ? NODAL.map(([t, p]) => [t, p, t.includes('lenta') ? 'sp' : 'fp']) : []), ...(TWIN || [])]
     .map(([t, p, c]) => { const d = document.createElement('div'); d.className = 'lab ' + (c || ''); d.textContent = t; $('labs').appendChild(d); return { d, p }; });
   if (BBBL.length) { const d = document.createElement('div'); d.className = 'lab cat'; d.textContent = 'bloqueo de la rama izquierda'; $('labs').appendChild(d); LAB.push({ d, p: LBX.clone().add(V(.35, -.25, .2)), when: BBBL }); }
