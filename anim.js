@@ -197,6 +197,11 @@
       W.push(trav ? 'En la TSV y al estimular, V y A se activan en serie a través de la vía: el SA es apenas más largo que el VA.'
                   : 'En la TSV, V y A se activan en paralelo desde el nodo (VA casi 0); al estimular, en serie (V → His → nodo → A): el SA es mucho más largo.');
     }
+    if (kind === 'sava') {   // el HA se mide en el mismo encarrilamiento: va junto con el SA − VA
+      const hat = p1.a - p1.h, hap = R.lastA - lastH, d = hap - hat;
+      brk(sc, 'His', p1.h, p1.a, 'HA ' + hat); brk(sc, 'His', lastH, R.lastA, 'HA ' + hap, { hot: 1 });
+      V[0][1] = V[0][1].replace(/ → <b>.*<\/b>\.$/, '') + `; ΔHA = ${hap} − ${hat} = <b>${sg(d)} ms</b> (${d < 0 ? '&lt; 0' : '&gt; 0'}) → <b>${dx}</b>.`;
+    }
     if (kind === 'dha' || all) {
       const hat = p1.a - p1.h, hap = R.lastA - lastH, d = hap - hat, ch = all ? 'His' : 'AD', g = all ? null : 'His';
       brk(sc, ch, p1.h, p1.a, 'HA ' + hat, { guide: g }); brk(sc, ch, lastH, R.lastA, 'HA ' + hap, { guide: g, hot: 1 });
