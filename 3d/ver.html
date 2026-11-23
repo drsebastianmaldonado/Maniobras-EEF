@@ -351,11 +351,13 @@ function drawLadder(T) {
 // ---------- cuadro
 const rng = $('t'), fase = $('fase'), ver = $('ver'), badge = $('badge');
 if (sc.verdict) ver.innerHTML = sc.verdict + (sc.why ? ' ' + sc.why : '');
+// respuesta escrita en el latido de retorno (la conclusión del escenario, sin formato)
+const RESP = PER_STIM ? '' : (sc.resp || (sc.verdict ? (() => { const d = document.createElement('div'); d.innerHTML = sc.verdict; return d.textContent.replace(/\.$/, ''); })() : ''));
 function frame(T) {
   U.T.value = T; if (ready) { setOn(T); drawWaves(T); }
   let t = ''; for (const [ti, tt] of fases) if (T >= ti) t = tt; fase.innerHTML = t;
   ver.classList.toggle('on', !!sc.verdict && T >= (sc.verdictT || DUR)); rng.value = T; drawTrace(T); drawLadder(T);
-  const w = inWin(T); badge.className = 'badge' + (w ? ' on' : ''); if (w) { const second = T >= w[1]; badge.textContent = (second ? w[4] + (sc.resp ? ': ' + sc.resp : '') : w[3]) + ' · cámara lenta'; badge.style.color = second ? '#3ddc84' : '#ff8a8a'; }
+  const w = inWin(T); badge.className = 'badge' + (w ? ' on' : ''); if (w) { const second = T >= w[1]; const showR = second && RESP && w === WIN[WIN.length - 1]; badge.textContent = (second ? w[4] + (showR ? ': ' + RESP : '') : w[3]) + ' · cámara lenta'; badge.style.color = second ? '#3ddc84' : '#ff8a8a'; }
 }
 function render(T) {
   if (auto) { const wi = WIN.findIndex(w => T >= w[0] - 120 && T <= w[2] + 60); if (wi >= 0 && KOCH) { tTgt.copy(KOCH.c).add(heart.position); tDist = 3.6; tYaw = Math.atan2(KOCH.dir.x, KOCH.dir.z); tPitch = Math.asin(KOCH.dir.y); }
