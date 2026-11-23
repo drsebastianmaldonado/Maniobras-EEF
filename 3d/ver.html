@@ -89,7 +89,7 @@ if (PER_STIM) STIMS.forEach((s, i) => { const nx = STIMS[i + 1] ? STIMS[i + 1].t
   WIN.push([s.t - 10, s.t + 110, Math.min(nx, s.t + 320), l1, e.l === 'S2' ? 'Respuesta al S2' : 'Respuesta']); });
 else runs.forEach((r, i) => { const last = r[r.length - 1].t, nx = runs[i + 1] ? runs[i + 1][0].t - 60 : Infinity, end = Math.min(nx, last + 560);
   if (r.length === 1) WIN.push([last - 10, last + 220, end, 'Extraestímulo', 'Latido siguiente']);
-  else WIN.push([last - 10, last + 220, end, 'Último latido estimulado', '1.er latido de retorno']); });
+  else WIN.push([last - 10, last + 220, end, r[r.length - 1].pt === G.base ? 'Último estimulado (base): miocardio → Purkinje apical → RD → His' : 'Último latido estimulado', '1.er latido de retorno']); });
 if (!WIN.length && sc.bbbL) { const h0 = sc.bbbL[0]; WIN.push([h0 - 60, h0 + 110, h0 + 430, 'Bloqueo de rama izquierda', 'El VA se alarga']); }
 if (!WIN.length && sc.ado) WIN.push([sc.ado[0] + 150, sc.ado[0] + 450, Math.min(DUR, sc.ado[1] + 250), 'Efecto de la adenosina', 'Cómo termina o sigue']);
 if (!WIN.length && sc.stimEnd) WIN.push([sc.stimEnd - 300, sc.stimEnd, sc.stimEnd + 350, 'Momento clave', 'Qué pasa después']);
@@ -248,7 +248,7 @@ function build(parts) {
     KOCH = { c: mapK([235, 262]), dir: sn.clone().negate().add(ax.clone().multiplyScalar(.2)).normalize() };
     NODAL = [['vía rápida', cf.getPoint(.4).add(e2k.clone().multiplyScalar(.18))], ['vía lenta', cs_.getPoint(.45).add(e2k.clone().multiplyScalar(-.18))]]; }
   if (TW3) { ANC.set(key([226, 304]), TW3.NP3); ANC.set(key([276, 376]), TW3.HP3); }
-  WV3 = sc.wv.map((w, i) => ({ c: w.c, hi: HIW[i], pts: w.pts.map(([p, t]) => { const a = ANC.get(key(p)); return { P: a ? a.clone() : mapK(p), t, y: p[1], anc: !!a || APP.has(key(p)) }; }) }));
+  WV3 = sc.wv.map((w, i) => ({ c: w.c, hi: HIW[i], base: w.pts[0][0] === G.base || (w.pts[0][0][0] === G.base[0] && w.pts[0][0][1] === G.base[1]), pts: w.pts.map(([p, t]) => { const a = ANC.get(key(p)); return { P: a ? a.clone() : mapK(p), t, y: p[1], anc: !!a || APP.has(key(p)) }; }) }));
   COLS = (sc.cols || []).map(c => ({ t: c.t, P: mapK(c.pt) }));
   ST3 = STIMS.map(s => ({ t: s.t, P: map2(s.pt) }));
   if (HISM) FOCUS = WIN.map(() => HIS.clone()); else FOCUS = WIN.map(w => { const c = V(0, 0, 0); let k = 0; WV3.forEach(x => { if (!x.hi) return; const t0 = x.pts[0].t; if (t0 >= w[0] && t0 <= w[2]) x.pts.forEach(p => { c.add(p.P); k++; }); }); return k ? c.multiplyScalar(1 / k) : V(0, 0, 0); });
@@ -300,11 +300,11 @@ function drawWaves(T) {
     const f = Math.max(0, Math.min(1, (Math.min(T, t1) - P[k].t) / Math.max(1, P[k + 1].t - P[k].t))), pos = P[k].P.clone().lerp(P[k + 1].P, f);
     const fade = T > t1 ? 1 - (T - t1) / 140 : 1, col = new THREE.Color(WCOL[w.c] || 0xffb050); if (w.hi) col.lerp(new THREE.Color(0xffffff), .25);
     // dentro del miocardio ventricular el frente ya se ve en la pared: no se dibuja el punto para no duplicarlo
-    const myo = q_ => !q_.anc && q_.y >= 330; if (myo(P[k]) || myo(P[k + 1])) continue;
+    const myo = q_ => !w.base && !q_.anc && q_.y >= 330; if (myo(P[k]) || myo(P[k + 1])) continue;
     const s = getSprite(n), tr = getTrail(n); n++;
-    s.visible = true; s.position.copy(pos); s.material.color = col; s.material.opacity = fade; s.scale.setScalar((w.hi ? .55 : .3) * Math.max(.4, Math.min(1, dist / 10)));
+    s.visible = true; s.position.copy(pos); s.material.color = col; s.material.opacity = fade; s.scale.setScalar((w.hi || w.base ? .55 : .3) * Math.max(.4, Math.min(1, dist / 10)));
     const arr = tr.geometry.attributes.position.array; let m = 0, j0 = k; while (j0 > 0 && !myo(P[j0 - 1])) j0--; for (let j = j0; j <= k && m < 62; j++, m++) { arr[m * 3] = P[j].P.x; arr[m * 3 + 1] = P[j].P.y; arr[m * 3 + 2] = P[j].P.z; }
-    arr[m * 3] = pos.x; arr[m * 3 + 1] = pos.y; arr[m * 3 + 2] = pos.z; m++; tr.geometry.setDrawRange(0, m); tr.geometry.attributes.position.needsUpdate = true; tr.material.color = col; tr.material.opacity = (w.hi ? .95 : .6) * fade; tr.visible = true; }
+    arr[m * 3] = pos.x; arr[m * 3 + 1] = pos.y; arr[m * 3 + 2] = pos.z; m++; tr.geometry.setDrawRange(0, m); tr.geometry.attributes.position.needsUpdate = true; tr.material.color = col; tr.material.opacity = (w.hi || w.base ? .95 : .6) * fade; tr.visible = true; }
   for (let i = n; i < pool.length; i++) { pool[i].visible = false; trails[i].visible = false; }
   for (const c of COLS) if (T >= c.t && T < c.t + (c.dur || 220)) { const x = getX(nx++); x.visible = true; x.position.copy(c.P); x.scale.setScalar(c.big ? .45 : .22); }
   for (let i = nx; i < xs.length; i++) xs[i].visible = false;
