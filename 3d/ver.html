@@ -137,7 +137,7 @@ const condMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
       gl_FragColor = vec4(vec3(1.,.62,.18)*(.16*vw + gF*(.5+.6*vw*vw) + gW*.12), 1.); }` });
 
 // ---------- modelo y correspondencia del esquema 2D de la app con el corazón 3D
-let KOCH = null, NODAL = null, BBBL = [], LBX = null, ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
+let TW3 = null, TWIN = null, KOCH = null, NODAL = null, BBBL = [], LBX = null, ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
 const map2 = p => V(M2[0][0] * p[0] + M2[0][1] * p[1] + M2[0][2], M2[1][0] * p[0] + M2[1][1] * p[1] + M2[1][2], M2[2][0] * p[0] + M2[2][1] * p[1] + M2[2][2]);
 function fit(pairs) {   // mínimos cuadrados: [x, y, 1] → X, Y, Z
   const A3 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], b = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
@@ -205,13 +205,18 @@ function build(parts) {
   if (APD[apk]) { const c = new THREE.CatmullRomCurve3(APD[apk].map(map2)), mm = new THREE.MeshBasicMaterial({ color: 0xff3d8b, transparent: true, opacity: .85, blending: THREE.AdditiveBlending, depthWrite: false });
     heart.add(new THREE.Mesh(new THREE.TubeGeometry(c, 30, .055, 10), mm)); heart.add(new THREE.Mesh(new THREE.TubeGeometry(c, 30, .11, 10), new THREE.MeshBasicMaterial({ color: 0xff3d8b, transparent: true, opacity: .18, blending: THREE.AdditiveBlending, depthWrite: false })));
     AP3 = { p: c.getPoint(.5), n: apk === 'nv' ? 'vía nodoventricular' : apk === 'af' ? 'vía atriofascicular' : apk === 'pjrt' ? 'vía decremental' : 'vía accesoria' }; }
+  // nodos AV gemelos: segundo nodo (posterior) con su His
+  if (sc.twin) { const NP3 = csOs.clone().add(ax.clone().multiplyScalar(.06)).add(sn.clone().multiplyScalar(-.05)), HP3 = NP3.clone().lerp(TIP, .32).add(sn.clone().multiplyScalar(.05)); TW3 = { NP3, HP3 };
+    const nm = new THREE.Mesh(new THREE.SphereGeometry(.07, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffa040, transparent: true, opacity: .85, blending: THREE.AdditiveBlending, depthWrite: false })); nm.position.copy(NP3); heart.add(nm);
+    heart.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([NP3, NP3.clone().lerp(HP3, .5).add(V(0, 0, -.05)), HP3]), 30, .025, 8), new THREE.MeshBasicMaterial({ color: 0xffa040, transparent: true, opacity: .55, blending: THREE.AdditiveBlending, depthWrite: false })));
+    TWIN = [['nodo posterior', NP3.clone().add(ax.clone().multiplyScalar(-.25)).add(V(-.2, 0, .1))], ['His posterior', HP3.clone().add(V(-.35, -.1, .1))]]; }
   // foco auricular (taquicardia auricular: vena pulmonar superior izquierda)
   if (sc.focus) { const FP = map2(sc.focusPt || G.focus); FOC3 = FP; const m = new THREE.Mesh(new THREE.SphereGeometry(.09, 16, 12), new THREE.MeshBasicMaterial({ color: 0xff4a4a, transparent: true, opacity: .95, blending: THREE.AdditiveBlending, depthWrite: false })); m.position.copy(FP); heart.add(m); FOCM = m; }
   // frentes del escenario en 3D
   // los puntos del sistema de conducción del esquema van exactamente sobre el His y las ramas del modelo
   const key = p => p[0] + ',' + p[1], ANC = new Map([[G.node, AVN], [G.his, HIS], [G.rb1, rbPts[12]], [G.rb2, rbPts[27]], [G.rb3, rbPts[40]], [G.rb4, rbPts[50]], [G.apex, rbPts[60]],
     [[312, 334], lbA[8]], [[360, 365], lbA[20]], [[405, 392], lbA[35]], [G.lvA, lbA[50]]].map(([a, b]) => [key(a), b]));
-  const APP = new Set([G.apV, G.apA, G.aSep, [231, 262], [237, 318], [232, 268], [236, 312], [250, 362], [264, 272], [240, 356], [212, 288], [92, 272], [178, 512], G.afA, G.afV, G.jx, G.cso].map(key));
+  const APP = new Set([[226, 304], [276, 376], [282, 380], G.apV, G.apA, G.aSep, [231, 262], [237, 318], [232, 268], [236, 312], [250, 362], [264, 272], [240, 356], [212, 288], [92, 272], [178, 512], G.afA, G.afV, G.jx, G.cso].map(key));
   // región del triángulo de Koch agrandada (como en la animación de la TRNAV): las vías lenta y rápida se leen mejor
   const N0 = map2(G.node), KZ = sc.nodal ? 4.2 : 1;
   // en la cara septal de la AD: e1 del ostium del SC hacia el His, e2 hacia la aurícula (arriba en el esquema 2D)
@@ -222,6 +227,7 @@ function build(parts) {
     const cf = tube([[232, 234], [252, 246], G.node], 0xc58cff, .022), cs_ = tube([[226, 248], [206, 268], [220, 292], [250, 284], G.node], 0xff9a3c, .022);
     KOCH = { c: mapK([235, 262]), dir: sn.clone().negate().add(ax.clone().multiplyScalar(.2)).normalize() };
     NODAL = [['vía rápida', cf.getPoint(.4).add(e2k.clone().multiplyScalar(.18))], ['vía lenta', cs_.getPoint(.45).add(e2k.clone().multiplyScalar(-.18))]]; }
+  if (TW3) { ANC.set(key([226, 304]), TW3.NP3); ANC.set(key([276, 376]), TW3.HP3); }
   WV3 = sc.wv.map((w, i) => ({ c: w.c, hi: HIW[i], pts: w.pts.map(([p, t]) => { const a = ANC.get(key(p)); return { P: a ? a.clone() : mapK(p), t, y: p[1], anc: !!a || APP.has(key(p)) }; }) }));
   COLS = (sc.cols || []).map(c => ({ t: c.t, P: mapK(c.pt) }));
   ST3 = STIMS.map(s => ({ t: s.t, P: map2(s.pt) }));
@@ -242,7 +248,7 @@ function build(parts) {
   const BBB = sc.bbbL || []; ON.hr = ON.h.filter(x => BBB.includes(x)); ON.h = ON.h.filter(x => !BBB.includes(x));
   BBB.forEach(h_ => COLS.push({ t: h_ + 8, P: LBX, dur: 520, big: 1 }));
   BBBL = BBB.map(h_ => [h_ + 8, h_ + 528]);
-  LAB = [['AD', RAc.clone().add(sn.clone().multiplyScalar(-.6))], ['AI', LAc.clone().add(ax.clone().multiplyScalar(.6)).add(sn.clone().multiplyScalar(.6)).add(V(0, 0, -.3))], ['VD', sept(.35, -3.2, .5)], ['VI', sept(.5, 3.2, 0)], ['nodo AV', AVN.clone().add(V(.05, -.2, .1))], ['His', HIS.clone().add(V(.1, .25, .2))], ...(AP3 ? [[AP3.n, AP3.p.clone().add(V(.25, .25, .25)), 'ap']] : []), ...(FOC3 ? [[sc.focusPt ? 'foco' : 'foco (VPSI)', FOC3.clone().add(V(.2, .25, 0)), 'cat']] : []), ...(NODAL ? NODAL.map(([t, p]) => [t, p, t.includes('lenta') ? 'sp' : 'fp']) : [])]
+  LAB = [['AD', RAc.clone().add(sn.clone().multiplyScalar(-.6))], ['AI', LAc.clone().add(ax.clone().multiplyScalar(.6)).add(sn.clone().multiplyScalar(.6)).add(V(0, 0, -.3))], ['VD', sept(.35, -3.2, .5)], ['VI', sept(.5, 3.2, 0)], [sc.twin ? 'nodo anterior' : 'nodo AV', AVN.clone().add(sc.twin ? ax.clone().multiplyScalar(.25) : V(.05, -.2, .1))], ['His', HIS.clone().add(V(.1, .25, .2))], ...(AP3 ? [[AP3.n, AP3.p.clone().add(V(.25, .25, .25)), 'ap']] : []), ...(FOC3 ? [[sc.focusPt ? 'foco' : 'foco (VPSI)', FOC3.clone().add(V(.2, .25, 0)), 'cat']] : []), ...(NODAL ? NODAL.map(([t, p]) => [t, p, t.includes('lenta') ? 'sp' : 'fp']) : []), ...(TWIN || [])]
     .map(([t, p, c]) => { const d = document.createElement('div'); d.className = 'lab ' + (c || ''); d.textContent = t; $('labs').appendChild(d); return { d, p }; });
   if (BBBL.length) { const d = document.createElement('div'); d.className = 'lab cat'; d.textContent = 'bloqueo de la rama izquierda'; $('labs').appendChild(d); LAB.push({ d, p: LBX.clone().add(V(.35, -.25, .2)), when: BBBL }); }
 }
