@@ -640,26 +640,26 @@
 
   // Nodos AV gemelos
   function twinSc(kind) {
-    const sc = newSc({ title: kind === 'tsv' ? 'TRAV por nodos AV gemelos' : 'Estimulación auricular desde dos sitios', twin: true, cats: kind === 'tsv' ? [] : ['hra', 'cso'] });
+    const sc = newSc({ title: kind === 'tsv' ? 'TRAV por nodos AV gemelos' : 'Estimulación auricular desde dos sitios', twin: true, cats: kind === 'tsv' ? [] : ['ralat'] });
     const NP = [226, 304], HP = [276, 376];
     if (kind === 'tsv') {
       let a = 120; const R = [];
       for (let i = 0; i < 5; i++) {
-        const h = a + 100; W_(sc, 'ante', [[G.aSep, a], [G.node, a + 30], [G.his, h]]); E(sc, 'AD', a + 10, 'A'); E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h); E(sc, 'ECG', h + 20, '', { qrs: 'n' });
-        const hp = h + 95; W_(sc, 'retro', [[G.rb1, h + 18], [[282, 380], h + 30], [HP, h + 60], [NP, hp + 35], [G.cso, hp + 75], [G.aSep, hp + 145]]); E(sc, 'HisP', hp, 'H', { inv: true });
-        R.push({ a, h, hp }); a = hp + 145; }
+        const h = a + 120; W_(sc, 'ante', [[G.aSep, a], [G.node, a + 35], [G.his, h]]); E(sc, 'AD', a + 10, 'A'); E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h); E(sc, 'ECG', h + 20, '', { qrs: 'n' });
+        const hp = h + 75; W_(sc, 'retro', [[G.rb1, h + 18], [[282, 380], h + 40], [HP, hp], [NP, hp + 70], [G.cso, hp + 90], [G.aSep, hp + 110]]); E(sc, 'HisP', hp, 'H', { inv: true });
+        R.push({ a, h, hp }); a = hp + 110; }
+      brk(sc, 'ECG', R[3].h + HVT, R[3].hp + 120, 'VA ' + (R[3].hp + 120 - R[3].h - HVT), { up: 1 });
       brk(sc, 'AD', R[2].a + 10, R[3].a + 10, 'AA ' + (R[3].a - R[2].a), { hot: 1 });
-      Object.assign(sc, { stimEnd: 0, verdictT: R[3].h + 60, verdict: 'Baja por el nodo anterior (His anterior antes del V, QRS angosto) y <b>sube por el nodo posterior</b> (His posterior retrógrado, A más precoz cerca del ostium del SC): <b>TRAV por nodos gemelos</b>.',
+      Object.assign(sc, { stimEnd: 0, verdictT: R[3].h + 60, verdict: 'RP corto (VA ~140 ms, más largo que en la TRNAV típica). Baja por el nodo anterior (His anterior antes del V, QRS angosto) y <b>sube por el nodo posterior</b> (His posterior retrógrado, A más precoz cerca del ostium del SC): <b>TRAV por nodos gemelos</b>.',
         why: 'Es un circuito AV con dos sistemas de conducción, como una TRAV con una "vía" que en realidad es otro nodo: decremental y sensible a la adenosina. Encarrilando desde los dos sitios nodales el PPI es corto.' });
     } else {
       const R = [];
-      [[200, 'hra'], [900, 'hra'], [1700, 'cso'], [2400, 'cso']].forEach(([s, site]) => {
-        paceA(sc, site, s); E(sc, 'AD', s + (site === 'hra' ? 10 : 40), 'A');
-        if (site === 'hra') { const h = s + 130; W_(sc, 'ante', [[G.hra, s], [G.ra, s + 20], [G.aSep, s + 40], [G.node, s + 70], [G.his, h]]); E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h); E(sc, 'ECG', h + 20, '', { qrs: 'n' }); R.push(h); }
-        else { const hp = s + 110; W_(sc, 'ante', [[G.cso, s], [NP, s + 40], [HP, hp]]); W_(sc, 'ante', [[HP, hp], [G.rb2, hp + 20], [G.rb3, hp + 35], [G.apex, hp + 50]]); W_(sc, 'ante', [[HP, hp], [[330, 430], hp + 25], [G.lvA, hp + 50]]);
-          W_(sc, 'ante', [[G.cso, s], [G.aSep, s + 25], [G.node, s + 50]], s + 45);
+      [[200, 'sin'], [900, 'sin'], [1700, 'lat'], [2400, 'lat']].forEach(([s, site]) => {
+        if (site === 'sin') { E(sc, 'AD', s + 10, 'A'); const h = s + 140; W_(sc, 'ante', [[G.sn, s - 20], [G.ra, s + 15], [G.aSep, s + 45], [G.node, s + 80], [G.his, h]]); W_(sc, 'ante', [[G.ra, s + 15], [[150, 262], s + 45], [G.cso, s + 75], [NP, s + 95]], s + 92); E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h); E(sc, 'ECG', h + 20, '', { qrs: 'n' }); R.push(h); }
+        else { paceA(sc, 'afA', s); E(sc, 'AD', s + 45, 'A'); const hp = s + 115; W_(sc, 'ante', [[G.afA, s], [[150, 290], s + 25], [G.cso, s + 45], [NP, s + 60], [HP, hp]]); W_(sc, 'ante', [[HP, hp], [G.rb2, hp + 20], [G.rb3, hp + 35], [G.apex, hp + 50]]); W_(sc, 'ante', [[HP, hp], [[330, 430], hp + 25], [G.lvA, hp + 50]]);
+          W_(sc, 'ante', [[G.afA, s], [[150, 255], s + 30], [G.aSep, s + 60], [G.node, s + 90]], s + 85);
           E(sc, 'HisP', hp, 'H'); E(sc, 'VD', hp + 40, 'V'); sc.flV.push(hp + 40); E(sc, 'ECG', hp + 15, '', { qrs: 'm' }); R.push(hp); } });
-      Object.assign(sc, { stimEnd: 0, verdictT: R[3] + 80, verdict: 'Desde la AD alta conduce el <b>nodo anterior</b> (His anterior, QRS 1); desde el ostium del SC, el <b>nodo posterior</b> (His posterior, QRS 2). <b>Dos QRS distintos no preexcitados</b>, cada uno con su His: dos sistemas de conducción AV.',
+      Object.assign(sc, { stimEnd: 0, verdictT: R[3] + 80, verdict: 'En ritmo sinusal conduce el <b>nodo anterior</b> (His anterior, QRS 1); estimulando la pared lateral baja de la AD, el <b>nodo posterior</b> (His posterior, QRS 2). <b>Dos QRS distintos no preexcitados</b>, cada uno con su His: dos sistemas de conducción AV.',
         why: 'Así se demuestran en 2 de cada 3 pacientes (estimulación auricular diferencial). En el 93 % hay heterotaxia (sobre todo isomerismo derecho); también en la TCGA y el canal AV malalineado.' });
     }
     return sc;
@@ -986,9 +986,9 @@
     dfire: { t: 'Doble disparo nodal (respuesta 1:2)', panels: [dfireSc], win: 2600,
       fases: s => { const R = s[0].m.R; return [[0, 'Ritmo sinusal. Mirá cuántos His y V salen de cada A.'], [R[0].h1 - 60, 'La A baja por la <b>vía rápida</b>: H1 y V1...'], [R[0].h1 + 80, '...y la misma A sigue bajando por la <b>vía lenta</b>: H2 y V2.']]; } },
     twin_tsv: { t: 'Nodos AV gemelos: la taquicardia', lanes: [['ECG', 'ECG'], ['AD', 'AD alta'], ['His', 'His ant.'], ['HisP', 'His post.']], panels: [() => twinSc('tsv')],
-      fases: [[0, 'Paciente con heterotaxia: dos nodos AV (anterior y posterior), cada uno con su His. Mirá por dónde baja y por dónde sube la taquicardia.']] },
+      fases: [[0, 'Paciente con heterotaxia: dos nodos AV (anterior y posterior), cada uno con su His. La taquicardia baja por el nodo anterior y sube por el posterior: RP corto (VA ~140 ms), parecida a una TRNAV pero con un VA más largo; la A más precoz está junto al ostium del SC.']] },
     twin_ap: { t: 'Nodos AV gemelos: estimulación auricular diferencial', lanes: [['ECG', 'ECG'], ['AD', 'AD alta'], ['His', 'His ant.'], ['HisP', 'His post.']], panels: [() => twinSc('ap')], win: 2600,
-      fases: [[0, 'Ritmo sinusal. Se estimula primero la AD alta...'], [1650, '...y después el ostium del SC: conduce el otro nodo.']] },
+      fases: [[0, 'Ritmo sinusal: conduce el <b>nodo anterior</b> (His anterior, QRS 1). El frente que llega al nodo posterior lo encuentra ya activado desde abajo.'], [1650, 'Se estimula la <b>pared lateral baja de la AD</b>: el frente llega primero al <b>nodo posterior</b> (His posterior, QRS 2).']] },
     obl_retro: { t: 'Vía oblicua: conducción retrógrada', win: 260, dur: 1270, lanes: [['C12', 'SC 1-2'], ['C34', 'SC 3-4'], ['C56', 'SC 5-6'], ['C78', 'SC 7-8']], panels: [() => oblSc('retro')],
       fases: s => { const R = s[0].m.R[0]; return [[0, 'Vista ampliada del anillo mitral: aurícula arriba, ventrículo abajo y el catéter del SC en el medio. Se estimula el VD.'], [R.s + 55, 'Seguí el <b>frente ventricular</b> (naranja): llega desde el septum y pasa por debajo de 3-4 sin activar la vía.'], [R.tAI - 32, 'Entra a la vía en la <b>inserción ventricular</b> (1-2), sube en diagonal (violeta) y sale en la <b>inserción auricular</b> (3-4).'], [R.tAI + 5, 'Desde la inserción auricular la aurícula se activa hacia los dos lados: la <b>A más precoz</b> está en 3-4.']]; } },
     obl_rev: { t: 'Vía oblicua: invertir el frente de estimulación', win: 260, dur: 2770, lanes: [['C12', 'SC 1-2'], ['C34', 'SC 3-4'], ['C56', 'SC 5-6'], ['C78', 'SC 7-8']], panels: [() => oblSc('rev')],
