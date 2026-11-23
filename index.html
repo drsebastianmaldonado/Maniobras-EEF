@@ -314,7 +314,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
   <section class="panel" id="p-loc" hidden>
     <div id="loc-hub" class="panel">
       <p class="small" style="margin:0 4px">Localización del sustrato arritmogénico a partir del ECG de superficie.</p>
-      <a class="card lcard" href="localizar/via-accesoria.html"><span class="lic2" style="--c:var(--violet)">Vía accesoria</span><b>Localización de la vía accesoria</b><span>Algoritmo por pasos según la onda delta, con ECG de ejemplo. Algoritmo del autor.</span><i>Abrir →</i></a>
+      <a class="card lcard" href="localizar/via-accesoria.html" onclick="this.href='localizar/via-accesoria.html?v='+APPV"><span class="lic2" style="--c:var(--violet)">Vía accesoria</span><b>Localización de la vía accesoria</b><span>Algoritmo por pasos según la onda delta, con ECG de ejemplo. Algoritmo del autor.</span><i>Abrir →</i></a>
       <button class="card lcard" type="button" id="goKis"><span class="lic2" style="--c:var(--blue)">Foco auricular</span><b>Algoritmo de Kistler</b><span>Localización del foco de la taquicardia auricular según la morfología de la onda P.</span><i>Abrir →</i></button>
       <button class="card lcard" type="button" id="goObl"><span class="lic2" style="--c:var(--teal)">Mapeo de vía</span><b>Vías accesorias oblicuas</b><span>Cómo registrar y validar el potencial de la vía, y seguir su recorrido oblicuo.</span><i>Abrir →</i></button>
       <button class="card lcard" type="button" id="goEnr"><span class="lic2" style="--c:var(--rose)">Arritmia ventricular</span><b>Algoritmo de Enriquez</b><span>Sitio de origen de las EV y TV idiopáticas (corazón estructuralmente normal), por cuadrantes anatómicos.</span><i>Abrir →</i></button>
@@ -407,7 +407,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 295;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 296;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -2536,7 +2536,7 @@ const SIX = (() => {
   it.push({ g: 'Localizadores y herramientas', t: 'Algoritmo de Kistler: foco de la taquicardia auricular', s: 'Localización del foco auricular por la morfología de la onda P',
     kw: 'kistler localizar foco ta onda p', body: treeTxt(KN), go: () => { tab('loc'); locView('kis'); } });
   it.push({ g: 'Localizadores y herramientas', t: 'Localización de la vía accesoria', s: 'Algoritmo por pasos según la onda delta, con ECG de ejemplo y modo práctica',
-    kw: 'via accesoria wpw wolff parkinson white preexcitacion onda delta localizar kent algoritmo ecg', body: '', go: () => { location.href = 'localizar/via-accesoria.html'; } });
+    kw: 'via accesoria wpw wolff parkinson white preexcitacion onda delta localizar kent algoritmo ecg', body: '', go: () => { location.href = 'localizar/via-accesoria.html?v=' + APPV; } });
   it.push({ g: 'Localizadores y herramientas', t: 'Calcular índices', s: 'PPI−LC, cPPI−LC, SA−VA, ΔHA, encarrilamiento diferencial y ΔAH a partir de los intervalos medidos',
     kw: 'calcular calculadora indices intervalos', body: tx([...document.querySelectorAll('#p-calc label, #p-calc .bl')].map(e => e.textContent)), go: () => tab('calc') });
   it.forEach(x => { x.nt = norm(x.t); x.ns = norm(x.s); x.nk = norm(x.kw || ''); x.nb = norm(x.body); });
