@@ -137,7 +137,7 @@ const condMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
       gl_FragColor = vec4(vec3(1.,.62,.18)*(.16*vw + gF*(.5+.6*vw*vw) + gW*.12), 1.); }` });
 
 // ---------- modelo y correspondencia del esquema 2D de la app con el corazón 3D
-let TW3 = null, TWIN = null, KOCH = null, NODAL = null, BBBL = [], LBX = null, ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
+let FV = null, FASC = null, RFM = null, TW3 = null, TWIN = null, KOCH = null, NODAL = null, BBBL = [], LBX = null, ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
 const map2 = p => V(M2[0][0] * p[0] + M2[0][1] * p[1] + M2[0][2], M2[1][0] * p[0] + M2[1][1] * p[1] + M2[1][2], M2[2][0] * p[0] + M2[2][1] * p[1] + M2[2][2]);
 function fit(pairs) {   // mínimos cuadrados: [x, y, 1] → X, Y, Z
   const A3 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], b = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
@@ -218,6 +218,15 @@ function build(parts) {
   // los puntos del sistema de conducción del esquema van exactamente sobre el His y las ramas del modelo
   const key = p => p[0] + ',' + p[1], ANC = new Map([[G.node, AVN], [G.his, HIS], [G.rb1, rbPts[12]], [G.rb2, rbPts[27]], [G.rb3, rbPts[40]], [G.rb4, rbPts[50]], [G.apex, rbPts[60]],
     [[312, 334], lbA[8]], [[360, 365], lbA[20]], [[405, 392], lbA[35]], [G.lvA, lbA[50]], [[346, 432], lbP[22]], [[370, 476], lbP[32]], [[400, 520], lbP[44]]].map(([a, b]) => [key(a), b]));
+  // TV fascicular: P1 (Purkinje anormal, lento) va paralelo al fascículo posterior, un poco hacia el septum; P2 es el fascículo posterior
+  if (sc.fasc) { const off = q_ => q_.clone().add(sn.clone().multiplyScalar(-.1)).add(up.clone().multiplyScalar(.08));
+    const P1 = [off(lbP[8]), off(lbP[24]), off(lbP[40])]; ANC.set(key([314, 384]), P1[0]); ANC.set(key([328, 442]), P1[1]); ANC.set(key([350, 502]), P1[2]);
+    const c = new THREE.CatmullRomCurve3(P1); const g = new THREE.TubeGeometry(c, 40, .02, 6);
+    heart.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xff9a3c, transparent: true, opacity: .55, blending: THREE.AdditiveBlending, depthWrite: false })));
+    FV = { c: lbP[26].clone(), dir: sn.clone().add(V(0, .15, .35)).normalize() };
+    FASC = [['P1 (Purkinje lento)', c.getPoint(.5).add(sn.clone().multiplyScalar(-.35))], ['P2 (fascículo posterior)', lbP[30].clone().add(sn.clone().multiplyScalar(.35))]];
+    if (sc.rf) { RFM = new THREE.Mesh(new THREE.SphereGeometry(.11, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false })); RFM.position.copy(lbP[32]); heart.add(RFM);
+      const tipA = new THREE.Mesh(new THREE.SphereGeometry(.05, 12, 10), new THREE.MeshBasicMaterial({ color: 0xff6b6b })); tipA.position.copy(lbP[32]); heart.add(tipA); FASC.push(['catéter de ablación', lbP[32].clone().add(V(.3, -.3, .2))]); } }
   const APP = new Set([[226, 304], [276, 376], [282, 380], G.apV, G.apA, G.aSep, [231, 262], [237, 318], [232, 268], [236, 312], [250, 362], [264, 272], [240, 356], [212, 288], [92, 272], [178, 512], G.afA, G.afV, G.jx, G.cso].map(key));
   // región del triángulo de Koch agrandada (como en la animación de la TRNAV): las vías lenta y rápida se leen mejor
   const N0 = map2(G.node), KZ = sc.nodal ? 4.2 : 1;
@@ -245,13 +254,13 @@ function build(parts) {
   for (const t of [...new Set(sc.flV)].sort((a, b) => a - b)) { const st = STIMS.find(s => Math.abs(s.t - t) < 15);
     if (st) { ON.v.push({ t, P: map2(st.pt) }); continue; }
     const hh = His.find(x => t - x >= 15 && t - x <= 80); if (hh != null) { ON.h.push(hh); continue; }
-    const p = ptAt(t, y => y > 300); ON.v.push({ t: t - 10, P: p ? map2(p) : TIP }); }
+    const p = ptAt(t, y => y > 300); ON.v.push({ t: t - 10, P: p ? (ANC.get(key(p)) || map2(p)).clone() : TIP }); }
   for (const x of His) if (!ON.h.includes(x)) ON.h.push(x);
   // rama izquierda que no conduce hacia abajo: BRI funcional (Coumel) o rama-rama (la izquierda es el brazo retrógrado)
   const BBB = sc.bbbL || (sc.bbr ? ON.h.slice() : []); ON.hr = ON.h.filter(x => BBB.includes(x)); ON.h = ON.h.filter(x => !BBB.includes(x));
   (sc.bbbL || []).forEach(h_ => COLS.push({ t: h_ + 8, P: LBX, dur: 520, big: 1 }));
   BBBL = (sc.bbbL || []).map(h_ => [h_ + 8, h_ + 528]);
-  LAB = [['AD', RAc.clone().add(sn.clone().multiplyScalar(-.6))], ['AI', LAc.clone().add(ax.clone().multiplyScalar(.6)).add(sn.clone().multiplyScalar(.6)).add(V(0, 0, -.3))], ['VD', sept(.35, -3.2, .5)], ['VI', sept(.5, 3.2, 0)], [sc.twin ? 'nodo anterior' : 'nodo AV', AVN.clone().add(sc.twin ? V(-.55, .22, .1) : V(.05, -.2, .1))], ['His', HIS.clone().add(V(.1, .25, .2))], ...(AP3 ? [[AP3.n, AP3.p.clone().add(V(.25, .25, .25)), 'ap']] : []), ...(FOC3 ? [[sc.focusPt ? 'foco' : 'foco (VPSI)', FOC3.clone().add(V(.2, .25, 0)), 'cat']] : []), ...(NODAL ? NODAL.map(([t, p]) => [t, p, t.includes('lenta') ? 'sp' : 'fp']) : []), ...(TWIN || [])]
+  LAB = [['AD', RAc.clone().add(sn.clone().multiplyScalar(-.6))], ['AI', LAc.clone().add(ax.clone().multiplyScalar(.6)).add(sn.clone().multiplyScalar(.6)).add(V(0, 0, -.3))], ['VD', sept(.35, -3.2, .5)], ['VI', sept(.5, 3.2, 0)], [sc.twin ? 'nodo anterior' : 'nodo AV', AVN.clone().add(sc.twin ? V(-.55, .22, .1) : V(.05, -.2, .1))], ['His', HIS.clone().add(V(.1, .25, .2))], ...(AP3 ? [[AP3.n, AP3.p.clone().add(V(.25, .25, .25)), 'ap']] : []), ...(FOC3 ? [[sc.focusPt ? 'foco' : 'foco (VPSI)', FOC3.clone().add(V(.2, .25, 0)), 'cat']] : []), ...(NODAL ? NODAL.map(([t, p]) => [t, p, t.includes('lenta') ? 'sp' : 'fp']) : []), ...(TWIN || []), ...(FASC ? FASC.map(([t, p]) => [t, p, t.startsWith('P1') ? 'sp' : t.startsWith('cat') ? 'cat' : 'fp']) : [])]
     .map(([t, p, c]) => { const d = document.createElement('div'); d.className = 'lab ' + (c || ''); d.textContent = t; $('labs').appendChild(d); return { d, p }; });
   if (BBBL.length) { const d = document.createElement('div'); d.className = 'lab cat'; d.textContent = 'bloqueo de la rama izquierda'; $('labs').appendChild(d); LAB.push({ d, p: LBX.clone().add(V(.35, -.25, .2)), when: BBBL }); }
 }
@@ -288,6 +297,7 @@ function drawWaves(T) {
   for (let i = n; i < pool.length; i++) { pool[i].visible = false; trails[i].visible = false; }
   for (const c of COLS) if (T >= c.t && T < c.t + (c.dur || 220)) { const x = getX(nx++); x.visible = true; x.position.copy(c.P); x.scale.setScalar(c.big ? .45 : .22); }
   for (let i = nx; i < xs.length; i++) xs[i].visible = false;
+  if (RFM) RFM.material.opacity = sc.rf && T >= sc.rf[0] && T < sc.rf[1] ? .55 + .35 * Math.sin(T / 40) : 0;
   const st = ST3.find(s => T >= s.t && T < s.t + 110); ring.visible = !!st;
   if (st) { const f = (T - st.t) / 110; ring.position.copy(st.P); ring.scale.setScalar((lastStims.has(st.t) ? 1.25 : .8) * (1 + f * 1.4) * (dist / 13)); ring.material.opacity = 1 - f; ring.lookAt(cam.position); }
 }
@@ -360,7 +370,7 @@ function frame(T) {
   const w = inWin(T); badge.className = 'badge' + (w ? ' on' : ''); if (w) { const second = T >= w[1]; const showR = second && RESP && w === WIN[WIN.length - 1]; badge.textContent = (second ? w[4] + (showR ? ': ' + RESP : '') : w[3]) + ' · cámara lenta'; badge.style.color = second ? '#3ddc84' : '#ff8a8a'; }
 }
 function render(T) {
-  if (auto) { const wi = WIN.findIndex(w => T >= w[0] - 120 && T <= w[2] + 60); if (wi >= 0 && KOCH) { tTgt.copy(KOCH.c).add(heart.position); tDist = 3.6; tYaw = Math.atan2(KOCH.dir.x, KOCH.dir.z); tPitch = Math.asin(KOCH.dir.y); }
+  if (auto) { const wi = WIN.findIndex(w => T >= w[0] - 120 && T <= w[2] + 60); if (FV) { tTgt.copy(FV.c).add(heart.position); tDist = wi >= 0 ? 5 : 6.5; tYaw = Math.atan2(FV.dir.x, FV.dir.z); tPitch = Math.asin(FV.dir.y); } else if (wi >= 0 && KOCH) { tTgt.copy(KOCH.c).add(heart.position); tDist = 3.6; tYaw = Math.atan2(KOCH.dir.x, KOCH.dir.z); tPitch = Math.asin(KOCH.dir.y); }
     else if (wi >= 0 && FOCUS[wi]) { tTgt.copy(FOCUS[wi]).add(heart.position); tDist = 8; const d = FOCUS[wi].clone().setY(0); if (d.length() > .3) { d.normalize(); tYaw = Math.atan2(d.x, d.z); if (Math.cos(tYaw) < -.2) tYaw = Math.sign(tYaw) * 1.7; } else tYaw = -.25; tPitch = .1; } else { tTgt.set(0, 0, 0); tDist = 13; tYaw = .15 + .25 * Math.sin(T / 2200); tPitch = .05; } }
   yaw += (tYaw - yaw) * .05; pitch += (tPitch - pitch) * .05; dist += (tDist - dist) * .05; tgt.lerp(tTgt, .05);
   cam.position.set(tgt.x + dist * Math.sin(yaw) * Math.cos(pitch), tgt.y + dist * Math.sin(pitch), tgt.z + dist * Math.cos(yaw) * Math.cos(pitch)); cam.lookAt(tgt);
