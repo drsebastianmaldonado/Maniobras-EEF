@@ -95,7 +95,7 @@ if (!WIN.length && sc.ado) WIN.push([sc.ado[0] + 150, sc.ado[0] + 450, Math.min(
 if (!WIN.length && sc.stimEnd) WIN.push([sc.stimEnd - 300, sc.stimEnd, sc.stimEnd + 350, 'Momento clave', 'Qué pasa después']);
 const HISM = /^hisorto/.test(AID);   // captura del His: lo crítico es cómo se activa el His en cada latido estimulado
 if (HISM && runs.length) { const r = runs[runs.length - 1], last = r[r.length - 1].t; WIN.length = 0; WIN.push([r[1] ? r[1].t - 20 : r[0].t - 20, last + 90, last + 420, 'Latidos estimulados: mirá cómo se activa el His', '1.er latido de retorno']); }
-const HISEV = sc.ev.filter(e => e.ch === 'His' && e.l === 'H' && STIMS.length && e.t >= STIMS[0].t && e.t <= STIMS[STIMS.length - 1].t + 120);
+const HISEV = !HISM ? [] : sc.ev.filter(e => e.ch === 'His' && e.l === 'H' && STIMS.length && e.t >= STIMS[0].t && e.t <= STIMS[STIMS.length - 1].t + 120);
 const inWin = t => WIN.find(w => t >= w[0] && t <= w[2]);
 const HIW = sc.wv.map(w => { const t0 = w.pts[0][1]; return !!WIN.find(x => t0 >= x[0] && t0 <= x[2]); });
 const lastStims = new Set(PER_STIM ? [] : runs.map(r => r[r.length - 1].t));
