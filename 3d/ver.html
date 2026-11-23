@@ -228,8 +228,9 @@ function build(parts) {
     if (sc.rf) { RFM = new THREE.Mesh(new THREE.SphereGeometry(.11, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false })); RFM.position.copy(lbP[32]); heart.add(RFM);
       const tipA = new THREE.Mesh(new THREE.SphereGeometry(.05, 12, 10), new THREE.MeshBasicMaterial({ color: 0xff6b6b })); tipA.position.copy(lbP[32]); heart.add(tipA); FASC.push(['catéter de ablación', lbP[32].clone().add(V(.3, -.3, .2))]);
       // línea de lesiones desde P2 hacia la hemirrama anterior, en el septum medio
-      LES = []; for (let i = 0; i < 8; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(.045, 12, 10), new THREE.MeshBasicMaterial({ color: 0xff7a3a, transparent: true, opacity: 0, depthWrite: false })); m.position.copy(lbP[32].clone().lerp(lbA[30], i / 7)); heart.add(m); LES.push(m); }
-      FASC.push(['línea de lesiones → hemirrama anterior', lbA[30].clone().add(V(0, .3, .2))]); } }
+      const LE = lbP[32].clone().lerp(lbA[30], .5), NL = 8, rL = lbP[32].distanceTo(LE) / (NL - 1) / 2 * 1.08;
+      LES = []; for (let i = 0; i < NL; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(rL, 14, 10), new THREE.MeshBasicMaterial({ color: 0xff7a3a, transparent: true, opacity: 0, depthWrite: false })); m.position.copy(lbP[32].clone().lerp(LE, i / (NL - 1))); heart.add(m); LES.push(m); }
+      FASC.push(['línea de lesiones', lbP[32].clone().lerp(LE, .5).add(sn.clone().multiplyScalar(.3)).add(V(.35, 0, 0))]); } }
   const APP = new Set([[226, 304], [276, 376], [282, 380], G.apV, G.apA, G.aSep, [231, 262], [237, 318], [232, 268], [236, 312], [250, 362], [264, 272], [240, 356], [212, 288], [92, 272], [178, 512], G.afA, G.afV, G.jx, G.cso].map(key));
   // región del triángulo de Koch agrandada (como en la animación de la TRNAV): las vías lenta y rápida se leen mejor
   const N0 = map2(G.node), KZ = sc.nodal ? 4.2 : 1;
