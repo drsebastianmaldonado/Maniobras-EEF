@@ -228,7 +228,7 @@ function build(parts) {
   FOCUS = WIN.map(w => { const c = V(0, 0, 0); let k = 0; WV3.forEach(x => { if (!x.hi) return; const t0 = x.pts[0].t; if (t0 >= w[0] && t0 <= w[2]) x.pts.forEach(p => { c.add(p.P); k++; }); }); return k ? c.multiplyScalar(1 / k) : V(0, 0, 0); });
   // activaciones de la pared: aurícula desde donde llega el frente; ventrículo por el His, desde el estímulo o desde donde llega el frente
   const ptAt = (t, test) => { let best = null, bd = 40; for (const w of sc.wv) for (const [p, tt] of w.pts) if (test(p[1]) && Math.abs(tt - t) < bd) { bd = Math.abs(tt - t); best = p; } return best; };
-  const His = sc.ev.filter(e => e.ch === 'His' && !e.inv).map(e => e.t);
+  const His = sc.ev.filter(e => e.ch === 'His' && e.l === 'H' && !e.inv).map(e => e.t);
   ON = { a: [], v: [], h: [] };
   // activaciones auriculares: las del escenario y las A de cualquier canal (SC, His), la más precoz de cada latido
   const aTimes = [...sc.flA, ...sc.ev.filter(e => e.l === 'A').map(e => e.t)].sort((a, b) => a - b), aOn = [];
