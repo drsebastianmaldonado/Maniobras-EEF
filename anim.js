@@ -640,7 +640,7 @@
 
   // Nodos AV gemelos
   function twinSc(kind) {
-    const sc = newSc({ title: kind === 'tsv' ? 'TRAV por nodos AV gemelos' : 'Estimulación auricular desde dos sitios', twin: true, cats: kind === 'tsv' ? [] : ['ralat'] });
+    const sc = newSc({ title: kind === 'tsv' ? 'Reentrada por nodos AV gemelos (twin AVNRT)' : 'Estimulación auricular desde dos sitios', twin: true, cats: kind === 'tsv' ? [] : ['ralat'] });
     const NP = [226, 304], HP = [276, 376];
     if (kind === 'tsv') {
       let a = 120; const R = [];
@@ -650,8 +650,8 @@
         R.push({ a, h, hp }); a = hp + 110; }
       brk(sc, 'ECG', R[3].h + HVT, R[3].hp + 120, 'VA ' + (R[3].hp + 120 - R[3].h - HVT), { up: 1 });
       brk(sc, 'AD', R[2].a + 10, R[3].a + 10, 'AA ' + (R[3].a - R[2].a), { hot: 1 });
-      Object.assign(sc, { stimEnd: 0, verdictT: R[3].h + 60, verdict: 'RP corto (VA ~140 ms, más largo que en la TRNAV típica). Baja por el nodo anterior (His anterior antes del V, QRS angosto) y <b>sube por el nodo posterior</b> (His posterior retrógrado, A más precoz cerca del ostium del SC): <b>TRAV por nodos gemelos</b>.',
-        why: 'Es un circuito AV con dos sistemas de conducción, como una TRAV con una "vía" que en realidad es otro nodo: decremental y sensible a la adenosina. Encarrilando desde los dos sitios nodales el PPI es corto.' });
+      Object.assign(sc, { stimEnd: 0, verdictT: R[3].h + 60, verdict: 'RP corto (VA ~140 ms, más largo que en la TRNAV típica). Baja por el nodo anterior (His anterior antes del V, QRS angosto) y <b>sube por el nodo posterior</b> (His posterior retrógrado, A más precoz cerca del ostium del SC): <b>reentrada por nodos gemelos (twin AVNRT)</b>.',
+        why: 'Es un circuito con dos sistemas de conducción AV: baja por un nodo y sube por el otro, los dos decrementales y sensibles a la adenosina (twin AVNRT). Encarrilando desde los dos sitios nodales el PPI es corto.' });
     } else {
       const R = [];
       [[200, 'sin'], [900, 'sin'], [1700, 'lat'], [2400, 'lat']].forEach(([s, site]) => {
