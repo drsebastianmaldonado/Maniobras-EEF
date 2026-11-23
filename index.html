@@ -406,7 +406,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 275;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 276;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -1099,7 +1099,7 @@ ARR.push(
     trampa: 'En una TV miocárdica con QRS parecido al sinusal el His puede activarse en forma pasiva, con un VH largo, e imitar una rama-rama. Después de la ablación, evaluá CDI: puede coexistir una TV miocárdica.' },
   { id: 'twin', n: 'Reentrada por nodos AV gemelos (twin AVNRT)', al: 'twin AVNRT TRAV por nodos gemelos nodos gemelos twin AV nodes Monckeberg asa heterotaxia isomerismo TCGA transposicion corregida canal AV cardiopatia congenita T-AVRT', dif: 'TRAV por vía accesoria, TRNAV (típica o atípica), TA y flutter intraauricular por reentrada.',
     conf: [['Dos His separados, cada uno antes de un QRS distinto, con conducción decremental por los dos nodos, y TSV con el QRS de uno de ellos', 'twin', 'moore22'], ['Encarrilamiento desde los dos sitios nodales: ambos están en el circuito', 'twin vop', 'gardey21']],
-    apoya: [['Heterotaxia (93 %; sobre todo isomerismo derecho), TCGA o canal AV malalineado', 'twin', 'moore22 gardey21'], ['Dos QRS no preexcitados distintos en el ECG o con estimulación auricular', 'twin pre', 'moore22'], ['Respuesta V-A-V a la sobreestimulación ventricular, VA largo', 'vop', 'moore22'], ['EV con His refractario que no modifica la A (asa continua)', 'ehr', 'moore22']],
+    apoya: [['Heterotaxia (93 %; sobre todo isomerismo derecho), TCGA o canal AV malalineado', 'twin', 'moore22 gardey21'], ['Dos QRS no preexcitados distintos en el ECG o con estimulación auricular', 'twin pre', 'moore22'], ['Respuesta V-A-V a la sobreestimulación ventricular, VA > 70 ms (más largo que en la TRNAV típica)', 'vop', 'moore22'], ['EV con His refractario que no modifica la A (asa continua)', 'ehr', 'moore22']],
     desc: [['Respuesta A-A-V o secuencia auricular distinta durante la estimulación ventricular', 'vop', 'knight00'], ['Un solo His y un solo sistema de conducción demostrables (aunque una sola morfología de QRS no los descarta)', 'twin', 'gardey21']],
     trampa: 'Pensalo antes del Fontan: el acceso posterior es la principal causa de fracaso. La ablación del nodo retrógrado fue exitosa en el 91 %, sin BAV de alto grado ni cambios del QRS.' },
   { id: 'tvf', n: 'TV fascicular (sensible al verapamilo)', al: 'fascicular Belhassen verapamilo idiopatica izquierda ILVT ILVT posterior anterior septal superior Purkinje P1 P2 falso tendon multiforme', dif: 'TSV con aberrancia (BRD + hemibloqueo), TV focal de Purkinje, reentrada rama-rama e interfascicular, TV papilar y TV del anillo mitral.',
