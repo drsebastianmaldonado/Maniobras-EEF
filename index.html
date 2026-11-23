@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Maniobras en el EEF</title>
 <meta name="description" content="Maniobras del polígrafo de electrofisiología para el diagnóstico diferencial de las taquicardias (supraventriculares y ventriculares): cómo hacerlas, cómo interpretarlas, algoritmo paso a paso y animaciones.">
+<link rel="icon" type="image/png" href="iconos/icon-192.png">
 <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Maniobras EEF">
@@ -22,8 +23,8 @@
 /* Mismo lenguaje visual que los algoritmos de "Prácticas en arritmias pediátricas": columna única, encabezado con
    degradé, tarjetas. Tres pestañas: algoritmo por preguntas, fichas de maniobras y calculadora de intervalos. */
 :root{
-  --bg:#f2f2f7;--card:#ffffff;--ink:#0b0b10;--ink2:#6c6c74;--line:#e3e3e8;
-  --blue:#0a74f0;--blue-soft:#e4f0ff;--green:#1faa4a;--orange:#d97a00;--red:#e0352b;
+  --bg:#f2f2f7;--card:#ffffff;--ink:#0b0b10;--ink2:#55555d;--line:#e3e3e8;
+  --blue:#0062cc;--blue-soft:#e4f0ff;--green:#1faa4a;--orange:#d97a00;--red:#e0352b;
   --violet:#7a3fd0;--slate:#5b6b8c;--teal:#12a58f;--rose:#d0457a;--seg:#e4e4ea;
   --shadow:0 1px 2px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.05);
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -47,7 +48,7 @@
   .anim .anhead,#dlgB .anim .anhead,#dlgB .fnav{position:static !important}
   .anim .anpanel:only-child svg.anh{max-height:calc(100dvh - 40px)}
 }.anim .anpanel{flex:1 1 280px;min-width:0}.anim svg{width:100%;height:auto;display:block;border:1px solid var(--line)}.anim svg.anh{background:#fff;border-radius:12px 12px 0 0;border-bottom:0}.anim svg.antr{background:var(--card);border-radius:0 0 12px 12px}.anim .ant2{font-weight:700;font-size:14px;margin:2px 0 6px}.anim .anhead{position:sticky;top:var(--segH,0px);z-index:4;background:inherit;margin:0 -2px;padding:4px 2px 2px}#dlgB .anim .anhead{top:56px}.anim .anc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}.anim .ant{width:100%;height:34px;margin:2px 0;accent-color:var(--blue)}
-.anim select{font:inherit;font-size:15px;min-height:36px;padding:4px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.anim:empty{min-height:420px}.anim select{font:inherit;font-size:15px;min-height:36px;padding:4px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
 figure.real > a{display:block}
 /* zona táctil cómoda (≥ 36 px) en el celular */
 @media (pointer:coarse){.ml{min-height:36px}.anim .anc .btn{min-height:40px}}.anim .anf{min-height:2.6em;margin:8px 0 0}.anim .anver{margin-top:6px;min-height:3em}.anim .anver.on{border-left:4px solid var(--green);padding:4px 8px;background:var(--blue-soft);border-radius:6px}.anim .anver p{margin:0 0 4px}
@@ -406,7 +407,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 293;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 294;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
