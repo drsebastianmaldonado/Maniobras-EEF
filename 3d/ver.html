@@ -97,6 +97,7 @@ const HISM = /^hisorto/.test(AID);   // captura del His: lo crítico es cómo se
 if (HISM && runs.length) { const r = runs[runs.length - 1], last = r[r.length - 1].t; WIN.length = 0; WIN.push([r[1] ? r[1].t - 20 : r[0].t - 20, last + 90, last + 420, 'Latidos estimulados: mirá cómo se activa el His', '1.er latido de retorno']); }
 const PHM = /^parahis/.test(AID);   // para-Hisiana: el His se marca capturado o retrógrado en cada estímulo
 if (PHM) WIN.forEach((w, i) => { const hi = i < 2; w[3] = hi ? 'Salida alta: captura His + miocardio' : 'Salida baja: solo miocardio (pierde el His)'; w[4] = hi ? 'Respuesta: QRS angosto, SH corto' : 'Respuesta: el frente baja al Purkinje y sube al His'; });
+if (/^vai/.test(AID)) WIN.forEach(w => { const st = STIMS.find(x => x.t >= w[0]) || {}, ap = st.pt === G.apex; w[3] = ap ? 'Estímulo en el ápex del VD' : 'Estímulo en la base posterior del VD'; w[4] = ap ? 'Respuesta: VA desde el ápex' : 'Respuesta: VA desde la base'; });
 const HISEV = !HISM && !PHM ? [] : sc.ev.filter(e => e.ch === 'His' && e.l === 'H' && STIMS.length && e.t >= STIMS[0].t && e.t <= STIMS[STIMS.length - 1].t + 120);
 const inWin = t => WIN.find(w => t >= w[0] && t <= w[2]);
 const HIW = sc.wv.map(w => { const t0 = w.pts[0][1]; return !!WIN.find(x => t0 >= x[0] && t0 <= x[2]); });
