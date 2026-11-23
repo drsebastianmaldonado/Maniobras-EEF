@@ -329,7 +329,13 @@
     const runs = [['apex', [300, 900, 1500]], ['base', [2300, 2900, 3500]]], va = {};
     runs.forEach(([site, S]) => S.forEach(s => {
       stim(sc, site, s); const rH = s + HR[site]; E(sc, 'His', rH, 'H', { inv: true }); let A;
-      if (ap) { W_(sc, 'retro', VIA.sep.paced(site, s)); A = s + VIA.sep.dS[site] + 15; W_(sc, 'retro', rbUp(site, s), Math.min(rH + 35, A + 15)); E(sc, 'AD', A, 'A'); }
+      if (ap) {   // en sinusal: desde el ápex la vía llega a la A un poco antes que el frente que sube por el His y el nodo (chocan en el septum auricular)
+        const P = site === 'base' ? [[G.base, s], [[240, 330], s + 30], [APS.sepV, s + 70], [APS.sep, s + 80], [[200, 215], s + 102], [G.ra, s + 122]]
+                                  : [[G.apex, s], [[205, 470], s + 40], [[226, 380], s + 80], [APS.sepV, s + 108], [APS.sep, s + 118], [[200, 215], s + 140], [G.ra, s + 160]];
+        W_(sc, 'retro', P); A = s + (site === 'base' ? 85 : 123);
+        if (site === 'base') W_(sc, 'retro', rbUp(site, s), A + 15);
+        else { W_(sc, 'retro', rbUp(site, s)); W_(sc, 'retro', [[G.node, rH + 35], [G.aSep, rH + 75]], s + 128); sc.cols.push({ t: s + 128, pt: [238, 242] }); }
+        E(sc, 'AD', A, 'A'); }
       else { W_(sc, 'retro', rbUp(site, s)); A = nodeUp(sc, rH + 35); }
       va[site] = { s, A };
     }));
