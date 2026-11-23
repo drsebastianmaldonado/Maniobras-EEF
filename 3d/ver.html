@@ -98,6 +98,9 @@ if (HISM && runs.length) { const r = runs[runs.length - 1], last = r[r.length - 
 if (AID === 'pjrt_circ' && !WIN.length) {   // PJRT: un latido en cámara lenta (baja por el nodo, sube lento por la vía)
   const AA = sc.ev.filter(e => e.ch === 'CSp' && e.l === 'A').map(e => e.t).sort((x, y) => x - y), V2 = sc.ev.filter(e => e.ch === 'VD' && e.t > AA[1]).map(e => e.t)[0] || AA[1] + 200;
   WIN.push([AA[1] - 20, V2 + 10, AA[2] + 60, 'Baja por el nodo y el His (AH)', 'Sube lento por la vía']); }
+if (AID === 'dfire' && !WIN.length) {   // doble disparo: una A sinusal baja por las dos vías
+  const AA = sc.ev.filter(e => e.ch === 'AD' && e.l === 'A').map(e => e.t).sort((x, y) => x - y), a = AA[2], HH = sc.ev.filter(e => e.ch === 'His' && e.l === 'H' && e.t > a).map(e => e.t).sort((x, y) => x - y);
+  WIN.push([a - 20, HH[0] + 40, HH[1] + 60, 'Una A sinusal baja por la vía rápida: H1 y V1', 'La misma A sigue por la vía lenta: H2 y V2']); }
 const PHM = /^parahis/.test(AID);   // para-Hisiana: el His se marca capturado o retrógrado en cada estímulo
 if (PHM) WIN.forEach((w, i) => { const hi = i < 2; w[3] = hi ? 'Salida alta: captura His + miocardio' : 'Salida baja: solo miocardio (pierde el His)'; w[4] = hi ? 'Respuesta: QRS angosto, SH corto' : 'Respuesta: el frente baja al Purkinje y sube al His'; });
 if (/^vai/.test(AID)) WIN.forEach(w => { const st = STIMS.find(x => x.t >= w[0]) || {}, ap = st.pt === G.apex; w[3] = ap ? 'Estímulo en el ápex del VD' : 'Estímulo en la base posterior del VD'; w[4] = ap ? 'Respuesta: VA desde el ápex' : 'Respuesta: VA desde la base'; });
@@ -146,7 +149,7 @@ const condMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
       gl_FragColor = vec4(vec3(1.,.62,.18)*(.16*vw + gF*(.5+.6*vw*vw) + gW*.12), 1.); }` });
 
 // ---------- modelo y correspondencia del esquema 2D de la app con el corazón 3D
-const KCAM = sc.ev.some(e => e.stim && /^(AD|CS)/.test(e.ch));   // cámara en el Koch solo si se estimula la aurícula
+const KCAM = AID === 'dfire' || sc.ev.some(e => e.stim && /^(AD|CS)/.test(e.ch));   // cámara en el Koch solo si se estimula la aurícula
 let HIS3 = null, FRONT = false, LES = null, FV = null, FASC = null, RFM = null, TW3 = null, TWIN = null, KOCH = null, NODAL = null, BBBL = [], LBX = null, ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
 const map2 = p => V(M2[0][0] * p[0] + M2[0][1] * p[1] + M2[0][2], M2[1][0] * p[0] + M2[1][1] * p[1] + M2[1][2], M2[2][0] * p[0] + M2[2][1] * p[1] + M2[2][2]);
 function fit(pairs) {   // mínimos cuadrados: [x, y, 1] → X, Y, Z
