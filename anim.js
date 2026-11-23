@@ -765,7 +765,7 @@
     return sc;
   }
 
-  // TV fascicular posterior: baja por P1 (Purkinje anormal, lento) y sube por el fascículo posterior (P2)
+  // TV fascicular posterior: baja por P1 (miocardio septal de conducción lenta) y sube por el fascículo posterior (P2)
   function tvfSc(kind) {
     const sc = newSc({ title: kind === 'vera' ? 'TV fascicular posterior: verapamilo' : kind === 'abl' ? 'TV fascicular posterior: ablación en P2' : 'TV fascicular posterior (P1 y P2)', fasc: true, cats: kind === 'abl' ? ['abl'] : [] });
     if (kind === 'abl') sc.ablPt = LPFl;   // P2 presistólico más precoz, en el fascículo posterior distal (sitio de salida)
@@ -788,7 +788,7 @@
     brk(sc, 'LV', c.t0 + c.span / 2, c.b + 10, 'P1–P2 ' + (c.b + 10 - (c.t0 + c.span / 2)), { up: 1 }); brk(sc, 'LV', c.b + 10, c.qrs, 'P2–QRS ' + (c.qrs - c.b - 10), { below: 1 });
     if (kind === 'circ') {
       Object.assign(sc, { stimEnd: 0, verdictT: R[3].qrs + 40,
-        verdict: '<b>P1</b> mesodiastólico (baja por el Purkinje anormal, lento) y <b>P2</b> presistólico (sube por el fascículo posterior) en el septum medio; el His se activa <b>después</b> del inicio del QRS, en sentido retrógrado: <b>TV fascicular posterior</b>.',
+        verdict: '<b>P1</b> mesodiastólico (baja por el miocardio septal de conducción lenta) y <b>P2</b> presistólico (sube por el fascículo posterior) en el septum medio; el His se activa <b>después</b> del inicio del QRS, en sentido retrógrado: <b>TV fascicular posterior</b>.',
         why: 'El frente sale al miocardio cerca del fascículo posterior distal: QRS con BRD y eje superior. P1 es parte crítica del circuito.' });
     } else {
       const last = R[R.length - 2], blk = R[R.length - 1];
@@ -802,7 +802,7 @@
       Object.assign(sc, { stimEnd: tEnd, verdictT: tEnd + 60,
         verdict: kind === 'vera' ? 'El verapamilo <b>alarga P1–P2</b> (y la LC) <b>sin cambiar P2–QRS</b>, hasta que la conducción se bloquea dentro de P1 y la TV termina.'
                                  : 'Durante la RF en el <b>P2 presistólico más precoz</b> (sitio de salida, en el fascículo posterior distal), <b>P1–P2 se alarga</b> y la TV termina con un P1 que no llega a P2: el giro inferior del circuito quedó bloqueado. Después, en sinusal, el fascículo posterior se bloquea en el sitio de ablación y <b>P2 aparece tarde</b>.',
-        why: kind === 'vera' ? 'P1 es tejido de Purkinje anormal, decremental y sensible al verapamilo: es el brazo lento del circuito.'
+        why: kind === 'vera' ? 'P1 es miocardio septal de conducción lenta, decremental y sensible al verapamilo: es el brazo lento del circuito.'
                              : 'Es el blanco cuando no se registra P1. El bloqueo fascicular posterior izquierdo nuevo en el ECG (eje derecho) sirvió como punto final (38 de 39 sin recurrencia, Ma 2006). Ojo: en el septum basal hay riesgo de BRI y BAV transitorios.' });
     }
     return sc;
@@ -1005,7 +1005,7 @@
     bbr_ppi: { t: 'Reentrada rama-rama: encarrilamiento desde el ápex', lanes: [['His', 'His'], ['RB', 'Rama der.'], ['VD', 'VD'], ['ECG', 'ECG']], panels: [() => bbrSc('ppi')], win: 1800,
       fases: s => { const S = s[0].m.S; return [[0, 'Ritmo sinusal y después la taquicardia rama-rama (LC 340 ms).'], [S[0] - 10, 'Se encarrila desde el <b>ápex del VD</b> a 300 ms: el estímulo entra al circuito por la salida de la rama derecha.'], [S[4] + 1, 'Se corta. Medí el <b>PPI</b> en el VD y restale la LC.'], [S[4] + 300, '<b>Respuesta:</b> ' + s[0].resp + '.']]; } },
     tvf_circ: { t: 'TV fascicular posterior: P1 y P2', lanes: [['His', 'His'], ['LV', 'Septo VI'], ['ECG', 'ECG']], panels: [() => tvfSc('circ')], win: 1500,
-      fases: [[0, 'TV fascicular posterior (LC 360 ms). El circuito está en el septum del VI: baja por <b>P1</b> (Purkinje anormal, lento, línea punteada) y sube por el <b>fascículo posterior</b> (P2).'], [500, 'Mirá en el septo: P1 en la mitad de la diástole y P2 justo antes del QRS. El His se activa después del inicio del QRS.']] },
+      fases: [[0, 'TV fascicular posterior (LC 360 ms). El circuito está en el septum del VI: baja por <b>P1</b> (miocardio septal de conducción lenta, línea punteada) y sube por el <b>fascículo posterior</b> (P2).'], [500, 'Mirá en el septo: P1 en la mitad de la diástole y P2 justo antes del QRS. El His se activa después del inicio del QRS.']] },
     tvf_vera: { t: 'TV fascicular posterior: efecto del verapamilo', lanes: [['His', 'His'], ['LV', 'Septo VI'], ['ECG', 'ECG']], panels: [() => tvfSc('vera')], win: 1600,
       fases: s => [[0, 'TV fascicular posterior (LC 360 ms).'], [1100, 'Se da <b>verapamilo</b>: P1 conduce cada vez más lento.'], [s[0].stimEnd - 200, 'Medí P1–P2 y P2–QRS: ¿qué intervalo se alarga?'], [s[0].stimEnd, 'La conducción se bloquea dentro de P1: la TV termina y vuelve el sinusal.']] },
     tvfabl_rf: { t: 'TV fascicular: ablación en P2', lanes: [['His', 'His'], ['LV', 'Septo VI'], ['ECG', 'ECG']], panels: [() => tvfSc('abl')], win: 1600,
@@ -1128,7 +1128,7 @@
     if (sc.fasc) { mk('path', { d: `M${P1t[0]},${P1t[1]} L${P1b[0]},${P1b[1]}`, stroke: '#ef6c00', 'stroke-width': 5, 'stroke-dasharray': '7 5', fill: 'none' }, svg);
       lbl(P1m[0] - 10, P1m[1] + 4, 'P1', '#ef6c00', 'end'); lbl(LPFl[0] + 12, LPFl[1] + 2, 'P2', '#6a3fb5'); lbl(LPFb[0] + 6, LPFb[1] + 30, 'fascículo posterior', '#6d4c41');
       mk('path', { d: 'M312,334 C330,400 360,470 400,520', stroke: '#6a3fb5', 'stroke-width': 3, fill: 'none', opacity: 0.45 }, svg); }
-    if (sc.rf) { const g = mk('g', { opacity: 0 }, svg); g.innerHTML = `<circle cx="${sc.rf[2][0]}" cy="${sc.rf[2][1]}" r="22" fill="#ff7043" fill-opacity=".45" stroke="#d84315" stroke-width="3"/>`; sc._rfg = g; lbl(sc.rf[2][0] + 26, sc.rf[2][1] + 34, 'RF', '#d84315'); svg.lastChild.setAttribute('opacity', 0); sc._rfl = svg.lastChild; }
+    if (sc.rf) { const g = mk('g', { opacity: 0 }, svg); g.innerHTML = `<circle cx="${sc.rf[2][0]}" cy="${sc.rf[2][1]}" r="22" fill="#ff7043" fill-opacity=".45" stroke="#d84315" stroke-width="3"/><path d="M${sc.rf[2][0]},${sc.rf[2][1]} L360,365" stroke="#d84315" stroke-width="7" stroke-dasharray="2 9" stroke-linecap="round"/>`; sc._rfg = g; lbl(sc.rf[2][0] + 26, sc.rf[2][1] + 34, 'RF: línea hacia la hemirrama anterior', '#d84315'); svg.lastChild.setAttribute('opacity', 0); sc._rfl = svg.lastChild; }
     if (sc.twin) { mk('ellipse', { cx: 226, cy: 304, rx: 16, ry: 9, fill: '#f3d36b', stroke: '#9a7300', 'stroke-width': 1.5 }, svg);
       mk('path', { d: 'M232,310 C248,330 264,352 276,376', stroke: '#e2a915', 'stroke-width': 5, fill: 'none', 'stroke-linecap': 'round' }, svg);
       lbl(206, 330, 'nodo posterior', '#6d4c41', 'end'); lbl(300, 240, 'nodo anterior', '#6d4c41'); }

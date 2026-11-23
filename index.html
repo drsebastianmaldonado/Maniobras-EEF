@@ -406,7 +406,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 280;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 281;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
@@ -792,7 +792,7 @@ const M = {
     como: ['Inducción: estimulación programada ventricular y auricular; si no se induce, isoproterenol (con o sin atropina o fenilefrina según el Wenckebach AV) o una dosis baja de clase IA. Con un protocolo sistemático se indujo en el 94 %.', 'Mapeo del septum del VI con un catéter multipolar (octapolar o PentaRay) desde la región media hacia el ápex.', 'Buscá P1 (potencial mesodiastólico, activación proximal → distal) y P2 (potencial presistólico fusionado, distal → proximal).', 'Mirá el His: en la TV posterior se activa 5–30 ms después del inicio del QRS, en sentido retrógrado.', 'Encarrilá desde la aurícula o el ventrículo: captura P1 en forma ortodrómica y el intervalo estímulo-P1 se alarga al acortar la LC.', 'Verapamilo IV en dosis baja (0,02–0,04 mg/kg): alarga la LC; P1-P2 y P2-P1 se alargan, P2-QRS no cambia.'],
     interp: [
       ['P1 mesodiastólico (proximal → distal) + P2 presistólico (distal → proximal) en el septum medio', 'TV fascicular posterior; P1 es parte crítica del circuito (15 de 20)', 'nogami10'],
-      ['El verapamilo alarga P1-P2 y P2-P1 pero no P2-QRS', 'P1 = tejido de Purkinje anormal, decremental y sensible al verapamilo', 'nogami10'],
+      ['El verapamilo alarga P1-P2 y P2-P1 pero no P2-QRS', 'P1 = miocardio septal de conducción lenta, decremental y sensible al verapamilo', 'nogami10'],
       ['Inducible, encarrilable y terminable con estimulación programada', 'Mecanismo de reentrada', 'nogami10 belhassen81'],
       ['Inducida por ejercicio o catecolaminas, no por estimulación programada; responde a lidocaína o betabloqueantes, no al verapamilo; la adenosina la suprime', 'TV focal de Purkinje (automática), no la fascicular reentrante', 'nogami10'],
       ['TV de QRS angosto con His retrógrado y HV más corto que en sinusal', 'TV fascicular septal superior (no TSV con aberrancia)', 'nogami10 li23'],
