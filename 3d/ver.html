@@ -16,7 +16,7 @@ h1{font-size:18px;margin:0}.sub{color:var(--ink2);font-size:13px;margin:0}
 canvas.gl{width:100%;height:100%;display:block}
 .lab{position:absolute;transform:translate(-50%,-50%);font-size:12px;font-weight:700;color:#d9d4ff;text-shadow:0 1px 3px #000,0 0 6px #000;pointer-events:none;white-space:nowrap}
 .lab.cat{color:#ff9a9a}.lab.sp{color:#ffb15c;font-size:11px}.lab.fp{color:#cfa2ff;font-size:11px}.lab.ap{color:#ff6fae;font-size:13px}
-.badge{position:absolute;left:10px;top:10px;font-size:13px;font-weight:800;padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.6);display:none}.badge.on{display:block}
+.badge{position:absolute;left:10px;top:10px;right:10px;width:fit-content;font-size:13px;font-weight:800;padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.6);display:none}.badge.on{display:block}
 .hint{position:absolute;right:10px;bottom:8px;font-size:11px;color:var(--ink2)}
 .load{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink2);font-size:13px;padding:20px;text-align:center}
 .ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -355,7 +355,7 @@ function frame(T) {
   U.T.value = T; if (ready) { setOn(T); drawWaves(T); }
   let t = ''; for (const [ti, tt] of fases) if (T >= ti) t = tt; fase.innerHTML = t;
   ver.classList.toggle('on', !!sc.verdict && T >= (sc.verdictT || DUR)); rng.value = T; drawTrace(T); drawLadder(T);
-  const w = inWin(T); badge.className = 'badge' + (w ? ' on' : ''); if (w) { const second = T >= w[1]; badge.textContent = (second ? w[4] : w[3]) + ' · cámara lenta'; badge.style.color = second ? '#3ddc84' : '#ff8a8a'; }
+  const w = inWin(T); badge.className = 'badge' + (w ? ' on' : ''); if (w) { const second = T >= w[1]; badge.textContent = (second ? w[4] + (sc.resp ? ': ' + sc.resp : '') : w[3]) + ' · cámara lenta'; badge.style.color = second ? '#3ddc84' : '#ff8a8a'; }
 }
 function render(T) {
   if (auto) { const wi = WIN.findIndex(w => T >= w[0] - 120 && T <= w[2] + 60); if (wi >= 0 && KOCH) { tTgt.copy(KOCH.c).add(heart.position); tDist = 3.6; tYaw = Math.atan2(KOCH.dir.x, KOCH.dir.z); tPitch = Math.asin(KOCH.dir.y); }

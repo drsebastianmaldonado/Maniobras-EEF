@@ -745,13 +745,17 @@
         W_(sc, 'retro', [[LPFb, s + 80], [LPFm, s + 150], [LPF0, s + 265], [G.his, s + 285]]); E(sc, 'His', s + 285, 'H'); E(sc, 'RB', s + 305, 'RB');
         rbDown(s + 285, k < 4 ? s + 320 : null); }
       const last = S[4], tr = last + 285; let t2 = cyc(tr); for (let i = 0; i < 2; i++) t2 = cyc(t2);
-      const retV = tr + 70, ppi = retV - last;
+      const retV = tr + 70, ppi = retV - last; sc.resp = `PPI − LC = ${ppi - LCT} ms (≤ 30): el ápex del VD está en el circuito → rama-rama`;
       brk(sc, 'VD', last, retV, 'PPI ' + ppi, { hot: 1 }); brk(sc, 'VD', R[0].v, R[1].v, 'LC ' + (R[1].v - R[0].v));
       Object.assign(sc, { stimEnd: last, verdictT: retV + 40, m: { S },
         verdict: `PPI − LC = ${ppi} − ${LCT} = <b>${ppi - LCT} ms</b> (≤ 30): el ápex del VD, donde sale la rama derecha, está en el circuito → <b>rama-rama</b>.`,
         why: 'En una TV miocárdica el ápex del VD suele estar lejos del circuito: PPI−LC > 30 ms. El tratamiento es la ablación de la rama derecha.' });
     } else {
       let t = 700; t = cyc(t); t = cyc(t); t = cyc(t, 30); t = cyc(t); cyc(t);
+      // la aurícula sigue en sinusal, disociada: sus A no conducen (el nodo y el His están ocupados por la taquicardia)
+      E(sc, 'AD', 10, 'A'); W_(sc, 'ante', [[G.sn, -20], [G.ra, 15], [G.aSep, 45], [G.node, 80]]);
+      for (let a = 640; a < R[4].v + 400; a += 630) { E(sc, 'AD', a, 'A'); W_(sc, 'ante', [[G.sn, a - 30], [G.ra, a + 5], [G.aSep, a + 35], [G.node, a + 70]], a + 60); }
+      sc.ints.push({ ch: 'AD', t0: 640, t1: 1270, l: 'AA 630 (disociada)' });
       brk(sc, 'VD', R[1].t, R[1].t + 70, 'HV 70', { guide: 'His', hot: 1 });
       brk(sc, 'His', R[2].t, R[3].t, 'HH ' + (R[3].t - R[2].t), { up: 1, hot: 1 }); brk(sc, 'RB', R[2].v, R[3].v, 'VV ' + (R[3].v - R[2].v), { hot: 1 });
       Object.assign(sc, { stimEnd: 0, verdictT: R[3].v + 40, m: { R },
@@ -996,10 +1000,10 @@
         [1700, 'Ahora se estimula del lado <b>lateral</b>: el frente ventricular va al revés, de lateral a septal.'], [2550, 'Medí de nuevo el VA local en 3-4: el V cae casi encima de la A.']] },
     obl_ante: { t: 'Vía oblicua: conducción anterógrada', win: 260, dur: 1100, lanes: [['C12', 'SC 1-2'], ['C34', 'SC 3-4'], ['C56', 'SC 5-6'], ['C78', 'SC 7-8']], panels: [() => oblSc('ante')],
       fases: s => { const R = s[0].m.R[0]; return [[0, 'Vista ampliada del anillo mitral. Ritmo sinusal con preexcitación por la misma vía.'], [R.a - 10, 'Seguí el <b>frente auricular</b> (violeta): llega desde el septum y entra a la vía en la <b>inserción auricular</b> (3-4).'], [R.a + 25, 'Baja por la vía en diagonal (naranja) y sale en la <b>inserción ventricular</b> (1-2).'], [R.a + 55, 'Desde la inserción ventricular el ventrículo se activa hacia los dos lados: el <b>V más precoz</b> está en 1-2.']]; } },
-    bbr_tv: { t: 'Reentrada rama-rama: criterios en la taquicardia', lanes: [['His', 'His'], ['RB', 'Rama der.'], ['VD', 'VD'], ['ECG', 'ECG']], panels: [() => bbrSc('tv')], win: 1800,
-      fases: [[0, 'Ritmo sinusal con HV largo (60 ms) y QRS ancho: trastorno de la conducción de base.'], [650, 'Taquicardia: sube por la <b>rama izquierda</b> (violeta) y baja por la <b>derecha</b> (naranja). Mirá el His y la rama antes de cada V.'], [1600, 'El ciclo oscila: mirá si cambia primero el HH o el VV.']] },
+    bbr_tv: { t: 'Reentrada rama-rama: criterios en la taquicardia', lanes: [['AD', 'AD alta'], ['His', 'His'], ['RB', 'Rama der.'], ['VD', 'VD'], ['ECG', 'ECG']], panels: [() => bbrSc('tv')], win: 1800,
+      fases: [[0, 'Ritmo sinusal con HV largo (60 ms) y QRS ancho: trastorno de la conducción de base.'], [650, 'Taquicardia: sube por la <b>rama izquierda</b> (violeta) y baja por la <b>derecha</b> (naranja). Mirá el His y la rama antes de cada V. La aurícula sigue en sinusal, <b>disociada</b> (AA 630): sus A no conducen.'], [1600, 'El ciclo oscila: mirá si cambia primero el HH o el VV.']] },
     bbr_ppi: { t: 'Reentrada rama-rama: encarrilamiento desde el ápex', lanes: [['His', 'His'], ['RB', 'Rama der.'], ['VD', 'VD'], ['ECG', 'ECG']], panels: [() => bbrSc('ppi')], win: 1800,
-      fases: s => { const S = s[0].m.S; return [[0, 'Ritmo sinusal y después la taquicardia rama-rama (LC 340 ms).'], [S[0] - 10, 'Se encarrila desde el <b>ápex del VD</b> a 300 ms: el estímulo entra al circuito por la salida de la rama derecha.'], [S[4] + 1, 'Se corta. Medí el <b>PPI</b> en el VD y restale la LC.']]; } },
+      fases: s => { const S = s[0].m.S; return [[0, 'Ritmo sinusal y después la taquicardia rama-rama (LC 340 ms).'], [S[0] - 10, 'Se encarrila desde el <b>ápex del VD</b> a 300 ms: el estímulo entra al circuito por la salida de la rama derecha.'], [S[4] + 1, 'Se corta. Medí el <b>PPI</b> en el VD y restale la LC.'], [S[4] + 300, '<b>Respuesta:</b> ' + s[0].resp + '.']]; } },
     tvf_circ: { t: 'TV fascicular posterior: P1 y P2', lanes: [['His', 'His'], ['LV', 'Septo VI'], ['ECG', 'ECG']], panels: [() => tvfSc('circ')], win: 1500,
       fases: [[0, 'TV fascicular posterior (LC 360 ms). El circuito está en el septum del VI: baja por <b>P1</b> (Purkinje anormal, lento, línea punteada) y sube por el <b>fascículo posterior</b> (P2).'], [500, 'Mirá en el septo: P1 en la mitad de la diástole y P2 justo antes del QRS. El His se activa después del inicio del QRS.']] },
     tvf_vera: { t: 'TV fascicular posterior: efecto del verapamilo', lanes: [['His', 'His'], ['LV', 'Septo VI'], ['ECG', 'ECG']], panels: [() => tvfSc('vera')], win: 1600,
