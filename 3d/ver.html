@@ -95,6 +95,9 @@ if (!WIN.length && sc.ado) WIN.push([sc.ado[0] + 150, sc.ado[0] + 450, Math.min(
 if (!WIN.length && sc.stimEnd) WIN.push([sc.stimEnd - 300, sc.stimEnd, sc.stimEnd + 350, 'Momento clave', 'Qué pasa después']);
 const HISM = /^hisorto/.test(AID);   // captura del His: lo crítico es cómo se activa el His en cada latido estimulado
 if (HISM && runs.length) { const r = runs[runs.length - 1], last = r[r.length - 1].t; WIN.length = 0; WIN.push([r[1] ? r[1].t - 20 : r[0].t - 20, last + 90, last + 420, 'Latidos estimulados: mirá cómo se activa el His', '1.er latido de retorno']); }
+if (AID === 'pjrt_circ' && !WIN.length) {   // PJRT: un latido en cámara lenta (baja por el nodo, sube lento por la vía)
+  const AA = sc.ev.filter(e => e.ch === 'CSp' && e.l === 'A').map(e => e.t).sort((x, y) => x - y), V2 = sc.ev.filter(e => e.ch === 'VD' && e.t > AA[1]).map(e => e.t)[0] || AA[1] + 200;
+  WIN.push([AA[1] - 20, V2 + 10, AA[2] + 60, 'Baja por el nodo y el His (AH)', 'Sube lento por la vía']); }
 const PHM = /^parahis/.test(AID);   // para-Hisiana: el His se marca capturado o retrógrado en cada estímulo
 if (PHM) WIN.forEach((w, i) => { const hi = i < 2; w[3] = hi ? 'Salida alta: captura His + miocardio' : 'Salida baja: solo miocardio (pierde el His)'; w[4] = hi ? 'Respuesta: QRS angosto, SH corto' : 'Respuesta: el frente baja al Purkinje y sube al His'; });
 if (/^vai/.test(AID)) WIN.forEach(w => { const st = STIMS.find(x => x.t >= w[0]) || {}, ap = st.pt === G.apex; w[3] = ap ? 'Estímulo en el ápex del VD' : 'Estímulo en la base posterior del VD'; w[4] = ap ? 'Respuesta: VA desde el ápex' : 'Respuesta: VA desde la base'; });
@@ -256,7 +259,7 @@ function build(parts) {
   WV3 = sc.wv.map((w, i) => ({ c: w.c, hi: HIW[i], base: w.pts[0][0] === G.base || (w.pts[0][0][0] === G.base[0] && w.pts[0][0][1] === G.base[1]), pts: w.pts.map(([p, t]) => { const a = ANC.get(key(p)); return { P: a ? a.clone() : mapK(p), t, y: p[1], anc: !!a || APP.has(key(p)) }; }) }));
   COLS = (sc.cols || []).map(c => ({ t: c.t, P: mapK(c.pt) }));
   ST3 = STIMS.map(s => ({ t: s.t, P: (ANC.get(key(s.pt)) || map2(s.pt)).clone() }));
-  if (HISM) FOCUS = WIN.map(() => HIS.clone()); else FOCUS = WIN.map(w => { const c = V(0, 0, 0); let k = 0; WV3.forEach(x => { if (!x.hi) return; const t0 = x.pts[0].t; if (t0 >= w[0] && t0 <= w[2]) x.pts.forEach(p => { c.add(p.P); k++; }); }); return k ? c.multiplyScalar(1 / k) : V(0, 0, 0); });
+  if (AID === 'pjrt_circ' && AP3) FOCUS = WIN.map(() => AP3.p.clone().lerp(AVN, .4)); else if (HISM) FOCUS = WIN.map(() => HIS.clone()); else FOCUS = WIN.map(w => { const c = V(0, 0, 0); let k = 0; WV3.forEach(x => { if (!x.hi) return; const t0 = x.pts[0].t; if (t0 >= w[0] && t0 <= w[2]) x.pts.forEach(p => { c.add(p.P); k++; }); }); return k ? c.multiplyScalar(1 / k) : V(0, 0, 0); });
   // activaciones de la pared: aurícula desde donde llega el frente; ventrículo por el His, desde el estímulo o desde donde llega el frente
   const ptAt = (t, test) => { let best = null, bd = 40; for (const w of sc.wv) for (const [p, tt] of w.pts) if (test(p[1]) && Math.abs(tt - t) < bd) { bd = Math.abs(tt - t); best = p; } return best; };
   const His = sc.ev.filter(e => (e.ch === 'His' || e.ch === 'HisP') && e.l === 'H' && !e.inv).map(e => e.ch === 'HisP' ? e.t + 10 : e.t);
