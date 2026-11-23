@@ -1183,6 +1183,7 @@
       const lab = mk('g', { 'font-size': 9, fill: 'var(--ink2)', 'text-anchor': 'middle' }, svg);
       const cur = mk('line', { x1: 0, y1: 4, x2: 0, y2: TH - 4, stroke: 'var(--blue)', 'stroke-width': 1 }, svg);
       const ver = document.createElement('div'); ver.className = 'anver'; wrap.appendChild(ver);
+      { const fh = featHtml(sc.title); if (fh) wrap.insertAdjacentHTML('beforeend', fh); }
       root.querySelector('.anp').appendChild(wrap);
       return { sc, h, tr, st, tg, tp, lab, cur, dots, ver, ints };
     });
@@ -1297,7 +1298,27 @@
     return A.t.includes(': ') ? A.t.split(': ').slice(1).join(': ').replace(/^./, c => c.toUpperCase()) : A.t; };
   FOR.ehr.push('ehr_pjrt'); FOR.pjrt = ['pjrt_circ', 'ehr_pjrt'];   // la PJRT también se muestra en su tarjeta de Arritmias
   window.ANIM_IDS = Object.keys(ANIMS);
-  window.ANIM_DATA = { ANIMS, G, LANES0, FOR };   // para el visor 3D (3d/ver.html)
+
+  // Cuadro de características de cada arritmia (se muestra debajo de cada animación, 2D y 3D)
+  const FEAT = {
+    trnav: ['TRNAV típica', [['Mecanismo', 'reentrada nodal: baja por la vía lenta y sube por la vía rápida'], ['VA', 'septal ≤ 70 ms, RP muy corto (seudo r′ en V1)'], ['Secuencia A', 'concéntrica, más precoz en el His o el SC proximal'], ['Relación AV', '1:1; puede seguir con bloqueo 2:1 (la A y el V no son parte del circuito)'], ['Adenosina', 'la termina (en la vía lenta)'], ['Maniobras', 'sobreestimulación V: A-V; PPI − LC > 115 ms, SA − VA > 85 ms']]],
+    trav: ['TRAV ortodrómica', [['Mecanismo', 'baja por el nodo y el His, sube por la vía accesoria: aurícula y ventrículo forman parte del circuito'], ['VA', '> 70 ms, RP corto (RP < PR)'], ['Secuencia A', 'excéntrica (vía libre) o concéntrica (vía septal)'], ['Relación AV', 'siempre 1:1; el bloqueo de rama del lado de la vía alarga el VA (Coumel)'], ['Adenosina', 'la termina en el nodo (termina con una A)'], ['Maniobras', 'sobreestimulación V: A-V; PPI − LC < 115 ms, SA − VA < 85 ms; la EV con His refractario adelanta la A']]],
+    pjrt: ['PJRT', [['Mecanismo', 'TRAV ortodrómica por una vía decremental lenta, casi siempre posteroseptal'], ['VA', 'largo: RP > PR, P negativa en las inferiores'], ['Secuencia A', 'más precoz en el ostium del SC'], ['Relación AV', '1:1'], ['Clínica', 'incesante; puede causar miocardiopatía (taquicardiomiopatía)'], ['Maniobras', 'la EV con His refractario retrasa la A o termina la taquicardia sin A']]],
+    anti: ['TRAV antidrómica por vía atriofascicular', [['Mecanismo', 'baja por la vía atriofascicular (decremental, pared libre derecha) y sube por la rama derecha, el His y el nodo'], ['QRS', 'preexcitado con morfología de BRI y transición tardía'], ['Relación AV', '1:1: la aurícula es parte del circuito'], ['Adenosina', 'la termina'], ['Maniobras', 'un EA desde la pared lateral, con el septum ya activado, adelanta el V siguiente con el mismo QRS']]],
+    ta: ['Taquicardia auricular', [['Mecanismo', 'foco auricular (automático, gatillado o microrreentrada)'], ['RP', 'largo o variable; el PR depende de la LC'], ['Secuencia A', 'según el foco (no la determina el nodo)'], ['Relación AV', 'puede seguir con bloqueo AV: el ventrículo no es necesario'], ['Adenosina', 'bloqueo AV y la TA sigue (o termina si es sensible)'], ['Maniobras', 'sobreestimulación V: A-A-V; sin VA linking']]],
+    jet: ['Taquicardia de la unión (JET)', [['Mecanismo', 'foco automático en la unión AV, cerca del His'], ['QRS', 'angosto, igual al sinusal; His antes de cada V con HV normal'], ['Relación AV', 'habitualmente disociación AV con más V que A; puede tener conducción VA 1:1'], ['Adenosina', 'no la termina (puede dar bloqueo VA transitorio)'], ['Clínica', 'posoperatorio de cardiopatías congénitas y forma congénita del lactante; calentamiento y enfriamiento'], ['Estimulación', 'no se induce ni se termina con estimulación programada']]],
+    tv: ['TV', [['Mecanismo', 'circuito o foco ventricular'], ['QRS', 'ancho; His después del inicio del QRS, disociado o ausente'], ['Relación VA', 'disociación VA o conducción VA variable'], ['Maniobras', 'un EA no modifica el V siguiente (salvo captura o fusión)']]],
+    nvrt: ['Taquicardia por vía nodoventricular', [['Mecanismo', 'circuito entre el nodo AV y una vía nodoventricular'], ['QRS', 'angosto (ortodrómica) o preexcitado'], ['Relación VA', 'la aurícula no es necesaria: puede seguir con bloqueo VA'], ['Adenosina', 'bloqueo VA con la taquicardia que sigue; después termina'], ['Maniobras', 'la EV con His refractario puede adelantar el V siguiente sin cambiar la A']]],
+    dfire: ['Doble disparo nodal', [['Mecanismo', 'no reentrante: cada A baja por la vía rápida y, después, por la vía lenta'], ['Relación AV', '1:2 (A-H1-V1-H2-V2), con H1–H2 fijo'], ['ECG', 'parece FA o extrasístoles: una P y dos QRS angostos'], ['Tratamiento', 'ablación de la vía lenta']]],
+    twin: ['Reentrada por nodos AV gemelos', [['Contexto', 'cardiopatías congénitas: heterotaxia, TCGA, canal AV'], ['Mecanismo', 'baja por un nodo AV y sube por el otro (puente de Mönckeberg)'], ['ECG', 'dos QRS sinusales distintos según el nodo que conduce'], ['VA', 'RP corto'], ['Tratamiento', 'ablación de uno de los nodos (del puente)']]],
+    bbr: ['Reentrada rama-rama', [['Mecanismo', 'macrorreentrada: baja por la rama derecha y sube por la izquierda (BRI típico)'], ['His', 'antes de cada V, con HV ≥ sinusal; los cambios del HH preceden a los del VV'], ['Contexto', 'cardiopatía con trastorno de la conducción (HV prolongado)'], ['Relación VA', 'disociación VA frecuente'], ['Tratamiento', 'ablación de la rama derecha']]],
+    tvf: ['TV fascicular posterior', [['Mecanismo', 'reentrada en el VI: P1 (miocardio septal lento) y P2 (fascículo posterior)'], ['QRS', 'BRD con eje superior, relativamente angosto'], ['Fármacos', 'sensible al verapamilo; la adenosina no la termina'], ['Relación VA', 'disociación VA frecuente'], ['Tratamiento', 'ablación en P2 (y P1)']]]
+  };
+  const featKey = t => /Antidr/.test(t) ? 'anti' : /PJRT/.test(t) ? 'pjrt' : /gemelos/.test(t) ? 'twin' : /doble vía nodal/.test(t) ? 'dfire' : /[Rr]ama-rama/.test(t) ? 'bbr' : /TV fascicular/.test(t) ? 'tvf'
+    : /^TV /.test(t) ? 'tv' : /nodoventricular|NVRT/.test(t) ? 'nvrt' : /JET|unión/.test(t) ? 'jet' : /^TRAV/.test(t) ? 'trav' : /^TRNAV/.test(t) ? 'trnav' : /^TA\b|Taquicardia auricular/.test(t) ? 'ta' : null;
+  const featHtml = t => { const k = featKey(t || ''); if (!k) return ''; const [n, L] = FEAT[k];
+    return `<details class="anfeat" open><summary>Características: ${n}</summary><dl>${L.map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl></details>`; };
+  window.ANIM_DATA = { ANIMS, G, LANES0, FOR, featHtml };   // para el visor 3D (3d/ver.html)
   window.ANIM_FOR = FOR;
   window.mountAnims = r => r.querySelectorAll('.anim[data-anim]').forEach(mount);
 })();

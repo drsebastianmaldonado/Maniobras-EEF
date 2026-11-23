@@ -32,7 +32,7 @@ canvas.tr{width:100%;display:block;background:var(--card);border-radius:14px}
 .note{color:var(--ink2);font-size:12px}
 </style>
 <script type="importmap">{"imports":{"three":"./lib/three.module.min.js"}}</script>
-<script data-goatcounter="https://maniobras-eef.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script></head>
+<script data-goatcounter="https://maniobras-eef.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script><style>#feat .anfeat{margin:12px 0;border:1px solid #333;border-radius:12px;background:#15151c;padding:8px 12px}#feat summary{font-weight:700;cursor:pointer;color:#e8e8f0}#feat dl{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin:8px 0 2px;font-size:14px;line-height:1.35;color:#d8d8e2}#feat dt{font-weight:700;color:#a9a6c0}#feat dd{margin:0}</style></head>
 <body>
 <div class="wrap">
   <button class="back" id="back" type="button">← Volver a la app</button>
@@ -47,7 +47,7 @@ canvas.tr{width:100%;display:block;background:var(--card);border-radius:14px}
   <p class="fase" id="fase"></p>
   <div class="ttl">Trazado</div><canvas class="tr" id="tr"></canvas>
   <div class="ttl">Diagrama de escalera</div><canvas class="tr" id="lad" style="height:190px"></canvas>
-  <div class="ver" id="ver"></div>
+  <div class="ver" id="ver"></div><div id="feat"></div>
   <p class="note">Naranja: anterógrado · violeta: retrógrado · rojo: foco y estímulo. En cámara lenta y con la cámara cerca: el último latido estimulado y el primero de retorno (o el extraestímulo y el latido siguiente). Corazón: BodyParts3D, © The Database Center for Life Science, CC BY-SA 2.1 Japan (modificado). Sistema de conducción y tiempos esquemáticos e ilustrativos.</p>
 </div>
 <script>document.write('<script src="../anim.js?v=' + Date.now() + '"><\/script>');</script>
@@ -69,7 +69,7 @@ const A = ANIMS[AID];
 if (!A) { $('load').textContent = 'No encontré esa animación.'; throw new Error('anim'); }
 const PL = A.sel ? A.panels(A.def) : A.panels;
 const PI = A.pi != null ? A.pi : Math.min(+(q.get('p') || 0), PL.length - 1);
-const sc = PL[PI]();
+const sc = PL[PI](); try { const fe = document.getElementById("feat"); if (fe && window.ANIM_DATA.featHtml) fe.innerHTML = window.ANIM_DATA.featHtml(sc.title); } catch (e) {}
 if (sc.vb) { $('load').textContent = 'Esta animación usa una vista esquemática que no tiene versión 3D.'; throw new Error('vb'); }
 const fases = typeof A.fases === 'function' ? A.fases([sc], A.def) : (A.fases || []);
 const DUR = A.dur || Math.round((sc.verdictT || Math.max(...sc.ev.map(e => e.t))) + 650);
