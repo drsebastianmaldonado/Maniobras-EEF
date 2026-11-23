@@ -164,7 +164,9 @@ function build(parts) {
   const samp = pts.filter((_, i) => i % 3 === 0);
   const near = q_ => { let b = samp[0], bd = 1e9; for (const p of samp) { const d = p.distanceToSquared(q_); if (d < bd) { bd = d; b = p; } } return b; };
   const cs = parts.cs.geometry.attributes.position; let csOs = null, csD = null; for (let i = 0; i < cs.count; i++) { const p = V(cs.getX(i), cs.getY(i), cs.getZ(i)); if (!csOs || p.x < csOs.x) csOs = p; if (!csD || p.x > csD.x) csD = p; }
-  const AVN = csOs.clone().lerp(tvC, .45).add(ax.clone().multiplyScalar(.12)), HIS = sept(.02, -.25, .35);
+  const HIS = sept(.02, -.25, .35);
+  // nodos gemelos: el anterior queda anterosuperior (lejos del posterior, que está junto al ostium del SC)
+  const AVN = sc.twin ? csOs.clone().lerp(HIS, .75).add(ax.clone().multiplyScalar(.35)).add(V(0, 0, .25)) : csOs.clone().lerp(tvC, .45).add(ax.clone().multiplyScalar(.12));
   const svc = parts.svc.geometry.attributes.position; let svcLow = null; for (let i = 0; i < svc.count; i++) { const p = V(svc.getX(i), svc.getY(i), svc.getZ(i)); if (!svcLow || p.y < svcLow.y) svcLow = p; }
   const SAN = near(svcLow.clone().add(V(0, -.15, .25))), TIP = near(sept(.95, -1.5, -.45));
   let raL = null; for (const p of samp) if (h(p) > .2 && h(p) < .8 && (!raL || p.x < raL.x)) raL = p;
@@ -248,7 +250,7 @@ function build(parts) {
   const BBB = sc.bbbL || []; ON.hr = ON.h.filter(x => BBB.includes(x)); ON.h = ON.h.filter(x => !BBB.includes(x));
   BBB.forEach(h_ => COLS.push({ t: h_ + 8, P: LBX, dur: 520, big: 1 }));
   BBBL = BBB.map(h_ => [h_ + 8, h_ + 528]);
-  LAB = [['AD', RAc.clone().add(sn.clone().multiplyScalar(-.6))], ['AI', LAc.clone().add(ax.clone().multiplyScalar(.6)).add(sn.clone().multiplyScalar(.6)).add(V(0, 0, -.3))], ['VD', sept(.35, -3.2, .5)], ['VI', sept(.5, 3.2, 0)], [sc.twin ? 'nodo anterior' : 'nodo AV', AVN.clone().add(sc.twin ? ax.clone().multiplyScalar(.25) : V(.05, -.2, .1))], ['His', HIS.clone().add(V(.1, .25, .2))], ...(AP3 ? [[AP3.n, AP3.p.clone().add(V(.25, .25, .25)), 'ap']] : []), ...(FOC3 ? [[sc.focusPt ? 'foco' : 'foco (VPSI)', FOC3.clone().add(V(.2, .25, 0)), 'cat']] : []), ...(NODAL ? NODAL.map(([t, p]) => [t, p, t.includes('lenta') ? 'sp' : 'fp']) : []), ...(TWIN || [])]
+  LAB = [['AD', RAc.clone().add(sn.clone().multiplyScalar(-.6))], ['AI', LAc.clone().add(ax.clone().multiplyScalar(.6)).add(sn.clone().multiplyScalar(.6)).add(V(0, 0, -.3))], ['VD', sept(.35, -3.2, .5)], ['VI', sept(.5, 3.2, 0)], [sc.twin ? 'nodo anterior' : 'nodo AV', AVN.clone().add(sc.twin ? V(-.55, .22, .1) : V(.05, -.2, .1))], ['His', HIS.clone().add(V(.1, .25, .2))], ...(AP3 ? [[AP3.n, AP3.p.clone().add(V(.25, .25, .25)), 'ap']] : []), ...(FOC3 ? [[sc.focusPt ? 'foco' : 'foco (VPSI)', FOC3.clone().add(V(.2, .25, 0)), 'cat']] : []), ...(NODAL ? NODAL.map(([t, p]) => [t, p, t.includes('lenta') ? 'sp' : 'fp']) : []), ...(TWIN || [])]
     .map(([t, p, c]) => { const d = document.createElement('div'); d.className = 'lab ' + (c || ''); d.textContent = t; $('labs').appendChild(d); return { d, p }; });
   if (BBBL.length) { const d = document.createElement('div'); d.className = 'lab cat'; d.textContent = 'bloqueo de la rama izquierda'; $('labs').appendChild(d); LAB.push({ d, p: LBX.clone().add(V(.35, -.25, .2)), when: BBBL }); }
 }
