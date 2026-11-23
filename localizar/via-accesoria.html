@@ -210,6 +210,7 @@ h1{font-size:clamp(28px,7.5vw,36px);line-height:1.08;letter-spacing:-.02em;margi
   var INFOPC=[['neg','2 o 3 negativas','la onda delta es negativa en 2 o 3 derivaciones inferiores'],['p2','2 positivas','la onda delta es positiva en 2 derivaciones inferiores'],['p3','3 positivas','la onda delta es positiva en las 3 derivaciones inferiores']];
   /* nodos: yn = Sí/No · ch = elegir una opción · res = resultado */
   var N={
+    v1:{k:'v1',tag:'Paso 1 · V1',q:'¿Cómo es la onda delta en V1?',ayuda:'Si la onda delta es negativa en DI o aVL, la vía es izquierda aunque V1 no sea positiva: elegí la primera opción.',o:[['Positiva o R>S','onda delta positiva o R>S en V1','zi'],['Negativa','onda delta negativa en V1','zs'],['rS','sin onda delta en V1 (ausencia de onda delta)','tr']]},
     p1:{k:'yn',tag:'Paso 1',q:'¿Onda delta negativa en DI/aVL, o bien onda delta positiva o R>S en V1?',ayuda:'Cualquiera de las dos condiciones responde «Sí».',si:'zi',no:'p2',rs:'Onda delta negativa en DI/aVL, o positiva / R>S en V1',rn:'No cumple el Paso 1'},
     zi:{k:'info',z:'izq',txt:'Vía izquierda',next:'inf_i'},
     inf_i:{k:'ch',tag:'Vía izquierda',q:'Evaluá la onda delta en la cara inferior',ayuda:INF,o:[['neg','izq_ps'],['p2','izq_pl'],['p3','izq_al']]},
@@ -224,7 +225,7 @@ h1{font-size:clamp(28px,7.5vw,36px);line-height:1.08;letter-spacing:-.02em;margi
   var NOMBRE={neg:'2 o 3 negativas',p2:'2 positivas',p3:'3 positivas'};
   var $=document.getElementById('main');
   var hist=[];            /* [{p:'texto de la pregunta', r:'respuesta'}] */
-  var cur='p1', res=null, stack=[];
+  var cur='v1', res=null, stack=[];
   function esc(s){return String(s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];});}
   function pushStack(){stack.push({cur:cur,res:res,hist:hist.slice()});}
   function goto(n){
@@ -236,6 +237,11 @@ h1{font-size:clamp(28px,7.5vw,36px);line-height:1.08;letter-spacing:-.02em;margi
     var x=N[cur]; pushStack();
     hist.push({p:x.q.replace(/^¿|\?$/g,''),r:si?'Sí':'No'});
     goto(si?x.si:x.no);
+  }
+  function answerV1(i){
+    var x=N[cur], o=x.o[i]; pushStack();
+    hist.push({p:'Onda delta en V1',r:o[0]+' ('+o[1]+')'});
+    goto(o[2]);
   }
   function answerOne(){
     var x=N[cur]; pushStack();
@@ -269,7 +275,7 @@ h1{font-size:clamp(28px,7.5vw,36px);line-height:1.08;letter-spacing:-.02em;margi
       (exOpen?'<figure class="ej"><a href="'+e.img+'" target="_blank" rel="noopener"><img src="'+e.img+'" alt="'+esc(e.t)+'"></a><figcaption>'+esc(e.t)+' Tocá la imagen para ampliarla.</figcaption></figure>':'');
   }
   function back(){var s=stack.pop();if(!s)return;cur=s.cur;res=s.res;hist=s.hist;exOpen=false;}
-  function reset(){hist=[];stack=[];cur='p1';res=null;exOpen=false;}
+  function reset(){hist=[];stack=[];cur='v1';res=null;exOpen=false;}
   function pathHtml(){
     if(!hist.length) return '';
     var h='<div class="path"><div class="pl">Tu recorrido</div>',n=0;
@@ -289,7 +295,8 @@ h1{font-size:clamp(28px,7.5vw,36px);line-height:1.08;letter-spacing:-.02em;margi
       var x=N[cur];
       {
         h+='<div class="gq"><div class="gtag">'+esc(x.tag)+'</div><h2>'+esc(x.q)+'</h2>'+(x.ayuda?'<p>'+esc(x.ayuda)+'</p>':'')+'</div>';
-        if(x.k==='one') h+='<div class="gopts"><button class="gopt" type="button" data-one="1">rS en V1<small>ausencia de onda delta</small></button></div>';
+        if(x.k==='v1') h+='<div class="gopts">'+x.o.map(function(o,i){return '<button class="gopt" type="button" data-v1="'+i+'">'+esc(o[0])+'<small>'+esc(o[1])+'</small></button>';}).join('')+'</div>';
+        else if(x.k==='one') h+='<div class="gopts"><button class="gopt" type="button" data-one="1">rS en V1<small>ausencia de onda delta</small></button></div>';
         else if(x.k==='yn') h+='<div class="gopts two"><button class="gopt si" type="button" data-yn="1">Sí</button><button class="gopt no" type="button" data-yn="0">No</button></div>';
         else if(x.k==='ch') h+='<div class="gopts">'+x.o.map(function(o,i){return '<button class="gopt" type="button" data-ch="'+i+'">'+NOMBRE[o[0]]+'</button>';}).join('')+'</div>';
         else if(x.k==='tr') h+='<div class="gopts two"><button class="gopt" type="button" data-tr="0">≤ V3<small>transición hasta V3</small></button><button class="gopt" type="button" data-tr="1">&gt; V3<small>transición después de V3</small></button></div>';
@@ -305,7 +312,7 @@ h1{font-size:clamp(28px,7.5vw,36px);line-height:1.08;letter-spacing:-.02em;margi
       zone('izq',[['2 o 3 inferiores negativas',LOC.izq_ps.n],['2 inferiores positivas',LOC.izq_pl.n],['3 inferiores positivas',LOC.izq_al.n]])+
       zone('sep',[['2 o 3 inferiores negativas',LOC.sd_ps.n],['2 inferiores positivas',LOC.sd_ms.n],['3 inferiores positivas',LOC.sd_as.n]])+
       zone('lat',[['2 o 3 inferiores negativas',LOC.ld_pl.n],['2 inferiores positivas',LOC.ld_l.n],['3 inferiores positivas',LOC.ld_al.n]])+
-      '<p class="note"><b>Izquierda:</b> Paso 1 «Sí». <b>Septal derecha:</b> Paso 2 «Sí», o rS en V1 con transición ≤ V3. <b>Lateral derecha:</b> rS en V1 con transición &gt; V3. Cara inferior: DII, DIII y aVF.</p></article>';
+      '<p class="note"><b>Izquierda:</b> onda delta positiva o R&gt;S en V1 (o negativa en DI/aVL). <b>Septal derecha:</b> onda delta negativa en V1, o rS en V1 con transición ≤ V3. <b>Lateral derecha:</b> rS en V1 con transición &gt; V3. Cara inferior: DII, DIII y aVF.</p></article>';
   }
   /* ---------- modo práctica: casos armados con las reglas del algoritmo ---------- */
   var BASE=[
@@ -379,6 +386,7 @@ h1{font-size:clamp(28px,7.5vw,36px);line-height:1.08;letter-spacing:-.02em;margi
       return;
     }
     if(e.target.closest('[data-ej]')){exOpen=!exOpen;render();return;}
+    if((t=e.target.closest('[data-v1]'))){answerV1(+t.getAttribute('data-v1'));render();return;}
     if(e.target.closest('[data-one]')){answerOne();render();return;}
     if((t=e.target.closest('[data-yn]'))){answerYN(t.getAttribute('data-yn')==='1');render();return;}
     if((t=e.target.closest('[data-ch]'))){answerCh(+t.getAttribute('data-ch'));render();return;}
