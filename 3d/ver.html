@@ -143,7 +143,7 @@ const condMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
 
 // ---------- modelo y correspondencia del esquema 2D de la app con el corazón 3D
 const KCAM = sc.ev.some(e => e.stim && /^(AD|CS)/.test(e.ch));   // cámara en el Koch solo si se estimula la aurícula
-let HIS3 = null, LES = null, FV = null, FASC = null, RFM = null, TW3 = null, TWIN = null, KOCH = null, NODAL = null, BBBL = [], LBX = null, ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
+let HIS3 = null, FRONT = false, LES = null, FV = null, FASC = null, RFM = null, TW3 = null, TWIN = null, KOCH = null, NODAL = null, BBBL = [], LBX = null, ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
 const map2 = p => V(M2[0][0] * p[0] + M2[0][1] * p[1] + M2[0][2], M2[1][0] * p[0] + M2[1][1] * p[1] + M2[1][2], M2[2][0] * p[0] + M2[2][1] * p[1] + M2[2][2]);
 function fit(pairs) {   // mínimos cuadrados: [x, y, 1] → X, Y, Z
   const A3 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], b = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
@@ -204,13 +204,14 @@ function build(parts) {
   // nodo AV, catéteres de los canales del trazado
   const glow = (p, c, s) => { const m = new THREE.Mesh(new THREE.SphereGeometry(s, 16, 12), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: .8, blending: THREE.AdditiveBlending, depthWrite: false })); m.position.copy(p); heart.add(m); return m; };
   glow(AVN, 0xffa040, .06);
-  const CAT = { VD: TIP, VDb: RVb, AD: SAN, ADl: raL, CS: csOs, CSp: csOs, CSd: csD, His: HIS };
+  const AFA = sc.ap === 'af' ? near(tvC.clone().lerp(raL, .55)) : null, AFS = AFA ? near(AFA.clone().add(ax.clone().multiplyScalar(.45)).lerp(raL, .3)) : null;
+  const CAT = { VD: TIP, VDb: RVb, AD: SAN, ADl: AFS || raL, CS: csOs, CSp: csOs, CSd: csD, His: HIS };
   const tipM = new THREE.MeshBasicMaterial({ color: 0xff6b6b, transparent: true, opacity: .9 });
   for (const [ch] of LANES) if (CAT[ch]) { const m = new THREE.Mesh(new THREE.SphereGeometry(.045, 12, 10), tipM); m.position.copy(CAT[ch]); heart.add(m); }
   // vía accesoria bien visible (gruesa y brillante), con su rótulo
   const APD = { sep: [[231, 262], [234, 290], [237, 318]], nv: [[250, 362], [256, 316], [264, 272]], pjrt: [[240, 356], [228, 322], [212, 288]], af: [[92, 272], [96, 400], [178, 512]], lat: [[519, 246], [528, 284], [534, 322]] };
   const apk = sc.ap === true ? 'lat' : sc.ap;
-  if (APD[apk]) { const c = new THREE.CatmullRomCurve3(APD[apk].map(map2)), mm = new THREE.MeshBasicMaterial({ color: 0xff3d8b, transparent: true, opacity: .85, blending: THREE.AdditiveBlending, depthWrite: false });
+  if (APD[apk]) { const c = new THREE.CatmullRomCurve3(APD[apk].map((q_, i) => AFA && i === 0 ? AFA.clone() : map2(q_))), mm = new THREE.MeshBasicMaterial({ color: 0xff3d8b, transparent: true, opacity: .85, blending: THREE.AdditiveBlending, depthWrite: false });
     heart.add(new THREE.Mesh(new THREE.TubeGeometry(c, 30, .055, 10), mm)); heart.add(new THREE.Mesh(new THREE.TubeGeometry(c, 30, .11, 10), new THREE.MeshBasicMaterial({ color: 0xff3d8b, transparent: true, opacity: .18, blending: THREE.AdditiveBlending, depthWrite: false })));
     AP3 = { p: c.getPoint(.5), n: apk === 'nv' ? 'vía nodoventricular' : apk === 'af' ? 'vía atriofascicular' : apk === 'pjrt' ? 'vía decremental' : 'vía accesoria' }; }
   // nodos AV gemelos: segundo nodo (posterior) con su His
@@ -249,10 +250,11 @@ function build(parts) {
     const cf = tube([[232, 234], [252, 246], G.node], 0xc58cff, .022), cs_ = tube([[226, 248], [206, 268], [220, 292], [250, 284], G.node], 0xff9a3c, .022);
     KOCH = { c: mapK([235, 262]), dir: sn.clone().negate().add(ax.clone().multiplyScalar(.2)).normalize() };
     NODAL = [['vía rápida', cf.getPoint(.4).add(e2k.clone().multiplyScalar(.18))], ['vía lenta', cs_.getPoint(.45).add(e2k.clone().multiplyScalar(-.18))]]; }
+  if (AFA) { FRONT = true; ANC.set(key(G.afA), AFA); ANC.set(key(G.ralat), AFS); }
   if (TW3) { ANC.set(key([226, 304]), TW3.NP3); ANC.set(key([276, 376]), TW3.HP3); }
   WV3 = sc.wv.map((w, i) => ({ c: w.c, hi: HIW[i], base: w.pts[0][0] === G.base || (w.pts[0][0][0] === G.base[0] && w.pts[0][0][1] === G.base[1]), pts: w.pts.map(([p, t]) => { const a = ANC.get(key(p)); return { P: a ? a.clone() : mapK(p), t, y: p[1], anc: !!a || APP.has(key(p)) }; }) }));
   COLS = (sc.cols || []).map(c => ({ t: c.t, P: mapK(c.pt) }));
-  ST3 = STIMS.map(s => ({ t: s.t, P: map2(s.pt) }));
+  ST3 = STIMS.map(s => ({ t: s.t, P: (ANC.get(key(s.pt)) || map2(s.pt)).clone() }));
   if (HISM) FOCUS = WIN.map(() => HIS.clone()); else FOCUS = WIN.map(w => { const c = V(0, 0, 0); let k = 0; WV3.forEach(x => { if (!x.hi) return; const t0 = x.pts[0].t; if (t0 >= w[0] && t0 <= w[2]) x.pts.forEach(p => { c.add(p.P); k++; }); }); return k ? c.multiplyScalar(1 / k) : V(0, 0, 0); });
   // activaciones de la pared: aurícula desde donde llega el frente; ventrículo por el His, desde el estímulo o desde donde llega el frente
   const ptAt = (t, test) => { let best = null, bd = 40; for (const w of sc.wv) for (const [p, tt] of w.pts) if (test(p[1]) && Math.abs(tt - t) < bd) { bd = Math.abs(tt - t); best = p; } return best; };
@@ -389,7 +391,7 @@ function frame(T) {
 }
 function render(T) {
   if (auto) { const wi = WIN.findIndex(w => T >= w[0] - 120 && T <= w[2] + 60); if (FV) { tTgt.copy(FV.c).add(heart.position); tDist = wi >= 0 ? 5 : 6.5; tYaw = Math.atan2(FV.dir.x, FV.dir.z); tPitch = Math.asin(FV.dir.y); } else if (wi >= 0 && KOCH && KCAM) { tTgt.copy(KOCH.c).add(heart.position); tDist = 3.6; tYaw = Math.atan2(KOCH.dir.x, KOCH.dir.z); tPitch = Math.asin(KOCH.dir.y); }
-    else if (wi >= 0 && FOCUS[wi]) { tTgt.copy(FOCUS[wi]).add(heart.position); tDist = HISM ? 5 : 8; const d = FOCUS[wi].clone().setY(0); if (d.length() > .3) { d.normalize(); tYaw = Math.atan2(d.x, d.z); if (Math.cos(tYaw) < -.2) tYaw = Math.sign(tYaw) * 1.7; } else tYaw = -.25; tPitch = .1; } else { tTgt.set(0, 0, 0); tDist = 13; tYaw = .15 + .25 * Math.sin(T / 2200); tPitch = .05; } }
+    else if (wi >= 0 && FOCUS[wi]) { tTgt.copy(FOCUS[wi]).add(heart.position); tDist = HISM ? 5 : 8; const d = FOCUS[wi].clone().setY(0); if (d.length() > .3) { d.normalize(); tYaw = Math.atan2(d.x, d.z); if (Math.cos(tYaw) < -.2) tYaw = Math.sign(tYaw) * 1.7; } else tYaw = -.25; tPitch = .1; if (FRONT) { tYaw = 0; tDist = 9; } } else { tTgt.set(0, 0, 0); tDist = 13; tYaw = .15 + .25 * Math.sin(T / 2200); tPitch = .05; } }
   yaw += (tYaw - yaw) * .05; pitch += (tPitch - pitch) * .05; dist += (tDist - dist) * .05; tgt.lerp(tTgt, .05);
   cam.position.set(tgt.x + dist * Math.sin(yaw) * Math.cos(pitch), tgt.y + dist * Math.sin(pitch), tgt.z + dist * Math.cos(yaw) * Math.cos(pitch)); cam.lookAt(tgt);
   const w = stage.clientWidth, h = stage.clientHeight; if (cv.width !== Math.round(w * R.getPixelRatio())) { R.setSize(w, h, false); comp.setSize(w, h); cam.aspect = w / h; cam.updateProjectionMatrix(); }
