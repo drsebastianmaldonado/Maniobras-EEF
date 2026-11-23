@@ -93,6 +93,9 @@ else runs.forEach((r, i) => { const last = r[r.length - 1].t, nx = runs[i + 1] ?
 if (!WIN.length && sc.bbbL) { const h0 = sc.bbbL[0]; WIN.push([h0 - 60, h0 + 110, h0 + 430, 'Bloqueo de rama izquierda', 'El VA se alarga']); }
 if (!WIN.length && sc.ado) WIN.push([sc.ado[0] + 150, sc.ado[0] + 450, Math.min(DUR, sc.ado[1] + 250), 'Efecto de la adenosina', 'Cómo termina o sigue']);
 if (!WIN.length && sc.stimEnd) WIN.push([sc.stimEnd - 300, sc.stimEnd, sc.stimEnd + 350, 'Momento clave', 'Qué pasa después']);
+const HISM = /^hisorto/.test(AID);   // captura del His: lo crítico es cómo se activa el His en cada latido estimulado
+if (HISM && runs.length) { const r = runs[runs.length - 1], last = r[r.length - 1].t; WIN.length = 0; WIN.push([r[1] ? r[1].t - 20 : r[0].t - 20, last + 90, last + 420, 'Latidos estimulados: mirá cómo se activa el His', '1.er latido de retorno']); }
+const HISEV = sc.ev.filter(e => e.ch === 'His' && e.l === 'H' && STIMS.length && e.t >= STIMS[0].t && e.t <= STIMS[STIMS.length - 1].t + 120);
 const inWin = t => WIN.find(w => t >= w[0] && t <= w[2]);
 const HIW = sc.wv.map(w => { const t0 = w.pts[0][1]; return !!WIN.find(x => t0 >= x[0] && t0 <= x[2]); });
 const lastStims = new Set(PER_STIM ? [] : runs.map(r => r[r.length - 1].t));
@@ -138,7 +141,7 @@ const condMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
 
 // ---------- modelo y correspondencia del esquema 2D de la app con el corazón 3D
 const KCAM = sc.ev.some(e => e.stim && /^(AD|CS)/.test(e.ch));   // cámara en el Koch solo si se estimula la aurícula
-let LES = null, FV = null, FASC = null, RFM = null, TW3 = null, TWIN = null, KOCH = null, NODAL = null, BBBL = [], LBX = null, ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
+let HIS3 = null, LES = null, FV = null, FASC = null, RFM = null, TW3 = null, TWIN = null, KOCH = null, NODAL = null, BBBL = [], LBX = null, ready = false, M2 = null, LAB = [], ON = null, WV3 = [], COLS = [], ST3 = [], FOCUS = [], AP3 = null, FOC3 = null, FOCM = null;
 const map2 = p => V(M2[0][0] * p[0] + M2[0][1] * p[1] + M2[0][2], M2[1][0] * p[0] + M2[1][1] * p[1] + M2[1][2], M2[2][0] * p[0] + M2[2][1] * p[1] + M2[2][2]);
 function fit(pairs) {   // mínimos cuadrados: [x, y, 1] → X, Y, Z
   const A3 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], b = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
@@ -209,6 +212,7 @@ function build(parts) {
     heart.add(new THREE.Mesh(new THREE.TubeGeometry(c, 30, .055, 10), mm)); heart.add(new THREE.Mesh(new THREE.TubeGeometry(c, 30, .11, 10), new THREE.MeshBasicMaterial({ color: 0xff3d8b, transparent: true, opacity: .18, blending: THREE.AdditiveBlending, depthWrite: false })));
     AP3 = { p: c.getPoint(.5), n: apk === 'nv' ? 'vía nodoventricular' : apk === 'af' ? 'vía atriofascicular' : apk === 'pjrt' ? 'vía decremental' : 'vía accesoria' }; }
   // nodos AV gemelos: segundo nodo (posterior) con su His
+  HIS3 = HIS.clone(); heart.add(hisGlow);
   if (sc.twin) { const NP3 = csOs.clone().add(ax.clone().multiplyScalar(.06)).add(sn.clone().multiplyScalar(-.05)), J3 = rbPts[20], HP3 = NP3.clone().lerp(J3, .5).add(sn.clone().multiplyScalar(.04)); TW3 = { NP3, HP3 };
     const nm = new THREE.Mesh(new THREE.SphereGeometry(.07, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffa040, transparent: true, opacity: .85, blending: THREE.AdditiveBlending, depthWrite: false })); nm.position.copy(NP3); heart.add(nm);
     heart.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([NP3, HP3, J3]), 40, .025, 8), new THREE.MeshBasicMaterial({ color: 0xffa040, transparent: true, opacity: .55, blending: THREE.AdditiveBlending, depthWrite: false })));
@@ -247,7 +251,7 @@ function build(parts) {
   WV3 = sc.wv.map((w, i) => ({ c: w.c, hi: HIW[i], pts: w.pts.map(([p, t]) => { const a = ANC.get(key(p)); return { P: a ? a.clone() : mapK(p), t, y: p[1], anc: !!a || APP.has(key(p)) }; }) }));
   COLS = (sc.cols || []).map(c => ({ t: c.t, P: mapK(c.pt) }));
   ST3 = STIMS.map(s => ({ t: s.t, P: map2(s.pt) }));
-  FOCUS = WIN.map(w => { const c = V(0, 0, 0); let k = 0; WV3.forEach(x => { if (!x.hi) return; const t0 = x.pts[0].t; if (t0 >= w[0] && t0 <= w[2]) x.pts.forEach(p => { c.add(p.P); k++; }); }); return k ? c.multiplyScalar(1 / k) : V(0, 0, 0); });
+  if (HISM) FOCUS = WIN.map(() => HIS.clone()); else FOCUS = WIN.map(w => { const c = V(0, 0, 0); let k = 0; WV3.forEach(x => { if (!x.hi) return; const t0 = x.pts[0].t; if (t0 >= w[0] && t0 <= w[2]) x.pts.forEach(p => { c.add(p.P); k++; }); }); return k ? c.multiplyScalar(1 / k) : V(0, 0, 0); });
   // activaciones de la pared: aurícula desde donde llega el frente; ventrículo por el His, desde el estímulo o desde donde llega el frente
   const ptAt = (t, test) => { let best = null, bd = 40; for (const w of sc.wv) for (const [p, tt] of w.pts) if (test(p[1]) && Math.abs(tt - t) < bd) { bd = Math.abs(tt - t); best = p; } return best; };
   const His = sc.ev.filter(e => (e.ch === 'His' || e.ch === 'HisP') && e.l === 'H' && !e.inv).map(e => e.ch === 'HisP' ? e.t + 10 : e.t);
@@ -285,6 +289,8 @@ const pool = [], trails = [], xs = [];
 const getSprite = i => { if (!pool[i]) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, blending: THREE.AdditiveBlending, depthTest: false, transparent: true })); heart.add(s); pool[i] = s; } return pool[i]; };
 const getTrail = i => { if (!trails[i]) { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(64 * 3), 3)); const l = new THREE.Line(g, new THREE.LineBasicMaterial({ transparent: true, blending: THREE.AdditiveBlending, depthTest: false })); heart.add(l); trails[i] = l; } return trails[i]; };
 const getX = i => { if (!xs[i]) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: xTex, color: 0xff5050, depthTest: false, transparent: true })); s.scale.set(.22, .22, 1); heart.add(s); xs[i] = s; } return xs[i]; };
+const hisGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: null, color: 0xffffff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthTest: false })); hisGlow.visible = false;
+const hisLab = document.createElement('div'); hisLab.className = 'lab'; hisLab.style.fontSize = '13px'; hisLab.style.opacity = 0; document.getElementById('labs').appendChild(hisLab);
 const ring = new THREE.Mesh(new THREE.RingGeometry(.12, .2, 32), new THREE.MeshBasicMaterial({ color: 0xff4d4d, transparent: true, depthTest: false, side: THREE.DoubleSide })); heart.add(ring);
 const WCOL = { ante: 0xffb050, retro: 0xc890ff, focus: 0xff5a5a };
 function drawWaves(T) {
@@ -304,6 +310,10 @@ function drawWaves(T) {
   for (let i = nx; i < xs.length; i++) xs[i].visible = false;
   if (RFM) { RFM.material.opacity = sc.rf && T >= sc.rf[0] && T < sc.rf[1] ? .55 + .35 * Math.sin(T / 40) : 0;
     if (LES) { const f = (T - sc.rf[0]) / Math.max(1, sc.rf[1] - sc.rf[0]); LES.forEach((m, i) => { const on = f >= i / LES.length; m.material.opacity = on ? (T < sc.rf[1] && f < (i + 1) / LES.length ? 1 : .75) : 0; }); RFM.position.copy(LES[Math.max(0, Math.min(LES.length - 1, Math.floor(f * LES.length)))].position); } }
+  if (HISEV.length && HIS3) { const e = HISEV.filter(x => T >= x.t - 5 && T < x.t + 260).pop();
+    if (e) { const f = (T - e.t + 5) / 265, col = e.inv ? 0xc890ff : 0xffb050; hisGlow.material.map = glowTex; hisGlow.material.color.set(col); hisGlow.material.opacity = 1 - f; hisGlow.scale.setScalar(.5 + .4 * f); hisGlow.position.copy(HIS3); hisGlow.visible = true;
+      hisLab.textContent = e.inv ? 'His retrógrado: el estímulo sube por la rama derecha' : 'His anterógrado: baja desde el nodo (ortodrómico)'; hisLab.style.color = e.inv ? '#d9b8ff' : '#ffc070'; hisLab.style.opacity = 1; }
+    else { hisGlow.visible = false; hisLab.style.opacity = 0; } }
   const st = ST3.find(s => T >= s.t && T < s.t + 110); ring.visible = !!st;
   if (st) { const f = (T - st.t) / 110; ring.position.copy(st.P); ring.scale.setScalar((lastStims.has(st.t) ? 1.25 : .8) * (1 + f * 1.4) * (dist / 13)); ring.material.opacity = 1 - f; ring.lookAt(cam.position); }
 }
@@ -377,11 +387,12 @@ function frame(T) {
 }
 function render(T) {
   if (auto) { const wi = WIN.findIndex(w => T >= w[0] - 120 && T <= w[2] + 60); if (FV) { tTgt.copy(FV.c).add(heart.position); tDist = wi >= 0 ? 5 : 6.5; tYaw = Math.atan2(FV.dir.x, FV.dir.z); tPitch = Math.asin(FV.dir.y); } else if (wi >= 0 && KOCH && KCAM) { tTgt.copy(KOCH.c).add(heart.position); tDist = 3.6; tYaw = Math.atan2(KOCH.dir.x, KOCH.dir.z); tPitch = Math.asin(KOCH.dir.y); }
-    else if (wi >= 0 && FOCUS[wi]) { tTgt.copy(FOCUS[wi]).add(heart.position); tDist = 8; const d = FOCUS[wi].clone().setY(0); if (d.length() > .3) { d.normalize(); tYaw = Math.atan2(d.x, d.z); if (Math.cos(tYaw) < -.2) tYaw = Math.sign(tYaw) * 1.7; } else tYaw = -.25; tPitch = .1; } else { tTgt.set(0, 0, 0); tDist = 13; tYaw = .15 + .25 * Math.sin(T / 2200); tPitch = .05; } }
+    else if (wi >= 0 && FOCUS[wi]) { tTgt.copy(FOCUS[wi]).add(heart.position); tDist = HISM ? 5 : 8; const d = FOCUS[wi].clone().setY(0); if (d.length() > .3) { d.normalize(); tYaw = Math.atan2(d.x, d.z); if (Math.cos(tYaw) < -.2) tYaw = Math.sign(tYaw) * 1.7; } else tYaw = -.25; tPitch = .1; } else { tTgt.set(0, 0, 0); tDist = 13; tYaw = .15 + .25 * Math.sin(T / 2200); tPitch = .05; } }
   yaw += (tYaw - yaw) * .05; pitch += (tPitch - pitch) * .05; dist += (tDist - dist) * .05; tgt.lerp(tTgt, .05);
   cam.position.set(tgt.x + dist * Math.sin(yaw) * Math.cos(pitch), tgt.y + dist * Math.sin(pitch), tgt.z + dist * Math.cos(yaw) * Math.cos(pitch)); cam.lookAt(tgt);
   const w = stage.clientWidth, h = stage.clientHeight; if (cv.width !== Math.round(w * R.getPixelRatio())) { R.setSize(w, h, false); comp.setSize(w, h); cam.aspect = w / h; cam.updateProjectionMatrix(); }
   comp.render();
+  if (HIS3) { const p = HIS3.clone().add(heart.position).project(cam); hisLab.style.left = ((p.x + 1) / 2 * w) + 'px'; hisLab.style.top = ((1 - p.y) / 2 * h - 34) + 'px'; }
   for (const l of LAB) { const p = l.p.clone().add(heart.position).project(cam); l.d.style.left = ((p.x + 1) / 2 * w) + 'px'; l.d.style.top = ((1 - p.y) / 2 * h) + 'px'; l.d.style.opacity = p.z < 1 && (!l.when || l.when.some(([a, b]) => T >= a && T < b)) ? 1 : 0; }
 }
 let T = 0, play = false, last = 0;
