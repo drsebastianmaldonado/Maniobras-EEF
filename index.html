@@ -61,7 +61,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font
   background:linear-gradient(165deg,color-mix(in srgb,var(--hc) 28%,var(--bg)),color-mix(in srgb,var(--hc) 5%,var(--bg)))}
 .hicon{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;color:#fff;background:linear-gradient(135deg,var(--hc),color-mix(in srgb,var(--hc) 62%,#000))}
 .hicon svg{width:20px;height:20px}
-.hero h1{margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.hero h1{margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.2}.htxt{flex:1;min-width:0}.hauth{margin:2px 0 0;font-size:12.5px;line-height:1.35;color:var(--ink2)}.hauth a{color:var(--ink2);text-decoration:none;word-break:break-all}
 .about{margin:0 0 10px;text-align:center}
 .hero .sub{margin:0;color:var(--ink2);max-width:56ch}
 .seg{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;background:var(--seg);padding:4px;border-radius:14px;position:sticky;top:calc(6px + env(safe-area-inset-top));z-index:5;box-shadow:var(--shadow);margin-top:12px}
@@ -283,7 +283,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div class="wrap">
   <header class="hero">
     <div class="hicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h3l1.5-4 2 8 1.5-4h2"/><path d="M14 6v12M17 9v6M20 6v12"/></svg></div>
-    <h1>Maniobras en el EEF</h1>
+    <div class="htxt"><h1>Maniobras en el EEF</h1><p class="hauth">Dr. Sebastián Maldonado<br>Electrofisiología pediátrica<br><a href="mailto:drsebastian.maldonado@gmail.com">drsebastian.maldonado@gmail.com</a></p></div>
     <button type="button" class="hsrch" id="srchBtn" aria-label="Buscar en toda la app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Buscar</span></button>
   </header>
 
@@ -416,7 +416,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <div id="visor" hidden role="dialog" aria-label="Imagen ampliada"><div class="vbar"><button type="button" class="vm" aria-label="Achicar">−</button><button type="button" class="vp" aria-label="Agrandar">+</button><button type="button" class="vf">Ajustar</button><button type="button" class="vx">✕ Cerrar</button></div><div class="vbox"><img alt="Imagen ampliada"></div></div>
 <script src="anim-index.js"></script>
 <script>
-const APPV = 301;   // igual al número de CACHE_VERSION de sw.js
+const APPV = 302;   // igual al número de CACHE_VERSION de sw.js
 try { document.getElementById('verPie').textContent = 'versión ' + APPV; } catch (e) {}
 // ===============================================================================================================
 // Referencias. "propia" = artículo del material base; las demás se citan a través de esas revisiones.
