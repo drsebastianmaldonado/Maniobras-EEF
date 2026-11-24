@@ -574,6 +574,16 @@
         sc.m.bri = R[3].v;
         Object.assign(sc, { verdictT: R[5].v + 60, verdict: `Con BRI funcional el VA se alarga <b>${(w.a - w.v) - (n.a - n.v)} ms</b> (${n.a - n.v} → ${w.a - w.v}) y la LC también (${R[2].v - R[1].v} → ${R[5].v - R[4].v}): la vía izquierda es parte del circuito (<b>efecto Coumel</b>).`,
           why: 'Con la rama izquierda bloqueada el frente baja por la derecha y cruza el septum hasta el VI: tarda más en llegar a la vía. Un aumento > 20–30 ms prueba una vía libre homolateral al bloqueo.' }); }
+    } else if (kind === 'jet') {   // JET típico: foco en la unión con disociación AV (más V que A)
+      Object.assign(sc, { title: 'Taquicardia de la unión (JET) con disociación AV', focus: true, focusPt: G.jx });
+      const LJ = 380, LS = 600, H = [], A = [];
+      for (let h = 150; h < 3000; h += LJ) { W_(sc, 'focus', [[G.jx, h - 12], [G.his, h]]); E(sc, 'His', h, 'H'); down(sc, h); Vs(sc, h); H.push(h);
+        W_(sc, 'retro', [[G.jx, h - 12], [G.node, h + 15]], h + 12); }                     // no conduce a la aurícula: bloqueo VA
+      for (let a = 330; a < 3000; a += LS) { W_(sc, 'ante', [[G.sn, a - 30], [G.ra, a], [G.aSep, a + 25], [G.node, a + 50]], a + 45); E(sc, 'AD', a, 'A'); A.push(a); }   // sinusal, se bloquea en el nodo refractario
+      brk(sc, 'VD', H[2] + HVT, H[3] + HVT, 'VV ' + LJ, { hot: 1 }); brk(sc, 'AD', A[1], A[2], 'AA ' + LS, { hot: 1 });
+      brk(sc, 'His', H[4], H[4] + HVT, 'HV ' + HVT, { guide: 'VD', up: 1 });
+      Object.assign(sc, { verdictT: H[6] + 60, verdict: `<b>Disociación AV con más V que A</b> (VV ${LJ}, AA ${LS}): las A sinusales no conducen y no marcan el ritmo. QRS angosto con <b>His antes de cada V y HV normal</b> → <b>taquicardia de la unión (JET)</b>.`,
+        why: 'El foco está en la unión, cerca del His: activa los ventrículos por el sistema normal y no conduce a la aurícula. La disociación AV excluye la TRAV (necesita la aurícula) y es lo típico del JET posoperatorio y del congénito.' });
     } else {
       Object.assign(sc, { title: 'Taquicardia auricular con bloqueo AV', focus: true });
       let f = 120; const plan = [120, 120, 120, 150, 180, 'b', 120, 150, 'b', 120];
@@ -990,6 +1000,8 @@
       fases: s => [[0, 'TRAV por una vía lateral izquierda (LC 340 ms). Mirá dónde aparece primero la A.'], [800, 'Medí el VA en el SC distal y en el His.']] },
     basal_ta: { t: 'Observaciones: TA que sigue con bloqueo AV', panels: [() => basalSc('ta')],
       fases: s => [[0, 'Taquicardia auricular (LC 340 ms).'], [120 + 3 * LCT, 'El AH se alarga de a poco (Wenckebach)...'], [120 + 5 * LCT, '...y una A no conduce. ¿Sigue la taquicardia?']] },
+    basal_jet: { t: 'Observaciones: JET con disociación AV', lanes: [['AD', 'AD alta'], ['His', 'His'], ['VD', 'VD']], panels: [() => basalSc('jet')], win: 2400,
+      fases: s => [[0, 'Taquicardia con QRS angosto. Mirá la relación entre las A y los V.'], [1000, 'Las A sinusales van más lentas y no conducen: <b>disociación AV</b>. Cada V tiene su His con HV normal.']] },
     basal_coumel: { t: 'Observaciones: efecto Coumel (BRI funcional)', lanes: [['CSd', 'SC dist'], ['CSp', 'SC prox'], ['His', 'His'], ['VD', 'VD']], panels: [() => basalSc('coumel')], win: 2400,
       fases: s => [[0, 'TRAV por una vía lateral izquierda con QRS angosto. Medí el VA y la LC.'], [s[0].m.bri - 60, 'Aparece <b>BRI funcional</b>: el frente ya no baja por la rama izquierda y el QRS se ensancha.'], [s[0].m.bri + 700, 'Compará el VA y la LC con y sin BRI.']] },
     pre_dual: { t: 'Estudio basal: doble fisiología nodal', panels: [dualSc], win: 1400, gap: 50,
@@ -1284,7 +1296,7 @@
   }
 
   // fichas con varias animaciones, cada una con una sola taquicardia y sus propios controles
-  const FOR = { ado: ['ado_trav', 'ado_trnav', 'ado_ta', 'ado_nv', 'ado_jet', 'ado_anti'], basal: ['basal_trnav', 'basal_travl', 'basal_coumel', 'basal_ta'],
+  const FOR = { ado: ['ado_trav', 'ado_trnav', 'ado_ta', 'ado_nv', 'ado_jet', 'ado_anti'], basal: ['basal_trnav', 'basal_travl', 'basal_coumel', 'basal_ta', 'basal_jet'],
     pre: ['pre_dual', 'pre_vanode', 'pre_vaap'], twin: ['twin_tsv', 'twin_ap'], bbr: ['bbr_tv', 'bbr_ppi'], conc: ['conc_gap', 'conc_in', 'conc_out'], tvf: ['tvf_circ', 'tvf_vera'], tvfabl: ['tvfabl_rf'], obl: ['obl_retro', 'obl_ante', 'obl_rev'] };
   for (const k of Object.keys(ANIMS)) {
     const A = ANIMS[k]; if (k.startsWith('ado_')) continue;
