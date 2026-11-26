@@ -88,7 +88,7 @@ const WIN = [];   // ventanas críticas: [t0, tSplit, t1, rótulo1, rótulo2]
 const PER_STIM = /^(parahis|vai|pre_|twin_ap)/.test(AID);   // estimulación en ritmo sinusal: cada estímulo es un punto clave
 if (PER_STIM) STIMS.forEach((s, i) => { const nx = STIMS[i + 1] ? STIMS[i + 1].t - 20 : Infinity, e = sc.ev.find(x => x.stim && x.t === s.t) || {};
   const l1 = e.l === 'S2' ? `Extraestímulo S2 (se adelanta: S1-S2 ${e.s2} ms)` : e.l === 'S1' ? 'Estímulo de base S1' : 'Estímulo';
-  WIN.push([s.t - 10, s.t + 110, Math.min(nx, s.t + 320), l1, e.l === 'S2' ? 'Respuesta al S2' : 'Respuesta']); });
+  WIN.push([s.t - 10, s.t + 110, Math.min(nx, s.t + 320), sc.wlab ? sc.wlab[i] : l1, sc.wresp ? 'Respuesta: ' + sc.wresp[i] : e.l === 'S2' ? 'Respuesta al S2' : 'Respuesta']); });
 else runs.forEach((r, i) => { const last = r[r.length - 1].t, nx = runs[i + 1] ? runs[i + 1][0].t - 60 : Infinity, end = Math.min(nx, last + 560);
   if (r.length === 1) WIN.push([last - 10, last + 220, end, 'Extraestímulo', 'Latido siguiente']);
   else WIN.push([last - 10, last + 220, end, r[r.length - 1].pt === G.base ? 'Último estimulado (base): miocardio → Purkinje apical → RD → His' : 'Último latido estimulado', '1.er latido de retorno']); });

@@ -595,6 +595,40 @@
     return sc;
   }
 
+  // Estudio basal: sospecha de vía atriofascicular. Estimulación desde el SC (sin preexcitación) y desde la pared lateral del AD,
+  // cada vez más rápido: el AH se alarga, el estímulo-delta también (vía decremental) y el HV se acorta hasta hacerse negativo (His retrógrado)
+  function afPaceSc() {
+    const sc = newSc({ title: 'Estimulación auricular con vía atriofascicular', ap: 'af', cats: ['cso', 'ralat'] }), R = [];
+    const apW = (t0, d, tc) => W_(sc, 'ante', [[G.afA, t0], [[86, 360], t0 + d * .35], [[118, 460], t0 + d * .7], [G.afV, t0 + d]], tc);
+    // 1) desde el SC: el frente llega primero al nodo; por la vía llega tarde y choca con el ventrículo ya activado
+    { const s = 250; paceA(sc, 'cso', s, 'CS'); E(sc, 'His', s + 20, 'A'); E(sc, 'ADl', s + 65, 'A');
+      W_(sc, 'ante', [[G.cso, s], [G.aSep, s + 15], [G.node, s + 30]]); W_(sc, 'ante', [[G.cso, s], [G.ra, s + 45], [G.ralat, s + 65], [G.afA, s + 75]]);
+      const h = s + 110; W_(sc, 'ante', [[G.node, s + 30], [G.his, h]]); E(sc, 'His', h, 'H'); down(sc, h); E(sc, 'VD', h + HVT, 'V'); sc.flV.push(h + HVT); E(sc, 'ECG', h + HVT - 5, '', { qrs: 'n' });
+      apW(s + 75, 160, h + HVT + 40); R.push({ s, h, v: h + HVT, ah: 90, sd: null, site: 'SC' }); }
+    // 2) desde la pared lateral del AD, LC cada vez más corta
+    [[1050, 100, 160, 600], [1850, 150, 185, 450], [2650, 220, 210, 350]].forEach(([s, ah, dap, lc], i) => {
+      paceA(sc, 'ralat', s, 'ADl'); E(sc, 'ADl', s + 5, 'A'); E(sc, 'His', s + 50, 'A');
+      W_(sc, 'ante', [[G.ralat, s], [G.ra, s + 25], [G.aSep, s + 45], [G.node, s + 60]]); W_(sc, 'ante', [[G.ralat, s], [G.afA, s + 20]]);
+      const vap = s + 20 + dap; apW(s + 20, dap);
+      const hA = s + 50 + ah; let h, inv = false;
+      if (i < 2) { h = hA; W_(sc, 'ante', [[G.node, s + 60], [G.his, h]]); down(sc, h, vap + 25, vap + 40); }
+      else { h = vap + 35; inv = true; W_(sc, 'ante', [[G.node, s + 60], [G.his, hA]], h - 8);       // el frente del nodo choca con el que sube por la rama derecha
+        W_(sc, 'retro', [[G.afV, vap], [G.rb3, vap + 12], [G.rb2, vap + 20], [G.rb1, vap + 28], [G.his, h]]); }
+      E(sc, 'His', h, 'H', inv ? { inv: true } : {}); const v = Math.min(vap, h + HVT); E(sc, 'VD', v + 8, 'V'); sc.flV.push(v); E(sc, 'ECG', v - 5, '', { qrs: i ? 'w' : 'm' });
+      R.push({ s, h, v, ah, sd: vap - s, lc, site: 'AD lateral', inv });
+    });
+    R.forEach((r, i) => { if (!r.inv) brk(sc, 'His', r.s + (i ? 50 : 20), r.h, 'AH ' + (r.h - r.s - (i ? 50 : 20)), { up: 1, hot: i === 2 ? 1 : 0 });
+      brk(sc, 'His', Math.min(r.h, r.v), Math.max(r.h, r.v), 'HV ' + (r.v - r.h > 0 ? '+' : '−') + Math.abs(r.v - r.h), { guide: 'VD', hot: i > 0 ? 1 : 0 });
+      if (r.sd) brk(sc, 'ADl', r.s, r.v, 'S-δ ' + r.sd, { guide: 'ECG' }); });
+    sc.wlab = R.map((r, i) => i ? `Estímulo en la pared lateral del AD (LC ${r.lc})` : 'Estímulo en el SC');
+    sc.wresp = R.map((r, i) => i === 0 ? 'QRS angosto, HV normal: conduce el nodo' : i === 3 ? 'His retrógrado (HV negativo): preexcitación máxima' : 'Más preexcitación: el HV se acorta');
+    const [c, a1, a2, a3] = R;
+    Object.assign(sc, { stimEnd: 0, verdictT: a3.v + 260, m: { R },
+      verdict: `Desde el SC conduce el nodo (QRS angosto). Desde la <b>pared lateral del AD</b> aparece <b>preexcitación con BRI</b> que aumenta con la frecuencia: el <b>AH se alarga</b> (${a1.ah} → ${a2.ah} ms), el estímulo-delta también (${a1.sd} → ${a3.sd}, vía decremental) y el <b>HV se acorta hasta hacerse negativo</b> (+${a1.v - a1.h} → −${a3.h - a3.v}): el His pasa a activarse en forma retrógrada desde la rama derecha → <b>vía atriofascicular</b>.`,
+      why: 'La vía nace en la pared lateral del anillo tricuspídeo: estimulando ahí el frente la encuentra antes que al nodo. Como la vía es decremental y el nodo se enlentece más, el ventrículo se activa cada vez más por la vía y el His termina activándose desde abajo. El QRS preexcitado tiene que ser igual al de la taquicardia clínica.' });
+    return sc;
+  }
+
   // Estudio basal: doble vía nodal con extraestímulos auriculares
   function dualSc() {
     const sc = newSc({ title: 'Extraestímulos auriculares: salto del AH', nodal: true, cats: ['hra'] });
@@ -1004,6 +1038,8 @@
       fases: s => [[0, 'Taquicardia con QRS angosto. Mirá la relación entre las A y los V.'], [1000, 'Las A sinusales van más lentas y no conducen: <b>disociación AV</b>. Cada V tiene su His con HV normal.']] },
     basal_coumel: { t: 'Observaciones: efecto Coumel (BRI funcional)', lanes: [['CSd', 'SC dist'], ['CSp', 'SC prox'], ['His', 'His'], ['VD', 'VD']], panels: [() => basalSc('coumel')], win: 2400,
       fases: s => [[0, 'TRAV por una vía lateral izquierda con QRS angosto. Medí el VA y la LC.'], [s[0].m.bri - 60, 'Aparece <b>BRI funcional</b>: el frente ya no baja por la rama izquierda y el QRS se ensancha.'], [s[0].m.bri + 700, 'Compará el VA y la LC con y sin BRI.']] },
+    pre_af: { t: 'Estudio basal: vía atriofascicular (estimulación auricular diferencial)', lanes: [['ECG', 'ECG'], ['ADl', 'AD lateral'], ['CS', 'SC'], ['His', 'His'], ['VD', 'VD']], panels: [afPaceSc], win: 3300,
+      fases: s => { const R = s[0].m.R; return [[0, 'Ritmo sinusal. Primero se estimula desde el <b>SC</b>.'], [R[0].s + 120, 'Desde el SC el frente llega antes al nodo: QRS angosto, HV normal.'], [R[1].s - 20, 'Ahora desde la <b>pared lateral del AD</b>, cerca de la vía: aparece preexcitación con BRI.'], [R[2].s - 20, 'Con una LC más corta el AH se alarga y el HV se acorta.'], [R[3].s - 20, 'LC 350: el HV se hace <b>negativo</b>; el His se activa desde la rama derecha (retrógrado).']]; } },
     pre_dual: { t: 'Estudio basal: doble fisiología nodal', panels: [dualSc], win: 1400, gap: 50,
       fases: s => { const R = s[0].m.R; return [[0, 'Ritmo sinusal. Se estimula la AD alta: un latido de base (S1) y un extraestímulo (S2), cada vez más precoz.'], [R[0].a - 5, 'Acoplamiento 400 ms: el S2 entra a las <b>dos vías</b>. La rápida llega primero al His; el frente de la lenta se bloquea al final (✕) porque encuentra el nodo refractario.'], [R[1].a - 5, '320 ms: sigue conduciendo la rápida (el AH se alarga un poco) y la lenta vuelve a bloquearse al final.'], [R[2].a - 5, '280 ms: la <b>vía rápida está refractaria</b> y se bloquea al entrar (✕); el frente de la <b>vía lenta</b> sigue hasta el His: salto del AH.']]; } },
     pre_vanode: { t: 'Estudio basal: conducción VA por el nodo', lanes: [['CSd', 'SC dist'], ['CSp', 'SC prox'], ['His', 'His'], ['VD', 'VD']], panels: [() => vaPaceSc('node')], win: 2600,
@@ -1297,7 +1333,7 @@
 
   // fichas con varias animaciones, cada una con una sola taquicardia y sus propios controles
   const FOR = { ado: ['ado_trav', 'ado_trnav', 'ado_ta', 'ado_nv', 'ado_jet', 'ado_anti'], basal: ['basal_trnav', 'basal_travl', 'basal_coumel', 'basal_ta', 'basal_jet'],
-    pre: ['pre_dual', 'pre_vanode', 'pre_vaap'], twin: ['twin_tsv', 'twin_ap'], bbr: ['bbr_tv', 'bbr_ppi'], conc: ['conc_gap', 'conc_in', 'conc_out'], tvf: ['tvf_circ', 'tvf_vera'], tvfabl: ['tvfabl_rf'], obl: ['obl_retro', 'obl_ante', 'obl_rev'] };
+    pre: ['pre_dual', 'pre_vanode', 'pre_vaap', 'pre_af'], twin: ['twin_tsv', 'twin_ap'], bbr: ['bbr_tv', 'bbr_ppi'], conc: ['conc_gap', 'conc_in', 'conc_out'], tvf: ['tvf_circ', 'tvf_vera'], tvfabl: ['tvfabl_rf'], obl: ['obl_retro', 'obl_ante', 'obl_rev'] };
   for (const k of Object.keys(ANIMS)) {
     const A = ANIMS[k]; if (k.startsWith('ado_')) continue;
     const np = (A.sel ? A.panels(A.def) : A.panels).length; if (np < 2 || FOR[k]) continue;
